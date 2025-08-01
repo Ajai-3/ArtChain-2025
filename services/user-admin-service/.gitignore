@@ -1,0 +1,22 @@
+# Node
+node_modules/
+dist/
+
+# Env
+.env
+firebase-admin-key.json
+
+# Logs
+*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor junk
+.vscode/
+
+# Prisma generated
+/src/generated/prisma
+
+# Lint
+.eslintcache
