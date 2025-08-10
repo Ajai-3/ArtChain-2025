@@ -1,8 +1,6 @@
-import { TokenService } from "../services/TokenService";
-import { HttpStatus } from "../../constants/httpStatus";
+import { tokenService } from "../service/tokenService";
 import { Request, Response, NextFunction } from "express";
-import { ERROR_MESSAGES } from "../../constants/errorMessages";
-import { ForbiddenError, UnauthorizedError } from "../../errors";
+import { ERROR_MESSAGES, ForbiddenError, HttpStatus, UnauthorizedError } from "art-chain-shared";
 
 export const authUser = async (
   req: Request,
@@ -17,7 +15,7 @@ export const authUser = async (
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
-    const decoded = TokenService.verifyAccessToken(accessToken);
+    const decoded = tokenService.verifyAccessToken(accessToken);
 
     if (!decoded || typeof decoded !== "object" || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);

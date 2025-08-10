@@ -1,5 +1,5 @@
 import { authUser } from "./authUser";
-import { authAdmin } from "./authAdmin";
+import { adminAuth } from "./adminAuth";
 import { Request, Response, NextFunction } from "express"
 import { authRoutesConfig } from "../config/authRoutes.config";
 
@@ -11,7 +11,7 @@ export function conditionalAuth(req: Request, res: Response, next: NextFunction)
   }
 
   if (authRoutesConfig.admin.some(route => path.startsWith(route))) {
-    return authAdmin(req, res, next);
+    return adminAuth(req, res, next);
   }
 
   next();
