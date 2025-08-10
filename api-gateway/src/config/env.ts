@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import { getArtChainSecrets } from 'art-chain-shared';
 
 export const config = {
   port: process.env.PORT || 3000,
