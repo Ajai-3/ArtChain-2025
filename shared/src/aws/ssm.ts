@@ -1,21 +1,19 @@
-import { SSMClient, GetParametersCommand } from "@aws-sdk/client-ssm";
+import { SecretsManagerClient, GetSecretValueCommand } from "@aws-sdk/client-secrets-manager";
 
-const ssm = new SSMClient({ region: process.env.AWS_REGION || "ap-south-1" });
+const client = new SecretsManagerClient({ region: process.env.AWS_REGION || "ap-south-1" });
 
-export async function getSecrets(names: string[]): Promise<Record<string, string>> {
-  const cmd = new GetParametersCommand({
-    Names: names,
-    WithDecryption: true,
-  });
+export async function getArtChainSecrets() {
+  try {
+    const command = new GetSecretValueCommand({ SecretId: "ArtChainSecret" });
+    const response = await client.send(command);
 
-  const res = await ssm.send(cmd);
-
-  const secrets: Record<string, string> = {};
-  res.Parameters?.forEach(param => {
-    if (param.Name && param.Value) {
-      secrets[param.Name] = param.Value;
+    if (response.SecretString) {
+      return JSON.parse(response.SecretString);
+    } else {
+      throw new Error("SecretString not found");
     }
-  });
-
-  return secrets;
+  } catch (error) {
+    console.error("Error fetching ArtChain secrets:", error);
+    throw error;
+  }
 }

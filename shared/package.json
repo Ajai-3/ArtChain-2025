@@ -28,6 +28,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.864.0",
     "@aws-sdk/client-ssm": "^3.864.0",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2"
