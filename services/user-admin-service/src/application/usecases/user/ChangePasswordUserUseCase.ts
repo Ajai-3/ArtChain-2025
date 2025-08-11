@@ -1,7 +1,7 @@
-import bcrypt from "bcrypt"
-import { BadRequestError, ERROR_MESSAGES, NotFoundError, UnauthorizedError } from "art-chain-shared";
-import { ChangePasswordDto } from "../../../domain/dtos/user/ChangePasswordDto";
-import { IUserRepository } from "../../../domain/repositories/IUserRepository";
+import bcrypt from 'bcrypt';
+import { BadRequestError, ERROR_MESSAGES, NotFoundError, UnauthorizedError } from 'art-chain-shared';
+import { ChangePasswordDto } from '../../../domain/dtos/user/ChangePasswordDto';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 
 
 export class ChangePasswordUserUseCase {

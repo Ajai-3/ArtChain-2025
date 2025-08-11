@@ -50,8 +50,8 @@ export class AuthController {
 
       const { token, payload } = await useCase.execute(dto);
 
-      await publishToQueue("emails", {
-        type: "VERIFICATION",
+      await publishToQueue('emails', {
+        type: 'VERIFICATION',
         email: payload.email,
         payload: {
           name: payload.name,
@@ -208,8 +208,8 @@ export class AuthController {
       const useCase = new ForgotPasswordUserUseCase(this.userRepo);
       const { user, token } = await useCase.execute(identifier);
 
-      await publishToQueue("emails", {
-        type: "PASSWORD_RESET",
+      await publishToQueue('emails', {
+        type: 'PASSWORD_RESET',
         email: user.email,
         payload: {
           name: user.name,

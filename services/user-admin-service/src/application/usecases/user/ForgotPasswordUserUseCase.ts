@@ -1,6 +1,6 @@
-import { ERROR_MESSAGES, UnauthorizedError } from "art-chain-shared";
-import { tokenService } from "../../../presentation/service/tocken.service";
-import { IUserRepository } from "../../../domain/repositories/IUserRepository";
+import { ERROR_MESSAGES, UnauthorizedError } from 'art-chain-shared';
+import { tokenService } from '../../../presentation/service/tocken.service';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 
 
 export class ForgotPasswordUserUseCase {

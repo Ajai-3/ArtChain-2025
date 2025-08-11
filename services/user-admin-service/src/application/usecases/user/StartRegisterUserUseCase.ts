@@ -1,7 +1,7 @@
-import { ConflictError, ERROR_MESSAGES } from "art-chain-shared";
-import { StartRegisterDto } from "../../../domain/dtos/user/StartRegisterDto";
-import { IUserRepository } from "../../../domain/repositories/IUserRepository";
-import { tokenService } from "../../../presentation/service/tocken.service";
+import { ConflictError, ERROR_MESSAGES } from 'art-chain-shared';
+import { StartRegisterDto } from '../../../domain/dtos/user/StartRegisterDto';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { tokenService } from '../../../presentation/service/tocken.service';
 
 
 export class StartRegisterUserUseCase {

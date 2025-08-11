@@ -3,7 +3,7 @@ import { User } from '../../../domain/entities/User';
 import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
 import { SafeUser } from '../../../domain/repositories/IBaseRepository';
 import { IAdminRepositories } from '../../../domain/repositories/IAdminRepository';
-import Role from "@prisma/client"
+import Role from '@prisma/client';
 
 
 export class AdminRepositoryImpl

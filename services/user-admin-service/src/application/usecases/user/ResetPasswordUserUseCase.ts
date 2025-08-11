@@ -1,13 +1,13 @@
-import bcrypt from "bcrypt";
-import { IUserRepository } from "../../../domain/repositories/IUserRepository";
-import { ResetPasswordDto } from "../../../domain/dtos/user/ResetPasswordDto";
-import { tokenService } from "../../../presentation/service/tocken.service";
-import { AUTH_MESSAGES } from "../../../constants/authMessages";
+import bcrypt from 'bcrypt';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { ResetPasswordDto } from '../../../domain/dtos/user/ResetPasswordDto';
+import { tokenService } from '../../../presentation/service/tocken.service';
+import { AUTH_MESSAGES } from '../../../constants/authMessages';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   NotFoundError,
-} from "art-chain-shared";
+} from 'art-chain-shared';
 
 export class ResetPasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}

@@ -14,7 +14,7 @@ router.post('/google-auth', authController.googleAuthUser);
 
 router.patch('/forgot-password', authController.forgotPassword);
 
-router.patch('/change-password/:userId', authController.changePassword)
+router.patch('/change-password/:userId', authController.changePassword);
 
 router.post('/login', authController.loginUser);
 router.post('/logout', authController.logoutUser);
