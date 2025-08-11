@@ -1,13 +1,10 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { UserRepositoryImpl } from '../../../infrastructure/repositories/user/UserRepositoryImpl';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 
 export class UserController {
-      private userRepo: UserRepositoryImpl;
-    
-      constructor() {
-        this.userRepo = new UserRepositoryImpl();
-      }
+  constructor(private readonly userRepo: IUserRepository) {}
 
       getUserProfile = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
         try {

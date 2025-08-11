@@ -22,13 +22,10 @@ import { ForgotPasswordUserUseCase } from '../../../application/usecases/user/Fo
 import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
 import { config } from '../../../infrastructure/config/env';
 import { publishToQueue } from '../../../infrastructure/messaging/rabbitmq';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 
 export class AuthController {
-  private userRepo: UserRepositoryImpl;
-
-  constructor() {
-    this.userRepo = new UserRepositoryImpl();
-  }
+  constructor(private readonly userRepo: IUserRepository) {}
 
   //# ================================================================================================================
   //# START REGISTER USER
@@ -280,7 +277,7 @@ export class AuthController {
 
       const { currentPassword, newPassword } = result;
 
-      const userId = 'cmckaxexr0000bsa8riu3xhdv';
+      const userId = req.params.userId;
 
       const dto: ChangePasswordDto = { userId, currentPassword, newPassword };
 
