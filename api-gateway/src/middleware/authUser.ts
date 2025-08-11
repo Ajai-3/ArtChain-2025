@@ -11,6 +11,8 @@ export const authUser = async (
     const authHeader = req.headers.authorization;
     const accessToken = authHeader?.split(" ")[1];
 
+    console.log(accessToken)
+
     if (!accessToken) {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }

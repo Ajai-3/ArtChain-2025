@@ -1,12 +1,13 @@
 import cors from 'cors';
 import express from 'express';
 import { config } from './config/env';
-import cookeParser from 'cookie-parser';
+import cookieParser from 'cookie-parser';
 import mainRoutes from './routes/main.route';
+import { conditionalAuth } from './middleware/conditionalAuth';
 
 const app = express();
 
-app.use(cookeParser());
+app.use(cookieParser());
 
 
 app.use((req, res, next) => {
@@ -27,6 +28,8 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(conditionalAuth)
 
 app.use('/', mainRoutes);
 

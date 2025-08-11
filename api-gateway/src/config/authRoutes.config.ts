@@ -1,5 +1,6 @@
 export const authRoutesConfig = {
   user: [
+    "/api/v1/auth/logout",
     "/api/v1/user/profile",
   ],
   admin: [
