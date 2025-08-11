@@ -2,9 +2,21 @@ version: "3.9"
 
 services:
   api-gateway:
-    build: ./api-gateway           
-    env_file: 
-     - .env     
-     - ./api-gateway/.env           
+    container_name: api-gateway
+    build: ./api-gateway
+    env_file:
+      - .env
+      - ./api-gateway/.env
     ports:
       - "3000:3000"
+    depends_on:
+      - user-admin-service
+
+  user-admin-service:
+    container_name: user-admin-service
+    build: ./services/user-admin-service
+    env_file:
+      - .env
+      - ./services/user-admin-service/.env
+    ports:
+      - "3001:3001"
