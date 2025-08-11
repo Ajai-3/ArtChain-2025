@@ -51,7 +51,17 @@ export class AuthController {
 
       const dto: StartRegisterDto = { name, username, email };
 
-      const token = await useCase.execute(dto);
+      const { token, payload } = await useCase.execute(dto);
+
+      await publishToQueue("emails", {
+        type: "VERIFICATION",
+        email: payload.email,
+        payload: {
+          name: payload.name,
+          token,
+          link: `${config.frontend_URL}/verify?token=${token}`,
+        },
+      });
 
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,

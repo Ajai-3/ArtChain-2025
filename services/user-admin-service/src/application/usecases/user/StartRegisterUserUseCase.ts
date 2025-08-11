@@ -29,8 +29,8 @@ export class StartRegisterUserUseCase {
       email,
     };
 
-    const token = await tokenService.generateEmailVerificationToken(payload);
+    const token = tokenService.generateEmailVerificationToken(payload);
 
-    return token;
+    return { token, payload };
   }
 }
