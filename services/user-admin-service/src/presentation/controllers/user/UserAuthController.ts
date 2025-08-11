@@ -20,6 +20,8 @@ import { ResetPasswordUserUseCase } from '../../../application/usecases/user/Res
 import { ChangePasswordUserUseCase } from '../../../application/usecases/user/ChangePasswordUserUseCase';
 import { ForgotPasswordUserUseCase } from '../../../application/usecases/user/ForgotPasswordUserUseCase';
 import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
+import { config } from '../../../infrastructure/config/env';
+import { publishToQueue } from '../../../infrastructure/messaging/rabbitmq';
 
 export class AuthController {
   private userRepo: UserRepositoryImpl;
@@ -199,15 +201,15 @@ export class AuthController {
       const useCase = new ForgotPasswordUserUseCase(this.userRepo);
       const { user, token } = await useCase.execute(identifier);
 
-      // await publishToQueue("emails", {
-      //   type: "PASSWORD_RESET",
-      //   email: user.email,
-      //   payload: {
-      //     name: user.name,
-      //     token,
-      //     link: `${config.frontend_URL}/reset-password?token=${token}`,
-      //   },
-      // });
+      await publishToQueue("emails", {
+        type: "PASSWORD_RESET",
+        email: user.email,
+        payload: {
+          name: user.name,
+          token,
+          link: `${config.frontend_URL}/reset-password?token=${token}`,
+        },
+      });
 
       return res
         .status(HttpStatus.OK)
