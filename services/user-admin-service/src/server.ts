@@ -1,12 +1,11 @@
-import http from "http";
-import app from "./app";
+import app from './app';
+import http from 'http';
+import { config } from './infrastructure/config/env';
 
+const PORT = config.port;
 
-const PORT = 3001
-
-const server = http.createServer(app)
-
+const server = http.createServer(app);
 
 server.listen(PORT, () => {
-    console.log(`User Admin Service starts on port ${PORT}`)
-})
+    console.log(`User-Admin Service starts on port ${PORT}`);
+});
