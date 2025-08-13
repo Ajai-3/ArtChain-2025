@@ -19,7 +19,7 @@ export class ForgotPasswordUserUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    const token = await tokenService.generateEmailVerificationToken({
+    const token = tokenService.generateEmailVerificationToken({
       name: user.name,
       username: user.username,
       email: user.email,

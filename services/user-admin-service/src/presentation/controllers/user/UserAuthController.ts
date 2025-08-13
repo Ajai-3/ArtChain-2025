@@ -1,28 +1,28 @@
-import { HttpStatus } from 'art-chain-shared';
-import { tokenService } from '../../service/tocken.service';
-import { Request, Response, NextFunction } from 'express';
-import { validateWithZod } from '../../../utils/zodValidator';
-import { AUTH_MESSAGES } from '../../../constants/authMessages';
-import { RegisterDto } from '../../../domain/dtos/user/RegisterDto';
-import { LoginRequestDto } from '../../../domain/dtos/user/LoginRequestDto';
-import { StartRegisterDto } from '../../../domain/dtos/user/StartRegisterDto';
-import { ResetPasswordDto } from '../../../domain/dtos/user/ResetPasswordDto';
-import { ChangePasswordDto } from '../../../domain/dtos/user/ChangePasswordDto';
-import { loginUserSchema } from '../../../application/validations/user/LoginSchema';
-import { LoginUserUseCase } from '../../../application/usecases/user/LoginUserUseCase';
-import { RegisterUserUseCase } from '../../../application/usecases/user/RegisterUserUseCase';
-import { registerUserSchema } from '../../../application/validations/user/RegisterUserSchema';
-import { passwordTokenSchema } from '../../../application/validations/user/PasswordTokenSchema';
-import { startRegisterSchema } from '../../../application/validations/user/StartRegisterSchema';
-import { UserRepositoryImpl } from '../../../infrastructure/repositories/user/UserRepositoryImpl';
-import { StartRegisterUserUseCase } from '../../../application/usecases/user/StartRegisterUserUseCase';
-import { ResetPasswordUserUseCase } from '../../../application/usecases/user/ResetPasswordUserUseCase';
-import { ChangePasswordUserUseCase } from '../../../application/usecases/user/ChangePasswordUserUseCase';
-import { ForgotPasswordUserUseCase } from '../../../application/usecases/user/ForgotPasswordUserUseCase';
-import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
-import { config } from '../../../infrastructure/config/env';
-import { publishToQueue } from '../../../infrastructure/messaging/rabbitmq';
-import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { HttpStatus } from "art-chain-shared";
+import { tokenService } from "../../service/tocken.service";
+import { Request, Response, NextFunction } from "express";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { AUTH_MESSAGES } from "../../../constants/authMessages";
+import { RegisterDto } from "../../../domain/dtos/user/RegisterDto";
+import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
+import { StartRegisterDto } from "../../../domain/dtos/user/StartRegisterDto";
+import { ResetPasswordDto } from "../../../domain/dtos/user/ResetPasswordDto";
+import { ChangePasswordDto } from "../../../domain/dtos/user/ChangePasswordDto";
+import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
+import { LoginUserUseCase } from "../../../application/usecases/user/LoginUserUseCase";
+import { RegisterUserUseCase } from "../../../application/usecases/user/RegisterUserUseCase";
+import { registerUserSchema } from "../../../application/validations/user/RegisterUserSchema";
+import { passwordTokenSchema } from "../../../application/validations/user/PasswordTokenSchema";
+import { startRegisterSchema } from "../../../application/validations/user/StartRegisterSchema";
+import { UserRepositoryImpl } from "../../../infrastructure/repositories/user/UserRepositoryImpl";
+import { StartRegisterUserUseCase } from "../../../application/usecases/user/StartRegisterUserUseCase";
+import { ResetPasswordUserUseCase } from "../../../application/usecases/user/ResetPasswordUserUseCase";
+import { ChangePasswordUserUseCase } from "../../../application/usecases/user/ChangePasswordUserUseCase";
+import { ForgotPasswordUserUseCase } from "../../../application/usecases/user/ForgotPasswordUserUseCase";
+import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
+import { config } from "../../../infrastructure/config/env";
+import { publishToQueue } from "../../../infrastructure/messaging/rabbitmq";
+import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 
 export class AuthController {
   constructor(private readonly userRepo: IUserRepository) {}
@@ -50,8 +50,8 @@ export class AuthController {
 
       const { token, payload } = await useCase.execute(dto);
 
-      await publishToQueue('emails', {
-        type: 'VERIFICATION',
+      await publishToQueue("emails", {
+        type: "VERIFICATION",
         email: payload.email,
         payload: {
           name: payload.name,
@@ -65,6 +65,7 @@ export class AuthController {
         token,
       });
     } catch (error) {
+      console.log(error);
       next(error);
     }
   };
@@ -110,10 +111,10 @@ export class AuthController {
       const useCase = new RegisterUserUseCase(this.userRepo);
       const { user, accessToken, refreshToken } = await useCase.execute(dto);
 
-      res.cookie('userRefreshToken', refreshToken, {
+      res.cookie("userRefreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -149,10 +150,10 @@ export class AuthController {
       const useCase = new LoginUserUseCase(this.userRepo);
       const { user, accessToken, refreshToken } = await useCase.execute(dto);
 
-      res.cookie('userRefreshToken', refreshToken, {
+      res.cookie("userRefreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -208,8 +209,8 @@ export class AuthController {
       const useCase = new ForgotPasswordUserUseCase(this.userRepo);
       const { user, token } = await useCase.execute(identifier);
 
-      await publishToQueue('emails', {
-        type: 'PASSWORD_RESET',
+      await publishToQueue("emails", {
+        type: "PASSWORD_RESET",
         email: user.email,
         payload: {
           name: user.name,
@@ -220,7 +221,7 @@ export class AuthController {
 
       return res
         .status(HttpStatus.OK)
-        .json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT });
+        .json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT, email: user?.email });
     } catch (error) {
       next(error);
     }
@@ -242,6 +243,8 @@ export class AuthController {
       const result = validateWithZod(passwordTokenSchema, req.body);
 
       const { token, password } = result;
+
+      console.log(result)
 
       const dto: ResetPasswordDto = { token, password };
 
@@ -313,15 +316,15 @@ export class AuthController {
           .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
       }
 
-      const payload = await tokenService.verifyRefreshToken(refreshToken);
+      const payload = tokenService.verifyRefreshToken(refreshToken);
 
-      if (typeof payload !== 'object' || payload === null) {
+      if (typeof payload !== "object" || payload === null) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
       }
 
-      const accessToken = await tokenService.generateAccessToken(payload);
+      const accessToken = tokenService.generateAccessToken(payload);
 
       return res
         .status(HttpStatus.OK)
@@ -346,23 +349,26 @@ export class AuthController {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
+      console.log(refreshToken);
+
       if (!refreshToken) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
       }
 
-      const payload = await tokenService.verifyRefreshToken(refreshToken);
-      if (typeof payload !== 'object' || payload === null) {
+      const payload = tokenService.verifyRefreshToken(refreshToken);
+      console.log(payload);
+      if (typeof payload !== "object" || payload === null) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
       }
 
-      res.clearCookie('userRefreshToken', {
+      res.clearCookie("userRefreshToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
       });
 
       return res

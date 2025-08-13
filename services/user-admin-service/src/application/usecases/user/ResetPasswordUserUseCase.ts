@@ -15,7 +15,7 @@ export class ResetPasswordUserUseCase {
   async execute(data: ResetPasswordDto) {
     const { token, password } = data;
 
-    const decoded = await tokenService.verifyEmailVerificationToken(token);
+    const decoded = tokenService.verifyEmailVerificationToken(token);
     if (!decoded) {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_RESET_TOKEN);
     }
