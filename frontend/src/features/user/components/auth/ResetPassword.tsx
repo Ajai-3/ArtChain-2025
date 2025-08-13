@@ -14,6 +14,7 @@ import {
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
   const urlToken = searchParams.get("token");
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const {
     register,
@@ -36,7 +37,12 @@ const ResetPassword: React.FC = () => {
     resetPasswordMutation({
       token: data.token,
       password: data.password,
-    });
+    },{
+        onError: (error) => {
+          console.log(error)
+          const errorMessage = error.message === "Invalid or expired reset token" ? "The password reset link is invalid or has expired. Please request a new one." : error.message
+          setApiError(errorMessage);
+        }},);
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -50,6 +56,7 @@ const ResetPassword: React.FC = () => {
           <p className="text-muted-foreground">
             Please set a new password for your account
           </p>
+          <p className="text-red-600">{apiError}</p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Hidden token input */}

@@ -53,8 +53,8 @@ apiClient.interceptors.request.use((config) => {
   }
 });
 const AUTH_ENDPOINTS = [
-  '/api/v1/users/login',
-  '/api/v1/users/signup',
+  '/api/v1/auth/login',
+  '/api/v1/auth/register',
   '/api/v1/admin/login',
 ];
 
@@ -96,7 +96,7 @@ apiClient.interceptors.response.use(
         const isAdminRequest = originalRequest.url?.includes("/api/v1/admin");
         const refreshEndpoint = isAdminRequest
           ? "/api/v1/admin/refresh-token"
-          : "/api/v1/users/refresh-token";
+          : "/api/v1/auth/refresh-token";
 
         const response = await apiClient.get<RefreshTokenResponse>(refreshEndpoint, {
           timeout: 30000,

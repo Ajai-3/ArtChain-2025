@@ -118,12 +118,14 @@ export const useForgottPasswordMutation = () => {
 
 // Mutation for resetting password
 export const useResetPasswordMutation = () => {
+  const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string; password: string }) =>
       apiClient.patch("/api/v1/auth/reset-password", credentials),
     onSuccess: (data) => {
       console.log("Password reset successful:", data);
-      toast.success("Password reset successful");
+      toast.success("Password reset successful, Login now.");
+       navigate("/login")
     },
     onError: (error) => {
       console.error("Password reset failed:", error);
