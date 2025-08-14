@@ -1,11 +1,76 @@
-
 services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: my-redis-cache
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data:/data
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    networks:
+      - backend
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/ || exit 1"]
+      interval: 10s
+      retries: 5
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.11.1
+    container_name: logstash
+    volumes:
+      - ./infra/elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5044:5044"
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.11.1
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:8.11.1
+    container_name: filebeat
+    volumes:
+      - ./infra/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./services/user-admin-service/logs:/var/log
+    depends_on:
+      - logstash
+    networks:
+      - backend
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     ports:
-      - "5672:5672"   
-      - "15672:15672" 
+      - "5672:5672"
+      - "15672:15672"
     env_file:
       - .env
     networks:
@@ -16,13 +81,18 @@ services:
     container_name: postgres
     restart: unless-stopped
     env_file:
-     - .env
+      - .env
     ports:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
     networks:
-      - backend    
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   api-gateway:
     container_name: api-gateway
@@ -47,10 +117,13 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
     networks:
       - backend
+    entrypoint: ["sh", "-c", "npx prisma migrate deploy && npm run dev"]
   notification-service:
     container_name: notification-service
     build: ./services/notification-service
@@ -62,9 +135,11 @@ services:
     depends_on:
       - rabbitmq
     networks:
-      - backend    
+      - backend
 
 networks:
   backend:
 volumes:
-  pg_data:  
+  pg_data:
+  redis_data:
+  es_data:
