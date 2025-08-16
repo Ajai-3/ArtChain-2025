@@ -7,6 +7,8 @@ export interface ISupporterRepository extends IBaseRepository {
     supportingCount: number;
   }>;
 
+  isSupporting(currentUserId: string, targetUserId: string): Promise<boolean>
+
   getSupporters(
     userId: string,
     page?: number,

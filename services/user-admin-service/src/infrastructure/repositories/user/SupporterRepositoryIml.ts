@@ -24,6 +24,20 @@ export class SupporterRepositoryImpl
     return { supportersCount, supportingCount };
   }
 
+  async isSupporting(
+    currentUserId: string,
+    targetUserId: string
+  ): Promise<boolean> {
+    const count = await this.model.count({
+      where: {
+        supporterId: currentUserId,
+        targetUserId: targetUserId,
+      },
+    });
+
+    return count > 0;
+  }
+
   async getSupporters(
     userId: string,
     page?: number,
@@ -41,7 +55,7 @@ export class SupporterRepositoryImpl
             username: true,
             profileImage: true,
             role: true,
-            plan: true
+            plan: true,
           },
         },
       },
@@ -69,7 +83,7 @@ export class SupporterRepositoryImpl
             username: true,
             profileImage: true,
             role: true,
-            plan: true
+            plan: true,
           },
         },
       },

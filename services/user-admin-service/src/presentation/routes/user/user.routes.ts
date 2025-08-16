@@ -10,7 +10,7 @@ const suppoterRepo = new SupporterRepositoryImpl()
 const userController = new UserController(userRepo, suppoterRepo);
 
 router.get('/profile', userController.getUserProfile);
-router.get('/profile:id', userController.getUserProfileWithId);
+router.get('/profile/:userId', userController.getUserProfileWithId);
 
 // router.post('/support')
 

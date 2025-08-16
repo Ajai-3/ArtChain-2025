@@ -5,9 +5,14 @@ import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-i
 import { HttpStatus } from "art-chain-shared";
 import { USER_MESSAGES } from "../../../constants/userMessages";
 import { ISupporterRepository } from "../../../domain/repositories/user/ISupporterRepository";
+import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+import { GetUserProfileWithIdDto } from "../../../domain/dtos/user/GetUserProfileWithIdDto";
 
 export class UserController {
-  constructor(private readonly userRepo: IUserRepository, private readonly suppoterRepo: ISupporterRepository) {}
+  constructor(
+    private readonly userRepo: IUserRepository,
+    private readonly suppoterRepo: ISupporterRepository
+  ) {}
 
   getUserProfile = async (
     req: Request,
@@ -17,7 +22,10 @@ export class UserController {
     try {
       const userId = req.headers["x-user-id"] as string;
 
-      const useCase = new GetCurrentUserUseCase(this.userRepo, this.suppoterRepo);
+      const useCase = new GetCurrentUserUseCase(
+        this.userRepo,
+        this.suppoterRepo
+      );
       const { user, supportingCount, supportersCount } = await useCase.execute(
         userId
       );
@@ -42,6 +50,24 @@ export class UserController {
   ): Promise<any> => {
     try {
       const userId = req.params.userId;
+      const currentUserId = req.headers["x-user-id"] as string | undefined;
+
+      const dto: GetUserProfileWithIdDto = { userId, currentUserId };
+      const useCase = new GetUserWithIdUserUseCase(
+        this.userRepo,
+        this.suppoterRepo
+      );
+      const { user, isSupporting, supportingCount, supportersCount } = await useCase.execute(dto);
+
+      return res.status(HttpStatus.OK).json({
+        message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
+        data: {
+          user,
+          isSupporting,
+          supportingCount,
+          supportersCount,
+        },
+      });
     } catch (error) {
       next(error);
     }
