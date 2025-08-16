@@ -4,9 +4,10 @@ import { IUserRepository } from "../../../domain/repositories/user/IUserReposito
 import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
 import { HttpStatus } from "art-chain-shared";
 import { USER_MESSAGES } from "../../../constants/userMessages";
+import { ISupporterRepository } from "../../../domain/repositories/user/ISupporterRepository";
 
 export class UserController {
-  constructor(private readonly userRepo: IUserRepository) {}
+  constructor(private readonly userRepo: IUserRepository, private readonly suppoterRepo: ISupporterRepository) {}
 
   getUserProfile = async (
     req: Request,
@@ -16,7 +17,7 @@ export class UserController {
     try {
       const userId = req.headers["x-user-id"] as string;
 
-      const useCase = new GetCurrentUserUseCase(this.userRepo);
+      const useCase = new GetCurrentUserUseCase(this.userRepo, this.suppoterRepo);
       const { user, supportingCount, supportersCount } = await useCase.execute(
         userId
       );

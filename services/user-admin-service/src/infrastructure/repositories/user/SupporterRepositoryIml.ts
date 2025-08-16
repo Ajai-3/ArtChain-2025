@@ -41,6 +41,7 @@ export class SupporterRepositoryImpl
             username: true,
             profileImage: true,
             role: true,
+            plan: true
           },
         },
       },
@@ -68,6 +69,7 @@ export class SupporterRepositoryImpl
             username: true,
             profileImage: true,
             role: true,
+            plan: true
           },
         },
       },
