@@ -1,0 +1,36 @@
+{
+  "name": "art-chain-shared",
+  "version": "1.0.14",
+  "description": "Shared utilities, constants, and services for the Art Chain microservices",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "art-chain",
+    "shared",
+    "microservices",
+    "utils"
+  ],
+  "author": "ArtChain",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.864.0",
+    "@aws-sdk/client-ssm": "^3.864.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
