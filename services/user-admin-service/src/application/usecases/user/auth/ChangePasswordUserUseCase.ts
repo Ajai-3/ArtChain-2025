@@ -7,6 +7,7 @@ import {
   NotFoundError,
   UnauthorizedError,
 } from "art-chain-shared";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 
 export class ChangePasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -16,17 +17,17 @@ export class ChangePasswordUserUseCase {
 
     const rawUser = await this.userRepo.findByIdRaw(userId);
     if (!rawUser) {
-      throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
+      throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
 
     const isValid = bcrypt.compareSync(currentPassword, rawUser.password);
     if (!isValid) {
-      throw new UnauthorizedError(ERROR_MESSAGES.INCORRECT_CURRENT_PASSWORD);
+      throw new UnauthorizedError(AUTH_MESSAGES.INCORRECT_CURRENT_PASSWORD);
     }
 
     const isSamePassword = bcrypt.compareSync(newPassword, rawUser.password);
     if (isSamePassword) {
-      throw new BadRequestError(ERROR_MESSAGES.NEW_PASSWORD_IS_SAME_AS_CURRENT);
+      throw new BadRequestError(AUTH_MESSAGES.NEW_PASSWORD_IS_SAME_AS_CURRENT);
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);

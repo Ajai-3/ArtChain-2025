@@ -1,13 +1,9 @@
 import bcrypt from "bcrypt";
+import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/tocken.service";
 import { ResetPasswordDto } from "../../../../domain/dtos/user/ResetPasswordDto";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
-import {
-  BadRequestError,
-  ERROR_MESSAGES,
-  NotFoundError,
-} from "art-chain-shared";
 
 export class ResetPasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -26,12 +22,12 @@ export class ResetPasswordUserUseCase {
 
     const user = await this.userRepo.findByEmailRaw(decoded.email);
     if (!user) {
-      throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
+      throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
 
     const isSamePassword = bcrypt.compareSync(password, user.password);
     if (isSamePassword) {
-      throw new BadRequestError(ERROR_MESSAGES.NEW_PASSWORD_IS_SAME_AS_CURRENT);
+      throw new BadRequestError(AUTH_MESSAGES.NEW_PASSWORD_IS_SAME_AS_CURRENT);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

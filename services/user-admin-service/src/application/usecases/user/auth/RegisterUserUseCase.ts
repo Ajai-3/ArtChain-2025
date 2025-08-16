@@ -4,6 +4,7 @@ import { RegisterDto } from "../../../../domain/dtos/user/RegisterDto";
 import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
 import { tokenService } from "../../../../presentation/service/tocken.service";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 
 export class RegisterUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -13,12 +14,12 @@ export class RegisterUserUseCase {
 
     const existingUserByUsername = await this.userRepo.findByUsername(username);
     if (existingUserByUsername) {
-      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_USERNAME);
+      throw new ConflictError(AUTH_MESSAGES.DUPLICATE_USERNAME);
     }
 
     const existingUserByEmail = await this.userRepo.findByEmail(email);
     if (existingUserByEmail) {
-      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_EMAIL);
+      throw new ConflictError(AUTH_MESSAGES.DUPLICATE_EMAIL);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -49,8 +50,8 @@ export class RegisterUserUseCase {
       role: user.role,
     };
 
-    const refreshToken = await tokenService.generateRefreshToken(payload);
-    const accessToken = await tokenService.generateAccessToken(payload);
+    const refreshToken = tokenService.generateRefreshToken(payload);
+    const accessToken = tokenService.generateAccessToken(payload);
 
     return { user, accessToken, refreshToken };
   }

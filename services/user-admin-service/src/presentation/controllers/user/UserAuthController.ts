@@ -92,7 +92,7 @@ export class AuthController {
           .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
       }
 
-      const decoded = await tokenService.verifyEmailVerificationToken(token);
+      const decoded = tokenService.verifyEmailVerificationToken(token);
       if (!decoded) {
         return res
           .status(HttpStatus.UNAUTHORIZED)

@@ -4,10 +4,11 @@ import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
 import { tokenService } from "../../../../presentation/service/tocken.service";
 import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 import {
-  ERROR_MESSAGES,
   ForbiddenError,
+  NotFoundError,
   UnauthorizedError,
 } from "art-chain-shared";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 
 export class LoginUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -20,19 +21,20 @@ export class LoginUserUseCase {
       (await this.userRepo.findByEmailRaw(identifier));
 
     if (!rawUser) {
-      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
+      throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
     if (rawUser.role !== "user" && rawUser.role !== "artist") {
-      throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
+      throw new ForbiddenError(AUTH_MESSAGES.INVALID_USER_ROLE);
     }
 
-    if (rawUser.status !== "active") {
-      throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
+    if (rawUser.status !== "active" && rawUser.status !== "suspended") {
+      throw new ForbiddenError(AUTH_MESSAGES.LOGIN_NOT_ALLOWED);
     }
+
     const isValid = bcrypt.compareSync(password, rawUser.password);
     if (!isValid) {
-      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
+      throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
     const user =
@@ -40,7 +42,7 @@ export class LoginUserUseCase {
       (await this.userRepo.findByEmail(identifier));
 
     if (!user) {
-      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
+      throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
 
     const payload = {
