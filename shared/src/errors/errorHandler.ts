@@ -15,25 +15,15 @@ export const createErrorHandler = (isProduction: boolean) => {
         code: error.name,
         statusCode: error.statusCode,
         message: error.message,
-        ...(error instanceof ValidationError && { details: (error as any).details }),
+        ...(error instanceof ValidationError && {
+          details: (error as any).details,
+        }),
         ...(!isProduction && {
           stack: error.stack,
           path: req.path,
         }),
       },
     };
-
-    console.error("Backend sending error response:", {
-      statusCode: error.statusCode,
-      body: {
-        status: "error",
-        error: {
-          code: error.name,
-          message: error.message,
-          statusCode: error.statusCode,
-        },
-      },
-    });
 
     res.status(error.statusCode).json(response);
   };
