@@ -1,10 +1,9 @@
-import bcrypt from 'bcrypt';
-import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-import { AuthResponseDto } from '../../../domain/dtos/user/AuthResponseDto';
-import { RegisterDto } from '../../../domain/dtos/user/RegisterDto';
-import { ConflictError, ERROR_MESSAGES } from 'art-chain-shared';
-import { tokenService } from '../../../presentation/service/tocken.service';
-
+import bcrypt from "bcrypt";
+import { ConflictError, ERROR_MESSAGES } from "art-chain-shared";
+import { RegisterDto } from "../../../../domain/dtos/user/RegisterDto";
+import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
+import { tokenService } from "../../../../presentation/service/tocken.service";
+import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
 
 export class RegisterUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -29,17 +28,17 @@ export class RegisterUserUseCase {
       name,
       email,
       username,
-      phone: '',
+      phone: "",
       password: hashedPassword,
       isVerified: false,
-      profileImage: '',
-      bannerImage: '',
-      backgroundImage: '',
-      bio: '',
-      country: '',
-      role: 'user',
-      plan: 'free',
-      status: 'active',
+      profileImage: "",
+      bannerImage: "",
+      backgroundImage: "",
+      bio: "",
+      country: "",
+      role: "user",
+      plan: "free",
+      status: "active",
       createdAt: new Date(),
       updatedAt: new Date(),
     });

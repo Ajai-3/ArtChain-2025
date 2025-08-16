@@ -1,19 +1,15 @@
-import { HttpStatus } from 'art-chain-shared';
-import { tokenService } from '../../service/tocken.service';
-import { Request, Response, NextFunction } from 'express';
-import { validateWithZod } from '../../../utils/zodValidator';
-import { AUTH_MESSAGES } from '../../../constants/authMessages';
-import { LoginRequestDto } from '../../../domain/dtos/user/LoginRequestDto';
-import { loginUserSchema } from '../../../application/validations/user/LoginSchema';
-import { LoginAdminUseCase } from '../../../application/usecases/admin/LoginAdminUseCase';
-import { AdminRepositoryImpl } from '../../../infrastructure/repositories/admin/AdminRepositoryImpl';
+import { HttpStatus } from "art-chain-shared";
+import { Request, Response, NextFunction } from "express";
+import { tokenService } from "../../service/tocken.service";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { AUTH_MESSAGES } from "../../../constants/authMessages";
+import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
+import { IAdminRepositories } from "../../../domain/repositories/IAdminRepository";
+import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
+import { LoginAdminUseCase } from "../../../application/usecases/admin/LoginAdminUseCase";
 
 export class AdminAuthController {
-  private adminRepo: AdminRepositoryImpl;
-
-  constructor() {
-    this.adminRepo = new AdminRepositoryImpl();
-  }
+  constructor(private readonly adminRepo: IAdminRepositories) {}
 
   //# ================================================================================================================
   //# ADMIN LOGIN
@@ -37,10 +33,10 @@ export class AdminAuthController {
       const useCase = new LoginAdminUseCase(this.adminRepo);
       const { user, accessToken, refreshToken } = await useCase.execute(dto);
 
-      res.cookie('adminRefreshToken', refreshToken, {
+      res.cookie("adminRefreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -75,17 +71,17 @@ export class AdminAuthController {
           .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
       }
 
-      const payload = await tokenService.verifyRefreshToken(refreshToken);
-      if (typeof payload !== 'object' || payload === null) {
+      const payload = tokenService.verifyRefreshToken(refreshToken);
+      if (typeof payload !== "object" || payload === null) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
       }
 
-      res.clearCookie('adminRefreshToken', {
+      res.clearCookie("adminRefreshToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
       });
 
       return res

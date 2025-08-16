@@ -23,6 +23,11 @@ export const config = {
     emailVerificationExpire: (process.env.JWT_EMAIL_VERIFICATION_EXPIRES_IN ||
       '5m') as jwt.SignOptions['expiresIn'],
   },
+  firebase: {
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY
+  }
 };
 
 console.log(config);

@@ -1,10 +1,13 @@
-import { ERROR_MESSAGES, ForbiddenError, UnauthorizedError } from 'art-chain-shared';
-import bcrypt from 'bcrypt';
-import { LoginRequestDto } from '../../../domain/dtos/user/LoginRequestDto';
-import { AuthResponseDto } from '../../../domain/dtos/user/AuthResponseDto';
-import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-import { tokenService } from '../../../presentation/service/tocken.service';
-
+import bcrypt from "bcrypt";
+import { LoginRequestDto } from "../../../../domain/dtos/user/LoginRequestDto";
+import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
+import { tokenService } from "../../../../presentation/service/tocken.service";
+import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import {
+  ERROR_MESSAGES,
+  ForbiddenError,
+  UnauthorizedError,
+} from "art-chain-shared";
 
 export class LoginUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -20,14 +23,13 @@ export class LoginUserUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== 'user' && rawUser.role !== 'artist') {
+    if (rawUser.role !== "user" && rawUser.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 
-    if (rawUser.status !== 'active') {
+    if (rawUser.status !== "active") {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
-
     const isValid = bcrypt.compareSync(password, rawUser.password);
     if (!isValid) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
@@ -47,8 +49,8 @@ export class LoginUserUseCase {
       role: user.role,
     };
 
-    const refreshToken = await tokenService.generateRefreshToken(payload);
-    const accessToken = await tokenService.generateAccessToken(payload);
+    const refreshToken = tokenService.generateRefreshToken(payload);
+    const accessToken = tokenService.generateAccessToken(payload);
 
     return { user, accessToken, refreshToken };
   }

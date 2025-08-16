@@ -16,10 +16,30 @@ export class UserController {
 
       getUserProfileWithId = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
         try {
+
+          const userId = req.params.userId;
+
             
         } catch (error) {
             next(error);
         }
       };
 
+      supportUnSupportToggle = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+        try {
+
+          
+        } catch (error) {
+          next(error)
+        }
+      }
+
+      getSuppoters =  async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+        try {
+
+          
+        } catch (error) {
+          next(error)
+        }
+      }
 }

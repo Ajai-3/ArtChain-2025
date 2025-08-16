@@ -59,7 +59,9 @@ services:
     container_name: filebeat
     volumes:
       - ./infra/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-      - ./services/user-admin-service/logs:/var/log
+      - ./logs/api-gateway:/usr/share/filebeat/logs/api-gateway
+      - ./logs/user-admin-service:/usr/share/filebeat/logs/user-admin-service
+      - ./logs/notification-service:/usr/share/filebeat/logs/notification-service
     depends_on:
       - logstash
     networks:
@@ -107,6 +109,8 @@ services:
       - rabbitmq
     networks:
       - backend
+    volumes:
+      - ./logs/api-gateway:/var/log/app  
 
   user-admin-service:
     container_name: user-admin-service
@@ -124,6 +128,8 @@ services:
     networks:
       - backend
     entrypoint: ["sh", "-c", "npx prisma migrate deploy && npm run dev"]
+    volumes:
+      - ./logs/user-admin-service:/var/log/app  
   notification-service:
     container_name: notification-service
     build: ./services/notification-service
@@ -136,6 +142,8 @@ services:
       - rabbitmq
     networks:
       - backend
+    volumes:
+      - ./logs/notification-service:/var/log/app    
 
 networks:
   backend:

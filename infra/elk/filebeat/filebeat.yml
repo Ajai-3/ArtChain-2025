@@ -2,7 +2,9 @@ filebeat.inputs:
   - type: log
     enabled: true
     paths:
-      - /var/log/*.log
+      - /usr/share/filebeat/logs/api-gateway/*.log
+      - /usr/share/filebeat/logs/user-admin-service/*.log
+      - /usr/share/filebeat/logs/notification-service/*.log
 
 output.logstash:
   hosts: ["logstash:5044"]

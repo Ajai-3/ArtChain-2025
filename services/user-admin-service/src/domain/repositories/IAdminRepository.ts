@@ -1,6 +1,5 @@
-import { User } from '../entities/User';
-import { IBaseRepository } from './IBaseRepository';
+import { IBaseRepository, SafeUser } from './IBaseRepository';
 
-export interface IAdminRepositories extends IBaseRepository<User> {
-  findByRole(role: string): Promise<User | null>;
+export interface IAdminRepositories extends IBaseRepository {
+  findByRole(role: string): Promise<SafeUser | null>;
 }

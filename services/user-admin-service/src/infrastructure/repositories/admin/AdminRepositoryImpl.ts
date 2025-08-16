@@ -1,9 +1,8 @@
+import Role from '@prisma/client';
 import { prisma } from '../../db/prisma';
-import { User } from '../../../domain/entities/User';
 import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
 import { SafeUser } from '../../../domain/repositories/IBaseRepository';
 import { IAdminRepositories } from '../../../domain/repositories/IAdminRepository';
-import Role from '@prisma/client';
 
 
 export class AdminRepositoryImpl
@@ -12,7 +11,7 @@ export class AdminRepositoryImpl
 {
   protected model = prisma.user;
 
-  async findByRole(role: keyof typeof Role): Promise<User | null> {
+  async findByRole(role: keyof typeof Role): Promise<SafeUser | null> {
     return this.model.findFirst({
       where: {
         role: Role[role],

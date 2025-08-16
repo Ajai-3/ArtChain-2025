@@ -1,28 +1,30 @@
 import { HttpStatus } from "art-chain-shared";
-import { tokenService } from "../../service/tocken.service";
 import { Request, Response, NextFunction } from "express";
+import { tokenService } from "../../service/tocken.service";
+import { config } from "../../../infrastructure/config/env";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { AUTH_MESSAGES } from "../../../constants/authMessages";
 import { RegisterDto } from "../../../domain/dtos/user/RegisterDto";
+import { GoogleAuthDto } from "../../../domain/dtos/user/GoogleAuthDto";
+import { publishToQueue } from "../../../infrastructure/messaging/rabbitmq";
 import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
 import { StartRegisterDto } from "../../../domain/dtos/user/StartRegisterDto";
 import { ResetPasswordDto } from "../../../domain/dtos/user/ResetPasswordDto";
+import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 import { ChangePasswordDto } from "../../../domain/dtos/user/ChangePasswordDto";
 import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
-import { LoginUserUseCase } from "../../../application/usecases/user/LoginUserUseCase";
-import { RegisterUserUseCase } from "../../../application/usecases/user/RegisterUserUseCase";
+import { googleAuthSchema } from "../../../application/validations/user/GoogleAuthSchema";
+import { LoginUserUseCase } from "../../../application/usecases/user/auth/LoginUserUseCase";
 import { registerUserSchema } from "../../../application/validations/user/RegisterUserSchema";
 import { passwordTokenSchema } from "../../../application/validations/user/PasswordTokenSchema";
 import { startRegisterSchema } from "../../../application/validations/user/StartRegisterSchema";
-import { UserRepositoryImpl } from "../../../infrastructure/repositories/user/UserRepositoryImpl";
-import { StartRegisterUserUseCase } from "../../../application/usecases/user/StartRegisterUserUseCase";
-import { ResetPasswordUserUseCase } from "../../../application/usecases/user/ResetPasswordUserUseCase";
-import { ChangePasswordUserUseCase } from "../../../application/usecases/user/ChangePasswordUserUseCase";
-import { ForgotPasswordUserUseCase } from "../../../application/usecases/user/ForgotPasswordUserUseCase";
+import { RegisterUserUseCase } from "../../../application/usecases/user/auth/RegisterUserUseCase";
+import { GoogleAuthUserUseCase } from "../../../application/usecases/user/auth/GoogleAuthUserUseCase";
+import { StartRegisterUserUseCase } from "../../../application/usecases/user/auth/StartRegisterUserUseCase";
+import { ResetPasswordUserUseCase } from "../../../application/usecases/user/auth/ResetPasswordUserUseCase";
+import { ChangePasswordUserUseCase } from "../../../application/usecases/user/auth/ChangePasswordUserUseCase";
+import { ForgotPasswordUserUseCase } from "../../../application/usecases/user/auth/ForgotPasswordUserUseCase";
 import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
-import { config } from "../../../infrastructure/config/env";
-import { publishToQueue } from "../../../infrastructure/messaging/rabbitmq";
-import { IUserRepository } from "../../../domain/repositories/IUserRepository";
 
 export class AuthController {
   constructor(private readonly userRepo: IUserRepository) {}
@@ -180,6 +182,30 @@ export class AuthController {
     next: NextFunction
   ): Promise<any> => {
     try {
+      const result = validateWithZod(googleAuthSchema, req.body);
+
+      const { token, email, name } = result;
+
+      const dto: GoogleAuthDto = { token, email, name };
+
+      const useCase = new GoogleAuthUserUseCase(this.userRepo);
+      const { user, isNewUser, accessToken, refreshToken } =
+        await useCase.execute(dto);
+
+      res.cookie("userRefreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+
+      return res.status(isNewUser ? HttpStatus.CREATED : HttpStatus.OK).json({
+        message: isNewUser
+          ? AUTH_MESSAGES.REGISTRATION_SUCCESS
+          : AUTH_MESSAGES.LOGIN_SUCCESS,
+        user,
+        accessToken,
+      });
     } catch (error) {
       next(error);
     }
@@ -244,7 +270,7 @@ export class AuthController {
 
       const { token, password } = result;
 
-      console.log(result)
+      console.log(result);
 
       const dto: ResetPasswordDto = { token, password };
 
