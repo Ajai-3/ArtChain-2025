@@ -30,6 +30,9 @@ export const authUser = async (
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 
+    req.headers['x-user-id'] = decoded.id; 
+    req.headers['x-user-role'] = decoded.role;
+
     (req as any).user = decoded;
     next();
   } catch (error) {
