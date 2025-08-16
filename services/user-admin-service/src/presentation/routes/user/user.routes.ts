@@ -10,4 +10,6 @@ const userController = new UserController(userRepo);
 router.get('/profile', userController.getUserProfile);
 router.get('/profile:id', userController.getUserProfileWithId);
 
+// router.post('/support')
+
 export default router;
