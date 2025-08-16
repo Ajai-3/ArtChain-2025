@@ -2,7 +2,7 @@ import { ConflictError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/tocken.service";
 import { StartRegisterDto } from "../../../../domain/dtos/user/StartRegisterDto";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
 export class StartRegisterUserUseCase {
   constructor(private userRepo: IUserRepository) {}

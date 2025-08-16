@@ -10,7 +10,7 @@ import { publishToQueue } from "../../../infrastructure/messaging/rabbitmq";
 import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
 import { StartRegisterDto } from "../../../domain/dtos/user/StartRegisterDto";
 import { ResetPasswordDto } from "../../../domain/dtos/user/ResetPasswordDto";
-import { IUserRepository } from "../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
 import { ChangePasswordDto } from "../../../domain/dtos/user/ChangePasswordDto";
 import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
 import { googleAuthSchema } from "../../../application/validations/user/GoogleAuthSchema";
@@ -306,7 +306,7 @@ export class AuthController {
 
       const { currentPassword, newPassword } = result;
 
-      const userId = req.params.userId;
+      const userId = req.headers["x-user-id"] as string;
 
       const dto: ChangePasswordDto = { userId, currentPassword, newPassword };
 

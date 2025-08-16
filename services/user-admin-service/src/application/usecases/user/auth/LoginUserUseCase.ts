@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { LoginRequestDto } from "../../../../domain/dtos/user/LoginRequestDto";
 import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
 import { tokenService } from "../../../../presentation/service/tocken.service";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import {
   ForbiddenError,
   NotFoundError,
@@ -11,14 +11,14 @@ import {
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 
 export class LoginUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private _userRepo: IUserRepository) {}
 
   async execute(data: LoginRequestDto): Promise<AuthResponseDto> {
     const { identifier, password } = data;
 
     const rawUser =
-      (await this.userRepo.findByUsernameRaw(identifier)) ||
-      (await this.userRepo.findByEmailRaw(identifier));
+      (await this._userRepo.findByUsernameRaw(identifier)) ||
+      (await this._userRepo.findByEmailRaw(identifier));
 
     if (!rawUser) {
       throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
@@ -38,8 +38,8 @@ export class LoginUserUseCase {
     }
 
     const user =
-      (await this.userRepo.findByUsername(identifier)) ||
-      (await this.userRepo.findByEmail(identifier));
+      (await this._userRepo.findByUsername(identifier)) ||
+      (await this._userRepo.findByEmail(identifier));
 
     if (!user) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);

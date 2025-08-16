@@ -3,7 +3,7 @@ import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/tocken.service";
 import { ResetPasswordDto } from "../../../../domain/dtos/user/ResetPasswordDto";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
 export class ResetPasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}

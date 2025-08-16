@@ -1,6 +1,6 @@
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/tocken.service";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import {
   BadRequestError,
   ERROR_MESSAGES,

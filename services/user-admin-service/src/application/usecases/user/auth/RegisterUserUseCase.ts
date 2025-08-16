@@ -3,7 +3,7 @@ import { ConflictError, ERROR_MESSAGES } from "art-chain-shared";
 import { RegisterDto } from "../../../../domain/dtos/user/RegisterDto";
 import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
 import { tokenService } from "../../../../presentation/service/tocken.service";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 
 export class RegisterUserUseCase {

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { ChangePasswordDto } from "../../../../domain/dtos/user/ChangePasswordDto";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import {
   BadRequestError,
   ERROR_MESSAGES,

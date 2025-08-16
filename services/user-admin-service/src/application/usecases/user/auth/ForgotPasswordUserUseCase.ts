@@ -1,8 +1,7 @@
-import { BadRequestError } from 'art-chain-shared';
-import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { tokenService } from '../../../../presentation/service/tocken.service';
-import { IUserRepository } from '../../../../domain/repositories/IUserRepository';
-
+import { BadRequestError } from "art-chain-shared";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { tokenService } from "../../../../presentation/service/tocken.service";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
 export class ForgotPasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -17,7 +16,9 @@ export class ForgotPasswordUserUseCase {
     }
 
     if (!user) {
-      throw new BadRequestError(AUTH_MESSAGES.INVALID_FORGOT_PASSWORD_IDENTIFIER);
+      throw new BadRequestError(
+        AUTH_MESSAGES.INVALID_FORGOT_PASSWORD_IDENTIFIER
+      );
     }
 
     const token = tokenService.generateEmailVerificationToken({
