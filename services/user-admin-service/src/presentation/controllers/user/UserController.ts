@@ -14,6 +14,13 @@ export class UserController {
     private readonly suppoterRepo: ISupporterRepository
   ) {}
 
+  //# ================================================================================================================
+  //# GET CURRENR USER PROFILE
+  //# ================================================================================================================
+  //# GET /api/v1/user/profile
+  //# Request headers: x-user-id
+  //# This controller help to get the current loggined user profile.
+  //# ================================================================================================================
   getUserProfile = async (
     req: Request,
     res: Response,
@@ -43,6 +50,14 @@ export class UserController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET OTHER USER PROFILE
+  //# ================================================================================================================
+  //# GET /api/v1/user/profile/:userId
+  //# Request headers: x-user-id
+  //# Request params: req.params.userId
+  //# This controller help to get other users profile with their id.
+  //# ================================================================================================================
   getUserProfileWithId = async (
     req: Request,
     res: Response,
@@ -57,7 +72,8 @@ export class UserController {
         this.userRepo,
         this.suppoterRepo
       );
-      const { user, isSupporting, supportingCount, supportersCount } = await useCase.execute(dto);
+      const { user, isSupporting, supportingCount, supportersCount } =
+        await useCase.execute(dto);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
@@ -73,17 +89,55 @@ export class UserController {
     }
   };
 
-  supportUnSupportToggle = async (
+  //# ================================================================================================================
+  //# SUPPORT A USER
+  //# ================================================================================================================
+  //# POST /api/v1/user/support
+  //# Request headers: x-user-id
+  //# Request params: req.params.userId
+  //# This controller help to get the current loggined user profile.
+  //# ================================================================================================================
+  supportUser = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<any> => {
     try {
+      const userId = req.params.userId;
+      const currentUserId = req.headers["x-user-id"] as string;
     } catch (error) {
       next(error);
     }
   };
 
+  //# ================================================================================================================
+  //# UNSUPPORT THE USER
+  //# ================================================================================================================
+  //# POST /api/v1/user/un-support
+  //# Request headers: x-user-id
+  //# Request params: req.params.userId
+  //# This controller help to get the current loggined user profile.
+  //# ================================================================================================================
+  unSupportUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const userId = req.params.userId;
+      const currentUserId = req.headers["x-user-id"] as string;
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET CURRENR USER PROFILE
+  //# ================================================================================================================
+  //# POST /api/v1/user/profile
+  //# Request headers: x-user-id
+  //# This controller help to get the current loggined user profile.
+  //# ================================================================================================================
   getSuppoters = async (
     req: Request,
     res: Response,

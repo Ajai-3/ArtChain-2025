@@ -289,7 +289,6 @@ export class AuthController {
   //# CHANGE PASSWORD
   //#=================================================================================================================
   //# POST /api/v1/auth/change-password
-  //# Request headers: { authorization: Bearer accessToken }
   //# Request body: { currentPassword: string, newPassword: string }
   //# This controller changes a user's password using their current password.
   //#=================================================================================================================
