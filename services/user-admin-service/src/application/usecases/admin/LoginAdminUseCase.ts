@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 
-import { tokenService } from "../../../presentation/service/tocken.service";
+import { tokenService } from "../../../presentation/service/token.service";
 import { AuthResponseDto } from "../../../domain/dtos/user/AuthResponseDto";
 import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
 import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
