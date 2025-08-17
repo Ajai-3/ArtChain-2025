@@ -1,6 +1,6 @@
 import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
-import { tokenService } from "../../service/tocken.service";
+import { tokenService } from "../../service/token.service";
 import { config } from "../../../infrastructure/config/env";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { AUTH_MESSAGES } from "../../../constants/authMessages";
@@ -25,6 +25,7 @@ import { ResetPasswordUserUseCase } from "../../../application/usecases/user/aut
 import { ChangePasswordUserUseCase } from "../../../application/usecases/user/auth/ChangePasswordUserUseCase";
 import { ForgotPasswordUserUseCase } from "../../../application/usecases/user/auth/ForgotPasswordUserUseCase";
 import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
+import { RefreshTokenUserUseCase } from "../../../application/usecases/user/auth/RefreshTokenUserUseCase";
 
 export class AuthController {
   constructor(private readonly userRepo: IUserRepository) {}
@@ -335,21 +336,8 @@ export class AuthController {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
-      if (!refreshToken) {
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
-      }
-
-      const payload = tokenService.verifyRefreshToken(refreshToken);
-
-      if (typeof payload !== "object" || payload === null) {
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
-      }
-
-      const accessToken = tokenService.generateAccessToken(payload);
+      const useCase = new RefreshTokenUserUseCase(this.userRepo);
+      const accessToken = await useCase.execute(refreshToken);
 
       return res
         .status(HttpStatus.OK)

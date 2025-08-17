@@ -1,5 +1,6 @@
+import { JwtPayload } from "jsonwebtoken";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/tocken.service";
+import { tokenService } from "../../../../presentation/service/token.service";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import {
   BadRequestError,
@@ -16,18 +17,19 @@ export class RefreshTokenUserUseCase {
       throw new BadRequestError(AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED);
     }
 
-    let payload: any;
+    let payload: JwtPayload | null;
+
     try {
-      payload = tokenService.verifyRefreshToken(refreshToken);
+      payload = tokenService.verifyRefreshToken(refreshToken) as JwtPayload;
     } catch (err) {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
-    if (!payload || typeof payload !== "object" || !payload.email) {
+    if (!payload || typeof payload !== "object" || !("email" in payload)) {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
-    const user = await this.userRepo.findByEmail(payload.email);
+    const user = await this.userRepo.findByEmail(payload.email as string);
     if (!user) {
       throw new UnauthorizedError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
