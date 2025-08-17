@@ -1,6 +1,6 @@
 import { BadRequestError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/tocken.service";
+import { tokenService } from "../../../../presentation/service/token.service";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
 export class ForgotPasswordUserUseCase {

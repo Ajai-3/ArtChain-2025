@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/tocken.service";
+import { tokenService } from "../../../../presentation/service/token.service";
 import { ResetPasswordDto } from "../../../../domain/dtos/user/ResetPasswordDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 

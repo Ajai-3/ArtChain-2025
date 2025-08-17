@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import { LoginRequestDto } from "../../../../domain/dtos/user/LoginRequestDto";
 import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
-import { tokenService } from "../../../../presentation/service/tocken.service";
+import { tokenService } from "../../../../presentation/service/token.service";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import {
   ForbiddenError,

@@ -2,7 +2,7 @@ import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { BadRequestError, ForbiddenError } from "art-chain-shared";
 import admin from "../../../../infrastructure/config/firebase-admin";
 import { GoogleAuthDto } from "../../../../domain/dtos/user/GoogleAuthDto";
-import { tokenService } from "../../../../presentation/service/tocken.service";
+import { tokenService } from "../../../../presentation/service/token.service";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
 export class GoogleAuthUserUseCase {
