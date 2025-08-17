@@ -39,12 +39,17 @@ apiClient.interceptors.request.use((config) => {
   try {
     const state = store.getState();
     const isAdminRequest = config.url?.includes("/api/v1/admin");
+    const isUserRequest = config.url?.includes("/api/v1/user")
     const token = isAdminRequest
       ? state?.admin?.accessToken ?? null
       : state?.user?.accessToken ?? null;
+    const userId = isUserRequest ? state?.user?.user?.id ?? null : null;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+     if (isUserRequest && userId) {
+      config.headers["x-user-id"] = userId;
     }
     return config;
   } catch (error) {
