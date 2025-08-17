@@ -15,11 +15,11 @@ export class UserController {
   ) {}
 
   //# ================================================================================================================
-  //# GET CURRENR USER PROFILE
+  //# GET CURRENT USER PROFILE
   //# ================================================================================================================
   //# GET /api/v1/user/profile
   //# Request headers: x-user-id
-  //# This controller help to get the current loggined user profile.
+  //# This controller helps to fetch the currently logged-in user's profile.
   //# ================================================================================================================
   getUserProfile = async (
     req: Request,
@@ -55,8 +55,8 @@ export class UserController {
   //# ================================================================================================================
   //# GET /api/v1/user/profile/:userId
   //# Request headers: x-user-id
-  //# Request params: req.params.userId
-  //# This controller help to get other users profile with their id.
+  //# Request params: userId
+  //# This controller helps to fetch another user's profile by their ID.
   //# ================================================================================================================
   getUserProfileWithId = async (
     req: Request,
@@ -92,11 +92,12 @@ export class UserController {
   //# ================================================================================================================
   //# SUPPORT A USER
   //# ================================================================================================================
-  //# POST /api/v1/user/support
+  //# POST /api/v1/user/support/:userId
   //# Request headers: x-user-id
-  //# Request params: req.params.userId
-  //# This controller help to get the current loggined user profile.
+  //# Request params: userId
+  //# This controller allows the current user to support another user.
   //# ================================================================================================================
+
   supportUser = async (
     req: Request,
     res: Response,
@@ -111,13 +112,14 @@ export class UserController {
   };
 
   //# ================================================================================================================
-  //# UNSUPPORT THE USER
+  //# UNSUPPORT A USER
   //# ================================================================================================================
-  //# POST /api/v1/user/un-support
+  //# DELETE /api/v1/user/un-support/:userId
   //# Request headers: x-user-id
-  //# Request params: req.params.userId
-  //# This controller help to get the current loggined user profile.
+  //# Request params: userId
+  //# This controller allows the current user to remove support from another user.
   //# ================================================================================================================
+
   unSupportUser = async (
     req: Request,
     res: Response,
@@ -132,11 +134,11 @@ export class UserController {
   };
 
   //# ================================================================================================================
-  //# GET CURRENR USER PROFILE
+  //# GET SUPPORTERS OF A USER
   //# ================================================================================================================
-  //# POST /api/v1/user/profile
+  //# GET /api/v1/user/supporters
   //# Request headers: x-user-id
-  //# This controller help to get the current loggined user profile.
+  //# This controller helps to fetch a list of users who support the current user.
   //# ================================================================================================================
   getSuppoters = async (
     req: Request,

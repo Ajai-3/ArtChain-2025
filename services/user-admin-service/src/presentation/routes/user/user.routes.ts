@@ -13,6 +13,6 @@ router.get("/profile", userController.getUserProfile);
 router.get("/profile/:userId", userController.getUserProfileWithId);
 
 router.post("/support/:userId", userController.supportUser);
-router.delete("/unsupport/:userId", userController.unSupportUser);
+router.delete("/un-support/:userId", userController.unSupportUser);
 
 export default router;
