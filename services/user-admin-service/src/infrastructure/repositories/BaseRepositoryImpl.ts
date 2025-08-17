@@ -1,4 +1,3 @@
-import { prisma } from '../db/prisma';
 import { User } from '../../domain/entities/User';
 import { SafeUser } from '../../domain/repositories/IBaseRepository';
 

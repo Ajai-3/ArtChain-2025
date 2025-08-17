@@ -1,6 +1,6 @@
 import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
-import { tokenService } from "../../service/tocken.service";
+import { tokenService } from "../../service/token.service";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { AUTH_MESSAGES } from "../../../constants/authMessages";
 import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";

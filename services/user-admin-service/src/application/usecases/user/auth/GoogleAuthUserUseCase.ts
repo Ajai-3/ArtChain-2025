@@ -1,14 +1,9 @@
-import bcrypt from "bcrypt";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { BadRequestError, ForbiddenError } from "art-chain-shared";
 import admin from "../../../../infrastructure/config/firebase-admin";
 import { GoogleAuthDto } from "../../../../domain/dtos/user/GoogleAuthDto";
-import { tokenService } from "../../../../presentation/service/tocken.service";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
-import {
-  BadRequestError,
-  ERROR_MESSAGES,
-  ForbiddenError,
-} from "art-chain-shared";
+import { tokenService } from "../../../../presentation/service/token.service";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
 export class GoogleAuthUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -22,25 +17,17 @@ export class GoogleAuthUserUseCase {
     }
 
     let normalizedUsername = name.trim().toLowerCase().replace(/\s+/g, "_");
-
-    const user = await this.userRepo.findByEmail(email);
-    const existUserName = await this.userRepo.findByUsername(
+    const usernameExists = await this.userRepo.findByUsername(
       normalizedUsername
     );
-
-    if (existUserName) {
+    if (usernameExists) {
       normalizedUsername += Math.floor(Math.random() * 1000).toString();
-      console.log(normalizedUsername);
     }
 
-    let newUser;
-    let payload;
-    let isNewUser = false;
-    let refreshToken;
-    let accessToken;
+    const existingUser = await this.userRepo.findByEmail(email);
 
-    if (!user) {
-      newUser = await this.userRepo.create({
+    if (!existingUser) {
+      const newUser = await this.userRepo.create({
         id: null,
         name,
         email,
@@ -60,36 +47,39 @@ export class GoogleAuthUserUseCase {
         updatedAt: new Date(),
       });
 
-      let user = await this.userRepo.findByEmail(email);
-
-      payload = {
-        id: user?.id,
-        email: user?.email,
-        role: user?.role,
+      const payload = {
+        id: newUser.id,
+        email: newUser.email,
+        role: newUser.role,
       };
 
-      refreshToken = tokenService.generateRefreshToken(payload);
-      accessToken = tokenService.generateAccessToken(payload);
+      const refreshToken = tokenService.generateRefreshToken(payload);
+      const accessToken = tokenService.generateAccessToken(payload);
+
       return { user: newUser, isNewUser: true, accessToken, refreshToken };
     }
 
-    if (user.role !== "user" && user.role !== "artist") {
-      throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
+    if (!["user", "artist"].includes(existingUser.role)) {
+      throw new ForbiddenError(AUTH_MESSAGES.INVALID_USER_ROLE);
     }
 
-    if (user.status !== "active") {
-      throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
+    if (existingUser.status === "banned") {
+      throw new ForbiddenError(AUTH_MESSAGES.ACCOUNT_BANNED);
     }
 
-    payload = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
+    if (existingUser.status === "deleted") {
+      throw new ForbiddenError(AUTH_MESSAGES.ACCOUNT_DELETED);
+    }
+
+    const payload = {
+      id: existingUser.id,
+      email: existingUser.email,
+      role: existingUser.role,
     };
 
-    refreshToken = tokenService.generateRefreshToken(payload);
-    accessToken = tokenService.generateAccessToken(payload);
+    const refreshToken = tokenService.generateRefreshToken(payload);
+    const accessToken = tokenService.generateAccessToken(payload);
 
-    return { user, isNewUser, accessToken, refreshToken };
+    return { user: existingUser, isNewUser: false, accessToken, refreshToken };
   }
 }

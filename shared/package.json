@@ -1,6 +1,6 @@
 {
   "name": "art-chain-shared",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "Shared utilities, constants, and services for the Art Chain microservices",
   "type": "module",
   "main": "dist/index.js",

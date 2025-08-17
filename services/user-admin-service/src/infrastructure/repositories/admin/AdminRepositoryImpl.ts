@@ -2,7 +2,7 @@ import Role from '@prisma/client';
 import { prisma } from '../../db/prisma';
 import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
 import { SafeUser } from '../../../domain/repositories/IBaseRepository';
-import { IAdminRepositories } from '../../../domain/repositories/IAdminRepository';
+import { IAdminRepositories } from '../../../domain/repositories/admin/IAdminRepository';
 
 
 export class AdminRepositoryImpl

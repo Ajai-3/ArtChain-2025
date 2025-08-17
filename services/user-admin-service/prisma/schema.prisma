@@ -25,7 +25,23 @@ model User {
   country         String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  supporters     Supporter[] @relation("supporterRelation")
+  supporting     Supporter[] @relation("supportedRelation")
 }
+
+model Supporter {
+  id           String   @id @default(cuid())
+  supporterId  String
+  targetUserId String
+  createdAt    DateTime @default(now())
+
+  supporter    User     @relation("supporterRelation", fields: [supporterId], references: [id])
+  targetUser   User     @relation("supportedRelation", fields: [targetUserId], references: [id])
+
+  @@unique([supporterId, targetUserId])
+}
+
 
 enum Role {
   user

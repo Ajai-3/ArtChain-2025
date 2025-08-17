@@ -1,7 +1,8 @@
-import { ConflictError, ERROR_MESSAGES } from "art-chain-shared";
-import { tokenService } from "../../../../presentation/service/tocken.service";
+import { ConflictError } from "art-chain-shared";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { tokenService } from "../../../../presentation/service/token.service";
 import { StartRegisterDto } from "../../../../domain/dtos/user/StartRegisterDto";
-import { IUserRepository } from "../../../../domain/repositories/IUserRepository";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
 export class StartRegisterUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -12,13 +13,13 @@ export class StartRegisterUserUseCase {
     const existingUser = await this.userRepo.findByEmail(email);
 
     if (existingUser) {
-      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_EMAIL);
+      throw new ConflictError(AUTH_MESSAGES.DUPLICATE_EMAIL);
     }
 
     const existingUserByUsername = await this.userRepo.findByUsername(username);
 
     if (existingUserByUsername) {
-      throw new ConflictError(ERROR_MESSAGES.DUPLICATE_USERNAME);
+      throw new ConflictError(AUTH_MESSAGES.DUPLICATE_USERNAME);
     }
 
     const payload = {
