@@ -1,43 +1,37 @@
-
-
-// import apiClient from "../../axios";
-// import { updateProfile } from "../../../redux/slices/userSlice";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import apiClient from "../../axios";
-import { updateProfile } from "firebase/auth";
+import type { AxiosResponse } from "axios";
 
-// export const useSupportMutation = () => {
-//   const queryClient = useQueryClient();
+export const useSupportMutation = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: (userId: string) =>
-//       apiClient.post(`/api/v1/user/support/${userId}`),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries(["profile"]);
-//     },
-//     onError: (error) => {
-//       console.error("Support failed:", error);
-//     },
-//   });
-// };
+  return useMutation<AxiosResponse<any>, Error, string>({
+    mutationFn: (userId: string) =>
+      apiClient.post(`/api/v1/user/support/${userId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    },
+    onError: (error) => {
+      console.error("Support failed:", error);
+    },
+  });
+};
 
-// export const useUnSupportMutation = () => {
-//   const queryClient = useQueryClient();
+export const useUnSupportMutation = () => {
+  const queryClient = useQueryClient();
 
-//   return useMutation({
-//     mutationFn: (userId: string) =>
-//       apiClient.delete(`/api/v1/user/un-support/${userId}`),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries(["profile"]);
-//     },
-//     onError: (error) => {
-//       console.error("UnSupport failed:", error);
-//     },
-//   });
-// };
+  return useMutation<AxiosResponse<any>, Error, string>({
+    mutationFn: (userId: string) =>
+      apiClient.delete(`/api/v1/user/un-support/${userId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+    },
+    onError: (error) => {
+      console.error("UnSupport failed:", error);
+    },
+  });
+};
 
 export const useUpdateProfileMutation = () => {
     const dispatch = useDispatch();

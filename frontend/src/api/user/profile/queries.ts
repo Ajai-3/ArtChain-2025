@@ -8,7 +8,7 @@ interface UserProfileApiResponse {
     user: User;
     supportingCount: number;
     supportersCount: number;
-    isSupporting: boolean;
+    isSupporting?: boolean;
   };
 }
 
