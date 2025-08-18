@@ -4,7 +4,6 @@ export interface User {
   username: string;
   email: string;
   phone: string;
-  password: string;
   role: 'user' | 'artist' | 'admin';
   plan: 'free' | 'pro' | 'pro_plus';
   status: 'active' | 'banned' | 'suspended' | 'deleted';
