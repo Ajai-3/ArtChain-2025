@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { User } from "../../../types/user";
 import type { RootState } from "../../../redux/store";
@@ -10,47 +10,58 @@ import {
   useUserProfile,
   useUserProfileWithId,
 } from "../../../api/user/profile/queries";
-import { setCurrentUser } from "../../../redux/slices/userSlice";
+import {
+  setCurrentUser,
+  updateSupportersCount,
+  updateSupportingCount,
+} from "../../../redux/slices/userSlice";
 
 const Profile: React.FC = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("gallery");
 
-  const { user: reduxUser } = useSelector((state: RootState) => state.user) as {
-    user: User | null;
-  };
+  const {
+    user: reduxUser,
+    supportingCount,
+    supportersCount,
+  } = useSelector((state: RootState) => state.user);
 
   const { userId } = useParams<{ userId?: string }>();
+
   const isOwnProfile = !userId || reduxUser?.id === userId;
 
-  const { data: apiUser, isLoading } = isOwnProfile
+  const { data: profileData, isLoading } = isOwnProfile
     ? useUserProfile()
-    : useUserProfileWithId(userId!);
-
-  console.log(apiUser);
+    : useUserProfileWithId(userId ?? "");
 
   const profileUser: User | null = isOwnProfile
-    ? apiUser?.user || reduxUser
-    : apiUser?.user || null;
+    ? profileData?.data?.user ?? reduxUser
+    : profileData?.data?.user ?? null;
 
   useEffect(() => {
-    if (isOwnProfile && apiUser) {
-      dispatch(setCurrentUser(apiUser?.user));
-    }
-  }, [apiUser, dispatch, isOwnProfile]);
+    if (!profileUser) return;
 
-  if (isLoading || !profileUser) {
-    return (
-      <div className="flex justify-center items-center h-[calc(100vh-62px)]">
-        Loading profile...
-      </div>
-    );
-  }
+    if (isOwnProfile) {
+      dispatch(setCurrentUser(profileUser));
+      dispatch(updateSupportingCount(profileData?.data?.supportingCount ?? 0));
+      dispatch(updateSupportersCount(profileData?.data?.supportersCount ?? 0));
+    }
+  }, [profileUser, profileData, dispatch, isOwnProfile]);
+
+  if (isLoading) return <div>Loading profile...</div>;
+  if (!profileUser) return <div>User not found</div>;
+
+  console.log(profileUser);
 
   return (
     <div className="w-full flex flex-col h-[calc(100vh-62px)]">
       <div className="flex-1 overflow-y-auto scrollbar relative">
-        <ProfileTopBar user={profileUser} isOwnProfile={isOwnProfile} />
+        <ProfileTopBar
+          user={profileUser}
+          supportingCount={supportingCount}
+          supportersCount={supportersCount}
+          isOwnProfile={isOwnProfile}
+        />
         <div className="sticky top-0 z-20 bg-white dark:bg-secondary-color">
           <ProfileSelectBar activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
