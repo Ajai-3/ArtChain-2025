@@ -34,6 +34,7 @@ const UserRoutes = (
       <Route path="shop" element={<Shop />} />
       <Route path="wallet" element={<Wallet />} />
       <Route path="profile" element={<Profile />} />
+      <Route path="profile/:userId" element={<Profile />} />
       <Route path="settings" element={<Settings />} />
     </Route>
   </>

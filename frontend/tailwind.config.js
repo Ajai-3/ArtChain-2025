@@ -15,6 +15,7 @@ export default {
       },
       colors: {
         "main-color": "#02a863",
+        "main-color-dark": "#009959",
         "secondary-color": "#0e0e10",
 
         background: 'hsl(var(--background))',
