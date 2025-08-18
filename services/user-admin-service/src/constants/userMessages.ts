@@ -25,4 +25,8 @@ export const USER_MESSAGES = {
   ACCOUNT_NOT_FOUND: "User account not found",
   USER_BLOCKED: "This user is blocked",
   USER_UNBLOCKED: "This user is unblocked",
+
+  // Users
+  GET_ALL_USERS_SUCCESS: "All users fetched successfully",
+  GET_ALL_USERS_FAILED: "Failed to fetch users",
 } as const;
