@@ -38,6 +38,10 @@ const Profile: React.FC = () => {
     ? profileData?.data?.user ?? reduxUser
     : profileData?.data?.user ?? null;
 
+    console.log(profileData)
+
+  const isSupporting = profileData?.data?.isSupporting || false;
+
   useEffect(() => {
     if (!profileUser) return;
 
@@ -48,19 +52,26 @@ const Profile: React.FC = () => {
     }
   }, [profileUser, profileData, dispatch, isOwnProfile]);
 
+  const displaySupportingCount = isOwnProfile
+  ? supportingCount
+  : profileData?.data?.supportingCount ?? 0;
+
+const displaySupportersCount = isOwnProfile
+  ? supportersCount
+  : profileData?.data?.supportersCount ?? 0;
+
   if (isLoading) return <div>Loading profile...</div>;
   if (!profileUser) return <div>User not found</div>;
-
-  console.log(profileUser);
 
   return (
     <div className="w-full flex flex-col h-[calc(100vh-62px)]">
       <div className="flex-1 overflow-y-auto scrollbar relative">
         <ProfileTopBar
           user={profileUser}
-          supportingCount={supportingCount}
-          supportersCount={supportersCount}
+          supportingCount={displaySupportingCount}
+          supportersCount={displaySupportersCount}
           isOwnProfile={isOwnProfile}
+          isSupporting={isSupporting}
         />
         <div className="sticky top-0 z-20 bg-white dark:bg-secondary-color">
           <ProfileSelectBar activeTab={activeTab} onTabChange={setActiveTab} />
