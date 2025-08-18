@@ -2,12 +2,17 @@ import React from "react";
 import type { User } from "../../../../types/user";
 import { Button } from "../../../../components/ui/button";
 import { ArrowDownRight, Ellipsis } from "lucide-react";
+import {
+  useSupportMutation,
+  useUnSupportMutation,
+} from "../../../../api/user/profile/mutations";
 
 interface ProfileTopBarProps {
   user: User;
   isOwnProfile: boolean;
   supportingCount: number;
   supportersCount: number;
+  isSupporting: boolean;
 }
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
@@ -15,8 +20,24 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   isOwnProfile,
   supportingCount,
   supportersCount,
+  isSupporting,
 }) => {
-  const isSupporting = false;
+  const supportMutation = useSupportMutation();
+  const unSupportMutation = useUnSupportMutation();
+
+  // Combine loading states
+  const isMutating = supportMutation.isPending || unSupportMutation.isPending;
+
+  const handleSupportClick = () => {
+    if (!user?.id) return;
+
+    if (isSupporting) {
+      unSupportMutation.mutate(user.id);
+    } else {
+      supportMutation.mutate(user.id);
+    }
+  };
+
   return (
     <div className="relative">
       <div className="py-20 px-6 relative overflow-hidden">
@@ -63,13 +84,31 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             </div>
             {!isOwnProfile && (
               <div className="flex gap-4 items-center">
-                {isSupporting ? (
-                  <Button variant={"profileMessage"}>
-                    Supporting <ArrowDownRight />
-                  </Button>
-                ) : (
-                  <Button variant={"support"}>Support</Button>
-                )}
+                <Button
+                  variant={isSupporting ? "profileMessage" : "support"}
+                  onClick={handleSupportClick}
+                  disabled={isMutating}
+                  className="relative flex items-center justify-center"
+                >
+                  <span
+                    className={`${
+                      isMutating ? "invisible" : ""
+                    } flex items-center gap-1`}
+                  >
+                    {isSupporting ? (
+                      <>
+                        Supporting <ArrowDownRight />
+                      </>
+                    ) : (
+                      "Support"
+                    )}
+                  </span>
+
+                  {isMutating && (
+                    <span className="absolute w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
+                  )}
+                </Button>
+
                 <Button variant={"profileMessage"}>Message</Button>
                 <Ellipsis />
               </div>
