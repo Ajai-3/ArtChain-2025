@@ -8,6 +8,8 @@ export interface ISupporterRepository extends IBaseRepository {
   }>;
 
   isSupporting(currentUserId: string, targetUserId: string): Promise<boolean>
+  addSupport(supporterId: string, targetUserId: string): Promise<void>;
+  removeSupport(supporterId: string, targetUserId: string): Promise<void>;
 
   getSupporters(
     userId: string,

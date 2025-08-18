@@ -24,6 +24,29 @@ export class SupporterRepositoryImpl
     return { supportersCount, supportingCount };
   }
 
+  async addSupport(supporterId: string, targetUserId: string): Promise<void> {
+    await this.model.create({
+      data: {
+        supporterId,
+        targetUserId,
+      },
+    });
+  }
+
+  async removeSupport(
+    supporterId: string,
+    targetUserId: string
+  ): Promise<void> {
+    await this.model.delete({
+      where: {
+        supporterId_targetUserId: {
+          supporterId,
+          targetUserId,
+        },
+      },
+    });
+  }
+
   async isSupporting(
     currentUserId: string,
     targetUserId: string

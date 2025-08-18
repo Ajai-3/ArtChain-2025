@@ -18,6 +18,8 @@ export const USER_MESSAGES = {
   SUPPORTER_ALREADY_EXISTS: "You are already supporting this user",
   NO_SUPPORTERS_FOUND: "No supporters found",
   NO_SUPPORTING_FOUND: "You are not supporting any users",
+  SUPPORT_SUCCESS: "Supported successfully",
+  UNSUPPORT_SUCCESS: "Unsupported successfully",
 
   // Account & Status
   ACCOUNT_DEACTIVATED: "Your account has been deactivated",
@@ -29,4 +31,8 @@ export const USER_MESSAGES = {
   // Users
   GET_ALL_USERS_SUCCESS: "All users fetched successfully",
   GET_ALL_USERS_FAILED: "Failed to fetch users",
+  MISSING_USER_IDS: 'User ID or Current User ID is missing.',
+  INVALID_SUPPORT_REQUEST: 'Invalid support action: userId or currentUserId is missing.',
+  ALREADY_SUPPORTING: 'User alredy supporting this user',
+  NOT_SUPPORTING: "You are not currently supporting this user.",
 } as const;
