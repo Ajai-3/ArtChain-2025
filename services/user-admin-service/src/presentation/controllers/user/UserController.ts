@@ -7,6 +7,9 @@ import { USER_MESSAGES } from "../../../constants/userMessages";
 import { ISupporterRepository } from "../../../domain/repositories/user/ISupporterRepository";
 import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
 import { GetUserProfileWithIdDto } from "../../../domain/dtos/user/GetUserProfileWithIdDto";
+import { SupportUnSupportDto } from "../../../domain/dtos/user/SupportUnSupportDto";
+import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
+import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
 
 export class UserController {
   constructor(
@@ -97,7 +100,6 @@ export class UserController {
   //# Request params: userId
   //# This controller allows the current user to support another user.
   //# ================================================================================================================
-
   supportUser = async (
     req: Request,
     res: Response,
@@ -106,6 +108,17 @@ export class UserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string;
+
+
+      const dto: SupportUnSupportDto = { userId, currentUserId }
+
+      const useCase = new SupportUserUseCase(this.userRepo, this.suppoterRepo)
+      await useCase.execute(dto)
+
+      return res.status(HttpStatus.OK).json({
+        message: USER_MESSAGES.SUPPORT_SUCCESS
+      })
+
     } catch (error) {
       next(error);
     }
@@ -119,7 +132,6 @@ export class UserController {
   //# Request params: userId
   //# This controller allows the current user to remove support from another user.
   //# ================================================================================================================
-
   unSupportUser = async (
     req: Request,
     res: Response,
@@ -128,6 +140,15 @@ export class UserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string;
+
+      const dto: SupportUnSupportDto = { userId, currentUserId }
+
+      const useCase = new UnSupportUserUseCase(this.userRepo, this.suppoterRepo)
+      await useCase.execute(dto)
+
+      return res.status(HttpStatus.OK).json({
+        message: USER_MESSAGES.UNSUPPORT_SUCCESS
+      })
     } catch (error) {
       next(error);
     }
