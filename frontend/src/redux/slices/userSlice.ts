@@ -38,14 +38,22 @@ const userSlice = createSlice({
     updateProfile: (state, action: { payload: { user: User } }) => {
       state.user = action.payload.user;
     },
+    updateSupportingCount: (state, action: { payload: number }) => {
+      state.supportingCount = action.payload;
+    },
+    updateSupportersCount: (state, action: { payload: number }) => {
+      state.supportersCount = action.payload;
+    },
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
       state.accessToken = null;
+      state.supportingCount = 0;
+      state.supportersCount = 0;
     },
   },
 });
 
-export const { setUser, setAccessToken, setCurrentUser, updateProfile, logout } =
+export const { setUser, setAccessToken, setCurrentUser, updateProfile, updateSupportingCount, updateSupportersCount, logout } =
   userSlice.actions;
 export default userSlice.reducer;
