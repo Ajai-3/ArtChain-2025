@@ -6,13 +6,17 @@ import { ArrowDownRight, Ellipsis } from "lucide-react";
 interface ProfileTopBarProps {
   user: User;
   isOwnProfile: boolean;
+  supportingCount: number;
+  supportersCount: number;
 }
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
   isOwnProfile,
+  supportingCount,
+  supportersCount,
 }) => {
-  const isSupporting = true;
+  const isSupporting = false;
   return (
     <div className="relative">
       <div className="py-20 px-6 relative overflow-hidden">
@@ -53,14 +57,16 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             </div>
 
             <div className="flex gap-4">
-              <p className="text-md">13k supporters</p>
+              <p className="text-md">{supportersCount} supporters</p>
               <p>|</p>
-              <p className="text-md">984 supporting</p>
+              <p className="text-md">{supportingCount} supporting</p>
             </div>
             {!isOwnProfile && (
               <div className="flex gap-4 items-center">
                 {isSupporting ? (
-                  <Button variant={"profileMessage"}>Supporting <ArrowDownRight /></Button>
+                  <Button variant={"profileMessage"}>
+                    Supporting <ArrowDownRight />
+                  </Button>
                 ) : (
                   <Button variant={"support"}>Support</Button>
                 )}
