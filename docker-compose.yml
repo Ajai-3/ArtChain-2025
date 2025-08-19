@@ -58,10 +58,11 @@ services:
     image: docker.elastic.co/beats/filebeat:8.11.1
     container_name: filebeat
     volumes:
-      - ./elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./infra/elk/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml
       - ./api-gateway/logs:/usr/share/filebeat/logs/api-gateway
       - ./services/user-admin-service/logs:/usr/share/filebeat/logs/user-admin-service
       - ./services/notification-service/logs:/usr/share/filebeat/logs/notification-service
+    command: ["filebeat", "-e", "-strict.perms=false"]
     depends_on:
       - logstash
     networks:
