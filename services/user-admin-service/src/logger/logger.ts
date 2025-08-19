@@ -11,7 +11,7 @@ const consoleFormat = printf(({ level, message, timestamp }) => {
 
 const esTransport = new ElasticsearchTransport({
   level: "info",
-  clientOpts: { node: "http://localhost:9200" },
+  clientOpts: { node: "http://elasticsearch:9200" },
   indexPrefix: `service-${serviceName}-logs`,
   transformer: (log) => ({
     "@timestamp": log.timestamp,
@@ -38,7 +38,7 @@ export const logger = createLogger({
   ],
 });
 
-const elasticClient = new Client({ node: "http://localhost:9200" });
+const elasticClient = new Client({ node: "http://elasticsearch:9200" });
 
 export const storeUserInfo = async (user: {
   userId: string;
