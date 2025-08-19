@@ -5,26 +5,28 @@ import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
 import { tokenService } from "../../../../presentation/service/token.service";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { AddUserToElasticSearchUseCase } from "../search/AddUserToElasticSearchUseCase";
+import { IndexedUser } from "../../../../types/IndexedUser";
 
 export class RegisterUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private _userRepo: IUserRepository) {}
 
   async execute(data: RegisterDto): Promise<AuthResponseDto> {
     const { name, username, email, password } = data;
 
-    const existingUserByUsername = await this.userRepo.findByUsername(username);
+    const existingUserByUsername = await this._userRepo.findByUsername(username);
     if (existingUserByUsername) {
       throw new ConflictError(AUTH_MESSAGES.DUPLICATE_USERNAME);
     }
 
-    const existingUserByEmail = await this.userRepo.findByEmail(email);
+    const existingUserByEmail = await this._userRepo.findByEmail(email);
     if (existingUserByEmail) {
       throw new ConflictError(AUTH_MESSAGES.DUPLICATE_EMAIL);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await this.userRepo.create({
+    const user = await this._userRepo.create({
       id: null,
       name,
       email,
