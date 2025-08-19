@@ -1,11 +1,13 @@
 import express from "express";
 import { AuthController } from "../../controllers/user/UserAuthController";
 import { UserRepositoryImpl } from "../../../infrastructure/repositories/user/UserRepositoryImpl";
+import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
 
 const router = express.Router();
 
 const userRepo = new UserRepositoryImpl();
-const authController = new AuthController(userRepo);
+const addUserToElasticUseCase = new AddUserToElasticSearchUseCase();
+const authController = new AuthController(userRepo, addUserToElasticUseCase);
 
 router.post("/start-register", authController.startRegister);
 router.post("/register", authController.registerUser);
@@ -13,7 +15,7 @@ router.post("/register", authController.registerUser);
 router.post("/google-auth", authController.googleAuthUser);
 
 router.post("/forgot-password", authController.forgotPassword);
-router.patch("/reset-password", authController.resetPassword)
+router.patch("/reset-password", authController.resetPassword);
 
 router.patch("/change-password", authController.changePassword);
 

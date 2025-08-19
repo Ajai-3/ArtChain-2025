@@ -1,0 +1,19 @@
+import apiClient from "../../axios";
+import type { IndexedUser } from "../../../types/IndexedUser";
+import { useQuery } from "@tanstack/react-query";
+
+export const useSearchUsers = (query: string) => {
+  return useQuery<IndexedUser[]>({
+    queryKey: ["searchUsers", query],
+    queryFn: async ({ signal }): Promise<IndexedUser[]> => {
+      const res = await apiClient.get(
+        `/api/v1/user/search?q=${encodeURIComponent(query)}`,
+        { signal }
+      );
+      return res as any; 
+    },
+    enabled: query.trim().length > 0,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+  });
+};

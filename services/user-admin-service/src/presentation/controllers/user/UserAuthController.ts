@@ -26,9 +26,14 @@ import { ChangePasswordUserUseCase } from "../../../application/usecases/user/au
 import { ForgotPasswordUserUseCase } from "../../../application/usecases/user/auth/ForgotPasswordUserUseCase";
 import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
 import { RefreshTokenUserUseCase } from "../../../application/usecases/user/auth/RefreshTokenUserUseCase";
+import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+import { IndexedUser } from "../../../types/IndexedUser";
 
 export class AuthController {
-  constructor(private readonly userRepo: IUserRepository) {}
+  constructor(
+    private readonly _userRepo: IUserRepository,
+    private _addUserToElastic: AddUserToElasticSearchUseCase
+  ) {}
 
   //# ================================================================================================================
   //# START REGISTER USER
@@ -47,7 +52,7 @@ export class AuthController {
 
       const { name, username, email } = result;
 
-      const useCase = new StartRegisterUserUseCase(this.userRepo);
+      const useCase = new StartRegisterUserUseCase(this._userRepo);
 
       const dto: StartRegisterDto = { name, username, email };
 
@@ -111,8 +116,10 @@ export class AuthController {
 
       const dto: RegisterDto = { name, username, email, password };
 
-      const useCase = new RegisterUserUseCase(this.userRepo);
+      const useCase = new RegisterUserUseCase(this._userRepo);
       const { user, accessToken, refreshToken } = await useCase.execute(dto);
+
+      await this._addUserToElastic.execute(user);
 
       res.cookie("userRefreshToken", refreshToken, {
         httpOnly: true,
@@ -150,7 +157,7 @@ export class AuthController {
 
       const dto: LoginRequestDto = { identifier, password };
 
-      const useCase = new LoginUserUseCase(this.userRepo);
+      const useCase = new LoginUserUseCase(this._userRepo);
       const { user, accessToken, refreshToken } = await useCase.execute(dto);
 
       res.cookie("userRefreshToken", refreshToken, {
@@ -189,7 +196,7 @@ export class AuthController {
 
       const dto: GoogleAuthDto = { token, email, name };
 
-      const useCase = new GoogleAuthUserUseCase(this.userRepo);
+      const useCase = new GoogleAuthUserUseCase(this._userRepo);
       const { user, isNewUser, accessToken, refreshToken } =
         await useCase.execute(dto);
 
@@ -233,7 +240,7 @@ export class AuthController {
           .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
       }
 
-      const useCase = new ForgotPasswordUserUseCase(this.userRepo);
+      const useCase = new ForgotPasswordUserUseCase(this._userRepo);
       const { user, token } = await useCase.execute(identifier);
 
       await publishToQueue("emails", {
@@ -275,7 +282,7 @@ export class AuthController {
 
       const dto: ResetPasswordDto = { token, password };
 
-      const useCase = new ResetPasswordUserUseCase(this.userRepo);
+      const useCase = new ResetPasswordUserUseCase(this._userRepo);
       await useCase.execute(dto);
 
       return res
@@ -310,7 +317,7 @@ export class AuthController {
 
       const dto: ChangePasswordDto = { userId, currentPassword, newPassword };
 
-      const useCase = new ChangePasswordUserUseCase(this.userRepo);
+      const useCase = new ChangePasswordUserUseCase(this._userRepo);
       await useCase.execute(dto);
 
       return res
@@ -336,7 +343,7 @@ export class AuthController {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
-      const useCase = new RefreshTokenUserUseCase(this.userRepo);
+      const useCase = new RefreshTokenUserUseCase(this._userRepo);
       const accessToken = await useCase.execute(refreshToken);
 
       return res
