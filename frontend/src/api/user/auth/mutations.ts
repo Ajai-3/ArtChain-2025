@@ -5,6 +5,14 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { logout, setUser } from "../../../redux/slices/userSlice";
 
+
+interface ArtistRequestPayload {
+  phone?: string;
+  bio?: string;
+  country?: string;
+}
+
+
 // Mutation for logging in a user
 export const useLoginMutation = () => {
     const dispatch = useDispatch();
@@ -151,18 +159,21 @@ export const changePasswordMutation = () => {
 };
 
 // Mutation for reqest to become an artist
-export const useBecomeArtistMutation = () => {
+
+export const useCreateArtistRequestMutation = () => {
   return useMutation({
-    mutationFn: (credentials: {  }) => apiClient.post("/api/v1/auth/become-artist"),
-    onSuccess: (data) => {
-      console.log("Artist request sent:", data);
-      toast.success("Artist request sent");
+    mutationFn: (data: ArtistRequestPayload) =>
+      apiClient.post("/api/v1/user/artist-request", data),
+    onSuccess: (response) => {
+      console.log("Artist request submitted:", response.data);
+      toast.success("Artist request submitted successfully!");
     },
-    onError: (error) => {
-      console.error("Artist request failed:", error);
+    onError: (error: any) => {
+      console.error("Failed to submit artist request:", error);
+      toast.error(error?.response?.data?.message || "Something went wrong!");
     },
-  })
-}
+  });
+};
 
 // Mutation for logging out a user
 export const useLogoutMutation = () => {
