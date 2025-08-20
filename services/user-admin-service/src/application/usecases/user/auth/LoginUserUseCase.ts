@@ -29,7 +29,7 @@ export class LoginUserUseCase {
     }
 
     if (rawUser.status !== "active" && rawUser.status !== "suspended") {
-      throw new ForbiddenError(AUTH_MESSAGES.LOGIN_NOT_ALLOWED);
+      throw new ForbiddenError(AUTH_MESSAGES.YOUR_ACCOUNT_BANNED);
     }
 
     const isValid = bcrypt.compareSync(password, rawUser.password);

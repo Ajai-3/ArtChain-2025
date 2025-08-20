@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { Button } from "../../../../components/ui/button";
+import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
 
 type UserInfoProps = {
   onBecomeArtist: () => void;
@@ -14,6 +15,7 @@ const UserInfo = ({ onBecomeArtist }: UserInfoProps) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.user.isAuthenticated
   );
+
 
   return (
     <div className="flex items-center gap-3">
@@ -49,6 +51,7 @@ const UserInfo = ({ onBecomeArtist }: UserInfoProps) => {
             variant="main" 
             className="hidden sm:flex"
             onClick={onBecomeArtist}
+            
           >
             Become an Artist
           </Button>

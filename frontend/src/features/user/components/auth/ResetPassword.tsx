@@ -58,6 +58,7 @@ const ResetPassword: React.FC = () => {
           </p>
           <p className="text-red-600">{apiError}</p>
         </div>
+        
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Hidden token input */}
           <input type="hidden" {...register("token")} />

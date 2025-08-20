@@ -5,29 +5,40 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { logout, setUser } from "../../../redux/slices/userSlice";
 
+interface ArtistRequestPayload {
+  phone?: string;
+  bio?: string;
+  country?: string;
+}
+
 // Mutation for logging in a user
-export const useLoginMutation = () => {
-    const dispatch = useDispatch();
+export const useLoginMutation = (
+  setFormError: (msg: string | null) => void
+) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { identifier: string; password: string }) =>
       apiClient.post("/api/v1/auth/login", credentials),
     onSuccess: (data: any) => {
-      console.log("data", data)
+      console.log("data", data);
       toast.success("Login successful");
 
-        const { user, accessToken } = data;
-      
-      dispatch(setUser({
-        user,
-        accessToken
-      }));
+      const { user, accessToken } = data;
 
-      navigate('/');
+      dispatch(
+        setUser({
+          user,
+          accessToken,
+        })
+      );
+
+      navigate("/");
     },
     onError: (error: any) => {
-
       console.error("Login failed:", error);
+      const msg = error?.message || "Login failed:";
+      setFormError(msg);
     },
   });
 };
@@ -37,29 +48,32 @@ export const useGoogleAuthMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (credentials: { token: string, email: string, name: string }) =>
+    mutationFn: (credentials: { token: string; email: string; name: string }) =>
       apiClient.post("/api/v1/auth/google-auth", credentials),
     onSuccess: (data: any) => {
-        const { user, accessToken, message } = data;
+      const { user, accessToken, message } = data;
 
-        toast.success(message);
-      
-      dispatch(setUser({
-        user,
-        accessToken
-      }));
+      toast.success(message);
 
-      navigate('/');
+      dispatch(
+        setUser({
+          user,
+          accessToken,
+        })
+      );
+
+      navigate("/");
     },
     onError: (error: any) => {
-
       console.error("Login failed:", error);
     },
   });
-}
+};
 
 // Mutation for signing up a new user
-export const useSignupMutation = () => {
+export const useSignupMutation = (
+  setFormError: (msg: string | null) => void
+) => {
   return useMutation({
     mutationFn: (credentials: {
       name: string;
@@ -70,39 +84,47 @@ export const useSignupMutation = () => {
       console.log("Verification email sended:", data);
       toast.success("Verification email sended");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error("Signup failed:", error);
+      const msg = error?.message || "Signup failed";
+      setFormError(msg);
     },
   });
 };
 
 // Mutation for verifying a new user
-export const useSignupverificationMutation = () => {
+export const useSignupverificationMutation = (setFormError: (msg: string | null) => void) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string; password: string }) =>
       apiClient.post("/api/v1/auth/register", credentials),
     onSuccess: (data: any) => {
-        const { user, accessToken } = data;
+      const { user, accessToken } = data;
 
-        toast.success("Verification successful");
-      
-      dispatch(setUser({
-        user,
-        accessToken
-      }));
+      toast.success("Verification successful");
 
-      navigate('/');
+      dispatch(
+        setUser({
+          user,
+          accessToken,
+        })
+      );
+
+      navigate("/");
     },
     onError: (error) => {
       console.error("Verification failed:", error);
+       const msg = error?.message || "Verification failed:";
+      setFormError(msg);
     },
   });
 };
 
 // Mutation for requesting password reset
-export const useForgottPasswordMutation = () => {
+export const useForgottPasswordMutation = (
+  setFormError: (msg: string | null) => void
+) => {
   return useMutation({
     mutationFn: (credentials: { identifier: string }) =>
       apiClient.post("/api/v1/auth/forgot-password", credentials),
@@ -112,6 +134,8 @@ export const useForgottPasswordMutation = () => {
     },
     onError: (error) => {
       console.error("Password reset failed:", error);
+       const msg = error?.message || "Password reset failed:";
+      setFormError(msg);
     },
   });
 };
@@ -125,10 +149,12 @@ export const useResetPasswordMutation = () => {
     onSuccess: (data) => {
       console.log("Password reset successful:", data);
       toast.success("Password reset successful, Login now.");
-       navigate("/login")
+      navigate("/login");
     },
     onError: (error) => {
       console.error("Password reset failed:", error);
+      //  const msg = error?.message || "Password reset failed:";
+      // setFormError(msg);
     },
   });
 };
@@ -151,18 +177,21 @@ export const changePasswordMutation = () => {
 };
 
 // Mutation for reqest to become an artist
-export const useBecomeArtistMutation = () => {
+
+export const useCreateArtistRequestMutation = () => {
   return useMutation({
-    mutationFn: (credentials: {  }) => apiClient.post("/api/v1/auth/become-artist"),
-    onSuccess: (data) => {
-      console.log("Artist request sent:", data);
-      toast.success("Artist request sent");
+    mutationFn: (data: ArtistRequestPayload) =>
+      apiClient.post("/api/v1/user/artist-request", data),
+    onSuccess: (response) => {
+      console.log("Artist request submitted:", response.data);
+      toast.success("Artist request submitted successfully!");
     },
-    onError: (error) => {
-      console.error("Artist request failed:", error);
+    onError: (error: any) => {
+      console.error("Failed to submit artist request:", error);
+      toast.error(error?.response?.data?.message || "Something went wrong!");
     },
-  })
-}
+  });
+};
 
 // Mutation for logging out a user
 export const useLogoutMutation = () => {
@@ -172,7 +201,7 @@ export const useLogoutMutation = () => {
     mutationFn: () => apiClient.post("/api/v1/auth/logout"),
     onSuccess: () => {
       dispatch(logout());
-      navigate('/login');
+      navigate("/login");
       toast.success("Logout successful");
     },
     onError: (error) => {

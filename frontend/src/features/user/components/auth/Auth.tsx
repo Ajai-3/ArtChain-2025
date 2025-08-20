@@ -32,6 +32,8 @@ const Auth: React.FC = () => {
   const [isResetDisabled, setIsResetDisabled] = useState(false);
   const [countdown, setCountdown] = useState(60);
 
+  const [formError, setFormError] = useState<string | null>(null);
+
   // Countdown timer for reset password button
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -74,11 +76,12 @@ const Auth: React.FC = () => {
   });
 
   // Mutations
-  const { mutate: loginMutation, isPending: isLoggingIn } = useLoginMutation();
   const { mutate: googleAuthMutation } = useGoogleAuthMutation();
   const { mutate: signupMutation, isPending: isSigningUp } =
-    useSignupMutation();
-  const { mutate: forgotMutation } = useForgottPasswordMutation();
+    useSignupMutation(setFormError);
+  const { mutate: loginMutation, isPending: isLoggingIn } =
+    useLoginMutation(setFormError);
+  const { mutate: forgotMutation } = useForgottPasswordMutation(setFormError);
 
   const handleLogin = (data: LoginFormInputs) => {
     loginMutation(data);
@@ -118,6 +121,10 @@ const Auth: React.FC = () => {
                 Secure access to your digital art collection
               </p>
             </div>
+
+            {formError && (
+              <p className="text-sm text-red-500 text-center mb-2">{formError}</p>
+            )}
 
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="w-full grid grid-cols-2 mb-6">
@@ -295,6 +302,9 @@ const Auth: React.FC = () => {
                 Enter your email to receive a reset link
               </p>
             </div>
+            {formError && (
+              <p className="text-sm text-red-500 text-center mb-2">{formError}</p>
+            )}
             <form
               onSubmit={handleForgotSubmit(handleForgot)}
               className="space-y-4 w-full max-w-md mx-auto"
