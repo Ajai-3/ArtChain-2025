@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import ArtCoin from "./ArtCoin";
 import UserInfo from "./UserInfo";
 import { ThemeToggle } from "../../../../components/ThemeToggle";
+import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
 
 type NavbarProps = {
   onBecomeArtist: () => void;
@@ -12,6 +13,8 @@ type NavbarProps = {
 
 const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist }) => {
   const coin = 120;
+
+
 
   return (
     <div className="flex items-center justify-between px-4 border-b border-zinc-400 dark:border-b-zinc-800 py-2">
