@@ -28,6 +28,8 @@ model User {
 
   supporters     Supporter[] @relation("supporterRelation")
   supporting     Supporter[] @relation("supportedRelation")
+
+  artistRequests ArtistRequest[]
 }
 
 model Supporter {
@@ -42,6 +44,22 @@ model Supporter {
   @@unique([supporterId, targetUserId])
 }
 
+model ArtistRequest {
+  id              String    @id @default(cuid())
+  userId          String
+  status          RequestStatus    @default(pending)
+  rejectionReason String?
+  createdAt       DateTime  @default(now())
+  reviewedAt      DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+enum RequestStatus {
+  pending
+  approved
+  rejected
+}  
 
 enum Role {
   user

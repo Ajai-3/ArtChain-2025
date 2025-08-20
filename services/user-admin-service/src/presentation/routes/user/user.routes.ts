@@ -1,21 +1,20 @@
 import express from "express";
-import { UserController } from "../../controllers/user/UserController";
 import { UserRepositoryImpl } from "../../../infrastructure/repositories/user/UserRepositoryImpl";
 import { SupporterRepositoryImpl } from "./../../../infrastructure/repositories/user/SupporterRepositoryIml";
 import { ElasticUserController } from "../../controllers/user/ElasticUserController";
 import { SearchUserUseCase } from "../../../application/usecases/user/search/SearchUserUseCase";
-
-const router = express.Router();
+import { userController } from "../../../infrastructure/container/user/userContainer";
 
 import { Request, Response, NextFunction } from "express";
 import { logger, storeUserInfo } from "../../../logger/logger";
+import { artistRequestController } from "../../../infrastructure/container/user/artistRequestContainer";
 
-const userRepo = new UserRepositoryImpl();
-const suppoterRepo = new SupporterRepositoryImpl();
-const userController = new UserController(userRepo, suppoterRepo);
+const router = express.Router();
+
 
 const searchUserUseCase = new SearchUserUseCase();
 const elasticUserController = new ElasticUserController(searchUserUseCase);
+
 
 
 router.get("/profile", userController.getUserProfile);
@@ -26,6 +25,9 @@ router.delete("/un-support/:userId", userController.unSupportUser);
 
 
 router.get('/search', elasticUserController.searchUsers);
+
+
+router.post("/artist-request", artistRequestController.createArtistRequest);
 
 router.get("/info", async (req: Request, res: Response, next: NextFunction) => {
  try {
