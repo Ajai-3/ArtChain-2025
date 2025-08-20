@@ -24,7 +24,7 @@ export class LoginAdminUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== "user" && rawUser.role !== "artist") {
+    if (rawUser.role !== "admin") {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 
@@ -51,8 +51,8 @@ export class LoginAdminUseCase {
       role: user.role,
     };
 
-    const refreshToken = await tokenService.generateRefreshToken(payload);
-    const accessToken = await tokenService.generateAccessToken(payload);
+    const refreshToken = tokenService.generateRefreshToken(payload);
+    const accessToken = tokenService.generateAccessToken(payload);
 
     return { user, accessToken, refreshToken };
   }
