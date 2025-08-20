@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Eye, EyeOff } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import { useSignupverificationMutation } from "../../../../api/user/auth/mutatio
 const SignupPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
   const urlToken = searchParams.get("token");
+  const [formError, setFormError] = useState<string | null>(null);
 
   const {
     register,
@@ -23,7 +24,7 @@ const SignupPassword: React.FC = () => {
   });
 
   const { mutate: signupverificationMutation, isPending } =
-    useSignupverificationMutation();
+    useSignupverificationMutation(setFormError);
 
   const handleVerification = (data: PasswordFormInput) => {
     if (!data.token) {
@@ -48,6 +49,9 @@ const SignupPassword: React.FC = () => {
             Create a new password for your account
           </p>
         </div>
+        {formError && (
+          <p className="text-sm text-red-500 text-center mb-2">{formError}</p>
+        )}
         <form onSubmit={handleSubmit(handleVerification)} className="space-y-4">
           {/* Hidden token input */}
           <input type="hidden" {...register("token")} />
