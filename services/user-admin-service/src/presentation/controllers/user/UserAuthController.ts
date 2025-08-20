@@ -68,6 +68,8 @@ export class AuthController {
         },
       });
 
+      console.log(token)
+      
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
         token,

@@ -1,5 +1,5 @@
 export interface GetAllUsersQueryDTO {
-    page?: number,
-    limit?: number,
-    roleQuery?: string,
+  search?: string;
+  page?: number;
+  limit?: number;
 }
