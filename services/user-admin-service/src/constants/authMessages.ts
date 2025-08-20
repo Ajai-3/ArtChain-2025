@@ -50,6 +50,7 @@ export const AUTH_MESSAGES = {
   ACCOUNT_BANNED: 'Your account has been banned.',
   ACCOUNT_DELETED: 'Your account has been deleted.',
   LOGIN_NOT_ALLOWED: 'Your account is not allowed to login.',
+  YOUR_ACCOUNT_BANNED: "Your account has been banned by admin.",
 
   // Duplicates
   DUPLICATE_EMAIL: 'Email already exists',
