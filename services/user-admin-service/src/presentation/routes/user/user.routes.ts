@@ -28,6 +28,7 @@ router.get('/search', elasticUserController.searchUsers);
 
 
 router.post("/artist-request", artistRequestController.createArtistRequest);
+router.get("/artist-request/status", artistRequestController.hasUserSubmittedRequest)
 
 router.get("/info", async (req: Request, res: Response, next: NextFunction) => {
  try {

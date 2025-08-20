@@ -6,10 +6,13 @@ import { CreateArtistRequestDto } from "../../../domain/dtos/user/CreateArtistRe
 import { validateWithZod } from "../../../utils/zodValidator";
 import { createArtistRequestSchema } from "../../../application/validations/user/createArtistRequestSchema";
 import { USER_MESSAGES } from "../../../constants/userMessages";
+import { HasUserSubmittedRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
+
 
 export class ArtistRequestController {
   constructor(
-    private _createArtistRequestUseCase: CreateArtistRequestUseCase
+    private _createArtistRequestUseCase: CreateArtistRequestUseCase,
+    private _hasUserSubmittedRequestUseCase: HasUserSubmittedRequestUseCase
   ) {}
 
   //# ================================================================================================================
@@ -42,6 +45,40 @@ export class ArtistRequestController {
       return res.status(HttpStatus.OK).json({
         message: ARTIST_MESSAGES.REQUEST_SUBMITTED_SUCCESS,
         data: request,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# CREATE ARTIST REQUEST
+  //# ================================================================================================================
+  //# GET /api/v1/user/artist-request/status
+  //# Request headers: x-user-id
+  //# Request body: { bio?, phone?, country? }
+  //# This controller allows the current user to submit a request to become an artist.
+  //# Optional fields (bio, phone, country) will be stored in the user profile if provided.
+  //# ================================================================================================================
+  hasUserSubmittedRequest = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<any> => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      if (!userId) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGES.USER_ID_REQUIRED })
+      };
+
+       const { alreadySubmitted, latestRequest } = await this._hasUserSubmittedRequestUseCase.execute(userId);
+
+      return res.status(HttpStatus.OK).json({
+        message: ARTIST_MESSAGES.REQUEST_SUBMITTED_SUCCESS,
+        data: {
+          alreadySubmitted,
+          latestRequest
+        }
       });
     } catch (error) {
       next(error);
