@@ -1,4 +1,4 @@
-export interface SupportUnSupportDto {
+export interface SupportUnSupportRequestDto {
     userId: string,
     currentUserId: string;
 }
