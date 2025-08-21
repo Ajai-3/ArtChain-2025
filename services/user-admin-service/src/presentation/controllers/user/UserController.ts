@@ -4,8 +4,8 @@ import { Request, Response, NextFunction } from "express";
 import { IUserController } from "./interfaces/IUserController";
 import { USER_MESSAGES } from "../../../constants/userMessages";
 
-import { SupportUnSupportDto } from "../../../domain/dtos/user/suporter/SupportUnSupportRequestDto";
-import { GetUserProfileWithIdDto } from "../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto";
+import { SupportUnSupportRequestDto } from "../../../domain/dtos/user/suporter/SupportUnSupportRequestDto";
+import { GetUserProfileWithIdRequestDto } from "../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto";
 
 import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
@@ -63,7 +63,7 @@ export class UserController implements IUserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string | undefined;
-      const dto: GetUserProfileWithIdDto = { userId, currentUserId };
+      const dto: GetUserProfileWithIdRequestDto = { userId, currentUserId };
 
       const { user, isSupporting, supportingCount, supportersCount } =
         await this._getUserWithIdUseCase.execute(dto);
@@ -93,7 +93,7 @@ export class UserController implements IUserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string;
-      const dto: SupportUnSupportDto = { userId, currentUserId };
+      const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._supportUserUseCase.execute(dto);
 
@@ -121,7 +121,7 @@ export class UserController implements IUserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string;
-      const dto: SupportUnSupportDto = { userId, currentUserId };
+      const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._unSupportUserUseCase.execute(dto);
 
