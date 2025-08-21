@@ -1,14 +1,18 @@
+import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
-import { IUserController } from "../../../domain/controllers/IUserController";
-import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+
+import { IUserController } from "./interfaces/IUserController";
+import { USER_MESSAGES } from "../../../constants/userMessages";
+
+import { SupportUnSupportDto } from "../../../domain/dtos/user/SupportUnSupportDto";
+import { GetUserProfileWithIdDto } from "../../../domain/dtos/user/GetUserProfileWithIdDto";
+
 import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-// import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCas";
-import { USER_MESSAGES } from "../../../constants/userMessages";
-import { HttpStatus } from "art-chain-shared";
-import { GetUserProfileWithIdDto } from "../../../domain/dtos/user/GetUserProfileWithIdDto";
-import { SupportUnSupportDto } from "../../../domain/dtos/user/SupportUnSupportDto";
+import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
+import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+// import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
+
 
 export class UserController implements IUserController {
   constructor(

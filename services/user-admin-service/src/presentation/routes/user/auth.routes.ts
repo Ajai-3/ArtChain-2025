@@ -1,27 +1,24 @@
 import express from "express";
-import { AuthController } from "../../controllers/user/UserAuthController";
-import { UserRepositoryImpl } from "../../../infrastructure/repositories/user/UserRepositoryImpl";
-import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+
+import { userAuthController } from './../../../infrastructure/container/user/userAuthContainer';
 
 const router = express.Router();
 
-const userRepo = new UserRepositoryImpl();
-const addUserToElasticUseCase = new AddUserToElasticSearchUseCase();
-const authController = new AuthController(userRepo, addUserToElasticUseCase);
 
-router.post("/start-register", authController.startRegister);
-router.post("/register", authController.registerUser);
 
-router.post("/google-auth", authController.googleAuthUser);
+router.post("/start-register", userAuthController.startRegister);
+router.post("/register", userAuthController.registerUser);
 
-router.post("/forgot-password", authController.forgotPassword);
-router.patch("/reset-password", authController.resetPassword);
+router.post("/login", userAuthController.loginUser);
+router.post("/google-auth", userAuthController.googleAuthUser);
 
-router.patch("/change-password", authController.changePassword);
+router.post("/forgot-password", userAuthController.forgotPassword);
+router.patch("/reset-password", userAuthController.resetPassword);
+router.patch("/change-password", userAuthController.changePassword);
 
-router.get("/refresh-token", authController.refreshToken);
+router.get("/refresh-token", userAuthController.refreshToken);
+router.post("/logout", userAuthController.logoutUser);
 
-router.post("/login", authController.loginUser);
-router.post("/logout", authController.logoutUser);
-
+// import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+// const addUserToElasticUseCase = new AddUserToElasticSearchUseCase();
 export default router;

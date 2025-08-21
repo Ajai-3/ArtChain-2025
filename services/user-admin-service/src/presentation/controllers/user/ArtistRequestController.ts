@@ -7,12 +7,13 @@ import { validateWithZod } from "../../../utils/zodValidator";
 import { createArtistRequestSchema } from "../../../application/validations/user/createArtistRequestSchema";
 import { USER_MESSAGES } from "../../../constants/userMessages";
 import { HasUserSubmittedRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
+import { IArtistRequestController } from "./interfaces/IArtistRequestController";
 
 
-export class ArtistRequestController {
+export class ArtistRequestController implements IArtistRequestController {
   constructor(
-    private _createArtistRequestUseCase: CreateArtistRequestUseCase,
-    private _hasUserSubmittedRequestUseCase: HasUserSubmittedRequestUseCase
+    private readonly _createArtistRequestUseCase: CreateArtistRequestUseCase,
+    private readonly _hasUserSubmittedRequestUseCase: HasUserSubmittedRequestUseCase
   ) {}
 
   //# ================================================================================================================
@@ -28,7 +29,7 @@ export class ArtistRequestController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers["x-user-id"] as string;
       if (!userId) {
@@ -64,7 +65,7 @@ export class ArtistRequestController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers["x-user-id"] as string;
       if (!userId) {

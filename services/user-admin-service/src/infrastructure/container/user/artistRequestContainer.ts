@@ -1,8 +1,10 @@
+import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl";
+import { ArtistRequestRepositoryImpl } from "../../repositories/user/ArtistRequestRepositoryImpl";
+
+import { ArtistRequestController } from "../../../presentation/controllers/user/ArtistRequestController";
+
 import { CreateArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CreateArtistRequestUseCase";
 import { HasUserSubmittedRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
-import { ArtistRequestController } from "../../../presentation/controllers/user/ArtistRequestController";
-import { ArtistRequestRepositoryImpl } from "../../repositories/user/ArtistRequestRepositoryImpl";
-import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl";
 
 // Repositories
 const userRepo = new UserRepositoryImpl();
