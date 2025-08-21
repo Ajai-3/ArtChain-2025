@@ -6,7 +6,7 @@ import { USER_MESSAGES } from "../../../constants/userMessages";
 
 import { IArtistRequestController } from "./interfaces/IArtistRequestController";
 
-import { CreateArtistRequestDto } from "../../../domain/dtos/user/CreateArtistRequestDto";
+import { CreateArtistRequestDto } from "../../../domain/dtos/user/artist-request/CreateArtistRequestDto";
 
 import { validateWithZod } from "../../../utils/zodValidator";
 
@@ -14,7 +14,6 @@ import { createArtistRequestSchema } from "../../../application/validations/user
 
 import { CreateArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CreateArtistRequestUseCase";
 import { CheckUserArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase";
-
 
 export class ArtistRequestController implements IArtistRequestController {
   constructor(

@@ -50,4 +50,5 @@ export const AUTH_MESSAGES = {
   ADMIN_REQUIRED: "Admin privileges required.",
   INVALID_USER_ROLE: "Invalid user role.",
   ADMIN_ONLY: "Admin access required.",
+  USER_NOT_FOUND: "User not found."
 } as const;

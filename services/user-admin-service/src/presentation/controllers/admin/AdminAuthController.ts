@@ -3,9 +3,9 @@ import { Request, Response, NextFunction } from "express";
 import { tokenService } from "../../service/token.service";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { AUTH_MESSAGES } from "../../../constants/authMessages";
-import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
+import { LoginRequestDto } from "../../../domain/dtos/user/auth/LoginRequestDto";
 import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
-import { IAdminRepositories } from '../../../domain/repositories/admin/IAdminRepository';
+import { IAdminRepositories } from "../../../domain/repositories/admin/IAdminRepository";
 import { LoginAdminUseCase } from "../../../application/usecases/admin/LoginAdminUseCase";
 
 export class AdminAuthController {
