@@ -34,4 +34,5 @@ export const USER_MESSAGES = {
   INVALID_SUPPORT_REQUEST: "Invalid support action: userId or currentUserId is missing.",
   ALREADY_SUPPORTING: "User is already supporting this user.",
   NOT_SUPPORTING: "You are not currently supporting this user.",
+  USER_NOT_FOUND: "User not found."
 } as const;

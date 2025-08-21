@@ -6,14 +6,14 @@ import { CreateArtistRequestDto } from "../../../domain/dtos/user/CreateArtistRe
 import { validateWithZod } from "../../../utils/zodValidator";
 import { createArtistRequestSchema } from "../../../application/validations/user/createArtistRequestSchema";
 import { USER_MESSAGES } from "../../../constants/userMessages";
-import { HasUserSubmittedRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
+import { CheckUserArtistRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
 import { IArtistRequestController } from "./interfaces/IArtistRequestController";
 
 
 export class ArtistRequestController implements IArtistRequestController {
   constructor(
     private readonly _createArtistRequestUseCase: CreateArtistRequestUseCase,
-    private readonly _hasUserSubmittedRequestUseCase: HasUserSubmittedRequestUseCase
+    private readonly _checkUserArtistRequestUseCase: CheckUserArtistRequestUseCase
   ) {}
 
   //# ================================================================================================================
@@ -72,7 +72,7 @@ export class ArtistRequestController implements IArtistRequestController {
         return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGES.USER_ID_REQUIRED })
       };
 
-       const { alreadySubmitted, latestRequest } = await this._hasUserSubmittedRequestUseCase.execute(userId);
+       const { alreadySubmitted, latestRequest } = await this._checkUserArtistRequestUseCase.execute(userId);
 
       return res.status(HttpStatus.OK).json({
         message: ARTIST_MESSAGES.REQUEST_SUBMITTED_SUCCESS,

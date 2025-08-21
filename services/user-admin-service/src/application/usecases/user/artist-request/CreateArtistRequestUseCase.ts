@@ -1,10 +1,10 @@
-import { ArtistRequestRepositoryImpl } from "./../../../../infrastructure/repositories/user/ArtistRequestRepositoryImpl";
 import { ArtistRequest } from "@prisma/client";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { CreateArtistRequestDto } from "../../../../domain/dtos/user/CreateArtistRequestDto";
 import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ICreateArtistRequestUseCase } from "../../../../domain/usecases/user/artist-request/ICreateArtistRequestUseCase";
 
-export class CreateArtistRequestUseCase {
+export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
   constructor(
     private readonly _userRepo: IUserRepository,
     private readonly _artistRequestRepo: IArtistRequestRepository
@@ -19,8 +19,7 @@ export class CreateArtistRequestUseCase {
       rejectionReason: "",
     });
 
-    const updateData: Partial<{ bio: string; phone: string; country: string }> =
-      {};
+    const updateData: Partial<{ bio: string; phone: string; country: string }> = {};
     if (bio) updateData.bio = bio;
     if (phone) updateData.phone = phone;
     if (country) updateData.country = country;

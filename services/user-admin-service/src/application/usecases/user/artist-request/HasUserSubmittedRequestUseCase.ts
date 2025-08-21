@@ -1,9 +1,12 @@
 import { NotFoundError } from "art-chain-shared";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
+import { USER_MESSAGES } from "../../../../constants/userMessages";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
+import { ICheckUserArtistRequestUseCase } from "../../../../domain/usecases/user/artist-request/ICheckUserArtistRequestUseCase";
+import { ArtistRequest } from "@prisma/client";
 
-export class HasUserSubmittedRequestUseCase {
+
+export class CheckUserArtistRequestUseCase implements ICheckUserArtistRequestUseCase {
   constructor(
     private readonly _userRepo: IUserRepository,
     private readonly _artistRequestRepo: IArtistRequestRepository
@@ -11,11 +14,11 @@ export class HasUserSubmittedRequestUseCase {
 
   async execute(
     userId: string
-  ): Promise<{ alreadySubmitted: boolean; latestRequest?: any }> {
+  ): Promise<{ alreadySubmitted: boolean; latestRequest?: ArtistRequest }> {
     const user = await this._userRepo.findById(userId);
 
     if (!user) {
-      throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
+      throw new NotFoundError(USER_MESSAGES.USER_NOT_FOUND);
     }
 
     const requests = await this._artistRequestRepo.getByUser(userId);

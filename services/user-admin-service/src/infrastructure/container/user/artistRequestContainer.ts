@@ -4,7 +4,7 @@ import { ArtistRequestRepositoryImpl } from "../../repositories/user/ArtistReque
 import { ArtistRequestController } from "../../../presentation/controllers/user/ArtistRequestController";
 
 import { CreateArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CreateArtistRequestUseCase";
-import { HasUserSubmittedRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
+import { CheckUserArtistRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
 
 // Repositories
 const userRepo = new UserRepositoryImpl();
@@ -12,11 +12,11 @@ const artistRequestRepo = new ArtistRequestRepositoryImpl();
 
 // Use Case
 const createArtistRequestUseCase = new CreateArtistRequestUseCase(userRepo, artistRequestRepo);
-const hasUserSubmittedRequestUseCase = new HasUserSubmittedRequestUseCase(userRepo, artistRequestRepo)
+const checkUserArtistRequestUseCase = new CheckUserArtistRequestUseCase(userRepo, artistRequestRepo)
 
 // Controller
 export const artistRequestController = new ArtistRequestController(
   createArtistRequestUseCase,
-  hasUserSubmittedRequestUseCase
+  checkUserArtistRequestUseCase
 
 );

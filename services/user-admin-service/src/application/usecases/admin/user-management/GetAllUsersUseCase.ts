@@ -1,6 +1,6 @@
-import { GetAllUsersQueryDTO } from '../../../domain/dtos/admin/GetAllUsersQueryDTO';
-import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
-import { searchUsersByName } from '../../../presentation/service/elasticUser.service';
+import { GetAllUsersQueryDTO } from "../../../../domain/dtos/admin/GetAllUsersQueryDTO";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { searchUsersByName } from "../../../../presentation/service/elasticUser.service";
 
 export class GetAllUsersUseCase {
   constructor(private _userRepo: IUserRepository) {}
@@ -8,7 +8,7 @@ export class GetAllUsersUseCase {
   async execute(query: GetAllUsersQueryDTO): Promise<any> {
     const { search, page = 1, limit = 10 } = query;
 
-    console.log(query)
+    console.log(query);
 
     if (search) {
       const indexedResults = await searchUsersByName(search);
