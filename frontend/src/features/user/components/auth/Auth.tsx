@@ -111,19 +111,23 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="flex-col h-screen flex items-center justify-center bg-background text-foreground px-4">
-      <div className="w-[500px] max-w-md bg-card p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6">
+      <div className="w-full max-w-md sm:max-w-md md:max-w-xl bg-card p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900">
         {!forgotMode ? (
           <>
             <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold mb-2">Welcome to Art Chain</h2>
-              <p className="text-muted-foreground">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                Welcome to Art Chain
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Secure access to your digital art collection
               </p>
             </div>
 
             {formError && (
-              <p className="text-sm text-red-500 text-center mb-2">{formError}</p>
+              <p className="text-sm text-red-500 text-center mb-2">
+                {formError}
+              </p>
             )}
 
             <Tabs defaultValue="login" className="w-full">
@@ -136,7 +140,7 @@ const Auth: React.FC = () => {
               <TabsContent value="login">
                 <form
                   onSubmit={handleLoginSubmit(handleLogin)}
-                  className="space-y-4"
+                  className="space-y-4 w-full"
                   noValidate
                 >
                   <div>
@@ -218,7 +222,7 @@ const Auth: React.FC = () => {
               <TabsContent value="signup">
                 <form
                   onSubmit={handleSignupSubmit(handleSignup)}
-                  className="space-y-4"
+                  className="space-y-4 w-full"
                   noValidate
                 >
                   <div>
@@ -296,14 +300,19 @@ const Auth: React.FC = () => {
           </>
         ) : (
           <>
+            {/* FORGOT PASSWORD */}
             <div className="mb-6 text-center">
-              <h2 className="text-2xl font-bold mb-2">Reset Password</h2>
-              <p className="text-muted-foreground">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+                Reset Password
+              </h2>
+              <p className="text-sm sm:text-base text-muted-foreground">
                 Enter your email to receive a reset link
               </p>
             </div>
             {formError && (
-              <p className="text-sm text-red-500 text-center mb-2">{formError}</p>
+              <p className="text-sm text-red-500 text-center mb-2">
+                {formError}
+              </p>
             )}
             <form
               onSubmit={handleForgotSubmit(handleForgot)}
