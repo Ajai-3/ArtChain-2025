@@ -1,4 +1,4 @@
-import { ArtistRequest } from "@prisma/client";
+import { ArtistRequest } from '@prisma/client';
 
 export interface ICheckUserArtistRequestUseCase {
   execute(

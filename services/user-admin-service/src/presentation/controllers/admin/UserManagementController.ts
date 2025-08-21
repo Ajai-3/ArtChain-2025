@@ -1,10 +1,10 @@
-import { Request, Response, NextFunction } from "express";
-import { IAdminRepositories } from "../../../domain/repositories/admin/IAdminRepository";
-import { HttpStatus } from "art-chain-shared";
-import { USER_MESSAGES } from "../../../constants/userMessages";
-import { GetAllUsersUseCase } from "../../../application/usecases/admin/user-management/GetAllUsersUseCase";
-import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
-import { BanOrUnbanUserUseCase } from "../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase";
+import { Request, Response, NextFunction } from 'express';
+import { IAdminRepositories } from '../../../domain/repositories/admin/IAdminRepository';
+import { HttpStatus } from 'art-chain-shared';
+import { USER_MESSAGES } from '../../../constants/userMessages';
+import { GetAllUsersUseCase } from '../../../application/usecases/admin/user-management/GetAllUsersUseCase';
+import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
+import { BanOrUnbanUserUseCase } from '../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase';
 
 export class UserManageMentController {
   constructor(private readonly _userRepo: IUserRepository) {}
@@ -55,13 +55,13 @@ export class UserManageMentController {
       const { userId } = req.params;
 
       if (!userId) {
-        return res.status(400).json({ message: "Missing userId" });
+        return res.status(400).json({ message: 'Missing userId' });
       }
 
       const useCase = new BanOrUnbanUserUseCase(this._userRepo);
       const user = await useCase.execute(userId);
 
-      const action = user.status === "banned" ? "banned" : "unbanned";
+      const action = user.status === 'banned' ? 'banned' : 'unbanned';
 
       return res
         .status(200)

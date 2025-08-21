@@ -1,5 +1,5 @@
-import { Client } from "@elastic/elasticsearch";
+import { Client } from '@elastic/elasticsearch';
 
 export const elasticClient = new Client ({
-    node: "http://elasticsearch:9200"
-})
+    node: 'http://elasticsearch:9200'
+});

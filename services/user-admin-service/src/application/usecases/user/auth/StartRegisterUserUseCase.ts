@@ -1,8 +1,8 @@
-import { ConflictError } from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { StartRegisterRequestDto } from "../../../../domain/dtos/user/auth/StartRegisterRequestDto";
+import { ConflictError } from 'art-chain-shared';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { tokenService } from '../../../../presentation/service/token.service';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { StartRegisterRequestDto } from '../../../../domain/dtos/user/auth/StartRegisterRequestDto';
 
 export class StartRegisterUserUseCase {
   constructor(private userRepo: IUserRepository) {}

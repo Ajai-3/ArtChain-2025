@@ -1,7 +1,7 @@
-import { NotFoundError } from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
+import { NotFoundError } from 'art-chain-shared';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
 
 export class GetCurrentUserUseCase {
   constructor(

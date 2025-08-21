@@ -1,14 +1,14 @@
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
-import { tokenService } from "../../../presentation/service/token.service";
-import { AuthResponseDto } from "../../../domain/dtos/user/AuthResponseDto";
-import { LoginRequestDto } from "../../../domain/dtos/user/auth/LoginRequestDto";
-import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
+import { tokenService } from '../../../presentation/service/token.service';
+import { AuthResponseDto } from '../../../domain/dtos/user/AuthResponseDto';
+import { LoginRequestDto } from '../../../domain/dtos/user/auth/LoginRequestDto';
+import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
 import {
   ERROR_MESSAGES,
   ForbiddenError,
   UnauthorizedError,
-} from "art-chain-shared";
+} from 'art-chain-shared';
 
 export class LoginAdminUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -24,11 +24,11 @@ export class LoginAdminUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== "admin") {
+    if (rawUser.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 
-    if (rawUser.status !== "active") {
+    if (rawUser.status !== 'active') {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 

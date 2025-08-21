@@ -1,20 +1,20 @@
-import { createLogger, format, transports } from "winston";
-import { ElasticsearchTransport } from "winston-elasticsearch";
-import { Client } from "@elastic/elasticsearch";
+import { createLogger, format, transports } from 'winston';
+import { ElasticsearchTransport } from 'winston-elasticsearch';
+import { Client } from '@elastic/elasticsearch';
 
 const { combine, timestamp, printf, json, colorize } = format;
-const serviceName = "user-admin-service";
+const serviceName = 'user-admin-service';
 
 const consoleFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp} [${serviceName}] ${level}: ${message}`;
 });
 
 const esTransport = new ElasticsearchTransport({
-  level: "info",
-  clientOpts: { node: "http://elasticsearch:9200" },
+  level: 'info',
+  clientOpts: { node: 'http://elasticsearch:9200' },
   indexPrefix: `service-${serviceName}-logs`,
   transformer: (log) => ({
-    "@timestamp": log.timestamp,
+    '@timestamp': log.timestamp,
     severity: log.level,
     message: log.message,
     service: serviceName,
@@ -23,7 +23,7 @@ const esTransport = new ElasticsearchTransport({
 });
 
 export const logger = createLogger({
-  level: "info",
+  level: 'info',
   format: combine(timestamp(), json()),
   transports: [
     new transports.Console({
@@ -32,13 +32,13 @@ export const logger = createLogger({
     new transports.File({ filename: `logs/${serviceName}-combined.log` }),
     new transports.File({
       filename: `logs/${serviceName}-error.log`,
-      level: "error",
+      level: 'error',
     }),
     esTransport,
   ],
 });
 
-const elasticClient = new Client({ node: "http://elasticsearch:9200" });
+const elasticClient = new Client({ node: 'http://elasticsearch:9200' });
 
 export const storeUserInfo = async (user: {
   userId: string;
@@ -47,7 +47,7 @@ export const storeUserInfo = async (user: {
   email: string;
 }) => {
   await elasticClient.index({
-    index: "users",
+    index: 'users',
     document: { ...user, service: serviceName, createdAt: new Date() },
   });
 };

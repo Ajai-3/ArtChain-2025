@@ -1,12 +1,12 @@
-import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl";
+import { UserRepositoryImpl } from '../../repositories/user/UserRepositoryImpl';
 
-import { UserController } from "../../../presentation/controllers/user/UserController";
+import { UserController } from '../../../presentation/controllers/user/UserController';
 
-import { SupporterRepositoryImpl } from "../../repositories/user/SupporterRepositoryIml";
-import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
-import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+import { SupporterRepositoryImpl } from '../../repositories/user/SupporterRepositoryIml';
+import { SupportUserUseCase } from '../../../application/usecases/user/user-intraction/SupportUserUseCase';
+import { UnSupportUserUseCase } from '../../../application/usecases/user/user-intraction/UnSupportUserUseCase';
+import { GetCurrentUserUseCase } from '../../../application/usecases/user/user-intraction/GetCurrentUserUseCase';
+import { GetUserWithIdUserUseCase } from '../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase';
 
 
 // Repositories

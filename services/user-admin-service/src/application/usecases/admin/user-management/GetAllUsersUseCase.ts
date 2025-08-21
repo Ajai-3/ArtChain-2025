@@ -1,6 +1,6 @@
-import { GetAllUsersQueryDTO } from "../../../../domain/dtos/admin/GetAllUsersQueryDTO";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { searchUsersByName } from "../../../../presentation/service/elasticUser.service";
+import { GetAllUsersQueryDTO } from '../../../../domain/dtos/admin/GetAllUsersQueryDTO';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { searchUsersByName } from '../../../../presentation/service/elasticUser.service';
 
 export class GetAllUsersUseCase {
   constructor(private _userRepo: IUserRepository) {}

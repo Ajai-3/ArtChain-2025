@@ -1,9 +1,9 @@
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { USER_MESSAGES } from "./../../../../constants/userMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { GetUserProfileWithIdDto } from "../../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { USER_MESSAGES } from './../../../../constants/userMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { GetUserProfileWithIdDto } from '../../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
 
 export class GetUserWithIdUserUseCase {
   constructor(

@@ -1,7 +1,7 @@
-import { elasticClient } from "../../infrastructure/config/elasticSearch";
-import { IndexedUser } from "../../types/IndexedUser";
+import { elasticClient } from '../../infrastructure/config/elasticSearch';
+import { IndexedUser } from '../../types/IndexedUser';
 
-const INDEX_NAME = "users";
+const INDEX_NAME = 'users';
 
 export const indexUser = async (user: IndexedUser) => {
   await elasticClient.index({
@@ -19,16 +19,16 @@ export const searchUsersByName = async (
   const result = await elasticClient.search({
     index: INDEX_NAME,
     size: 20,
-    sort: [{ createdAt: "desc" }],
+    sort: [{ createdAt: 'desc' }],
     query: {
       bool: {
         should: [
           { match_phrase_prefix: { username: query } },
           { match_phrase_prefix: { name: query } },
           { match_phrase_prefix: { email: query } },
-          { fuzzy: { username: { value: query, fuzziness: "AUTO" } } },
-          { fuzzy: { name: { value: query, fuzziness: "AUTO" } } },
-          { fuzzy: { email: { value: query, fuzziness: "AUTO" } } },
+          { fuzzy: { username: { value: query, fuzziness: 'AUTO' } } },
+          { fuzzy: { name: { value: query, fuzziness: 'AUTO' } } },
+          { fuzzy: { email: { value: query, fuzziness: 'AUTO' } } },
         ],
       },
     },

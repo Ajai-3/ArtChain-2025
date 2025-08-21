@@ -1,10 +1,10 @@
-import bcrypt from "bcrypt";
-import { ConflictError } from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { AuthResultDto } from "../../../../domain/dtos/user/auth/AuthResultDto";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { RegisterRequestDto } from "../../../../domain/dtos/user/auth/RegisterRequestDto";
+import bcrypt from 'bcrypt';
+import { ConflictError } from 'art-chain-shared';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { tokenService } from '../../../../presentation/service/token.service';
+import { AuthResultDto } from '../../../../domain/dtos/user/auth/AuthResultDto';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { RegisterRequestDto } from '../../../../domain/dtos/user/auth/RegisterRequestDto';
 
 export class RegisterUserUseCase {
   constructor(private _userRepo: IUserRepository) {}
@@ -29,17 +29,17 @@ export class RegisterUserUseCase {
       name,
       email,
       username,
-      phone: "",
+      phone: '',
       password: hashedPassword,
       isVerified: false,
-      profileImage: "",
-      bannerImage: "",
-      backgroundImage: "",
-      bio: "",
-      country: "",
-      role: "user",
-      plan: "free",
-      status: "active",
+      profileImage: '',
+      bannerImage: '',
+      backgroundImage: '',
+      bio: '',
+      country: '',
+      role: 'user',
+      plan: 'free',
+      status: 'active',
       createdAt: new Date(),
       updatedAt: new Date(),
     });

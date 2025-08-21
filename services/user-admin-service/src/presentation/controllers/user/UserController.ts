@@ -1,16 +1,16 @@
-import { HttpStatus } from "art-chain-shared";
-import { Request, Response, NextFunction } from "express";
+import { HttpStatus } from 'art-chain-shared';
+import { Request, Response, NextFunction } from 'express';
 
-import { IUserController } from "./interfaces/IUserController";
-import { USER_MESSAGES } from "../../../constants/userMessages";
+import { IUserController } from './interfaces/IUserController';
+import { USER_MESSAGES } from '../../../constants/userMessages';
 
-import { SupportUnSupportRequestDto } from "../../../domain/dtos/user/suporter/SupportUnSupportRequestDto";
-import { GetUserProfileWithIdRequestDto } from "../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto";
+import { SupportUnSupportRequestDto } from '../../../domain/dtos/user/suporter/SupportUnSupportRequestDto';
+import { GetUserProfileWithIdRequestDto } from '../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto';
 
-import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
-import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+import { SupportUserUseCase } from '../../../application/usecases/user/user-intraction/SupportUserUseCase';
+import { UnSupportUserUseCase } from '../../../application/usecases/user/user-intraction/UnSupportUserUseCase';
+import { GetCurrentUserUseCase } from '../../../application/usecases/user/user-intraction/GetCurrentUserUseCase';
+import { GetUserWithIdUserUseCase } from '../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase';
 // import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
 
 export class UserController implements IUserController {
@@ -34,7 +34,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<any> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { user, supportingCount, supportersCount } =
         await this._getCurrentUserUseCase.execute(userId);
 
@@ -62,7 +62,7 @@ export class UserController implements IUserController {
   ): Promise<any> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers["x-user-id"] as string | undefined;
+      const currentUserId = req.headers['x-user-id'] as string | undefined;
       const dto: GetUserProfileWithIdRequestDto = { userId, currentUserId };
 
       const { user, isSupporting, supportingCount, supportersCount } =
@@ -92,7 +92,7 @@ export class UserController implements IUserController {
   ): Promise<any> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._supportUserUseCase.execute(dto);
@@ -120,7 +120,7 @@ export class UserController implements IUserController {
   ): Promise<any> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._unSupportUserUseCase.execute(dto);

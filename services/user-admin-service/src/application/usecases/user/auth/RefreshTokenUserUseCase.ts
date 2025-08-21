@@ -1,15 +1,15 @@
-import { JwtPayload } from "jsonwebtoken";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { JwtPayload } from 'jsonwebtoken';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { tokenService } from '../../../../presentation/service/token.service';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { RefreshTokenResultDto } from './../../../../domain/dtos/user/auth/RefreshTokenResultDto';
-import { IRefreshTokenUserUseCase } from "../../../../domain/usecases/user/auth/IRefreshTokenUserUseCase";
+import { IRefreshTokenUserUseCase } from '../../../../domain/usecases/user/auth/IRefreshTokenUserUseCase';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   ForbiddenError,
   UnauthorizedError,
-} from "art-chain-shared";
+} from 'art-chain-shared';
 
 export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -27,7 +27,7 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
-    if (!payload || typeof payload !== "object" || !("email" in payload)) {
+    if (!payload || typeof payload !== 'object' || !('email' in payload)) {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
@@ -36,8 +36,8 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    if (user.status === "banned") {
-      throw new ForbiddenError("Your account has been banned.");
+    if (user.status === 'banned') {
+      throw new ForbiddenError('Your account has been banned.');
     }
 
     const accessToken = tokenService.generateAccessToken({

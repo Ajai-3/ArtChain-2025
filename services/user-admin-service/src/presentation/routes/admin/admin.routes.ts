@@ -10,7 +10,7 @@ const adminRepo = new AdminRepositoryImpl();
 const adminAuthController = new AdminAuthController(adminRepo);
 
 const userRepo = new UserRepositoryImpl();
-const userManageMentController = new UserManageMentController(userRepo)
+const userManageMentController = new UserManageMentController(userRepo);
 
 // Admin Auth routes
 router.post('/login', adminAuthController.adminLogin);
@@ -20,8 +20,8 @@ router.post('/logout', adminAuthController.adminLogout);
 
 
 // User Management Routes
-router.get("/users", userManageMentController.getAllUsers)
-router.patch("/users/:userId/ban-toggle", userManageMentController.banOrUnbanUser);
+router.get('/users', userManageMentController.getAllUsers);
+router.patch('/users/:userId/ban-toggle', userManageMentController.banOrUnbanUser);
 
 
 export default router;

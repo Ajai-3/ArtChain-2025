@@ -1,11 +1,11 @@
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { BadRequestError, ForbiddenError } from "art-chain-shared";
-import admin from "../../../../infrastructure/config/firebase-admin";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { AuthResultDto } from "../../../../domain/dtos/user/auth/AuthResultDto";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { GoogleAuthRequestDto } from "../../../../domain/dtos/user/auth/GoogleAuthRequestDto";
-import { IGoogleAuthUserUseCase } from "../../../../domain/usecases/user/auth/IGoogleAuthUserUseCase";
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { BadRequestError, ForbiddenError } from 'art-chain-shared';
+import admin from '../../../../infrastructure/config/firebase-admin';
+import { tokenService } from '../../../../presentation/service/token.service';
+import { AuthResultDto } from '../../../../domain/dtos/user/auth/AuthResultDto';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { GoogleAuthRequestDto } from '../../../../domain/dtos/user/auth/GoogleAuthRequestDto';
+import { IGoogleAuthUserUseCase } from '../../../../domain/usecases/user/auth/IGoogleAuthUserUseCase';
 
 export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
   constructor(private userRepo: IUserRepository) {}
@@ -18,7 +18,7 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_VERIFICATION_TOKEN);
     }
 
-    let normalizedUsername = name.trim().toLowerCase().replace(/\s+/g, "_");
+    let normalizedUsername = name.trim().toLowerCase().replace(/\s+/g, '_');
     const usernameExists = await this.userRepo.findByUsername(
       normalizedUsername
     );
@@ -34,17 +34,17 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
         name,
         email,
         username: normalizedUsername,
-        phone: "",
-        password: "",
+        phone: '',
+        password: '',
         isVerified: false,
-        profileImage: "",
-        bannerImage: "",
-        backgroundImage: "",
-        bio: "",
-        country: "",
-        role: "user",
-        plan: "free",
-        status: "active",
+        profileImage: '',
+        bannerImage: '',
+        backgroundImage: '',
+        bio: '',
+        country: '',
+        role: 'user',
+        plan: 'free',
+        status: 'active',
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -61,15 +61,15 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
       return { user: newUser, isNewUser: true, accessToken, refreshToken };
     }
 
-    if (!["user", "artist"].includes(existingUser.role)) {
+    if (!['user', 'artist'].includes(existingUser.role)) {
       throw new ForbiddenError(AUTH_MESSAGES.INVALID_USER_ROLE);
     }
 
-    if (existingUser.status === "banned") {
+    if (existingUser.status === 'banned') {
       throw new ForbiddenError(AUTH_MESSAGES.ACCOUNT_BANNED);
     }
 
-    if (existingUser.status === "deleted") {
+    if (existingUser.status === 'deleted') {
       throw new ForbiddenError(AUTH_MESSAGES.ACCOUNT_DELETED);
     }
 
