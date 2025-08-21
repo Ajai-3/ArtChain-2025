@@ -110,6 +110,8 @@ apiClient.interceptors.response.use(
 
         const newToken = response?.accessToken;
 
+        console.log(newToken)
+
         if (isAdminRequest) {
           store.dispatch(setAdminAccessToken(newToken));
         } else {

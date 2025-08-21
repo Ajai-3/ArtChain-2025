@@ -10,23 +10,29 @@ const UserLayout: React.FC = () => {
   const [showBecomeArtistModal, setShowBecomeArtistModal] = useState(false);
 
   return (
-    <div className="h-screen">
+    <div className="h-screen overflow-hidden">
       <Navbar onBecomeArtist={() => setShowBecomeArtistModal(true)} />
-      
-      <div className="flex">
-        <UserSideBar createPostClick={() => setShowCreatePostModal(true)} />
-        <Outlet />
+
+      <div className="flex flex-col sm:flex-row">
+         <div className="hidden sm:block">
+          <UserSideBar createPostClick={() => setShowCreatePostModal(true)} />
+         </div>
+        <div className="w-full flex flex-col h-[calc(100vh-62px)]">
+          <div className="flex-1 overflow-y-auto scrollbar relative pb-28 sm:pb-0">
+            <Outlet />
+            <div className="block sm:hidden w-full fixed bottom-0 left-0">
+              <UserSideBar createPostClick={() => setShowCreatePostModal(true)} />
+            </div>
+          </div>
+        </div>
       </div>
 
-      <CreatePost 
-        isOpen={showCreatePostModal} 
+      <CreatePost
+        isOpen={showCreatePostModal}
         onClose={() => setShowCreatePostModal(false)}
-        onConfirm={() => {
-          setShowCreatePostModal(false);
-        }}
       />
 
-      <BecomeArtistModal 
+      <BecomeArtistModal
         isOpen={showBecomeArtistModal}
         onClose={() => setShowBecomeArtistModal(false)}
       />

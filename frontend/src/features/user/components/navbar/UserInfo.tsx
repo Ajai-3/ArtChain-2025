@@ -1,20 +1,17 @@
 import { Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../../redux/store";
 import { Button } from "../../../../components/ui/button";
-import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
+import type { User as safeuser } from "../../../../types/user";
 
 type UserInfoProps = {
   onBecomeArtist: () => void;
+  isAuthenticated: boolean;
+  user: safeuser | null
 };
 
-const UserInfo = ({ onBecomeArtist }: UserInfoProps) => {
+const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user.user);
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.user.isAuthenticated
-  );
+
 
 
   return (
