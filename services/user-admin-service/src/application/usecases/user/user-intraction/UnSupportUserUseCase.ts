@@ -1,4 +1,4 @@
-import { SupportUnSupportDto } from "../../../../domain/dtos/user/SupportUnSupportDto";
+import { SupportUnSupportDto } from "../../../../domain/dtos/user/suporter/SupportUnSupportRequestDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { BadRequestError, NotFoundError } from "art-chain-shared";

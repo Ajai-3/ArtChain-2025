@@ -1,13 +1,13 @@
 import { ConflictError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/token.service";
-import { StartRegisterDto } from "../../../../domain/dtos/user/StartRegisterDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { StartRegisterRequestDto } from "../../../../domain/dtos/user/auth/StartRegisterRequestDto";
 
 export class StartRegisterUserUseCase {
   constructor(private userRepo: IUserRepository) {}
 
-  async execute(data: StartRegisterDto) {
+  async execute(data: StartRegisterRequestDto) {
     const { name, username, email } = data;
 
     const existingUser = await this.userRepo.findByEmail(email);
