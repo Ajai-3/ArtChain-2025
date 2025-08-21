@@ -1,7 +1,8 @@
+
 import bcrypt from "bcrypt";
-import { LoginRequestDto } from "../../../../domain/dtos/user/LoginRequestDto";
-import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
 import { tokenService } from "../../../../presentation/service/token.service";
+import { AuthResultDto } from "../../../../domain/dtos/user/auth/AuthResultDto";
+import { LoginRequestDto } from "../../../../domain/dtos/user/auth/LoginRequestDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import {
   ForbiddenError,
@@ -13,7 +14,7 @@ import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 export class LoginUserUseCase {
   constructor(private _userRepo: IUserRepository) {}
 
-  async execute(data: LoginRequestDto): Promise<AuthResponseDto> {
+  async execute(data: LoginRequestDto): Promise<AuthResultDto> {
     const { identifier, password } = data;
 
     const rawUser =

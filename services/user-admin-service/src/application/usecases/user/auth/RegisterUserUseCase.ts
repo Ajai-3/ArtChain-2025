@@ -1,17 +1,15 @@
 import bcrypt from "bcrypt";
-import { ConflictError, ERROR_MESSAGES } from "art-chain-shared";
-import { RegisterDto } from "../../../../domain/dtos/user/RegisterDto";
-import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ConflictError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { AddUserToElasticSearchUseCase } from "../search/AddUserToElasticSearchUseCase";
-import { IndexedUser } from "../../../../types/IndexedUser";
+import { tokenService } from "../../../../presentation/service/token.service";
+import { AuthResultDto } from "../../../../domain/dtos/user/auth/AuthResultDto";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { RegisterRequestDto } from "../../../../domain/dtos/user/auth/RegisterRequestDto";
 
 export class RegisterUserUseCase {
   constructor(private _userRepo: IUserRepository) {}
 
-  async execute(data: RegisterDto): Promise<AuthResponseDto> {
+  async execute(data: RegisterRequestDto): Promise<AuthResultDto> {
     const { name, username, email, password } = data;
 
     const existingUserByUsername = await this._userRepo.findByUsername(username);

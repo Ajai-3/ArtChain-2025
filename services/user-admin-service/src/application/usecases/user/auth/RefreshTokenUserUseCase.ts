@@ -2,6 +2,8 @@ import { JwtPayload } from "jsonwebtoken";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/token.service";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { RefreshTokenResultDto } from './../../../../domain/dtos/user/auth/RefreshTokenResultDto';
+import { IRefreshTokenUserUseCase } from "../../../../domain/usecases/user/auth/IRefreshTokenUserUseCase";
 import {
   BadRequestError,
   ERROR_MESSAGES,
@@ -9,10 +11,10 @@ import {
   UnauthorizedError,
 } from "art-chain-shared";
 
-export class RefreshTokenUserUseCase {
+export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
   constructor(private userRepo: IUserRepository) {}
 
-  async execute(refreshToken: string): Promise<string> {
+  async execute(refreshToken: string): Promise<RefreshTokenResultDto> {
     if (!refreshToken) {
       throw new BadRequestError(AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED);
     }
@@ -44,6 +46,6 @@ export class RefreshTokenUserUseCase {
       role: user.role,
     });
 
-    return accessToken;
+    return { accessToken };
   }
 }

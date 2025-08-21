@@ -2,11 +2,13 @@ import { BadRequestError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/token.service";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ForgotPasswordResultDto } from "../../../../domain/dtos/user/auth/ForgotPasswordResultDto";
+import { IForgotPasswordUserUseCase } from "../../../../domain/usecases/user/auth/IForgotPasswordUserUseCase";
 
-export class ForgotPasswordUserUseCase {
+export class ForgotPasswordUserUseCase implements IForgotPasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}
 
-  async execute(identifier: string): Promise<any> {
+  async execute(identifier: string): Promise<ForgotPasswordResultDto> {
     const normalizedInput = identifier.toLocaleLowerCase();
 
     let user = await this.userRepo.findByUsername(normalizedInput);

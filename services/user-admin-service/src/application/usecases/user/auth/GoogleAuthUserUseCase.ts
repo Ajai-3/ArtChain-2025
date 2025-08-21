@@ -1,14 +1,16 @@
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { BadRequestError, ForbiddenError } from "art-chain-shared";
 import admin from "../../../../infrastructure/config/firebase-admin";
-import { GoogleAuthDto } from "../../../../domain/dtos/user/GoogleAuthDto";
 import { tokenService } from "../../../../presentation/service/token.service";
+import { AuthResultDto } from "../../../../domain/dtos/user/auth/AuthResultDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { GoogleAuthRequestDto } from "../../../../domain/dtos/user/auth/GoogleAuthRequestDto";
+import { IGoogleAuthUserUseCase } from "../../../../domain/usecases/user/auth/IGoogleAuthUserUseCase";
 
-export class GoogleAuthUserUseCase {
+export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
   constructor(private userRepo: IUserRepository) {}
 
-  async execute(data: GoogleAuthDto): Promise<any> {
+  async execute(data: GoogleAuthRequestDto): Promise<AuthResultDto> {
     const { token, email, name } = data;
 
     const decodedToken = await admin.auth().verifyIdToken(token);

@@ -2,13 +2,14 @@ import bcrypt from "bcrypt";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { tokenService } from "../../../../presentation/service/token.service";
-import { ResetPasswordDto } from "../../../../domain/dtos/user/ResetPasswordDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ResetPasswordRequestDto} from "../../../../domain/dtos/user/auth/ResetPasswordRequestDto";
+import { IResetPasswordUserUseCase } from "../../../../domain/usecases/user/auth/IResetPasswordUserUseCase";
 
-export class ResetPasswordUserUseCase {
+export class ResetPasswordUserUseCase implements IResetPasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}
 
-  async execute(data: ResetPasswordDto) {
+  async execute(data: ResetPasswordRequestDto): Promise<void> {
     const { token, password } = data;
 
     const decoded = tokenService.verifyEmailVerificationToken(token);

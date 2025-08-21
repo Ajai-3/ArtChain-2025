@@ -1,18 +1,18 @@
 import bcrypt from "bcrypt";
-import { ChangePasswordDto } from "../../../../domain/dtos/user/ChangePasswordDto";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ChangePasswordRequestDto } from "../../../../domain/dtos/user/auth/ChangePasswordRequestDto";
+import { IChangePasswordUserUseCase } from "../../../../domain/usecases/user/auth/IChangePasswordUserUseCase";
 import {
   BadRequestError,
-  ERROR_MESSAGES,
   NotFoundError,
   UnauthorizedError,
 } from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 
-export class ChangePasswordUserUseCase {
+export class ChangePasswordUserUseCase implements IChangePasswordUserUseCase {
   constructor(private userRepo: IUserRepository) {}
 
-  async execute(data: ChangePasswordDto) {
+  async execute(data: ChangePasswordRequestDto): Promise<void> {
     const { userId, currentPassword, newPassword } = data;
 
     const rawUser = await this.userRepo.findByIdRaw(userId);
