@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 export function responseInterceptor(req: Request, res: Response, next: NextFunction) {
   const oldJson = res.json;

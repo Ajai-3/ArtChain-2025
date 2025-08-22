@@ -19,7 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(responseInterceptor)
+app.use(responseInterceptor);
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);

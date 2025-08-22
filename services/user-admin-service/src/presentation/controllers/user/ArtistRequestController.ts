@@ -1,19 +1,19 @@
-import { Request, Response, NextFunction } from "express";
-import { HttpStatus } from "art-chain-shared";
+import { Request, Response, NextFunction } from 'express';
+import { HttpStatus } from 'art-chain-shared';
 
-import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
-import { USER_MESSAGES } from "../../../constants/userMessages";
+import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
+import { USER_MESSAGES } from '../../../constants/userMessages';
 
-import { IArtistRequestController } from "../../interfaces/user/IArtistRequestController";
+import { IArtistRequestController } from '../../interfaces/user/IArtistRequestController';
 
-import { CreateArtistRequestDto } from "../../../domain/dtos/user/artist-request/CreateArtistRequestDto";
+import { CreateArtistRequestDto } from '../../../domain/dtos/user/artist-request/CreateArtistRequestDto';
 
-import { validateWithZod } from "../../../utils/zodValidator";
+import { validateWithZod } from '../../../utils/zodValidator';
 
-import { createArtistRequestSchema } from "../../../application/validations/user/createArtistRequestSchema";
+import { createArtistRequestSchema } from '../../../application/validations/user/createArtistRequestSchema';
 
-import { CreateArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CreateArtistRequestUseCase";
-import { CheckUserArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase";
+import { CreateArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CreateArtistRequestUseCase';
+import { CheckUserArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase';
 
 export class ArtistRequestController implements IArtistRequestController {
   constructor(
@@ -36,7 +36,7 @@ export class ArtistRequestController implements IArtistRequestController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)
@@ -74,7 +74,7 @@ export class ArtistRequestController implements IArtistRequestController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)

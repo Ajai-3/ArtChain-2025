@@ -1,7 +1,7 @@
-import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl";
+import { UserRepositoryImpl } from '../../repositories/user/UserRepositoryImpl';
 
-import { LoginAdminUseCase } from "../../../application/usecases/admin/LoginAdminUseCase";
-import { AdminAuthController } from "../../../presentation/controllers/admin/AdminAuthController";
+import { LoginAdminUseCase } from '../../../application/usecases/admin/LoginAdminUseCase';
+import { AdminAuthController } from '../../../presentation/controllers/admin/AdminAuthController';
 
 // Repositories
 const userRepo = new UserRepositoryImpl();
