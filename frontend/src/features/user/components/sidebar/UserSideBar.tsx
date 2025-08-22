@@ -38,7 +38,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
   createPostClick,
 }) => {
   return (
-    <div className="border-t sm:border-r sm:border-t-0 border-zinc-400 dark:border-zinc-800 p-2 h-auto sm:h-[calc(100vh-64px)] w-full sm:w-16 flex flex-row md:flex-col justify-between dark:bg-black">
+    <div className="border-t sm:border-r sm:border-t-0 z-50 border-zinc-400 dark:border-zinc-800 p-2 h-auto sm:h-[calc(100vh-64px)] w-full sm:w-16 flex flex-row md:flex-col justify-between dark:bg-black">
       <div className="flex flex-row sm:flex-col justify-between w-full sm:w-auto sm:gap-2">
         {links.map(({ to, icon: Icon, label, showOn }) => {
           const responsiveClass = showOn === "desktop" ? "hidden sm:block" : "";

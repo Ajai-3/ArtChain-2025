@@ -18,7 +18,7 @@ const UserLayout: React.FC = () => {
           <UserSideBar createPostClick={() => setShowCreatePostModal(true)} />
          </div>
         <div className="w-full flex flex-col h-[calc(100vh-62px)]">
-          <div className="flex-1 overflow-y-auto scrollbar relative pb-28 sm:pb-0">
+          <div className="flex-1 overflow-y-auto scrollbar relative sm:pb-0">
             <Outlet />
             <div className="block sm:hidden w-full fixed bottom-0 left-0">
               <UserSideBar createPostClick={() => setShowCreatePostModal(true)} />

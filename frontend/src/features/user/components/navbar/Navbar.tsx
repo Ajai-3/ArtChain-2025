@@ -30,9 +30,9 @@ const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist }) => {
 
       {user && isAuthenticated ? <SearchBar /> : null}
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-2 sm:gap-6">
         {user && isAuthenticated ? <ArtCoin coin={coin} /> : null}
-        <ThemeToggle />
+        {/* <ThemeToggle /> */}
         <UserInfo user={user} isAuthenticated={isAuthenticated} onBecomeArtist={onBecomeArtist} />
       </div>
     </div>

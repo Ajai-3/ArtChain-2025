@@ -13,7 +13,6 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
   const navigate = useNavigate();
 
 
-
   return (
     <div className="flex items-center gap-3">
       {isAuthenticated && user ? (
@@ -28,7 +27,7 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
 
           <button
             onClick={() => navigate("/profile")}
-            className="rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-full hidden sm:block hover:bg-zinc-100 dark:hover:bg-zinc-800"
             aria-label="Profile"
           >
             {user.profileImage ? (

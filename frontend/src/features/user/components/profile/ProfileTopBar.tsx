@@ -40,7 +40,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
 
   return (
     <div className="relative">
-      <div className="py-20 px-6 relative overflow-hidden">
+      <div className="py-10 sm:py-20 px-6 relative overflow-hidden">
         {user?.bannerImage && (
           <img
             src={user.bannerImage}

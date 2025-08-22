@@ -38,7 +38,6 @@ const Profile: React.FC = () => {
     ? profileData?.data?.user ?? reduxUser
     : profileData?.data?.user ?? null;
 
-    console.log(profileData)
 
   const isSupporting = profileData?.data?.isSupporting || false;
 
@@ -62,6 +61,8 @@ const displaySupportersCount = isOwnProfile
 
   if (isLoading) return <div>Loading profile...</div>;
   if (!profileUser) return <div>User not found</div>;
+
+  
 
   return (
     <div className="w-full flex flex-col h-[calc(100vh-62px)]">
