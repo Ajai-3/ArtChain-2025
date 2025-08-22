@@ -12,7 +12,7 @@ import {
 } from 'art-chain-shared';
 
 export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private _userRepo: IUserRepository) {}
 
   async execute(refreshToken: string): Promise<RefreshTokenResultDto> {
     if (!refreshToken) {
@@ -31,7 +31,7 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
-    const user = await this.userRepo.findByEmail(payload.email as string);
+    const user = await this._userRepo.findByEmail(payload.email as string);
     if (!user) {
       throw new UnauthorizedError(ERROR_MESSAGES.USER_NOT_FOUND);
     }

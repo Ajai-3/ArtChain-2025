@@ -1,7 +1,7 @@
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { SupportUnSupportDto } from '../../../../domain/dtos/user/suporter/SupportUnSupportRequestDto';
+import { SupportUnSupportRequestDto } from '../../../../domain/dtos/user/suporter/SupportUnSupportRequestDto';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
 
@@ -11,7 +11,7 @@ export class SupportUserUseCase {
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: SupportUnSupportDto): Promise<any> {
+  async execute(data: SupportUnSupportRequestDto): Promise<any> {
     const { userId, currentUserId } = data;
 
     if (!userId || !currentUserId) {

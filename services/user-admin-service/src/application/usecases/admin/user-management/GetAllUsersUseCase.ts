@@ -1,8 +1,9 @@
-import { GetAllUsersQueryDTO } from '../../../../domain/dtos/admin/GetAllUsersQueryDTO';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { GetAllUsersQueryDTO } from '../../../../domain/dtos/admin/GetAllUsersQueryDTO';
 import { searchUsersByName } from '../../../../presentation/service/elasticUser.service';
+import { IGetAllUsersUseCase } from '../../../../domain/usecases/admin/user-management/IGetAllUsersUseCase';
 
-export class GetAllUsersUseCase {
+export class GetAllUsersUseCase implements IGetAllUsersUseCase {
   constructor(private _userRepo: IUserRepository) {}
 
   async execute(query: GetAllUsersQueryDTO): Promise<any> {

@@ -10,12 +10,12 @@ import {
 } from 'art-chain-shared';
 
 export class ChangePasswordUserUseCase implements IChangePasswordUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private _userRepo: IUserRepository) {}
 
   async execute(data: ChangePasswordRequestDto): Promise<void> {
     const { userId, currentPassword, newPassword } = data;
 
-    const rawUser = await this.userRepo.findByIdRaw(userId);
+    const rawUser = await this._userRepo.findByIdRaw(userId);
     if (!rawUser) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
@@ -32,6 +32,6 @@ export class ChangePasswordUserUseCase implements IChangePasswordUserUseCase {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await this.userRepo.update(userId, { password: hashedPassword });
+    await this._userRepo.update(userId, { password: hashedPassword });
   }
 }

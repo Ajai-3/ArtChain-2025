@@ -7,7 +7,7 @@ import { ResetPasswordRequestDto} from '../../../../domain/dtos/user/auth/ResetP
 import { IResetPasswordUserUseCase } from '../../../../domain/usecases/user/auth/IResetPasswordUserUseCase';
 
 export class ResetPasswordUserUseCase implements IResetPasswordUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private _userRepo: IUserRepository) {}
 
   async execute(data: ResetPasswordRequestDto): Promise<void> {
     const { token, password } = data;
@@ -21,7 +21,7 @@ export class ResetPasswordUserUseCase implements IResetPasswordUserUseCase {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_RESET_TOKEN);
     }
 
-    const user = await this.userRepo.findByEmailRaw(decoded.email);
+    const user = await this._userRepo.findByEmailRaw(decoded.email);
     if (!user) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
@@ -33,6 +33,6 @@ export class ResetPasswordUserUseCase implements IResetPasswordUserUseCase {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    await this.userRepo.update(user.id, { password: hashedPassword });
+    await this._userRepo.update(user.id, { password: hashedPassword });
   }
 }

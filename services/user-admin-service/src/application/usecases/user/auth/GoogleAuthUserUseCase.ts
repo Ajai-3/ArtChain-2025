@@ -8,7 +8,7 @@ import { GoogleAuthRequestDto } from '../../../../domain/dtos/user/auth/GoogleAu
 import { IGoogleAuthUserUseCase } from '../../../../domain/usecases/user/auth/IGoogleAuthUserUseCase';
 
 export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private _userRepo: IUserRepository) {}
 
   async execute(data: GoogleAuthRequestDto): Promise<AuthResultDto> {
     const { token, email, name } = data;
@@ -19,17 +19,17 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
     }
 
     let normalizedUsername = name.trim().toLowerCase().replace(/\s+/g, '_');
-    const usernameExists = await this.userRepo.findByUsername(
+    const usernameExists = await this._userRepo.findByUsername(
       normalizedUsername
     );
     if (usernameExists) {
       normalizedUsername += Math.floor(Math.random() * 1000).toString();
     }
 
-    const existingUser = await this.userRepo.findByEmail(email);
+    const existingUser = await this._userRepo.findByEmail(email);
 
     if (!existingUser) {
-      const newUser = await this.userRepo.create({
+      const newUser = await this._userRepo.create({
         id: null,
         name,
         email,

@@ -5,18 +5,18 @@ import { IUserRepository } from '../../../../domain/repositories/user/IUserRepos
 import { StartRegisterRequestDto } from '../../../../domain/dtos/user/auth/StartRegisterRequestDto';
 
 export class StartRegisterUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+  constructor(private _userRepo: IUserRepository) {}
 
   async execute(data: StartRegisterRequestDto) {
     const { name, username, email } = data;
 
-    const existingUser = await this.userRepo.findByEmail(email);
+    const existingUser = await this._userRepo.findByEmail(email);
 
     if (existingUser) {
       throw new ConflictError(AUTH_MESSAGES.DUPLICATE_EMAIL);
     }
 
-    const existingUserByUsername = await this.userRepo.findByUsername(username);
+    const existingUserByUsername = await this._userRepo.findByUsername(username);
 
     if (existingUserByUsername) {
       throw new ConflictError(AUTH_MESSAGES.DUPLICATE_USERNAME);

@@ -2,7 +2,7 @@ import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { USER_MESSAGES } from './../../../../constants/userMessages';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { GetUserProfileWithIdDto } from '../../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto';
+import { GetUserProfileWithIdRequestDto } from '../../../../domain/dtos/user/suporter/GetUserProfileWithIdRequestDto';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
 
 export class GetUserWithIdUserUseCase {
@@ -11,7 +11,7 @@ export class GetUserWithIdUserUseCase {
     private _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: GetUserProfileWithIdDto): Promise<any> {
+  async execute(data: GetUserProfileWithIdRequestDto): Promise<any> {
     const { userId, currentUserId } = data;
 
     if (!userId) {
