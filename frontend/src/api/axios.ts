@@ -43,6 +43,8 @@ apiClient.interceptors.request.use((config) => {
     const token = isAdminRequest
       ? state?.admin?.accessToken ?? null
       : state?.user?.accessToken ?? null;
+
+    console.log(token)
     const userId = isUserRequest ? state?.user?.user?.id ?? null : null;
 
     if (token) {
@@ -64,7 +66,7 @@ const AUTH_ENDPOINTS = [
 ];
 
 apiClient.interceptors.response.use(
-  (response) => response.data,
+  (response) => response,
   async (error) => {
     if (!error.response) {
       const networkError: ApiError = {
@@ -99,16 +101,15 @@ apiClient.interceptors.response.use(
 
       try {
         const isAdminRequest = originalRequest.url?.includes("/api/v1/admin");
-        const refreshEndpoint = isAdminRequest
-          ? "/api/v1/admin/refresh-token"
-          : "/api/v1/auth/refresh-token";
+        const refreshEndpoint = "/api/v1/auth/refresh-token"
+
 
         const response = await apiClient.get<RefreshTokenResponse>(refreshEndpoint, {
           timeout: 30000,
           _noRetry: true
         });
 
-        const newToken = response?.accessToken;
+        const newToken = response.data?.accessToken;
 
         console.log(newToken)
 
