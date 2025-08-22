@@ -5,7 +5,6 @@ import { createErrorHandler } from 'art-chain-shared';
 import authRouter from './presentation/routes/user/auth.routes';
 import userRouter from './presentation/routes/user/user.routes';
 import adminRouter from './presentation/routes/admin/admin.routes';
-import { responseInterceptor } from './presentation/middleware/responseLogger';
 
 const app = express();
 
@@ -19,7 +18,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(responseInterceptor);
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
