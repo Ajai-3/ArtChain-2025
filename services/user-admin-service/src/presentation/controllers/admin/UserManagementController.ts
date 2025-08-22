@@ -1,13 +1,15 @@
-import { Request, Response, NextFunction } from 'express';
-import { IAdminRepositories } from '../../../domain/repositories/admin/IAdminRepository';
-import { HttpStatus } from 'art-chain-shared';
-import { USER_MESSAGES } from '../../../constants/userMessages';
-import { GetAllUsersUseCase } from '../../../application/usecases/admin/user-management/GetAllUsersUseCase';
-import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
-import { BanOrUnbanUserUseCase } from '../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase';
+import { HttpStatus } from "art-chain-shared";
+import { Request, Response, NextFunction } from "express";
+import { USER_MESSAGES } from "../../../constants/userMessages";
+import { IUserManageMentController } from "./../../interfaces/admin/IUserManagementController";
+import { GetAllUsersUseCase } from "../../../application/usecases/admin/user-management/GetAllUsersUseCase";
+import { BanOrUnbanUserUseCase } from "../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase";
 
-export class UserManageMentController {
-  constructor(private readonly _userRepo: IUserRepository) {}
+export class UserManageMentController implements IUserManageMentController {
+  constructor(
+    private readonly _getAllUsersUseCase: GetAllUsersUseCase,
+    private readonly _banOrUnbanUserUseCase: BanOrUnbanUserUseCase
+  ) {}
 
   //# ================================================================================================================
   //# GET ALL USERS (Admin)
@@ -23,8 +25,11 @@ export class UserManageMentController {
       const limit = parseInt(req.query.limit as string) || 10;
       const search = (req.query.search as string)?.trim();
 
-      const useCase = new GetAllUsersUseCase(this._userRepo);
-      const result = await useCase.execute({ page, limit, search });
+      const result = await this._getAllUsersUseCase.execute({
+        page,
+        limit,
+        search,
+      });
 
       console.log(result);
 
@@ -55,13 +60,12 @@ export class UserManageMentController {
       const { userId } = req.params;
 
       if (!userId) {
-        return res.status(400).json({ message: 'Missing userId' });
+        return res.status(400).json({ message: "Missing userId" });
       }
 
-      const useCase = new BanOrUnbanUserUseCase(this._userRepo);
-      const user = await useCase.execute(userId);
+      const user = await this._banOrUnbanUserUseCase.execute(userId);
 
-      const action = user.status === 'banned' ? 'banned' : 'unbanned';
+      const action = user.status === "banned" ? "banned" : "unbanned";
 
       return res
         .status(200)

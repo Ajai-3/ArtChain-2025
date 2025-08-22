@@ -7,9 +7,10 @@ import { LoginRequestDto } from '../../../domain/dtos/user/auth/LoginRequestDto'
 import { loginUserSchema } from '../../../application/validations/user/LoginSchema';
 import { IAdminRepositories } from '../../../domain/repositories/admin/IAdminRepository';
 import { LoginAdminUseCase } from '../../../application/usecases/admin/LoginAdminUseCase';
+import { IAdminAuthController } from '../../interfaces/admin/IAdminAuthController';
 
-export class AdminAuthController {
-  constructor(private readonly adminRepo: IAdminRepositories) {}
+export class AdminAuthController implements IAdminAuthController {
+  constructor(private readonly _loginAdminUseCase: LoginAdminUseCase) {}
 
   //# ================================================================================================================
   //# ADMIN LOGIN
@@ -30,8 +31,7 @@ export class AdminAuthController {
 
       const dto: LoginRequestDto = { identifier, password };
 
-      const useCase = new LoginAdminUseCase(this.adminRepo);
-      const { user, accessToken, refreshToken } = await useCase.execute(dto);
+      const { user, accessToken, refreshToken } = await this._loginAdminUseCase.execute(dto);
 
       res.cookie('adminRefreshToken', refreshToken, {
         httpOnly: true,
