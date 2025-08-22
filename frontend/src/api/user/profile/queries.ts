@@ -16,7 +16,8 @@ export const useUserProfile = () => {
   return useQuery<UserProfileApiResponse>({
     queryKey: ["userProfile"],
     queryFn: async (): Promise<UserProfileApiResponse> => {
-      return apiClient.get("/api/v1/user/profile");
+      const res = await apiClient.get("/api/v1/user/profile");
+      return res.data; 
     },
     retry: 2,
     refetchInterval: false,
@@ -27,7 +28,8 @@ export const useUserProfileWithId = (userId: string) => {
   return useQuery<UserProfileApiResponse>({
     queryKey: ["userProfile", userId],
     queryFn: async (): Promise<UserProfileApiResponse> => {
-      return apiClient.get(`/api/v1/user/profile/${userId}`);
+      const res = await apiClient.get(`/api/v1/user/profile/${userId}`);
+      return res.data; 
     },
     enabled: !!userId,
     retry: 2,

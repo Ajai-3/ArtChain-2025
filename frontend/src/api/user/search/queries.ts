@@ -10,7 +10,7 @@ export const useSearchUsers = (query: string) => {
         `/api/v1/user/search?q=${encodeURIComponent(query)}`,
         { signal }
       );
-      return res as any; 
+      return res.data as any; 
     },
     enabled: query.trim().length > 0,
     staleTime: 5 * 60 * 1000,
