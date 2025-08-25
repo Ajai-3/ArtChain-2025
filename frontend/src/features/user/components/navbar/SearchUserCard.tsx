@@ -1,5 +1,5 @@
 import React from "react";
-import type { IndexedUser } from "../../../../types/IndexedUser";
+import type { IndexedUser } from "../../../../types/user/IndexedUser";
 import { User } from "lucide-react";
 
 interface SearchUserCardProps {
@@ -8,7 +8,6 @@ interface SearchUserCardProps {
 }
 
 const SearchUserCard: React.FC<SearchUserCardProps> = ({ user, onSelect }) => {
-
   return (
     <div className="flex items-center gap-3" onClick={onSelect}>
       {/* Profile image or default icon */}
