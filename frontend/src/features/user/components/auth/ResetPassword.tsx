@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
-import { useResetPasswordMutation } from "../../../../api/user/auth/mutations";
+import { useResetPasswordMutation } from "../../hooks/auth/useResetPasswordMutation";
 import {
   passwordSchema,
   type PasswordFormInput,
