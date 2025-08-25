@@ -30,7 +30,7 @@ export const adminAuth = async (
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {
-      return res.status(HttpStatus.UNAUTHORIZED).json({ success: false, error: error.message });
+      return res.status(HttpStatus.UNAUTHORIZED).json({ error: error.message });
     }
      if (error instanceof ForbiddenError) {
       return res.status(HttpStatus.FORBIDDEN).json({ 
