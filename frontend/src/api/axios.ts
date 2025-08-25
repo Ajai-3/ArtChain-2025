@@ -56,9 +56,16 @@ const AUTH_ENDPOINTS = ["/api/v1/auth/login", "/api/v1/auth/register", "/api/v1/
 apiClient.interceptors.response.use(
   (response) => {
     console.log("🔵 Full API Response:", response);
+    console.log("🔵 API response.data:", response.data);
     return response;
   },
   async (error) => {
+    console.error(
+      "%c🔴 API Error Response:",
+      "color: red; font-weight: bold;",
+      error.response ?? error
+    );
+
     if (!error.response) {
       const networkError: ApiError = {
         status: 503,

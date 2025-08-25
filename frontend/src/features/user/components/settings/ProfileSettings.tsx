@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { UpdateProfileFormInputs } from "../../schemas/authSchemas";
 import { updateProfileSchema } from "../../schemas/authSchemas";
-import { useUpdateProfileMutation } from "../../../../api/user/profile/mutations";
+import { useUpdateProfileMutation } from "../../hooks/profile/useUpdateProfileMutation";
 import { uploadToFolder } from "../../../../utils/cloudinary";
 import { Loader2 } from "lucide-react";
 

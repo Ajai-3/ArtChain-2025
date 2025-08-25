@@ -1,5 +1,5 @@
 import React from "react";
-import type { User } from "../../../../types/user";
+import type { User } from "../../../../types/user/user";
 import GalleryTab from "./GalleryTab";
 import FavoritesTab from "./FavoritesTab";
 import PostsTab from "./PostsTab";

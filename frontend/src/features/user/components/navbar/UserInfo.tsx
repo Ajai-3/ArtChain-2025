@@ -1,17 +1,16 @@
 import { Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../components/ui/button";
-import type { User as safeuser } from "../../../../types/user";
+import type { User as safeuser } from "../../../../types/user/user";
 
 type UserInfoProps = {
   onBecomeArtist: () => void;
   isAuthenticated: boolean;
-  user: safeuser | null
+  user: safeuser | null;
 };
 
 const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
   const navigate = useNavigate();
-
 
   return (
     <div className="flex items-center gap-3">
@@ -38,16 +37,17 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
               />
             ) : (
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-white">
-                {user.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
+                {user.name?.charAt(0).toUpperCase() || (
+                  <User className="w-4 h-4" />
+                )}
               </div>
             )}
           </button>
 
-          <Button 
-            variant="main" 
+          <Button
+            variant="main"
             className="hidden sm:flex"
             onClick={onBecomeArtist}
-            
           >
             Become an Artist
           </Button>

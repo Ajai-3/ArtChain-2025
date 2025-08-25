@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { useSelector } from "react-redux";
-import type { User } from "../../../../types/user";
+import type { User } from "../../../../types/user/user";
 import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import type { RootState } from "../../../../redux/store";
@@ -36,7 +36,12 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
     user: User | null;
   };
 
-  const { control, watch, trigger, formState: { errors } } = form;
+  const {
+    control,
+    watch,
+    trigger,
+    formState: { errors },
+  } = form;
   const isForSale = watch("isForSale");
 
   const handleNext = async () => {
@@ -98,7 +103,9 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
                     className="w-full"
                   />
                   {errors.title && (
-                    <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.title.message}
+                    </p>
                   )}
                 </div>
               )}
@@ -121,7 +128,9 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
                     className="w-full min-h-[180px]"
                   />
                   {errors.description && (
-                    <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.description.message}
+                    </p>
                   )}
                 </div>
               )}
@@ -150,7 +159,9 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
                     </SelectContent>
                   </Select>
                   {errors.artType && (
-                    <p className="text-red-500 text-sm mt-1">{errors.artType.message}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.artType.message}
+                    </p>
                   )}
                 </div>
               )}
@@ -302,7 +313,9 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
                     <div className="flex items-center space-x-4">
                       <Button
                         type="button"
-                        variant={field.value === "artcoin" ? "outline" : "ghost"}
+                        variant={
+                          field.value === "artcoin" ? "outline" : "ghost"
+                        }
                         className={`${
                           field.value === "artcoin"
                             ? "border-main-color text-main-color hover:bg-main-color/10"
@@ -323,7 +336,9 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
                   )}
                 />
                 {errors.priceType && (
-                  <p className="text-red-500 text-sm mt-1">{errors.priceType.message}</p>
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.priceType.message}
+                  </p>
                 )}
               </div>
 
@@ -347,7 +362,9 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
                         onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                       {errors.artcoins && (
-                        <p className="text-red-500 text-sm mt-1">{errors.artcoins.message}</p>
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.artcoins.message}
+                        </p>
                       )}
                     </div>
                   )}
