@@ -5,8 +5,9 @@ import { tokenService } from '../../../../presentation/service/token.service';
 import { AuthResultDto } from '../../../../domain/dtos/user/auth/AuthResultDto';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { RegisterRequestDto } from '../../../../domain/dtos/user/auth/RegisterRequestDto';
+import { IRegisterUserUseCase } from '../../../../domain/usecases/user/auth/IRegisterUserUseCase';
 
-export class RegisterUserUseCase {
+export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(private _userRepo: IUserRepository) {}
 
   async execute(data: RegisterRequestDto): Promise<AuthResultDto> {

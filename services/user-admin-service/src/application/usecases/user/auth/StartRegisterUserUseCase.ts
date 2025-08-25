@@ -3,11 +3,13 @@ import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { StartRegisterRequestDto } from '../../../../domain/dtos/user/auth/StartRegisterRequestDto';
+import { IStartRegisterUserUseCase } from '../../../../domain/usecases/user/auth/IStartRegisterUserUseCase';
+import { StartRegisterResultDto } from '../../../../domain/dtos/user/auth/StartRegisterResultDto';
 
-export class StartRegisterUserUseCase {
+export class StartRegisterUserUseCase implements IStartRegisterUserUseCase {
   constructor(private _userRepo: IUserRepository) {}
 
-  async execute(data: StartRegisterRequestDto) {
+  async execute(data: StartRegisterRequestDto): Promise<StartRegisterResultDto> {
     const { name, username, email } = data;
 
     const existingUser = await this._userRepo.findByEmail(email);
