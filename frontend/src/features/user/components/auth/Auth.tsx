@@ -11,9 +11,9 @@ import {
 } from "../../schemas/authSchemas";
 import {
   useForgottPasswordMutation,
-  useGoogleAuthMutation,
   useSignupMutation,
 } from "../../../../api/user/auth/mutations";
+import { useGoogleAuthMutation } from "../../hooks/auth/useGoogleAuthMutation";
 import { useLoginMutation } from "../../hooks/auth/useLoginMutation";
 import { Eye, EyeOff, Mail, Loader2 } from "lucide-react";
 import {
