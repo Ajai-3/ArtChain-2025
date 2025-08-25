@@ -3,7 +3,7 @@ import LikedItems from "../components/settings/LikedItems";
 import SalesHistory from "../components/settings/SalesHistory";
 import BlockedUsers from "../components/settings/BlockedUsers";
 import HelpAndSupport from "../components/settings/HelpAndSupport";
-import { useLogoutMutation } from "../../../api/user/auth/mutations";
+import { useLogoutMutation } from "../hooks/auth/useLogoutMutation";
 import ProfileSettings from "../components/settings/ProfileSettings";
 import PrivacySettings from "../components/settings/PrivacySettings";
 import PurchaseHistory from "../components/settings/PurchaseHistory";
