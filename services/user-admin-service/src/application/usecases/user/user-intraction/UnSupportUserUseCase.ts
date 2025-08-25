@@ -1,17 +1,18 @@
-import { BadRequestError, NotFoundError } from 'art-chain-shared';
-import { USER_MESSAGES } from '../../../../constants/userMessages';
-import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
-import { SupportUnSupportRequestDto } from '../../../../domain/dtos/user/suporter/SupportUnSupportRequestDto';
+import { BadRequestError, NotFoundError } from "art-chain-shared";
+import { USER_MESSAGES } from "../../../../constants/userMessages";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
+import { IUnSupportUserUseCase } from "../../../../domain/usecases/user/user-intraction/IUnSupportUserUseCase";
+import { SupportUnSupportRequestDto } from "../../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto";
 
-export class UnSupportUserUseCase {
+export class UnSupportUserUseCase implements IUnSupportUserUseCase {
   constructor(
     private readonly _userRepo: IUserRepository,
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: SupportUnSupportRequestDto): Promise<any> {
+  async execute(data: SupportUnSupportRequestDto): Promise<void> {
     const { userId, currentUserId } = data;
 
     if (!userId || !currentUserId) {
