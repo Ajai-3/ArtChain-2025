@@ -85,7 +85,7 @@ export class ArtistRequestController implements IArtistRequestController {
         await this._checkUserArtistRequestUseCase.execute(userId);
 
       return res.status(HttpStatus.OK).json({
-        message: ARTIST_MESSAGES.REQUEST_SUBMITTED_SUCCESS,
+        message: ARTIST_MESSAGES.REQUEST_FETCH_SUCCESS,
         data: {
           alreadySubmitted,
           latestRequest,

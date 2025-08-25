@@ -15,9 +15,11 @@ export class GetCurrentUserUseCase {
     if (!user) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
-
+    
     const { supportersCount, supportingCount } = await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
-
+    
+    console.log(user)
+    
     return { user, supportingCount, supportersCount };
   }
 }

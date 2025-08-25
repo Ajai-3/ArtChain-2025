@@ -79,7 +79,7 @@ export class UserAuthController implements IUserAuthController {
         },
       });
 
-      console.log(token);
+      console.log(`${config.frontend_URL}/verify?token=${token}`);
 
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
@@ -140,6 +140,8 @@ export class UserAuthController implements IUserAuthController {
         sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
+
+      console.log(user)
 
       return res.status(HttpStatus.CREATED).json({
         message: AUTH_MESSAGES.REGISTRATION_SUCCESS,
