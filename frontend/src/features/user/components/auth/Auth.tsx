@@ -11,10 +11,10 @@ import {
 } from "../../schemas/authSchemas";
 import {
   useForgottPasswordMutation,
-  useLoginMutation,
   useGoogleAuthMutation,
   useSignupMutation,
 } from "../../../../api/user/auth/mutations";
+import { useLoginMutation } from "../../hooks/auth/useLoginMutation";
 import { Eye, EyeOff, Mail, Loader2 } from "lucide-react";
 import {
   Tabs,

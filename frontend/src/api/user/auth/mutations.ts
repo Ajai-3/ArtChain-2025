@@ -11,29 +11,6 @@ interface ArtistRequestPayload {
   country?: string;
 }
 
-export const useLoginMutation = (
-  setFormError: (msg: string | null) => void
-) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  return useMutation({
-    mutationFn: (credentials: { identifier: string; password: string }) =>
-      apiClient.post("/api/v1/auth/login", credentials),
-    onSuccess: (res) => {
-      const { user, accessToken } = res.data;
-      toast.success("Login successful");
-      dispatch(setUser({ user, accessToken }));
-      navigate("/");
-    },
-    onError: (error: any) => {
-      const msg =
-        error?.fullError?.data?.body?.error?.message ||
-        error?.message ||
-        "Login failed";
-      setFormError(msg);
-    },
-  });
-};
 
 export const useGoogleAuthMutation = () => {
   const dispatch = useDispatch();
