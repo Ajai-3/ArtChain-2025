@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { passwordSchema, type PasswordFormInput } from "../../schemas/authSchemas";
-import { useSignupverificationMutation } from "../../../../api/user/auth/mutations";
+import { useSignupverificationMutation } from "../../hooks/auth/useSignupVerificationMutation";
 
 const SignupPassword: React.FC = () => {
   const [searchParams] = useSearchParams();

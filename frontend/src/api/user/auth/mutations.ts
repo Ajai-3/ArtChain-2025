@@ -15,26 +15,6 @@ interface ArtistRequestPayload {
 
 
 
-export const useSignupverificationMutation = (
-  setFormError: (msg: string | null) => void
-) => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  return useMutation({
-    mutationFn: (credentials: { token: string; password: string }) =>
-      apiClient.post("/api/v1/auth/register", credentials),
-    onSuccess: (res) => {
-      const { user, accessToken } = res.data;
-      toast.success("Verification successful");
-      dispatch(setUser({ user, accessToken }));
-      navigate("/");
-    },
-    onError: (error) => {
-      const msg = error?.message || "Verification failed:";
-      setFormError(msg);
-    },
-  });
-};
 
 export const useForgottPasswordMutation = (
   setFormError: (msg: string | null) => void
