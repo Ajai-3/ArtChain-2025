@@ -20,21 +20,7 @@ interface ArtistRequestPayload {
 
 
 
-export const changePasswordMutation = () => {
-  return useMutation({
-    mutationFn: (credentials: {
-      currentPassword: string;
-      newPassword: string;
-    }) => apiClient.patch("/api/v1/auth/change-password", credentials),
-    onSuccess: (res) => {
-      console.log("Password changed successful:", res.data);
-      toast.success("Password changed successful");
-    },
-    onError: (error) => {
-      console.error("Password change failed:", error);
-    },
-  });
-};
+
 
 export const useCreateArtistRequestMutation = () => {
   return useMutation({
