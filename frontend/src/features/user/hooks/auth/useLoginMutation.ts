@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { setUser } from "../../../../redux/slices/userSlice";
 import apiClient from "../../../../api/axios";
-
+import type { ApiError } from "../../../../types/apiError";
 
 export const useLoginMutation = (
   setFormError: (msg: string | null) => void
@@ -21,12 +21,8 @@ export const useLoginMutation = (
       dispatch(setUser({ user, accessToken }));
       navigate("/");
     },
-    onError: (error: any) => {
-      const msg =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Login failed";
-      setFormError(msg);
+    onError: (error: ApiError) => {
+      setFormError(error.message);
     },
   });
 };

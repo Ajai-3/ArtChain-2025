@@ -1,6 +1,7 @@
 import toast from "react-hot-toast";
 import apiClient from "../../../../api/axios";
 import { useMutation } from "@tanstack/react-query";
+import type { ApiError } from "../../../../types/apiError";
 
 export const useSignupMutation = (
   setFormError: (msg: string | null) => void
@@ -15,9 +16,8 @@ export const useSignupMutation = (
       console.log("Verification email sended:", res.data);
       toast.success("Verification email sended");
     },
-    onError: (error: any) => {
-      const msg = error?.message || "Signup failed";
-      setFormError(msg);
+    onError: (error: ApiError) => {
+      setFormError(error.message);
     },
   });
 };
