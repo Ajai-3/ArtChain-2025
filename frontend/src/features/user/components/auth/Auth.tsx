@@ -9,9 +9,7 @@ import {
   type SignupFormInputs,
   type ForgotPasswordFormInputs,
 } from "../../schemas/authSchemas";
-import {
-  useForgottPasswordMutation,
-} from "../../../../api/user/auth/mutations";
+import { useForgottPasswordMutation } from "../../hooks/auth/useForgotPasswordMutation";
 import { useSignupMutation } from "../../hooks/auth/useSignupMutation";
 import { useGoogleAuthMutation } from "../../hooks/auth/useGoogleAuthMutation";
 import { useLoginMutation } from "../../hooks/auth/useLoginMutation";
