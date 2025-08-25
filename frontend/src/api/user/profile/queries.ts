@@ -17,6 +17,7 @@ export const useUserProfile = () => {
     queryKey: ["userProfile"],
     queryFn: async (): Promise<UserProfileApiResponse> => {
       const res = await apiClient.get("/api/v1/user/profile");
+      console.log(res.data)
       return res.data; 
     },
     retry: 2,

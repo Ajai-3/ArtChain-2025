@@ -11,7 +11,6 @@ interface ArtistRequestPayload {
   country?: string;
 }
 
-// Mutation for logging in a user
 export const useLoginMutation = (
   setFormError: (msg: string | null) => void
 ) => {
@@ -20,48 +19,32 @@ export const useLoginMutation = (
   return useMutation({
     mutationFn: (credentials: { identifier: string; password: string }) =>
       apiClient.post("/api/v1/auth/login", credentials),
-    onSuccess: (data: any) => {
-      console.log("data", data);
+    onSuccess: (res) => {
+      const { user, accessToken } = res.data;
       toast.success("Login successful");
-
-      const { user, accessToken } = data;
-
-      dispatch(
-        setUser({
-          user,
-          accessToken,
-        })
-      );
-
+      dispatch(setUser({ user, accessToken }));
       navigate("/");
     },
     onError: (error: any) => {
-      console.error("Login failed:", error);
-      const msg = error?.message || "Login failed:";
+      const msg =
+        error?.fullError?.data?.body?.error?.message ||
+        error?.message ||
+        "Login failed";
       setFormError(msg);
     },
   });
 };
 
-// Mutation for logging with google
 export const useGoogleAuthMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string; email: string; name: string }) =>
       apiClient.post("/api/v1/auth/google-auth", credentials),
-    onSuccess: (data: any) => {
-      const { user, accessToken, message } = data;
-
+    onSuccess: (res) => {
+      const { user, accessToken, message } = res.data;
       toast.success(message);
-
-      dispatch(
-        setUser({
-          user,
-          accessToken,
-        })
-      );
-
+      dispatch(setUser({ user, accessToken }));
       navigate("/");
     },
     onError: (error: any) => {
@@ -70,7 +53,6 @@ export const useGoogleAuthMutation = () => {
   });
 };
 
-// Mutation for signing up a new user
 export const useSignupMutation = (
   setFormError: (msg: string | null) => void
 ) => {
@@ -80,94 +62,79 @@ export const useSignupMutation = (
       username: string;
       email: string;
     }) => apiClient.post("/api/v1/auth/start-register", credentials),
-    onSuccess: (data) => {
-      console.log("Verification email sended:", data);
+    onSuccess: (res) => {
+      console.log("Verification email sended:", res.data);
       toast.success("Verification email sended");
     },
     onError: (error: any) => {
-      console.error("Signup failed:", error);
       const msg = error?.message || "Signup failed";
       setFormError(msg);
     },
   });
 };
 
-// Mutation for verifying a new user
-export const useSignupverificationMutation = (setFormError: (msg: string | null) => void) => {
+export const useSignupverificationMutation = (
+  setFormError: (msg: string | null) => void
+) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string; password: string }) =>
       apiClient.post("/api/v1/auth/register", credentials),
-    onSuccess: (data: any) => {
-      const { user, accessToken } = data;
-
+    onSuccess: (res) => {
+      const { user, accessToken } = res.data;
       toast.success("Verification successful");
-
-      dispatch(
-        setUser({
-          user,
-          accessToken,
-        })
-      );
-
+      dispatch(setUser({ user, accessToken }));
       navigate("/");
     },
     onError: (error) => {
-      console.error("Verification failed:", error);
-       const msg = error?.message || "Verification failed:";
+      const msg = error?.message || "Verification failed:";
       setFormError(msg);
     },
   });
 };
 
-// Mutation for requesting password reset
 export const useForgottPasswordMutation = (
   setFormError: (msg: string | null) => void
 ) => {
   return useMutation({
     mutationFn: (credentials: { identifier: string }) =>
       apiClient.post("/api/v1/auth/forgot-password", credentials),
-    onSuccess: (data) => {
-      console.log("Password reset request sent:", data);
+    onSuccess: (res) => {
+      console.log("Password reset request sent:", res.data);
       toast.success("Password reset request sent");
     },
     onError: (error) => {
-      console.error("Password reset failed:", error);
-       const msg = error?.message || "Password reset failed:";
+      const msg = error?.message || "Password reset failed:";
       setFormError(msg);
     },
   });
 };
 
-// Mutation for resetting password
 export const useResetPasswordMutation = () => {
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string; password: string }) =>
       apiClient.patch("/api/v1/auth/reset-password", credentials),
-    onSuccess: (data) => {
-      console.log("Password reset successful:", data);
+    onSuccess: (res) => {
+      console.log("Password reset successful:", res.data);
       toast.success("Password reset successful, Login now.");
       navigate("/login");
     },
     onError: (error) => {
       console.error("Password reset failed:", error);
-      //  const msg = error?.message || "Password reset failed:";
-      // setFormError(msg);
     },
   });
 };
 
-// Mutation for changing password
 export const changePasswordMutation = () => {
   return useMutation({
     mutationFn: (credentials: {
       currentPassword: string;
       newPassword: string;
     }) => apiClient.patch("/api/v1/auth/change-password", credentials),
-    onSuccess: (data) => {
-      console.log("Password changed successful:", data);
+    onSuccess: (res) => {
+      console.log("Password changed successful:", res.data);
       toast.success("Password changed successful");
     },
     onError: (error) => {
@@ -176,36 +143,32 @@ export const changePasswordMutation = () => {
   });
 };
 
-// Mutation for reqest to become an artist
-
 export const useCreateArtistRequestMutation = () => {
   return useMutation({
     mutationFn: (data: ArtistRequestPayload) =>
       apiClient.post("/api/v1/user/artist-request", data),
-    onSuccess: (response) => {
-      console.log("Artist request submitted:", response.data);
+    onSuccess: (res) => {
+      console.log("Artist request submitted:", res.data);
       toast.success("Artist request submitted successfully!");
     },
     onError: (error: any) => {
-      console.error("Failed to submit artist request:", error);
       toast.error(error?.response?.data?.message || "Something went wrong!");
     },
   });
 };
 
-// Mutation for logging out a user
 export const useLogoutMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: () => apiClient.post("/api/v1/auth/logout"),
-    onSuccess: () => {
+    onSuccess: (res) => {
+      console.log("Logout successful:", res.data);
       dispatch(logout());
       navigate("/login");
       toast.success("Logout successful");
     },
     onError: (error) => {
-      console.error("Logout failed:", error);
       toast.error("Logout failed");
     },
   });
