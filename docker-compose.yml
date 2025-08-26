@@ -132,6 +132,22 @@ services:
     command: sh -c "npx prisma migrate deploy && npm run dev"
     volumes:
       - ./logs/user-admin-service:/var/log/app
+
+  elastic-search-service:
+    container_name: elastic-search-service
+    build: ./services/elastic-search-service
+    env_file:
+      - .env
+    ports:
+      - "3004:3004"
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+      - ./logs/elastic-search-service:/var/log/app
+    
   notification-service:
     container_name: notification-service
     build: ./services/notification-service
