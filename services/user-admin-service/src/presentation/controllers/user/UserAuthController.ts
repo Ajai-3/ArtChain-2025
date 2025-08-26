@@ -182,7 +182,7 @@ export class UserAuthController implements IUserAuthController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      return res.status(HttpStatus.CREATED).json({
+      return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.LOGIN_SUCCESS,
         user,
         accessToken,
@@ -352,7 +352,7 @@ export class UserAuthController implements IUserAuthController {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
-      const accessToken = await this._refreshTokenUserUseCase.execute(
+      const { accessToken } = await this._refreshTokenUserUseCase.execute(
         refreshToken
       );
 

@@ -17,7 +17,7 @@
   "dependencies": {
     "@prisma/client": "^6.13.0",
     "amqplib": "^0.10.8",
-    "art-chain-shared": "^1.0.20",
+    "art-chain-shared": "^1.0.22",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.1",

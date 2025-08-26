@@ -24,7 +24,7 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
     try {
       payload = tokenService.verifyRefreshToken(refreshToken) as JwtPayload;
     } catch (err) {
-      throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
+      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
     }
 
     if (!payload || typeof payload !== 'object' || !('email' in payload)) {

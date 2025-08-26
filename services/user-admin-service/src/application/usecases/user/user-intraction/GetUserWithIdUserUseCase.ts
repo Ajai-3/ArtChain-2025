@@ -13,7 +13,9 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
     private _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: GetUserProfileWithIdRequestDto): Promise<GetUserProfileWithIdResultDto> {
+  async execute(
+    data: GetUserProfileWithIdRequestDto
+  ): Promise<GetUserProfileWithIdResultDto> {
     const { userId, currentUserId } = data;
 
     if (!userId) {

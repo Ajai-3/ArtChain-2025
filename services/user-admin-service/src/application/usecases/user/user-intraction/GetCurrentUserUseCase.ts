@@ -21,8 +21,6 @@ export class GetCurrentUserUseCase implements IGetCurrentUserUseCase {
     const { supportersCount, supportingCount } =
       await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
 
-    console.log(user);
-
     return { user, supportingCount, supportersCount };
   }
 }
