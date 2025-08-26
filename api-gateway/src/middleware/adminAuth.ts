@@ -13,7 +13,7 @@ export const adminAuth = async (
     const accessToken = authHeader?.split(" ")[1];
 
     if (!accessToken) {
-      throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
+      throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
 
     const decoded = tokenService.verifyAccessToken(accessToken);
