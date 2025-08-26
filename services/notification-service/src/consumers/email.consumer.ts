@@ -2,9 +2,9 @@ import amqp from "amqplib";
 import { sendEmail } from "../services/email/email.service";
 import path from "path";
 import fs from "fs";
+import { config } from "../config/env";
 
-const RABBITMQ_URL =
-  process.env.RABBITMQ_URL || "amqp://guest:guest@rabbitmq:5672";
+const RABBITMQ_URL = config.rabbitmq_url;
 const TEMPLATES_DIR = path.join(__dirname, "../email-templates");
 
 interface EmailMessage {

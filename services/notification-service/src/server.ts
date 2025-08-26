@@ -1,8 +1,9 @@
 import app from './app';
 import http from 'http';
 import { startEmailConsumer } from './consumers/email.consumer';
+import { config } from './config/env';
 
-const PORT = process.env.PORT
+const PORT = config.port
 
 const server = http.createServer(app);
 
