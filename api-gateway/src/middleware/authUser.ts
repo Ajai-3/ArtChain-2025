@@ -14,22 +14,25 @@ export const authUser = async (
 ): Promise<any> => {
   try {
     const authHeader = req.headers.authorization;
+    console.log(authHeader)
     const accessToken = authHeader?.split(" ")[1];
 
     if (!accessToken) {
-      throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
+      throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
+    console.log(accessToken)
 
     const decoded = tokenService.verifyAccessToken(accessToken);
+    console.log(decoded)
 
     if (!decoded || typeof decoded !== "object" || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
-
+    
     if (decoded.role !== "user" && decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
-   
+    
     (req as any).user = decoded;
     next();
   } catch (error) {
