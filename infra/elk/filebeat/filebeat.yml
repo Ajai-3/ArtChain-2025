@@ -2,17 +2,17 @@ filebeat.inputs:
   - type: log
     enabled: true
     paths:
-      - /usr/share/filebeat/logs/api-gateway/*.log
+      - /usr/share/filebeat/logs/user-admin-service/*.log
     fields:
-      service: "api-gateway"
+      service: "user-admin-service"
     fields_under_root: true
 
   - type: log
     enabled: true
     paths:
-      - /usr/share/filebeat/logs/user-admin-service/*.log
+      - /usr/share/filebeat/logs/api-gateway/*.log
     fields:
-      service: "user-admin-service"
+      service: "api-gateway"
     fields_under_root: true
 
   - type: log
