@@ -1,10 +1,10 @@
-import { ArtistRequestRepositoryImpl } from "./../../../../infrastructure/repositories/user/ArtistRequestRepositoryImpl";
-import { ArtistRequest } from "@prisma/client";
-import { CreateArtistRequestDto } from "../../../../domain/dtos/user/CreateArtistRequestDto";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ArtistRequest } from '@prisma/client';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { CreateArtistRequestDto } from '../../../../domain/dtos/user/artist-request/CreateArtistRequestDto';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { ICreateArtistRequestUseCase } from '../../../../domain/usecases/user/artist-request/ICreateArtistRequestUseCase';
 
-export class CreateArtistRequestUseCase {
+export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
   constructor(
     private readonly _userRepo: IUserRepository,
     private readonly _artistRequestRepo: IArtistRequestRepository
@@ -15,8 +15,8 @@ export class CreateArtistRequestUseCase {
 
     const newRequest = await this._artistRequestRepo.createArtistRequest({
       userId,
-      status: "pending",
-      rejectionReason: "",
+      status: 'pending',
+      rejectionReason: '',
     });
 
     const updateData: Partial<{ bio: string; phone: string; country: string }> =

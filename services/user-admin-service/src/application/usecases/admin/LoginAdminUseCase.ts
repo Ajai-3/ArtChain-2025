@@ -1,34 +1,31 @@
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
 
-import { tokenService } from "../../../presentation/service/token.service";
-import { AuthResponseDto } from "../../../domain/dtos/user/AuthResponseDto";
-import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
-import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
-import {
-  ERROR_MESSAGES,
-  ForbiddenError,
-  UnauthorizedError,
-} from "art-chain-shared";
+import { tokenService } from '../../../presentation/service/token.service';
+import { AuthResultDto } from '../../../domain/dtos/user/auth/AuthResultDto';
+import { LoginRequestDto } from '../../../domain/dtos/user/auth/LoginRequestDto';
+import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
+import { ERROR_MESSAGES, ForbiddenError, UnauthorizedError } from 'art-chain-shared';
+import { ILoginAdminUseCase } from '../../../domain/usecases/admin/auth/ILoginAdminUseCase';
 
-export class LoginAdminUseCase {
-  constructor(private userRepo: IUserRepository) {}
+export class LoginAdminUseCase implements ILoginAdminUseCase {
+  constructor(private _userRepo: IUserRepository) {}
 
-  async execute(data: LoginRequestDto): Promise<AuthResponseDto> {
+  async execute(data: LoginRequestDto): Promise<AuthResultDto> {
     const { identifier, password } = data;
 
     const rawUser =
-      (await this.userRepo.findByUsernameRaw(identifier)) ||
-      (await this.userRepo.findByEmailRaw(identifier));
+      (await this._userRepo.findByUsernameRaw(identifier)) ||
+      (await this._userRepo.findByEmailRaw(identifier));
 
     if (!rawUser) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== "admin") {
+    if (rawUser.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 
-    if (rawUser.status !== "active") {
+    if (rawUser.status !== 'active') {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 
@@ -38,8 +35,8 @@ export class LoginAdminUseCase {
     }
 
     const user =
-      (await this.userRepo.findByUsername(identifier)) ||
-      (await this.userRepo.findByEmail(identifier));
+      (await this._userRepo.findByUsername(identifier)) ||
+      (await this._userRepo.findByEmail(identifier));
 
     if (!user) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);

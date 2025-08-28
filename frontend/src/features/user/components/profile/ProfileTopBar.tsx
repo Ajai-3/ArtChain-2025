@@ -1,11 +1,9 @@
 import React from "react";
-import type { User } from "../../../../types/user";
-import { Button } from "../../../../components/ui/button";
+import type { User } from "../../../../types/user/user";
 import { ArrowDownRight, Ellipsis } from "lucide-react";
-import {
-  useSupportMutation,
-  useUnSupportMutation,
-} from "../../../../api/user/profile/mutations";
+import { Button } from "../../../../components/ui/button";
+import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
+import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
 
 interface ProfileTopBarProps {
   user: User;
@@ -40,7 +38,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
 
   return (
     <div className="relative">
-      <div className="py-20 px-6 relative overflow-hidden">
+      <div className="py-10 sm:py-20 px-6 relative overflow-hidden">
         {user?.bannerImage && (
           <img
             src={user.bannerImage}
@@ -54,7 +52,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
         {/* Content container */}
         <div className="relative z-10 flex items-center gap-6">
           {/* Profile Image */}
-          <div className="w-28 h-28 rounded-full overflow-hidden">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
             {user?.profileImage ? (
               <img
                 src={user.profileImage}

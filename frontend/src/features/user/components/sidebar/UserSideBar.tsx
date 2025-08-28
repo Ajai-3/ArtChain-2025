@@ -13,28 +13,41 @@ import {
 import { NavLink } from "react-router-dom";
 
 const links = [
-  { to: "/", icon: House, label: "Home" },
-  { to: "/messages", icon: MessageSquareText, label: "Messages" },
-  { to: "/liora.ai", icon: FlaskConical, label: "Liora.Ai" },
-  { to: "/notifications", icon: Bell, label: "Notifications" },
-  { to: "/create", icon: Plus, label: "Create Post" },
-  { to: "/bidding", icon: Gavel, label: "Bidding" },
-  { to: "/shop", icon: ShoppingBag, label: "Shop" },
-  { to: "/wallet", icon: CreditCard, label: "Wallet" },
-  { to: "/profile", icon: User, label: "Profile" },
+  { to: "/", icon: House, label: "Home", showOn: "all" },
+  {
+    to: "/messages",
+    icon: MessageSquareText,
+    label: "Messages",
+    showOn: "all",
+  },
+  { to: "/liora.ai", icon: FlaskConical, label: "Liora.Ai", showOn: "all" },
+  {
+    to: "/notifications",
+    icon: Bell,
+    label: "Notifications",
+    showOn: "desktop",
+  },
+  { to: "/create", icon: Plus, label: "Create Post", showOn: "all" },
+  { to: "/bidding", icon: Gavel, label: "Bidding", showOn: "all" },
+  { to: "/shop", icon: ShoppingBag, label: "Shop", showOn: "desktop" },
+  { to: "/wallet", icon: CreditCard, label: "Wallet", showOn: "desktop" },
+  { to: "/profile", icon: User, label: "Profile", showOn: "all" },
 ];
 
-const UserSideBar: React.FC<{ createPostClick: () => void }> = ({ createPostClick }) => {
+const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
+  createPostClick,
+}) => {
   return (
-    <div className="border-r border-zinc-400 dark:border-zinc-800 p-2 h-[calc(100vh-64px)] w-16 flex flex-col justify-between">
-      <div className="flex flex-col gap-2">
-        {links.map(({ to, icon: Icon, label }) => {
+    <div className="border-t sm:border-r sm:border-t-0 z-50 border-zinc-400 dark:border-zinc-800 p-2 h-auto sm:h-[calc(100vh-64px)] w-full sm:w-16 flex flex-row md:flex-col justify-between dark:bg-black">
+      <div className="flex flex-row sm:flex-col justify-between w-full sm:w-auto sm:gap-2">
+        {links.map(({ to, icon: Icon, label, showOn }) => {
+          const responsiveClass = showOn === "desktop" ? "hidden sm:block" : "";
           if (label === "Create Post") {
             return (
               <button
                 key={to}
                 onClick={createPostClick}
-                className="p-3 rounded-md flex items-center justify-center transition-colors text-zinc-800 hover:text-white dark:hover:text-white dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
+                className="p-3 rounded-md transition-colors text-zinc-800 hover:text-white dark:hover:text-white dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
                 title={label}
               >
                 <Icon className="w-6 h-6" />
@@ -46,7 +59,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({ createPostClic
               key={to}
               to={to}
               className={({ isActive }) =>
-                `p-3 rounded-md flex items-center justify-center transition-colors ${
+                `p-3 rounded-md transition-colors ${responsiveClass} ${
                   isActive
                     ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
                     : "text-zinc-800 hover:text-white dark:hover:text-white dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
@@ -60,7 +73,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({ createPostClic
         })}
       </div>
 
-      <div className="flex items-center justify-center gap-2">
+      <div className="hidden md:flex items-center justify-center gap-2">
         <NavLink
           to="/settings"
           className={({ isActive }) =>

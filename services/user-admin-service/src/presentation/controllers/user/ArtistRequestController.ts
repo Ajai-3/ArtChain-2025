@@ -1,18 +1,24 @@
-import { Request, Response, NextFunction } from "express";
-import { CreateArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CreateArtistRequestUseCase";
-import { HttpStatus } from "art-chain-shared";
-import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
-import { CreateArtistRequestDto } from "../../../domain/dtos/user/CreateArtistRequestDto";
-import { validateWithZod } from "../../../utils/zodValidator";
-import { createArtistRequestSchema } from "../../../application/validations/user/createArtistRequestSchema";
-import { USER_MESSAGES } from "../../../constants/userMessages";
-import { HasUserSubmittedRequestUseCase } from "../../../application/usecases/user/artist-request/HasUserSubmittedRequestUseCase";
+import { Request, Response, NextFunction } from 'express';
+import { HttpStatus } from 'art-chain-shared';
 
+import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
+import { USER_MESSAGES } from '../../../constants/userMessages';
 
-export class ArtistRequestController {
+import { IArtistRequestController } from '../../interfaces/user/IArtistRequestController';
+
+import { CreateArtistRequestDto } from '../../../domain/dtos/user/artist-request/CreateArtistRequestDto';
+
+import { validateWithZod } from '../../../utils/zodValidator';
+
+import { createArtistRequestSchema } from '../../../application/validations/user/createArtistRequestSchema';
+
+import { CreateArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CreateArtistRequestUseCase';
+import { CheckUserArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase';
+
+export class ArtistRequestController implements IArtistRequestController {
   constructor(
-    private _createArtistRequestUseCase: CreateArtistRequestUseCase,
-    private _hasUserSubmittedRequestUseCase: HasUserSubmittedRequestUseCase
+    private readonly _createArtistRequestUseCase: CreateArtistRequestUseCase,
+    private readonly _checkUserArtistRequestUseCase: CheckUserArtistRequestUseCase
   ) {}
 
   //# ================================================================================================================
@@ -28,17 +34,19 @@ export class ArtistRequestController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       if (!userId) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGES.USER_ID_REQUIRED })
-      };
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: USER_MESSAGES.USER_ID_REQUIRED });
+      }
       const result = validateWithZod(createArtistRequestSchema, req.body);
 
       const { bio, phone, country } = result;
 
-      const dto: CreateArtistRequestDto = {userId, bio, phone, country}
+      const dto: CreateArtistRequestDto = { userId, bio, phone, country };
 
       const request = await this._createArtistRequestUseCase.execute(dto);
 
@@ -64,21 +72,24 @@ export class ArtistRequestController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       if (!userId) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ message: USER_MESSAGES.USER_ID_REQUIRED })
-      };
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: USER_MESSAGES.USER_ID_REQUIRED });
+      }
 
-       const { alreadySubmitted, latestRequest } = await this._hasUserSubmittedRequestUseCase.execute(userId);
+      const { alreadySubmitted, latestRequest } =
+        await this._checkUserArtistRequestUseCase.execute(userId);
 
       return res.status(HttpStatus.OK).json({
-        message: ARTIST_MESSAGES.REQUEST_SUBMITTED_SUCCESS,
+        message: ARTIST_MESSAGES.REQUEST_FETCH_SUCCESS,
         data: {
           alreadySubmitted,
-          latestRequest
-        }
+          latestRequest,
+        },
       });
     } catch (error) {
       next(error);

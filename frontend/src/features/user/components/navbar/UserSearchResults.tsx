@@ -1,5 +1,5 @@
 import React from "react";
-import type { IndexedUser } from "../../../../types/IndexedUser";
+import type { IndexedUser } from "../../../../types/user/IndexedUser";
 import SearchUserCard from "./SearchUserCard";
 
 interface UserSearchResultsProps {
@@ -13,7 +13,7 @@ const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   users,
   isLoading,
   query,
-  onSelectUser
+  onSelectUser,
 }) => {
   // Only show the box if user typed something
   if (!query.trim()) return null;
@@ -39,7 +39,10 @@ const UserSearchResults: React.FC<UserSearchResultsProps> = ({
               key={user.id}
               className="px-4 py-2 hover:bg-zinc-900 cursor-pointer"
             >
-              <SearchUserCard user={user} onSelect={() => onSelectUser(user.id)} />
+              <SearchUserCard
+                user={user}
+                onSelect={() => onSelectUser(user.id)}
+              />
             </li>
           ))}
         </ul>

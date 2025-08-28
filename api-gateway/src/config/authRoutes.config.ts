@@ -5,6 +5,9 @@ export const authRoutesConfig = {
     "/api/v1/user/profile/:userId",
     "/api/v1/user/support",
     "/api/v1/user/un-support",
+    "/api/v1/user/artist-request",
+    "/api/v1/user/artist-request/status",
+    "/api/v1/user/change-password",
   ],
   admin: [
     "/api/v1/admin/dashboard",

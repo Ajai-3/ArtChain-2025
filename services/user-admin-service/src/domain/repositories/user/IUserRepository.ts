@@ -1,5 +1,5 @@
-import { SafeUser } from "../IBaseRepository";
-import { IBaseRepository } from "../IBaseRepository";
+import { SafeUser } from '../IBaseRepository';
+import { IBaseRepository } from '../IBaseRepository';
 
 export interface IUserRepository extends IBaseRepository {
     findAllUsers(query: { page: number; limit: number }): Promise<{

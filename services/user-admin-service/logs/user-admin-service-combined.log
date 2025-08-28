@@ -1,6 +1,0 @@
-{"errorCode":500,"level":"error","message":"Something went wrong","timestamp":"2025-08-19T06:24:56.683Z"}
-{"level":"warn","message":"This is a warning","timestamp":"2025-08-19T06:25:00.459Z"}
-{"level":"info","message":"Server started successfully","timestamp":"2025-08-19T06:25:02.422Z"}
-{"level":"info","message":"User created","role":"admin","timestamp":"2025-08-19T06:25:02.423Z","userId":123}
-{"level":"warn","message":"This is a warning","timestamp":"2025-08-19T09:30:50.278Z"}
-{"level":"warn","message":"This is a warning","timestamp":"2025-08-19T09:30:54.051Z"}

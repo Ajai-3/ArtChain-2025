@@ -18,9 +18,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/api/v1/user/health', (req, res) => {
-    return res.send('hello');
-});
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);

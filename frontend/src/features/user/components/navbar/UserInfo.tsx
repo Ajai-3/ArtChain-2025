@@ -1,21 +1,16 @@
 import { Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../../redux/store";
 import { Button } from "../../../../components/ui/button";
-import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
+import type { User as safeuser } from "../../../../types/user/user";
 
 type UserInfoProps = {
   onBecomeArtist: () => void;
+  isAuthenticated: boolean;
+  user: safeuser | null;
 };
 
-const UserInfo = ({ onBecomeArtist }: UserInfoProps) => {
+const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user.user);
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.user.isAuthenticated
-  );
-
 
   return (
     <div className="flex items-center gap-3">
@@ -31,7 +26,7 @@ const UserInfo = ({ onBecomeArtist }: UserInfoProps) => {
 
           <button
             onClick={() => navigate("/profile")}
-            className="rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            className="rounded-full hidden sm:block hover:bg-zinc-100 dark:hover:bg-zinc-800"
             aria-label="Profile"
           >
             {user.profileImage ? (
@@ -42,16 +37,17 @@ const UserInfo = ({ onBecomeArtist }: UserInfoProps) => {
               />
             ) : (
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-white">
-                {user.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
+                {user.name?.charAt(0).toUpperCase() || (
+                  <User className="w-4 h-4" />
+                )}
               </div>
             )}
           </button>
 
-          <Button 
-            variant="main" 
+          <Button
+            variant="main"
             className="hidden sm:flex"
             onClick={onBecomeArtist}
-            
           >
             Become an Artist
           </Button>

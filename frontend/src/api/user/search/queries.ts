@@ -1,5 +1,5 @@
 import apiClient from "../../axios";
-import type { IndexedUser } from "../../../types/IndexedUser";
+import type { IndexedUser } from "../../../types/user/IndexedUser";
 import { useQuery } from "@tanstack/react-query";
 
 export const useSearchUsers = (query: string) => {
@@ -7,10 +7,10 @@ export const useSearchUsers = (query: string) => {
     queryKey: ["searchUsers", query],
     queryFn: async ({ signal }): Promise<IndexedUser[]> => {
       const res = await apiClient.get(
-        `/api/v1/user/search?q=${encodeURIComponent(query)}`,
+        `/api/v1/elastic-user/search?q=${encodeURIComponent(query)}`,
         { signal }
       );
-      return res as any; 
+      return res.data as any;
     },
     enabled: query.trim().length > 0,
     staleTime: 5 * 60 * 1000,

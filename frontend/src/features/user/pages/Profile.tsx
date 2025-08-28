@@ -1,64 +1,19 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import type { User } from "../../../types/user";
-import type { RootState } from "../../../redux/store";
 import ProfileTopBar from "../components/profile/ProfileTopBar";
-import ProfileSelectBar from "../components/profile/ProfileSelectBar";
+import { useProfileData } from "../hooks/profile/useProfileData";
 import ProfileContent from "../components/profile/ProfileContent";
-import { useParams } from "react-router-dom";
-import {
-  useUserProfile,
-  useUserProfileWithId,
-} from "../../../api/user/profile/queries";
-import {
-  setCurrentUser,
-  updateSupportersCount,
-  updateSupportingCount,
-} from "../../../redux/slices/userSlice";
+import ProfileSelectBar from "../components/profile/ProfileSelectBar";
 
 const Profile: React.FC = () => {
-  const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState("gallery");
-
   const {
-    user: reduxUser,
-    supportingCount,
-    supportersCount,
-  } = useSelector((state: RootState) => state.user);
-
-  const { userId } = useParams<{ userId?: string }>();
-
-  const isOwnProfile = !userId || reduxUser?.id === userId;
-
-  const { data: profileData, isLoading } = isOwnProfile
-    ? useUserProfile()
-    : useUserProfileWithId(userId ?? "");
-
-  const profileUser: User | null = isOwnProfile
-    ? profileData?.data?.user ?? reduxUser
-    : profileData?.data?.user ?? null;
-
-    console.log(profileData)
-
-  const isSupporting = profileData?.data?.isSupporting || false;
-
-  useEffect(() => {
-    if (!profileUser) return;
-
-    if (isOwnProfile) {
-      dispatch(setCurrentUser(profileUser));
-      dispatch(updateSupportingCount(profileData?.data?.supportingCount ?? 0));
-      dispatch(updateSupportersCount(profileData?.data?.supportersCount ?? 0));
-    }
-  }, [profileUser, profileData, dispatch, isOwnProfile]);
-
-  const displaySupportingCount = isOwnProfile
-  ? supportingCount
-  : profileData?.data?.supportingCount ?? 0;
-
-const displaySupportersCount = isOwnProfile
-  ? supportersCount
-  : profileData?.data?.supportersCount ?? 0;
+    activeTab,
+    setActiveTab,
+    isLoading,
+    profileUser,
+    isOwnProfile,
+    isSupporting,
+    displaySupportingCount,
+    displaySupportersCount,
+  } = useProfileData();
 
   if (isLoading) return <div>Loading profile...</div>;
   if (!profileUser) return <div>User not found</div>;

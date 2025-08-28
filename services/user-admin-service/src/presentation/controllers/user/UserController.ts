@@ -1,22 +1,24 @@
+import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
-import { IUserController } from "../../../domain/controllers/IUserController";
-import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+
+import { IUserController } from "../../interfaces/user/IUserController";
+import { USER_MESSAGES } from "../../../constants/userMessages";
+
+import { SupportUnSupportRequestDto } from "../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto";
+import { GetUserProfileWithIdRequestDto } from "../../../domain/dtos/user/user-intraction/GetUserProfileWithIdRequestDto";
+
 import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-// import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCas";
-import { USER_MESSAGES } from "../../../constants/userMessages";
-import { HttpStatus } from "art-chain-shared";
-import { GetUserProfileWithIdDto } from "../../../domain/dtos/user/GetUserProfileWithIdDto";
-import { SupportUnSupportDto } from "../../../domain/dtos/user/SupportUnSupportDto";
+import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
+import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+// import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
 
 export class UserController implements IUserController {
   constructor(
     private readonly _getCurrentUserUseCase: GetCurrentUserUseCase,
     private readonly _getUserWithIdUseCase: GetUserWithIdUserUseCase,
     private readonly _supportUserUseCase: SupportUserUseCase,
-    private readonly _unSupportUserUseCase: UnSupportUserUseCase,
-    // private readonly _getSupportersUseCase: GetUserSupportersUseCase
+    private readonly _unSupportUserUseCase: UnSupportUserUseCase // private readonly _getSupportersUseCase: GetUserSupportersUseCase
   ) {}
 
   //# ================================================================================================================
@@ -26,10 +28,15 @@ export class UserController implements IUserController {
   //# Request headers: x-user-id
   //# This controller helps to fetch the currently logged-in user's profile.
   //# ================================================================================================================
-  getUserProfile = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  getUserProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers["x-user-id"] as string;
-      const { user, supportingCount, supportersCount } = await this._getCurrentUserUseCase.execute(userId);
+      const { user, supportingCount, supportersCount } =
+        await this._getCurrentUserUseCase.execute(userId);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
@@ -48,13 +55,18 @@ export class UserController implements IUserController {
   //# Request params: userId
   //# This controller helps to fetch another user's profile by their ID.
   //# ================================================================================================================
-  getUserProfileWithId = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  getUserProfileWithId = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string | undefined;
-      const dto: GetUserProfileWithIdDto = { userId, currentUserId };
+      const dto: GetUserProfileWithIdRequestDto = { userId, currentUserId };
 
-      const { user, isSupporting, supportingCount, supportersCount } = await this._getUserWithIdUseCase.execute(dto);
+      const { user, isSupporting, supportingCount, supportersCount } =
+        await this._getUserWithIdUseCase.execute(dto);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
@@ -73,11 +85,15 @@ export class UserController implements IUserController {
   //# Request params: userId
   //# This controller allows the current user to support another user.
   //# ================================================================================================================
-  supportUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  supportUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string;
-      const dto: SupportUnSupportDto = { userId, currentUserId };
+      const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._supportUserUseCase.execute(dto);
 
@@ -97,11 +113,15 @@ export class UserController implements IUserController {
   //# Request params: userId
   //# This controller allows the current user to remove support from another user.
   //# ================================================================================================================
-  unSupportUser = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  unSupportUser = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string;
-      const dto: SupportUnSupportDto = { userId, currentUserId };
+      const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._unSupportUserUseCase.execute(dto);
 
@@ -120,11 +140,14 @@ export class UserController implements IUserController {
   //# Request headers: x-user-id
   //# This controller helps to fetch a list of users who support the current user.
   //# ================================================================================================================
-  getSupporters = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  getSupporters = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       // const userId = req.headers["x-user-id"] as string;
       // const supporters = await this._getSupportersUseCase.execute(userId);
-
       // return res.status(HttpStatus.OK).json({
       //   message: USER_MESSAGES.SUPPORTERS_FETCH_SUCCESS,
       //   data: supporters,

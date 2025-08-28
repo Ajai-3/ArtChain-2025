@@ -1,29 +1,31 @@
-  import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
+import { config } from "../../config/env";
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: parseInt(process.env.EMAIL_PORT || '587'),
-    secure: process.env.EMAIL_SECURE === 'true',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
+const transporter = nodemailer.createTransport({
+  host: config.email.host,
+  port: config.email.port,
+  secure: config.email.secure,
+  auth: {
+    user: config.email.user,
+    pass: config.email.pass,
+  },
+});
 
-  async function sendEmail(mailOptions: {
-    to: string;
-    subject: string;
-    html: string;
-  }) {
-    try {
-      await transporter.sendMail({
-        from: `"${process.env.EMAIL_FROM_NAME}" <${process.env.EMAIL_FROM_ADDRESS}>`,
-        ...mailOptions
-      });
-    } catch (error) {
-      console.error('Email sending failed:', error);
-      throw error;
-    }
+async function sendEmail(mailOptions: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  try {
+    await transporter.sendMail({
+      from: `"${config.email.fromName}" <${config.email.fromAddress}>`,
+      ...mailOptions,
+    });
+
+  } catch (error) {
+    console.error("Email sending failed:", error);
+    throw error;
   }
+}
 
-  export { sendEmail };
+export { sendEmail };

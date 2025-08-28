@@ -1,5 +1,5 @@
-import { IndexedUser } from "../../../../types/IndexedUser";
-import { searchUsersByName } from "./../../../../presentation/service/elasticUser.service";
+import { IndexedUser } from '../../../../types/IndexedUser';
+import { searchUsersByName } from './../../../../presentation/service/elasticUser.service';
 
 export class SearchUserUseCase {
   searchUsers = async (query: string): Promise<IndexedUser[]> => {

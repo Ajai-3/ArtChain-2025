@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
-import { useResetPasswordMutation } from "../../../../api/user/auth/mutations";
+import { useResetPasswordMutation } from "../../hooks/auth/useResetPasswordMutation";
 import {
   passwordSchema,
   type PasswordFormInput,
@@ -34,32 +34,38 @@ const ResetPassword: React.FC = () => {
       return;
     }
 
-    resetPasswordMutation({
-      token: data.token,
-      password: data.password,
-    },{
+    resetPasswordMutation(
+      {
+        token: data.token,
+        password: data.password,
+      },
+      {
         onError: (error) => {
-          console.log(error)
-          const errorMessage = error.message === "Invalid or expired reset token" ? "The password reset link is invalid or has expired. Please request a new one." : error.message
+          const errorMessage =
+            error.message === "Invalid or expired reset token"
+              ? "The password reset link is invalid or has expired. Please request a new one."
+              : error.message;
           setApiError(errorMessage);
-        }},);
+        },
+      }
+    );
   };
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <div className="flex-col h-screen flex items-center justify-center bg-background text-foreground px-4">
-      <div className="w-[500px] max-w-md bg-card p-8 rounded-2xl shadow-xl border dark:border-zinc-800">
+    <div className="flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6">
+      <div className="w-full max-w-md sm:max-w-lg md:max-w-md bg-card p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900">
         <div className="mb-6 text-center space-y-2">
-          <h2 className="text-2xl font-bold">Create New Password</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-xl sm:text-2xl font-bold">Create New Password</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Please set a new password for your account
           </p>
-          <p className="text-red-600">{apiError}</p>
+          {apiError && <p className="text-red-600 text-sm">{apiError}</p>}
         </div>
-        
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full">
           {/* Hidden token input */}
           <input type="hidden" {...register("token")} />
 

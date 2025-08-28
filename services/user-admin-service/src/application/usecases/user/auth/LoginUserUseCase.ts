@@ -1,19 +1,17 @@
-import bcrypt from "bcrypt";
-import { LoginRequestDto } from "../../../../domain/dtos/user/LoginRequestDto";
-import { AuthResponseDto } from "../../../../domain/dtos/user/AuthResponseDto";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import {
-  ForbiddenError,
-  NotFoundError,
-  UnauthorizedError,
-} from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 
-export class LoginUserUseCase {
+import bcrypt from 'bcrypt';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { tokenService } from '../../../../presentation/service/token.service';
+import { AuthResultDto } from '../../../../domain/dtos/user/auth/AuthResultDto';
+import { LoginRequestDto } from '../../../../domain/dtos/user/auth/LoginRequestDto';
+import { ForbiddenError, NotFoundError, UnauthorizedError } from 'art-chain-shared';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ILoginUserUseCase } from '../../../../domain/usecases/user/auth/ILoginUserUseCase';
+
+export class LoginUserUseCase implements ILoginUserUseCase {
   constructor(private _userRepo: IUserRepository) {}
 
-  async execute(data: LoginRequestDto): Promise<AuthResponseDto> {
+  async execute(data: LoginRequestDto): Promise<AuthResultDto> {
     const { identifier, password } = data;
 
     const rawUser =
@@ -24,11 +22,11 @@ export class LoginUserUseCase {
       throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== "user" && rawUser.role !== "artist") {
+    if (rawUser.role !== 'user' && rawUser.role !== 'artist') {
       throw new ForbiddenError(AUTH_MESSAGES.INVALID_USER_ROLE);
     }
 
-    if (rawUser.status !== "active" && rawUser.status !== "suspended") {
+    if (rawUser.status !== 'active' && rawUser.status !== 'suspended') {
       throw new ForbiddenError(AUTH_MESSAGES.YOUR_ACCOUNT_BANNED);
     }
 

@@ -1,7 +1,7 @@
-import { prisma } from "../../db/prisma";
-import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
-import { ISupporterRepository } from "../../../domain/repositories/user/ISupporterRepository";
-import { UserPreview } from "../../../types/UserPreview";
+import { prisma } from '../../db/prisma';
+import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
+import { ISupporterRepository } from '../../../domain/repositories/user/ISupporterRepository';
+import { UserPreview } from '../../../types/UserPreview';
 
 export class SupporterRepositoryImpl
   extends BaseRepositoryImpl

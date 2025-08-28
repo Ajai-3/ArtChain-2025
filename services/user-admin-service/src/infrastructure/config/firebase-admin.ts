@@ -1,5 +1,5 @@
-import { config } from "./env";
-import admin from "firebase-admin";
+import { config } from './env';
+import admin from 'firebase-admin';
 
 
 admin.initializeApp({

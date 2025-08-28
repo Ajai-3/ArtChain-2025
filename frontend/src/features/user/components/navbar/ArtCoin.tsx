@@ -1,5 +1,6 @@
 import { Coins } from "lucide-react";
 import React from "react";
+import type { User } from "../../../../types/user/user";
 
 interface ArtCoinProps {
   coin: number;

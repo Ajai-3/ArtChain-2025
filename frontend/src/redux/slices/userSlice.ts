@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { User } from "../../types/user";
+import type { User } from "../../types/user/user";
 
 interface UserState {
   user: User | null;
@@ -54,6 +54,13 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, setAccessToken, setCurrentUser, updateProfile, updateSupportingCount, updateSupportersCount, logout } =
-  userSlice.actions;
+export const {
+  setUser,
+  setAccessToken,
+  setCurrentUser,
+  updateProfile,
+  updateSupportingCount,
+  updateSupportersCount,
+  logout,
+} = userSlice.actions;
 export default userSlice.reducer;

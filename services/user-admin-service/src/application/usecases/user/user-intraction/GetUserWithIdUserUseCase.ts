@@ -1,21 +1,25 @@
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { USER_MESSAGES } from './../../../../constants/userMessages';
+import { USER_MESSAGES } from "./../../../../constants/userMessages";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { GetUserProfileWithIdDto } from "../../../../domain/dtos/user/GetUserProfileWithIdDto";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
+import { IGetUserWithIdUserUseCase } from "../../../../domain/usecases/user/user-intraction/IGetUserWithIdUserUseCase";
+import { GetUserProfileWithIdResultDto } from "../../../../domain/dtos/user/user-intraction/GetUserProfileWithIdResultDto";
+import { GetUserProfileWithIdRequestDto } from "../../../../domain/dtos/user/user-intraction/GetUserProfileWithIdRequestDto";
 
-export class GetUserWithIdUserUseCase {
+export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
   constructor(
     private _userRepo: IUserRepository,
     private _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: GetUserProfileWithIdDto): Promise<any> {
+  async execute(
+    data: GetUserProfileWithIdRequestDto
+  ): Promise<GetUserProfileWithIdResultDto> {
     const { userId, currentUserId } = data;
 
     if (!userId) {
-        throw new BadRequestError(USER_MESSAGES.USER_ID_REQUIRED)
+      throw new BadRequestError(USER_MESSAGES.USER_ID_REQUIRED);
     }
 
     let currentUser = null;

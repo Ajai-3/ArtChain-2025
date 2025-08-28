@@ -1,18 +1,20 @@
-import { JwtPayload } from "jsonwebtoken";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { JwtPayload } from 'jsonwebtoken';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { tokenService } from '../../../../presentation/service/token.service';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { RefreshTokenResultDto } from './../../../../domain/dtos/user/auth/RefreshTokenResultDto';
+import { IRefreshTokenUserUseCase } from '../../../../domain/usecases/user/auth/IRefreshTokenUserUseCase';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   ForbiddenError,
   UnauthorizedError,
-} from "art-chain-shared";
+} from 'art-chain-shared';
 
-export class RefreshTokenUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
+  constructor(private _userRepo: IUserRepository) {}
 
-  async execute(refreshToken: string): Promise<string> {
+  async execute(refreshToken: string): Promise<RefreshTokenResultDto> {
     if (!refreshToken) {
       throw new BadRequestError(AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED);
     }
@@ -22,20 +24,20 @@ export class RefreshTokenUserUseCase {
     try {
       payload = tokenService.verifyRefreshToken(refreshToken) as JwtPayload;
     } catch (err) {
+      throw new UnauthorizedError(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
+    }
+
+    if (!payload || typeof payload !== 'object' || !('email' in payload)) {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
-    if (!payload || typeof payload !== "object" || !("email" in payload)) {
-      throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
-    }
-
-    const user = await this.userRepo.findByEmail(payload.email as string);
+    const user = await this._userRepo.findByEmail(payload.email as string);
     if (!user) {
       throw new UnauthorizedError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    if (user.status === "banned") {
-      throw new ForbiddenError("Your account has been banned.");
+    if (user.status === 'banned') {
+      throw new ForbiddenError('Your account has been banned.');
     }
 
     const accessToken = tokenService.generateAccessToken({
@@ -44,6 +46,8 @@ export class RefreshTokenUserUseCase {
       role: user.role,
     });
 
-    return accessToken;
+    console.log(payload, accessToken, user)
+
+    return { accessToken };
   }
 }

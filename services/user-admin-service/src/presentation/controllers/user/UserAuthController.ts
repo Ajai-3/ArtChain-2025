@@ -1,38 +1,49 @@
-import { HttpStatus } from "art-chain-shared";
-import { Request, Response, NextFunction } from "express";
-import { tokenService } from "../../service/token.service";
-import { config } from "../../../infrastructure/config/env";
-import { validateWithZod } from "../../../utils/zodValidator";
-import { AUTH_MESSAGES } from "../../../constants/authMessages";
-import { RegisterDto } from "../../../domain/dtos/user/RegisterDto";
-import { GoogleAuthDto } from "../../../domain/dtos/user/GoogleAuthDto";
-import { publishToQueue } from "../../../infrastructure/messaging/rabbitmq";
-import { LoginRequestDto } from "../../../domain/dtos/user/LoginRequestDto";
-import { StartRegisterDto } from "../../../domain/dtos/user/StartRegisterDto";
-import { ResetPasswordDto } from "../../../domain/dtos/user/ResetPasswordDto";
-import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
-import { ChangePasswordDto } from "../../../domain/dtos/user/ChangePasswordDto";
-import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
-import { googleAuthSchema } from "../../../application/validations/user/GoogleAuthSchema";
-import { LoginUserUseCase } from "../../../application/usecases/user/auth/LoginUserUseCase";
-import { registerUserSchema } from "../../../application/validations/user/RegisterUserSchema";
-import { passwordTokenSchema } from "../../../application/validations/user/PasswordTokenSchema";
-import { startRegisterSchema } from "../../../application/validations/user/StartRegisterSchema";
-import { RegisterUserUseCase } from "../../../application/usecases/user/auth/RegisterUserUseCase";
-import { GoogleAuthUserUseCase } from "../../../application/usecases/user/auth/GoogleAuthUserUseCase";
-import { StartRegisterUserUseCase } from "../../../application/usecases/user/auth/StartRegisterUserUseCase";
-import { ResetPasswordUserUseCase } from "../../../application/usecases/user/auth/ResetPasswordUserUseCase";
-import { ChangePasswordUserUseCase } from "../../../application/usecases/user/auth/ChangePasswordUserUseCase";
-import { ForgotPasswordUserUseCase } from "../../../application/usecases/user/auth/ForgotPasswordUserUseCase";
-import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
-import { RefreshTokenUserUseCase } from "../../../application/usecases/user/auth/RefreshTokenUserUseCase";
-import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
-import { IndexedUser } from "../../../types/IndexedUser";
+import { Request, Response, NextFunction } from 'express';
+import { HttpStatus } from 'art-chain-shared';
 
-export class AuthController {
+import { tokenService } from '../../service/token.service';
+import { config } from '../../../infrastructure/config/env';
+import { validateWithZod } from '../../../utils/zodValidator';
+import { publishToQueue } from '../../../infrastructure/messaging/rabbitmq';
+
+import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
+
+import { AUTH_MESSAGES } from '../../../constants/authMessages';
+
+import { LoginRequestDto } from '../../../domain/dtos/user/auth/LoginRequestDto';
+import { RegisterRequestDto } from '../../../domain/dtos/user/auth/RegisterRequestDto';
+import { GoogleAuthRequestDto } from '../../../domain/dtos/user/auth/GoogleAuthRequestDto';
+import { ResetPasswordRequestDto } from '../../../domain/dtos/user/auth/ResetPasswordRequestDto';
+import { StartRegisterRequestDto } from '../../../domain/dtos/user/auth/StartRegisterRequestDto';
+import { ChangePasswordRequestDto } from '../../../domain/dtos/user/auth/ChangePasswordRequestDto';
+
+import { loginUserSchema } from '../../../application/validations/user/LoginSchema';
+import { googleAuthSchema } from '../../../application/validations/user/GoogleAuthSchema';
+import { registerUserSchema } from '../../../application/validations/user/RegisterUserSchema';
+import { startRegisterSchema } from '../../../application/validations/user/StartRegisterSchema';
+import { passwordTokenSchema } from '../../../application/validations/user/PasswordTokenSchema';
+import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
+
+import { LoginUserUseCase } from './../../../application/usecases/user/auth/LoginUserUseCase';
+import { RegisterUserUseCase } from './../../../application/usecases/user/auth/RegisterUserUseCase';
+import { GoogleAuthUserUseCase } from './../../../application/usecases/user/auth/GoogleAuthUserUseCase';
+import { RefreshTokenUserUseCase } from './../../../application/usecases/user/auth/RefreshTokenUserUseCase';
+import { ResetPasswordUserUseCase } from './../../../application/usecases/user/auth/ResetPasswordUserUseCase';
+import { ChangePasswordUserUseCase } from './../../../application/usecases/user/auth/ChangePasswordUserUseCase';
+import { ForgotPasswordUserUseCase } from './../../../application/usecases/user/auth/ForgotPasswordUserUseCase';
+import { StartRegisterUserUseCase } from './../../../application/usecases/user/auth/StartRegisterUserUseCase';
+import { forgotPasswordSchema } from '../../../application/validations/user/forgotPasswordSchema';
+
+export class UserAuthController implements IUserAuthController {
   constructor(
-    private readonly _userRepo: IUserRepository,
-    private _addUserToElastic: AddUserToElasticSearchUseCase
+    private readonly _startRegisterUserUseCase: StartRegisterUserUseCase,
+    private readonly _registerUserUseCase: RegisterUserUseCase,
+    private readonly _loginUserUseCase: LoginUserUseCase,
+    private readonly _googleAuthUserUseCase: GoogleAuthUserUseCase,
+    private readonly _forgotPasswordUserUseCase: ForgotPasswordUserUseCase,
+    private readonly _resetPasswordUserUseCase: ResetPasswordUserUseCase,
+    private readonly _changePasswordUserUseCase: ChangePasswordUserUseCase,
+    private readonly _refreshTokenUserUseCase: RefreshTokenUserUseCase
   ) {}
 
   //# ================================================================================================================
@@ -46,20 +57,20 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const result = validateWithZod(startRegisterSchema, req.body);
 
       const { name, username, email } = result;
 
-      const useCase = new StartRegisterUserUseCase(this._userRepo);
+      const dto: StartRegisterRequestDto = { name, username, email };
 
-      const dto: StartRegisterDto = { name, username, email };
+      const { token, payload } = await this._startRegisterUserUseCase.execute(
+        dto
+      );
 
-      const { token, payload } = await useCase.execute(dto);
-
-      await publishToQueue("emails", {
-        type: "VERIFICATION",
+      await publishToQueue('emails', {
+        type: 'VERIFICATION',
         email: payload.email,
         payload: {
           name: payload.name,
@@ -68,8 +79,8 @@ export class AuthController {
         },
       });
 
-      console.log(token)
-      
+      console.log(`${config.frontend_URL}/verify?token=${token}`);
+
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
         token,
@@ -91,7 +102,7 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const { token, password } = req.body;
       if (!token || !password) {
@@ -116,19 +127,21 @@ export class AuthController {
 
       const { name, username, email } = result;
 
-      const dto: RegisterDto = { name, username, email, password };
+      const dto: RegisterRequestDto = { name, username, email, password };
 
-      const useCase = new RegisterUserUseCase(this._userRepo);
-      const { user, accessToken, refreshToken } = await useCase.execute(dto);
+      const { user, accessToken, refreshToken } =
+        await this._registerUserUseCase.execute(dto);
 
-      await this._addUserToElastic.execute(user);
+      // await this._addUserToElastic.execute(user);
 
-      res.cookie("userRefreshToken", refreshToken, {
+      res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
+
+      console.log(user)
 
       return res.status(HttpStatus.CREATED).json({
         message: AUTH_MESSAGES.REGISTRATION_SUCCESS,
@@ -151,7 +164,7 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const result = validateWithZod(loginUserSchema, req.body);
 
@@ -159,17 +172,17 @@ export class AuthController {
 
       const dto: LoginRequestDto = { identifier, password };
 
-      const useCase = new LoginUserUseCase(this._userRepo);
-      const { user, accessToken, refreshToken } = await useCase.execute(dto);
+      const { user, accessToken, refreshToken } =
+        await this._loginUserUseCase.execute(dto);
 
-      res.cookie("userRefreshToken", refreshToken, {
+      res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      return res.status(HttpStatus.CREATED).json({
+      return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.LOGIN_SUCCESS,
         user,
         accessToken,
@@ -190,22 +203,21 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const result = validateWithZod(googleAuthSchema, req.body);
 
       const { token, email, name } = result;
 
-      const dto: GoogleAuthDto = { token, email, name };
+      const dto: GoogleAuthRequestDto = { token, email, name };
 
-      const useCase = new GoogleAuthUserUseCase(this._userRepo);
       const { user, isNewUser, accessToken, refreshToken } =
-        await useCase.execute(dto);
+        await this._googleAuthUserUseCase.execute(dto);
 
-      res.cookie("userRefreshToken", refreshToken, {
+      res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -232,21 +244,16 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
-      const identifier = req.body.identifier as string;
+      const { identifier } = validateWithZod(forgotPasswordSchema, req.body);
 
-      if (!identifier) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
-      }
+      const { user, token } = await this._forgotPasswordUserUseCase.execute(
+        identifier
+      );
 
-      const useCase = new ForgotPasswordUserUseCase(this._userRepo);
-      const { user, token } = await useCase.execute(identifier);
-
-      await publishToQueue("emails", {
-        type: "PASSWORD_RESET",
+      await publishToQueue('emails', {
+        type: 'PASSWORD_RESET',
         email: user.email,
         payload: {
           name: user.name,
@@ -257,7 +264,7 @@ export class AuthController {
 
       return res
         .status(HttpStatus.OK)
-        .json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT, email: user?.email });
+        .json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT, email: user.email });
     } catch (error) {
       next(error);
     }
@@ -274,7 +281,7 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const result = validateWithZod(passwordTokenSchema, req.body);
 
@@ -282,10 +289,8 @@ export class AuthController {
 
       console.log(result);
 
-      const dto: ResetPasswordDto = { token, password };
-
-      const useCase = new ResetPasswordUserUseCase(this._userRepo);
-      await useCase.execute(dto);
+      const dto: ResetPasswordRequestDto = { token, password };
+      await this._resetPasswordUserUseCase.execute(dto);
 
       return res
         .status(HttpStatus.OK)
@@ -306,7 +311,7 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const result = validateWithZod(
         currentPasswordNewPasswordSchema,
@@ -315,12 +320,14 @@ export class AuthController {
 
       const { currentPassword, newPassword } = result;
 
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
-      const dto: ChangePasswordDto = { userId, currentPassword, newPassword };
-
-      const useCase = new ChangePasswordUserUseCase(this._userRepo);
-      await useCase.execute(dto);
+      const dto: ChangePasswordRequestDto = {
+        userId,
+        currentPassword,
+        newPassword,
+      };
+      await this._changePasswordUserUseCase.execute(dto);
 
       return res
         .status(HttpStatus.OK)
@@ -341,12 +348,13 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
-      const useCase = new RefreshTokenUserUseCase(this._userRepo);
-      const accessToken = await useCase.execute(refreshToken);
+      const { accessToken } = await this._refreshTokenUserUseCase.execute(
+        refreshToken
+      );
 
       return res
         .status(HttpStatus.OK)
@@ -367,7 +375,7 @@ export class AuthController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
@@ -381,16 +389,16 @@ export class AuthController {
 
       const payload = tokenService.verifyRefreshToken(refreshToken);
       console.log(payload);
-      if (typeof payload !== "object" || payload === null) {
+      if (typeof payload !== 'object' || payload === null) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
       }
 
-      res.clearCookie("userRefreshToken", {
+      res.clearCookie('userRefreshToken', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
       });
 
       return res

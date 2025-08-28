@@ -6,8 +6,7 @@ export async function publishToQueue(queue: string, message: object) {
     const connection = await amqp.connect(config.rabbitmq_URL);
     const channel = await connection.createChannel();
     
-    await channel.assertQueue(queue, { durable: true });
-    channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+    channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { persistent: true });
     
     console.log(`Message sent to ${queue}`);
     setTimeout(() => connection.close(), 500);

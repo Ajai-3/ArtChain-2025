@@ -26,7 +26,7 @@ const SearchBar: React.FC = () => {
   const filteredUsers = users.filter((user) => user.id !== currentUserId);
 
   return (
-    <div className="relative w-1/4">
+    <div className="relative w-1/4 hidden sm:block">
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-4 h-4" />
       <Input
         type="text"

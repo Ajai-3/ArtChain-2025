@@ -4,8 +4,8 @@ import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Textarea } from "../../../../components/ui/textarea";
 import type { RootState } from "../../../../redux/store";
-import type { User } from "../../../../types/user";
-import { useCreateArtistRequestMutation } from "../../../../api/user/auth/mutations";
+import type { User } from "../../../../types/user/user";
+import { useCreateArtistRequestMutation } from "../../hooks/art/useCreateArtistRequestMutation";
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
@@ -115,7 +115,8 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
           <>
             <div>
               <p>
-                Your artist request is <strong>{data.latestRequest.status}</strong>. Submitted on{" "}
+                Your artist request is{" "}
+                <strong>{data.latestRequest.status}</strong>. Submitted on{" "}
                 <strong>
                   {new Date(data.latestRequest.createdAt).toLocaleDateString()}
                 </strong>

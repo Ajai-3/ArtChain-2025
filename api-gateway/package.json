@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "build": "tsc",
-     "start": "node --loader @esbuild-kit/esm-loader dist/server.js"
+    "start": "node --loader @esbuild-kit/esm-loader dist/server.js"
   },
   "keywords": [],
   "type": "module",
@@ -15,7 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "art-chain-shared": "^1.0.14",
+    "art-chain-shared": "^1.0.22",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",

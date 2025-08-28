@@ -1,5 +1,5 @@
-import { IBaseRepository } from "./../IBaseRepository";
-import { UserPreview } from "../../../types/UserPreview";
+import { IBaseRepository } from './../IBaseRepository';
+import { UserPreview } from '../../../types/UserPreview';
 
 export interface ISupporterRepository extends IBaseRepository {
   getUserSupportersAndSupportingCounts(userId: string): Promise<{

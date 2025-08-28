@@ -17,7 +17,7 @@
   "dependencies": {
     "@prisma/client": "^6.13.0",
     "amqplib": "^0.10.8",
-    "art-chain-shared": "^1.0.15",
+    "art-chain-shared": "^1.0.22",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.1",
@@ -25,7 +25,7 @@
     "firebase-admin": "^13.4.0",
     "jsonwebtoken": "^9.0.2",
     "winston": "^3.17.0",
-    "winston-elasticsearch": "^0.19.0",
+    "winston-elasticsearch": "^0.11.0",
     "zod": "^4.0.17"
   },
   "devDependencies": {

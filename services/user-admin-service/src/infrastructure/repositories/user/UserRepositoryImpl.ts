@@ -1,8 +1,8 @@
-import { prisma } from "../../db/prisma";
-import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
-import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
-import { SafeUser } from "../../../domain/repositories/IBaseRepository";
-import { Role } from "@prisma/client";
+import { prisma } from '../../db/prisma';
+import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
+import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
+import { SafeUser } from '../../../domain/repositories/IBaseRepository';
+import { Role } from '@prisma/client';
 
 export class UserRepositoryImpl extends BaseRepositoryImpl implements IUserRepository {
   protected model = prisma.user;

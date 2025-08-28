@@ -1,21 +1,21 @@
-import bcrypt from "bcrypt";
-import { ChangePasswordDto } from "../../../../domain/dtos/user/ChangePasswordDto";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import bcrypt from 'bcrypt';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ChangePasswordRequestDto } from '../../../../domain/dtos/user/auth/ChangePasswordRequestDto';
+import { IChangePasswordUserUseCase } from '../../../../domain/usecases/user/auth/IChangePasswordUserUseCase';
 import {
   BadRequestError,
-  ERROR_MESSAGES,
   NotFoundError,
   UnauthorizedError,
-} from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+} from 'art-chain-shared';
 
-export class ChangePasswordUserUseCase {
-  constructor(private userRepo: IUserRepository) {}
+export class ChangePasswordUserUseCase implements IChangePasswordUserUseCase {
+  constructor(private _userRepo: IUserRepository) {}
 
-  async execute(data: ChangePasswordDto) {
+  async execute(data: ChangePasswordRequestDto): Promise<void> {
     const { userId, currentPassword, newPassword } = data;
 
-    const rawUser = await this.userRepo.findByIdRaw(userId);
+    const rawUser = await this._userRepo.findByIdRaw(userId);
     if (!rawUser) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
@@ -32,6 +32,6 @@ export class ChangePasswordUserUseCase {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await this.userRepo.update(userId, { password: hashedPassword });
+    await this._userRepo.update(userId, { password: hashedPassword });
   }
 }
