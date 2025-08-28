@@ -7,7 +7,7 @@ export const useSearchUsers = (query: string) => {
     queryKey: ["searchUsers", query],
     queryFn: async ({ signal }): Promise<IndexedUser[]> => {
       const res = await apiClient.get(
-        `/api/v1/user/search?q=${encodeURIComponent(query)}`,
+        `/api/v1/elastic-user/search?q=${encodeURIComponent(query)}`,
         { signal }
       );
       return res.data as any;
