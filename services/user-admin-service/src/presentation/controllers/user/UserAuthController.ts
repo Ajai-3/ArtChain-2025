@@ -4,7 +4,7 @@ import { HttpStatus } from 'art-chain-shared';
 import { tokenService } from '../../service/token.service';
 import { config } from '../../../infrastructure/config/env';
 import { validateWithZod } from '../../../utils/zodValidator';
-import { publishToQueue } from '../../../infrastructure/messaging/rabbitmq';
+import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
 
 import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
 
@@ -33,6 +33,7 @@ import { ChangePasswordUserUseCase } from './../../../application/usecases/user/
 import { ForgotPasswordUserUseCase } from './../../../application/usecases/user/auth/ForgotPasswordUserUseCase';
 import { StartRegisterUserUseCase } from './../../../application/usecases/user/auth/StartRegisterUserUseCase';
 import { forgotPasswordSchema } from '../../../application/validations/user/forgotPasswordSchema';
+import { logger } from '../../../logger/logger';
 
 export class UserAuthController implements IUserAuthController {
   constructor(
@@ -69,7 +70,7 @@ export class UserAuthController implements IUserAuthController {
         dto
       );
 
-      await publishToQueue('emails', {
+      await publishNotification('email', {
         type: 'VERIFICATION',
         email: payload.email,
         payload: {
@@ -80,6 +81,7 @@ export class UserAuthController implements IUserAuthController {
       });
 
       console.log(`${config.frontend_URL}/verify?token=${token}`);
+      logger.info(`Start registration sucessfull of user ${payload.name}`);
 
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
@@ -252,7 +254,7 @@ export class UserAuthController implements IUserAuthController {
         identifier
       );
 
-      await publishToQueue('emails', {
+      await publishNotification('email', {
         type: 'PASSWORD_RESET',
         email: user.email,
         payload: {
