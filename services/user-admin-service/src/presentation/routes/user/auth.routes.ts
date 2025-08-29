@@ -19,6 +19,4 @@ router.patch('/change-password', userAuthController.changePassword);
 router.get('/refresh-token', userAuthController.refreshToken);
 router.post('/logout', userAuthController.logoutUser);
 
-// import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
-// const addUserToElasticUseCase = new AddUserToElasticSearchUseCase();
 export default router;

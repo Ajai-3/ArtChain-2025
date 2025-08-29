@@ -1,39 +1,40 @@
-import { Request, Response, NextFunction } from 'express';
-import { HttpStatus } from 'art-chain-shared';
+import { Request, Response, NextFunction } from "express";
+import { HttpStatus } from "art-chain-shared";
+import { logger } from "../../../utils/logger";
 
-import { tokenService } from '../../service/token.service';
-import { config } from '../../../infrastructure/config/env';
-import { validateWithZod } from '../../../utils/zodValidator';
-import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
+import { tokenService } from "../../service/token.service";
+import { config } from "../../../infrastructure/config/env";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 
-import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
+import { IUserAuthController } from "../../interfaces/user/IUserAuthController";
 
-import { AUTH_MESSAGES } from '../../../constants/authMessages';
+import { AUTH_MESSAGES } from "../../../constants/authMessages";
 
-import { LoginRequestDto } from '../../../domain/dtos/user/auth/LoginRequestDto';
-import { RegisterRequestDto } from '../../../domain/dtos/user/auth/RegisterRequestDto';
-import { GoogleAuthRequestDto } from '../../../domain/dtos/user/auth/GoogleAuthRequestDto';
-import { ResetPasswordRequestDto } from '../../../domain/dtos/user/auth/ResetPasswordRequestDto';
-import { StartRegisterRequestDto } from '../../../domain/dtos/user/auth/StartRegisterRequestDto';
-import { ChangePasswordRequestDto } from '../../../domain/dtos/user/auth/ChangePasswordRequestDto';
+import { LoginRequestDto } from "../../../domain/dtos/user/auth/LoginRequestDto";
+import { RegisterRequestDto } from "../../../domain/dtos/user/auth/RegisterRequestDto";
+import { GoogleAuthRequestDto } from "../../../domain/dtos/user/auth/GoogleAuthRequestDto";
+import { ResetPasswordRequestDto } from "../../../domain/dtos/user/auth/ResetPasswordRequestDto";
+import { StartRegisterRequestDto } from "../../../domain/dtos/user/auth/StartRegisterRequestDto";
+import { ChangePasswordRequestDto } from "../../../domain/dtos/user/auth/ChangePasswordRequestDto";
 
-import { loginUserSchema } from '../../../application/validations/user/LoginSchema';
-import { googleAuthSchema } from '../../../application/validations/user/GoogleAuthSchema';
-import { registerUserSchema } from '../../../application/validations/user/RegisterUserSchema';
-import { startRegisterSchema } from '../../../application/validations/user/StartRegisterSchema';
-import { passwordTokenSchema } from '../../../application/validations/user/PasswordTokenSchema';
-import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
+import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
+import { googleAuthSchema } from "../../../application/validations/user/GoogleAuthSchema";
+import { registerUserSchema } from "../../../application/validations/user/RegisterUserSchema";
+import { startRegisterSchema } from "../../../application/validations/user/StartRegisterSchema";
+import { passwordTokenSchema } from "../../../application/validations/user/PasswordTokenSchema";
+import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
 
-import { LoginUserUseCase } from './../../../application/usecases/user/auth/LoginUserUseCase';
-import { RegisterUserUseCase } from './../../../application/usecases/user/auth/RegisterUserUseCase';
-import { GoogleAuthUserUseCase } from './../../../application/usecases/user/auth/GoogleAuthUserUseCase';
-import { RefreshTokenUserUseCase } from './../../../application/usecases/user/auth/RefreshTokenUserUseCase';
-import { ResetPasswordUserUseCase } from './../../../application/usecases/user/auth/ResetPasswordUserUseCase';
-import { ChangePasswordUserUseCase } from './../../../application/usecases/user/auth/ChangePasswordUserUseCase';
-import { ForgotPasswordUserUseCase } from './../../../application/usecases/user/auth/ForgotPasswordUserUseCase';
-import { StartRegisterUserUseCase } from './../../../application/usecases/user/auth/StartRegisterUserUseCase';
-import { forgotPasswordSchema } from '../../../application/validations/user/forgotPasswordSchema';
-import { logger } from '../../../logger/logger';
+import { LoginUserUseCase } from "./../../../application/usecases/user/auth/LoginUserUseCase";
+import { forgotPasswordSchema } from "../../../application/validations/user/forgotPasswordSchema";
+import { RegisterUserUseCase } from "./../../../application/usecases/user/auth/RegisterUserUseCase";
+import { GoogleAuthUserUseCase } from "./../../../application/usecases/user/auth/GoogleAuthUserUseCase";
+import { RefreshTokenUserUseCase } from "./../../../application/usecases/user/auth/RefreshTokenUserUseCase";
+import { ResetPasswordUserUseCase } from "./../../../application/usecases/user/auth/ResetPasswordUserUseCase";
+import { StartRegisterUserUseCase } from "./../../../application/usecases/user/auth/StartRegisterUserUseCase";
+import { ChangePasswordUserUseCase } from "./../../../application/usecases/user/auth/ChangePasswordUserUseCase";
+import { ForgotPasswordUserUseCase } from "./../../../application/usecases/user/auth/ForgotPasswordUserUseCase";
+import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
 
 export class UserAuthController implements IUserAuthController {
   constructor(
@@ -44,7 +45,8 @@ export class UserAuthController implements IUserAuthController {
     private readonly _forgotPasswordUserUseCase: ForgotPasswordUserUseCase,
     private readonly _resetPasswordUserUseCase: ResetPasswordUserUseCase,
     private readonly _changePasswordUserUseCase: ChangePasswordUserUseCase,
-    private readonly _refreshTokenUserUseCase: RefreshTokenUserUseCase
+    private readonly _refreshTokenUserUseCase: RefreshTokenUserUseCase,
+    private readonly _addUserToElasticUserUseCase: AddUserToElasticSearchUseCase
   ) {}
 
   //# ================================================================================================================
@@ -70,8 +72,8 @@ export class UserAuthController implements IUserAuthController {
         dto
       );
 
-      await publishNotification('email', {
-        type: 'VERIFICATION',
+      await publishNotification("email.verification", {
+        type: "VERIFICATION",
         email: payload.email,
         payload: {
           name: payload.name,
@@ -134,16 +136,16 @@ export class UserAuthController implements IUserAuthController {
       const { user, accessToken, refreshToken } =
         await this._registerUserUseCase.execute(dto);
 
-      // await this._addUserToElastic.execute(user);
-
-      res.cookie('userRefreshToken', refreshToken, {
+      res.cookie("userRefreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      console.log(user)
+      const elasticUser = await this._addUserToElasticUserUseCase.execute(user)
+
+      await publishNotification("user.created", elasticUser);
 
       return res.status(HttpStatus.CREATED).json({
         message: AUTH_MESSAGES.REGISTRATION_SUCCESS,
@@ -177,10 +179,10 @@ export class UserAuthController implements IUserAuthController {
       const { user, accessToken, refreshToken } =
         await this._loginUserUseCase.execute(dto);
 
-      res.cookie('userRefreshToken', refreshToken, {
+      res.cookie("userRefreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -216,10 +218,10 @@ export class UserAuthController implements IUserAuthController {
       const { user, isNewUser, accessToken, refreshToken } =
         await this._googleAuthUserUseCase.execute(dto);
 
-      res.cookie('userRefreshToken', refreshToken, {
+      res.cookie("userRefreshToken", refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -254,8 +256,8 @@ export class UserAuthController implements IUserAuthController {
         identifier
       );
 
-      await publishNotification('email', {
-        type: 'PASSWORD_RESET',
+      await publishNotification("email.password_reset", {
+        type: "PASSWORD_RESET",
         email: user.email,
         payload: {
           name: user.name,
@@ -322,7 +324,7 @@ export class UserAuthController implements IUserAuthController {
 
       const { currentPassword, newPassword } = result;
 
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
 
       const dto: ChangePasswordRequestDto = {
         userId,
@@ -391,16 +393,16 @@ export class UserAuthController implements IUserAuthController {
 
       const payload = tokenService.verifyRefreshToken(refreshToken);
       console.log(payload);
-      if (typeof payload !== 'object' || payload === null) {
+      if (typeof payload !== "object" || payload === null) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
       }
 
-      res.clearCookie('userRefreshToken', {
+      res.clearCookie("userRefreshToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
       });
 
       return res

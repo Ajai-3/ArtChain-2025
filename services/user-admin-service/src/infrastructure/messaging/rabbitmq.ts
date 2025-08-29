@@ -7,7 +7,7 @@ export async function publishNotification(routingKey: string, message: object) {
 
   const exchange = "global_exchange";
 
-  await channel.assertExchange(exchange, "direct", { durable: true });
+  await channel.assertExchange(exchange, "topic", { durable: true });
 
   channel.publish(
     exchange,
