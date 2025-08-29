@@ -1,11 +1,7 @@
 import { getRabbitChannel } from "../../lib/rabbitmq";
-import { setupQueueWithDLQ } from "../../lib/queue";
+import { setupNotificationQueues } from "../../lib/queueSetup";
 import { sendEmail } from "../../services/email/email.service";
-import fs from "fs";
-import path from "path";
 import { getTemplateFromS3 } from "../../lib/s3";
-
-const TEMPLATES_DIR = path.join(__dirname, "../email-templates");
 
 const EMAIL_SUBJECTS = {
   VERIFICATION: "Verify Your ArtChain Account",
@@ -15,25 +11,15 @@ const EMAIL_SUBJECTS = {
 
 export async function startEmailConsumer() {
   const ch = await getRabbitChannel();
-  await setupQueueWithDLQ(ch, "emails");
+  await setupNotificationQueues(ch);
 
   ch.consume("emails", async (msg) => {
     if (!msg) return;
-
     try {
       const { type, email, payload } = JSON.parse(msg.content.toString());
 
-      // const baseTemplate = fs.readFileSync(
-      //   path.join(TEMPLATES_DIR, "base.html"),
-      //   "utf-8"
-      // );
-      // const contentTemplate = fs.readFileSync(
-      //   path.join(TEMPLATES_DIR, `${type.toLowerCase()}.html`),
-      //   "utf-8"
-      // );
-
-      const baseTemplate = await getTemplateFromS3("base")
-      const contentTemplate = await getTemplateFromS3(type.toLowerCase())
+      const baseTemplate = await getTemplateFromS3("base");
+      const contentTemplate = await getTemplateFromS3(type.toLowerCase());
 
       let finalContent = contentTemplate;
       Object.entries(payload).forEach(([k, v]) => {
@@ -50,7 +36,7 @@ export async function startEmailConsumer() {
       ch.ack(msg);
     } catch (err) {
       console.error("❌ Failed to process email message:", err);
-      ch.nack(msg, false, false);
+      ch.nack(msg, false, false); 
     }
   });
 
