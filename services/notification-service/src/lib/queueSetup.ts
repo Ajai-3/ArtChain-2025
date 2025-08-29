@@ -3,7 +3,7 @@ import { Channel } from "amqplib";
 export async function setupNotificationQueues(ch: Channel) {
   const exchange = "global_exchange";
 
-  await ch.assertExchange(exchange, "direct", { durable: true });
+  await ch.assertExchange(exchange, "topic", { durable: true });
 
   // Email queue + DLQ
   await ch.assertQueue("emails", {
@@ -11,8 +11,11 @@ export async function setupNotificationQueues(ch: Channel) {
     deadLetterExchange: "",
     deadLetterRoutingKey: "emails.dlq",
   });
-  await ch.assertQueue("emails.dlq", { durable: true });
-  await ch.bindQueue("emails", exchange, "email");
+  await ch.bindQueue("emails", exchange, "email.*");
+
+  // Elasticsearch indexing queue
+  await ch.assertQueue("search_indexing", { durable: true });
+  await ch.bindQueue("search_indexing", exchange, "user.created");
 
   // Follow queue
   await ch.assertQueue("supports", { durable: true });
