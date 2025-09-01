@@ -1,7 +1,7 @@
 import { getRabbitChannel } from "../../rabbitmq";
 import { setupNotificationQueues } from "../../queueSetup";
 import { sendEmail } from "../../../../presentation/services/email/email.service";
-import { getTemplateFromS3 } from "../../../utils/s3";
+import { getTemplateFromS3 } from "../../../../config/s3";
 
 const EMAIL_SUBJECTS = {
   VERIFICATION: "Verify Your ArtChain Account",
