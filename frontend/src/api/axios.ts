@@ -138,7 +138,7 @@ apiClient.interceptors.response.use(
 
     return Promise.reject({
       status: error.response.status,
-      message: error.response.data?.error?.message || "Request failed",
+      message: error.response.data?.body?.error?.message || "Request failed",
       fullError: error.response,
     });
   }

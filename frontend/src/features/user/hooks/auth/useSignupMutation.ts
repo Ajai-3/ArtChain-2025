@@ -17,6 +17,7 @@ export const useSignupMutation = (
       toast.success("Verification email sended");
     },
     onError: (error: ApiError) => {
+      console.log(error)
       setFormError(error.message);
     },
   });
