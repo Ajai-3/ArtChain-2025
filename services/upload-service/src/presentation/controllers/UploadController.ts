@@ -5,6 +5,9 @@ import { UploadBannerImage } from "../../application/usecases/UploadBannerImage"
 import { IUploadController } from "../interface/IUploadController";
 import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
 import { logger } from "../../infrastructure/utils/logger";
+import { validateUpload } from "../validations/validateUpload";
+import { HttpStatus } from "art-chain-shared";
+import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
 
 export class UploadController implements IUploadController {
   constructor(
@@ -26,26 +29,7 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const file = req.file;
-      const rawUserId = req.headers["x-user-id"];
-      const userId = Array.isArray(rawUserId)
-        ? rawUserId[0]
-        : (rawUserId as string);
-
-      logger.debug(
-        `Upload profile request received | userId=${userId} | file=${file?.originalname}`
-      );
-
-      if (!file) {
-        logger.warn(
-          `Upload profile failed | userId=${userId} | reason=No file uploaded`
-        );
-        return res.status(400).json({ error: "No file uploaded" });
-      }
-      if (!userId) {
-        logger.warn("Upload profile failed | reason=Missing user ID");
-        return res.status(400).json({ error: "Missing user ID" });
-      }
+      const { userId, file } = validateUpload(req, "profile");
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -55,15 +39,20 @@ export class UploadController implements IUploadController {
       };
 
       const result = await this._uploadProfileImage.execute(dto);
+
       logger.info(
         `Profile image uploaded successfully | userId=${userId} | file=${file.originalname}`
       );
-      res.json(result);
+
+      res
+        .status(HttpStatus.CREATED)
+        .json({ message: UPLOAD_MESSAGES.PROFILE_UPLOAD_SUCCESS, result });
     } catch (error: any) {
       logger.error(`Upload profile error | message=${error.message}`);
       next(error);
     }
   }
+
   //# =============================================================================================================
   //# UPLOAD BANNER
   //# =============================================================================================================
@@ -78,26 +67,7 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const file = req.file;
-      const rawUserId = req.headers["x-user-id"];
-      const userId = Array.isArray(rawUserId)
-        ? rawUserId[0]
-        : (rawUserId as string);
-
-      logger.debug(
-        `Upload banner request received | userId=${userId} | file=${file?.originalname}`
-      );
-
-      if (!file) {
-        logger.warn(
-          `Upload banner failed | userId=${userId} | reason=No file uploaded`
-        );
-        return res.status(400).json({ error: "No file uploaded" });
-      }
-      if (!userId) {
-        logger.warn("Upload banner failed | reason=Missing user ID");
-        return res.status(400).json({ error: "Missing user ID" });
-      }
+      const { userId, file } = validateUpload(req, "banner");
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -107,10 +77,14 @@ export class UploadController implements IUploadController {
       };
 
       const result = await this._uploadBannerImage.execute(dto);
+
       logger.info(
         `Banner image uploaded successfully | userId=${userId} | file=${file.originalname}`
       );
-      res.json(result);
+
+      res
+        .status(HttpStatus.CREATED)
+        .json({ message: UPLOAD_MESSAGES.BANNER_UPLOAD_SUCCESS, result });
     } catch (error: any) {
       logger.error(`Upload banner error | message=${error.message}`);
       next(error);
@@ -125,33 +99,13 @@ export class UploadController implements IUploadController {
   //# Request body: multipart/form-data { file }
   //# Uploads an artwork image for the current user.
   //# =============================================================================================================
-
   async uploadArt(
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const file = req.file;
-      const rawUserId = req.headers["x-user-id"];
-      const userId = Array.isArray(rawUserId)
-        ? rawUserId[0]
-        : (rawUserId as string);
-
-      logger.debug(
-        `Upload art request received | userId=${userId} | file=${file?.originalname}`
-      );
-
-      if (!file) {
-        logger.warn(
-          `Upload art failed | userId=${userId} | reason=No file uploaded`
-        );
-        return res.status(400).json({ error: "No file uploaded" });
-      }
-      if (!userId) {
-        logger.warn("Upload art failed | reason=Missing user ID");
-        return res.status(400).json({ error: "Missing user ID" });
-      }
+      const { userId, file } = validateUpload(req, "art");
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -161,10 +115,14 @@ export class UploadController implements IUploadController {
       };
 
       const result = await this._uploadArtImage.execute(dto);
+
       logger.info(
         `Art image uploaded successfully | userId=${userId} | file=${file.originalname}`
       );
-      res.json(result);
+
+      res
+        .status(HttpStatus.CREATED)
+        .json({ message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS, result });
     } catch (error: any) {
       logger.error(`Upload art error | message=${error.message}`);
       next(error);
