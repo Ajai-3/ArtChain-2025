@@ -8,13 +8,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --production
+RUN npm install 
 
 # Copy rest of the source code
 COPY . .
 
 # Expose port
-EXPOSE 3004
+EXPOSE 4004
 
 # Start the service
 CMD ["npm", "run", "dev"]
