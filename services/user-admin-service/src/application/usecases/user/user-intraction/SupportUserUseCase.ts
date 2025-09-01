@@ -5,6 +5,7 @@ import { IUserRepository } from "../../../../domain/repositories/user/IUserRepos
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { ISupportUserUseCase } from "../../../../domain/usecases/user/user-intraction/ISupportUserUseCase";
 import { SupportUnSupportRequestDto } from "../../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto";
+import { SupportResultDto } from "../../../../domain/dtos/user/user-intraction/SupportResultDto";
 
 export class SupportUserUseCase implements ISupportUserUseCase {
   constructor(
@@ -12,7 +13,7 @@ export class SupportUserUseCase implements ISupportUserUseCase {
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: SupportUnSupportRequestDto): Promise<void> {
+  async execute(data: SupportUnSupportRequestDto): Promise<SupportResultDto> {
     const { userId, currentUserId } = data;
 
     if (!userId || !currentUserId) {
@@ -37,5 +38,18 @@ export class SupportUserUseCase implements ISupportUserUseCase {
     }
 
     await this._supporterRepo.addSupport(supporter.id, targetUser.id);
+
+    return {
+      supporter: {
+        id: supporter.id,
+        username: supporter.username,
+        profileImage: supporter.profileImage,
+      },
+      targetUser: {
+        id: targetUser.id,
+        username: targetUser.username,
+      },
+      createdAt: new Date(),
+    };
   }
 }

@@ -1,6 +1,5 @@
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { GetAllUsersQueryDTO } from '../../../../domain/dtos/admin/GetAllUsersQueryDTO';
-import { searchUsersByName } from '../../../../presentation/service/elasticUser.service';
 import { IGetAllUsersUseCase } from '../../../../domain/usecases/admin/user-management/IGetAllUsersUseCase';
 
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
@@ -11,13 +10,13 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
 
     console.log(query);
 
-    if (search) {
-      const indexedResults = await searchUsersByName(search);
-      const userIds = indexedResults.map((user) => user.id);
+    // if (search) {
+    //   const indexedResults = await searchUsersByName(search);
+    //   const userIds = indexedResults.map((user) => user.id);
 
-      return this._userRepo.findManyByIds(userIds, page, limit);
-    } else {
-      return this._userRepo.findAllUsers({ page, limit });
-    }
+    //   return this._userRepo.findManyByIds(userIds, page, limit);
+    // } else {
+    //   return this._userRepo.findAllUsers({ page, limit });
+    // }
   }
 }
