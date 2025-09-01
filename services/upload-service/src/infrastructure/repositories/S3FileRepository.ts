@@ -1,23 +1,55 @@
-import { S3 } from 'aws-sdk';
-import { IFileRepository } from '../../domain/repositories/IFileRepository';
+import { getBucketConfig, s3Client } from "../config/s3";
+import { logger } from "../utils/logger";
+import { IFileRepository } from "../../domain/repositories/IFileRepository";
+import { generateFileName } from "../utils/generateFileName";
+import { FileCategory } from "../../types/FileCategory";
 
 export class S3FileRepository implements IFileRepository {
-  private s3 = new S3();
+  async upload(
+    file: Buffer,
+    originalName: string,
+    mimeType: string,
+    category: FileCategory,
+    userId: string
+  ): Promise<string> {
+    const { bucket, acl } = getBucketConfig(category);
+    const key = generateFileName(userId, originalName, category);
 
-  async upload(file: Buffer, filename: string, mimeType: string, category: string): Promise<string> {
-    const key = `${category}/${Date.now()}-${filename}`;
+    try {
+      await s3Client
+        .upload({
+          Bucket: bucket,
+          Key: key,
+          Body: file,
+          ContentType: mimeType,
+          ACL: acl,
+        })
+        .promise();
 
-    const result = await this.s3.upload({
-      Bucket: process.env.S3_BUCKET!,
-      Key: key,
-      Body: file,
-      ContentType: mimeType
-    }).promise();
-
-    return result.Location; // CDN URL
+      const cdnUrl = `${getCdnDomain()}/${key}`;
+      logger.info(`✅ File uploaded | bucket=${bucket} | key=${key} | url=${cdnUrl} | ACL=${acl}`);
+      return cdnUrl;
+    } catch (err) {
+      logger.error(`❌ Error uploading file ${key} to bucket ${bucket}:`, err);
+      throw err;
+    }
   }
 
-  async delete(fileUrl: string): Promise<void> {
-    // parse key from URL and delete
+  async delete(fileUrl: string, category: FileCategory): Promise<void> {
+    try {
+      const { bucket } = getBucketConfig(category);
+      const key = fileUrl.split(`${getCdnDomain()}/`)[1];
+
+      await s3Client.deleteObject({ Bucket: bucket, Key: key! }).promise();
+      logger.info(`✅ File deleted | bucket=${bucket} | key=${key}`);
+    } catch (err) {
+      logger.error(`❌ Error deleting file ${fileUrl} from bucket ${category}:`, err);
+      throw err;
+    }
   }
+}
+
+
+function getCdnDomain(): string {
+  return process.env.AWS_CDN_DOMAIN || "https://your-cdn-domain.com";
 }

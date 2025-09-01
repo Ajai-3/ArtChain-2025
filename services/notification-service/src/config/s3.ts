@@ -1,5 +1,6 @@
 import AWS from "aws-sdk";
 import { config } from "./env";
+import { logger } from "../infrastructure/utils/logger";
 
 const s3 = new AWS.S3({ region: "ap-south-1" });
 
@@ -11,7 +12,7 @@ export async function getTemplateFromS3(templateName: string): Promise<string> {
     const data = await s3.getObject({ Bucket: bucket, Key: key }).promise();
     return data.Body?.toString("utf-8") ?? "";
   } catch (err) {
-    console.error(`❌ Error fetching template ${templateName} from S3:`, err);
+    logger.error(`❌ Error fetching template ${templateName} from S3:`, err);
     throw err;
   }
 }
