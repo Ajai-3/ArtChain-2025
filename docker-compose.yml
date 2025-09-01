@@ -63,7 +63,7 @@ services:
     image: grafana/grafana:10.0.0
     container_name: grafana
     ports:
-      - "3010:3010"
+      - "3000:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
@@ -79,7 +79,7 @@ services:
       - .env
       - ./api-gateway/.env
     ports:
-      - "3000:3000"
+      - "4000:4000"
     depends_on:
       - user-admin-service
     networks:
@@ -92,7 +92,7 @@ services:
       - .env
       - ./services/user-admin-service/.env
     ports:
-      - "3001:3001"
+      - "4001:4001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -105,8 +105,9 @@ services:
     build: ./services/elastic-search-service
     env_file:
       - .env
+      - ./services/elastic-search-service/.env
     ports:
-      - "3004:3004"
+      - "4004:4004"
     depends_on:
       - elasticsearch
     networks:
@@ -119,7 +120,7 @@ services:
       - .env
       - ./services/notification-service/.env
     ports:
-      - "3005:3005"
+      - "4005:4005"
     networks:
       - backend
 
