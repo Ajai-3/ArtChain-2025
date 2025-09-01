@@ -1,0 +1,173 @@
+import { Request, Response, NextFunction } from "express";
+import { UploadProfileImage } from "../../application/usecases/UploadProfileImage";
+import { UploadArtImage } from "../../application/usecases/UploadArtImage";
+import { UploadBannerImage } from "../../application/usecases/UploadBannerImage";
+import { IUploadController } from "../interface/IUploadController";
+import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
+import { logger } from "../../infrastructure/utils/logger";
+
+export class UploadController implements IUploadController {
+  constructor(
+    private readonly _uploadProfileImage: UploadProfileImage,
+    private readonly _uploadBannerImage: UploadBannerImage,
+    private readonly _uploadArtImage: UploadArtImage
+  ) {}
+
+  //# =============================================================================================================
+  //# UPLOAD PROFILE
+  //# =============================================================================================================
+  //# POST /api/v1/upload/profile //# Request headers: x-user-id
+  //# Request body: multipart/form-data { file }
+  //# Uploads a profile picture for the current user.
+  //# =============================================================================================================
+  async uploadProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> {
+    try {
+      const file = req.file;
+      const rawUserId = req.headers["x-user-id"];
+      const userId = Array.isArray(rawUserId)
+        ? rawUserId[0]
+        : (rawUserId as string);
+
+      logger.debug(
+        `Upload profile request received | userId=${userId} | file=${file?.originalname}`
+      );
+
+      if (!file) {
+        logger.warn(
+          `Upload profile failed | userId=${userId} | reason=No file uploaded`
+        );
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      if (!userId) {
+        logger.warn("Upload profile failed | reason=Missing user ID");
+        return res.status(400).json({ error: "Missing user ID" });
+      }
+
+      const dto: UploadFileDTO = {
+        fileBuffer: file.buffer,
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        userId,
+      };
+
+      const result = await this._uploadProfileImage.execute(dto);
+      logger.info(
+        `Profile image uploaded successfully | userId=${userId} | file=${file.originalname}`
+      );
+      res.json(result);
+    } catch (error: any) {
+      logger.error(`Upload profile error | message=${error.message}`);
+      next(error);
+    }
+  }
+  //# =============================================================================================================
+  //# UPLOAD BANNER
+  //# =============================================================================================================
+  //# POST /api/v1/upload/banner
+  //# Request headers: x-user-id
+  //# Request body: multipart/form-data { file }
+  //# Uploads a banner image for the current user.
+  //# =============================================================================================================
+  async uploadBanner(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> {
+    try {
+      const file = req.file;
+      const rawUserId = req.headers["x-user-id"];
+      const userId = Array.isArray(rawUserId)
+        ? rawUserId[0]
+        : (rawUserId as string);
+
+      logger.debug(
+        `Upload banner request received | userId=${userId} | file=${file?.originalname}`
+      );
+
+      if (!file) {
+        logger.warn(
+          `Upload banner failed | userId=${userId} | reason=No file uploaded`
+        );
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      if (!userId) {
+        logger.warn("Upload banner failed | reason=Missing user ID");
+        return res.status(400).json({ error: "Missing user ID" });
+      }
+
+      const dto: UploadFileDTO = {
+        fileBuffer: file.buffer,
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        userId,
+      };
+
+      const result = await this._uploadBannerImage.execute(dto);
+      logger.info(
+        `Banner image uploaded successfully | userId=${userId} | file=${file.originalname}`
+      );
+      res.json(result);
+    } catch (error: any) {
+      logger.error(`Upload banner error | message=${error.message}`);
+      next(error);
+    }
+  }
+
+  //# =============================================================================================================
+  //# UPLOAD ART
+  //# =============================================================================================================
+  //# POST /api/v1/upload/art
+  //# Request headers: x-user-id
+  //# Request body: multipart/form-data { file }
+  //# Uploads an artwork image for the current user.
+  //# =============================================================================================================
+
+  async uploadArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> {
+    try {
+      const file = req.file;
+      const rawUserId = req.headers["x-user-id"];
+      const userId = Array.isArray(rawUserId)
+        ? rawUserId[0]
+        : (rawUserId as string);
+
+      logger.debug(
+        `Upload art request received | userId=${userId} | file=${file?.originalname}`
+      );
+
+      if (!file) {
+        logger.warn(
+          `Upload art failed | userId=${userId} | reason=No file uploaded`
+        );
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      if (!userId) {
+        logger.warn("Upload art failed | reason=Missing user ID");
+        return res.status(400).json({ error: "Missing user ID" });
+      }
+
+      const dto: UploadFileDTO = {
+        fileBuffer: file.buffer,
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        userId,
+      };
+
+      const result = await this._uploadArtImage.execute(dto);
+      logger.info(
+        `Art image uploaded successfully | userId=${userId} | file=${file.originalname}`
+      );
+      res.json(result);
+    } catch (error: any) {
+      logger.error(`Upload art error | message=${error.message}`);
+      next(error);
+    }
+  }
+}
