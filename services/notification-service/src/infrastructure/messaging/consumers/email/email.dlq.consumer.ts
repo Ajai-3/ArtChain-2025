@@ -1,4 +1,4 @@
-import { getRabbitChannel } from "../../lib/rabbitmq";
+import { getRabbitChannel } from "../../rabbitmq";
 
 export async function startEmailDLQConsumer() {
   const ch = await getRabbitChannel();

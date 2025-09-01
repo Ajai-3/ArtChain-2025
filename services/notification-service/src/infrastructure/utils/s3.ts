@@ -1,10 +1,10 @@
 import AWS from "aws-sdk";
-import { config } from './../config/env';
+import { config } from "../../config/env";
 
-const s3 = new AWS.S3({ region: "ap-south-1" }); 
+const s3 = new AWS.S3({ region: "ap-south-1" });
 
 export async function getTemplateFromS3(templateName: string): Promise<string> {
-  const bucket = config.aws.email_template_bucket!; 
+  const bucket = config.aws.email_template_bucket!;
   const key = `${templateName}.html`;
 
   try {
@@ -15,4 +15,3 @@ export async function getTemplateFromS3(templateName: string): Promise<string> {
     throw err;
   }
 }
-

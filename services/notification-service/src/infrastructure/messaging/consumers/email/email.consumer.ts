@@ -1,13 +1,14 @@
-import { getRabbitChannel } from "../../lib/rabbitmq";
-import { setupNotificationQueues } from "../../lib/queueSetup";
-import { sendEmail } from "../../services/email/email.service";
-import { getTemplateFromS3 } from "../../lib/s3";
+import { getRabbitChannel } from "../../rabbitmq";
+import { setupNotificationQueues } from "../../queueSetup";
+import { sendEmail } from "../../../../presentation/services/email/email.service";
+import { getTemplateFromS3 } from "../../../utils/s3";
 
 const EMAIL_SUBJECTS = {
   VERIFICATION: "Verify Your ArtChain Account",
   PASSWORD_RESET: "Password Reset Request",
   PASSWORD_CHANGE: "Password Change Confirmation",
 };
+type EmailType = keyof typeof EMAIL_SUBJECTS;
 
 export async function startEmailConsumer() {
   const ch = await getRabbitChannel();
@@ -16,7 +17,10 @@ export async function startEmailConsumer() {
   ch.consume("emails", async (msg) => {
     if (!msg) return;
     try {
-      const { type, email, payload } = JSON.parse(msg.content.toString());
+      const parsed = JSON.parse(msg.content.toString());
+      const type = parsed.type as EmailType;
+      const email: string = parsed.email;
+      const payload: Record<string, any> = parsed.payload;
 
       const baseTemplate = await getTemplateFromS3("base");
       const contentTemplate = await getTemplateFromS3(type.toLowerCase());
@@ -29,14 +33,17 @@ export async function startEmailConsumer() {
         );
       });
 
-      const html = baseTemplate.replace("{{CONTENT_PLACEHOLDER}}", finalContent);
+      const html = baseTemplate.replace(
+        "{{CONTENT_PLACEHOLDER}}",
+        finalContent
+      );
 
       await sendEmail({ to: email, subject: EMAIL_SUBJECTS[type], html });
       console.log(`✅ Email sent successfully to ${email}`);
       ch.ack(msg);
     } catch (err) {
       console.error("❌ Failed to process email message:", err);
-      ch.nack(msg, false, false); 
+      ch.nack(msg, false, false);
     }
   });
 

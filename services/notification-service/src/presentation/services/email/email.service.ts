@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { config } from "../../config/env";
+import { config } from "../../../config/env";
 
 const transporter = nodemailer.createTransport({
   host: config.email.host,
@@ -21,7 +21,6 @@ async function sendEmail(mailOptions: {
       from: `"${config.email.fromName}" <${config.email.fromAddress}>`,
       ...mailOptions,
     });
-
   } catch (error) {
     console.error("Email sending failed:", error);
     throw error;

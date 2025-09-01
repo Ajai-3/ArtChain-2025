@@ -11,6 +11,7 @@ import { SupportUserUseCase } from "../../../application/usecases/user/user-intr
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
 import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
 import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 // import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
 
 export class UserController implements IUserController {
@@ -95,7 +96,15 @@ export class UserController implements IUserController {
       const currentUserId = req.headers["x-user-id"] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
-      await this._supportUserUseCase.execute(dto);
+      const result = await this._supportUserUseCase.execute(dto);
+
+      await publishNotification("user.supported", {
+        supportedUserId: result.targetUser.id,
+        supporterId: result.supporter.id,
+        supporterName: result.supporter.username,
+        supporterProfile: result.supporter.profileImage,
+        createdAt: result.createdAt,
+      });
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORT_SUCCESS,

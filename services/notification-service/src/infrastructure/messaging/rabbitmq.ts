@@ -1,5 +1,5 @@
 import amqp, { Connection, Channel } from "amqplib";
-import { config } from "../config/env";
+import { config } from "../../config/env";
 
 let connection: Connection;
 let channel: Channel;
