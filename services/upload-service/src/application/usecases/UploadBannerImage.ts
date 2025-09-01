@@ -1,5 +1,5 @@
-import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
-import { IFileRepository } from "../../domain/repositories/IFileRepository";
+import { UploadFileDTO } from '../../domain/dto/UploadFileDTO';
+import { IFileRepository } from '../../domain/repositories/IFileRepository';
 
 export class UploadBannerImage {
   constructor(private fileRepo: IFileRepository) {}
@@ -10,8 +10,8 @@ export class UploadBannerImage {
       fileBuffer,
       fileName,
       mimeType,
-      "banner"
+      'banner'
     );
-    return { url, userId, type: "banner" };
+    return { url, userId, type: 'banner' };
   }
 }

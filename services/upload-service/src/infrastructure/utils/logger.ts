@@ -1,15 +1,15 @@
-import { createLogger, format, transports } from "winston";
-import LokiTransport from "winston-loki";
+import { createLogger, format, transports } from 'winston';
+import LokiTransport from 'winston-loki';
 
 const { combine, timestamp, printf, colorize, json } = format;
-const serviceName = "upload-service";
+const serviceName = 'upload-service';
 
 const consoleFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp} [${serviceName}] ${level}: ${message}`;
 });
 
 export const logger = createLogger({
-  level: "info",
+  level: 'info',
   format: combine(timestamp(), json()),
   defaultMeta: { service: serviceName },
   transports: [
@@ -18,7 +18,7 @@ export const logger = createLogger({
     }),
 
     new LokiTransport({
-      host: "http://loki:3100",
+      host: 'http://loki:3100',
       labels: { service: serviceName },
       json: true,
     }),

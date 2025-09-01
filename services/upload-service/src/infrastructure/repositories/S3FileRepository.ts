@@ -1,5 +1,5 @@
-import { S3 } from "aws-sdk";
-import { IFileRepository } from "../../domain/repositories/IFileRepository";
+import { S3 } from 'aws-sdk';
+import { IFileRepository } from '../../domain/repositories/IFileRepository';
 
 export class S3FileRepository implements IFileRepository {
   private s3 = new S3();

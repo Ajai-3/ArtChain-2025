@@ -1,6 +1,6 @@
-import dontenv from "dotenv";
-dontenv.config()
+import dontenv from 'dotenv';
+dontenv.config();
 
 export const config = {
     port: process.env.PORT
-}
+};

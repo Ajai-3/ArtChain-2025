@@ -1,9 +1,9 @@
-import { S3FileRepository } from "../repositories/S3FileRepository";
+import { S3FileRepository } from '../repositories/S3FileRepository';
 
-import { UploadProfileImage } from "../../application/usecases/UploadProfileImage";
-import { UploadBannerImage } from "./../../application/usecases/UploadBannerImage";
-import { UploadArtImage } from "../../application/usecases/UploadArtImage";
-import { UploadController } from "../../presentation/controllers/UploadController";
+import { UploadProfileImage } from '../../application/usecases/UploadProfileImage';
+import { UploadBannerImage } from './../../application/usecases/UploadBannerImage';
+import { UploadArtImage } from '../../application/usecases/UploadArtImage';
+import { UploadController } from '../../presentation/controllers/UploadController';
 
 // Repositories
 const repo = new S3FileRepository();

@@ -1,13 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { UploadProfileImage } from "../../application/usecases/UploadProfileImage";
-import { UploadArtImage } from "../../application/usecases/UploadArtImage";
-import { UploadBannerImage } from "../../application/usecases/UploadBannerImage";
-import { IUploadController } from "../interface/IUploadController";
-import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
-import { logger } from "../../infrastructure/utils/logger";
-import { validateUpload } from "../validations/validateUpload";
-import { HttpStatus } from "art-chain-shared";
-import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
+import { Request, Response, NextFunction } from 'express';
+import { UploadProfileImage } from '../../application/usecases/UploadProfileImage';
+import { UploadArtImage } from '../../application/usecases/UploadArtImage';
+import { UploadBannerImage } from '../../application/usecases/UploadBannerImage';
+import { IUploadController } from '../interface/IUploadController';
+import { UploadFileDTO } from '../../domain/dto/UploadFileDTO';
+import { logger } from '../../infrastructure/utils/logger';
+import { validateUpload } from '../validations/validateUpload';
+import { HttpStatus } from 'art-chain-shared';
+import { UPLOAD_MESSAGES } from '../../constants/uploadMessages';
 
 export class UploadController implements IUploadController {
   constructor(
@@ -29,7 +29,7 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { userId, file } = validateUpload(req, "profile");
+      const { userId, file } = validateUpload(req, 'profile');
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -67,7 +67,7 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { userId, file } = validateUpload(req, "banner");
+      const { userId, file } = validateUpload(req, 'banner');
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -105,7 +105,7 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> {
     try {
-      const { userId, file } = validateUpload(req, "art");
+      const { userId, file } = validateUpload(req, 'art');
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,

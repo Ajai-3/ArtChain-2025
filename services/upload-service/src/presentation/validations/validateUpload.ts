@@ -1,15 +1,15 @@
-import { Request } from "express";
-import { z, ZodError } from "zod";
-import { uploadSchema } from "./uploadSchema";
-import { logger } from "../../infrastructure/utils/logger";
+import { Request } from 'express';
+import { z, ZodError } from 'zod';
+import { uploadSchema } from './uploadSchema';
+import { logger } from '../../infrastructure/utils/logger';
 
 export const validateUpload = (
   req: Request,
-  type: "profile" | "banner" | "art"
+  type: 'profile' | 'banner' | 'art'
 ) => {
   try {
     const validated = uploadSchema.parse({
-      userId: req.headers["x-user-id"],
+      userId: req.headers['x-user-id'],
       file: req.file,
     });
 
@@ -23,9 +23,9 @@ export const validateUpload = (
     };
   } catch (err) {
     if (err instanceof ZodError) {
-      const messages = err.issues.map((issue) => issue.message).join(", ");
+      const messages = err.issues.map((issue) => issue.message).join(', ');
       logger.warn(
-        `Upload ${type} failed | userId=${req.headers["x-user-id"] || "unknown"} | reason=${messages}`
+        `Upload ${type} failed | userId=${req.headers['x-user-id'] || 'unknown'} | reason=${messages}`
       );
       throw err;
     }
