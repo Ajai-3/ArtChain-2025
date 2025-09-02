@@ -1,3 +1,4 @@
+import { Notification } from "../../domain/entities/Notification";
 import { emitToUser } from "../../infrastructure/sockets/socketHandler";
 import { NotificationRepositoryImp } from "../../infrastructure/repositories/NotificationRepositoryImp";
 import { logger } from "../../infrastructure/utils/logger";
@@ -11,17 +12,17 @@ export async function handleSupportEvent(event: {
   supporterProfile: string | null;
   createdAt: string;
 }) {
-  const notification = {
-    userId: event.supportedUserId,
-    type: "support",
-    data: {
+  const notification = new Notification(
+    event.supportedUserId,
+    "support",            
+    {                
       supporterId: event.supporterId,
       supporterName: event.supporterName,
       supporterProfile: event.supporterProfile,
     },
-    read: false,
-    createdAt: new Date(event.createdAt),
-  };
+    false,       
+    new Date(event.createdAt) 
+  );
 
   const savedNotification = await repo.save(notification);
 
