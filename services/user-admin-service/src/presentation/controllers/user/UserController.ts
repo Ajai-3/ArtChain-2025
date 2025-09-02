@@ -12,6 +12,7 @@ import { UnSupportUserUseCase } from "../../../application/usecases/user/user-in
 import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
 import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
+import { logger } from "../../../utils/logger";
 // import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
 
 export class UserController implements IUserController {
@@ -105,6 +106,10 @@ export class UserController implements IUserController {
         supporterProfile: result.supporter.profileImage,
         createdAt: result.createdAt,
       });
+
+      logger.info(
+        `${result.supporter.username} supported ${result.targetUser.username} at ${result.createdAt}`
+      );
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORT_SUCCESS,

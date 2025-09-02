@@ -1,5 +1,6 @@
 import amqp from "amqplib";
 import { config } from "../config/env";
+import { logger } from "../../utils/logger";
 
 export async function publishNotification(routingKey: string, message: object) {
   const connection = await amqp.connect(config.rabbitmq_URL);
@@ -16,7 +17,7 @@ export async function publishNotification(routingKey: string, message: object) {
     { persistent: true }
   );
 
-  console.log(`📢 Notification sent [${routingKey}]`, message);
+  logger.info(`📢 Notification sent [${routingKey}] ${JSON.stringify(message)}`);
 
   setTimeout(() => connection.close(), 500);
 }
