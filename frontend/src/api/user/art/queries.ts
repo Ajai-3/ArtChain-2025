@@ -32,14 +32,3 @@ type ArtistRequestStatusResponse = {
   latestRequest: any;
 };
 
-export const useHasSubmittedArtistRequest = () => {
-  return useQuery<ArtistRequestStatusResponse, Error>({
-    queryKey: ['hasUserSubmittedRequest'],
-    queryFn: async () => {
-      const res = await apiClient.get('/api/v1/user/artist-request/status');
-      console.log(res.data)
-      return res.data;
-    },
-    staleTime: 5 * 60 * 1000,
-  });
-};

@@ -7,10 +7,6 @@ export const useCreateArtistRequestMutation = () => {
   return useMutation({
     mutationFn: (data: ArtistRequestPayload) =>
       apiClient.post("/api/v1/user/artist-request", data),
-    onSuccess: (res) => {
-      console.log("Artist request submitted:", res.data);
-      toast.success("Artist request submitted successfully!");
-    },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Something went wrong!");
     },

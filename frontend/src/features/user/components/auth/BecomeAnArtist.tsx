@@ -8,7 +8,7 @@ import type { User } from "../../../../types/user/user";
 import { useCreateArtistRequestMutation } from "../../hooks/art/useCreateArtistRequestMutation";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
+import { useHasSubmittedArtistRequest } from "../../hooks/art/useHasSubmittedArtistRequest";
 
 // Zod schema
 export const createArtistRequestSchema = z.object({
@@ -51,7 +51,8 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
     country?: string;
   }>({});
 
-  const { data, isLoading, isError } = useHasSubmittedArtistRequest();
+  const { data, isLoading, isError, refetch } =
+    useHasSubmittedArtistRequest(isOpen);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -104,30 +105,74 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
     }
 
     setErrors({});
-    mutation.mutate(payload);
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        refetch();
+        toast.success("Request submitted successfully!");
+      },
+    });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white border border-zinc-800 dark:bg-secondary-color p-6 rounded-lg w-[90%] max-w-xl">
         <h2 className="text-xl text-center mb-4 font-bold">Become an Artist</h2>
-        {data?.alreadySubmitted && !isLoading ? (
-          <>
-            <div>
-              <p>
-                Your artist request is{" "}
-                <strong>{data.latestRequest.status}</strong>. Submitted on{" "}
-                <strong>
-                  {new Date(data.latestRequest.createdAt).toLocaleDateString()}
-                </strong>
-                . Our admin will review it soon.
-              </p>
-
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
+        {isLoading ? (
+          <p className="text-center">Loading...</p>
+        ) : isError ? (
+          <p className="text-red-500 text-center">
+            Failed to load request status.
+          </p>
+        ) : data?.alreadySubmitted &&
+          data.latestRequest.status === "pending" ? (
+          <div className="text-center">
+            <div className="mb-2">
+              <span className="font-semibold">Status:</span>{" "}
+              <span className="capitalize">{data.latestRequest.status}</span>
             </div>
-          </>
+
+            <div className="mb-2">
+              <span className="font-semibold">Submitted On:</span>{" "}
+              {new Date(data.latestRequest.createdAt).toLocaleDateString(
+                undefined,
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }
+              )}
+            </div>
+
+            {data.latestRequest.reviewedAt && (
+              <div className="mb-2">
+                <span className="font-semibold">Reviewed On:</span>{" "}
+                {new Date(data.latestRequest.reviewedAt).toLocaleDateString(
+                  undefined,
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )}
+              </div>
+            )}
+
+            {data.latestRequest.rejectionReason?.trim() && (
+              <div className="mb-2 text-red-600">
+                <span className="font-semibold">Rejection Reason:</span>{" "}
+                {data.latestRequest.rejectionReason}
+              </div>
+            )}
+
+            <p className="text-gray-600 mt-4">
+              Your request is being reviewed by the admin. You will be notified
+              of updates.
+            </p>
+
+            <Button variant="outline" onClick={onClose} className="mt-4">
+              Close
+            </Button>
+          </div>
         ) : (
           <>
             <div className="space-y-4 mb-4">

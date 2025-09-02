@@ -58,7 +58,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% .9%;
 
     --foreground: 0 0% 98%;
 
@@ -116,6 +116,7 @@
     @apply bg-background text-foreground;
   }
 }
+
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
