@@ -4,10 +4,16 @@ const app = express();
 
 import uploadRoutes from './presentation/routes/upload.routes';
 import { errorHandler } from './presentation/middleware/errorHandler';
+import { logger } from './infrastructure/utils/logger';
+
+app.use((req, res, next) => {
+  logger.info(`Incoming request: ${req.method} ${req.path}`);
+  next();
+});
 
 app.use(express.json());
 
-app.use('/upload', uploadRoutes);
+app.use('/api/v1/upload', uploadRoutes);
 
 app.use(errorHandler);
 

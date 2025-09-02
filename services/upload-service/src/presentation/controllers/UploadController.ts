@@ -1,13 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
-import { UploadProfileImage } from '../../application/usecases/UploadProfileImage';
-import { UploadArtImage } from '../../application/usecases/UploadArtImage';
-import { UploadBannerImage } from '../../application/usecases/UploadBannerImage';
-import { IUploadController } from '../interface/IUploadController';
-import { UploadFileDTO } from '../../domain/dto/UploadFileDTO';
-import { logger } from '../../infrastructure/utils/logger';
-import { validateUpload } from '../validations/validateUpload';
-import { HttpStatus } from 'art-chain-shared';
-import { UPLOAD_MESSAGES } from '../../constants/uploadMessages';
+import { Request, Response, NextFunction } from "express";
+import { UploadProfileImage } from "../../application/usecases/UploadProfileImage";
+import { UploadArtImage } from "../../application/usecases/UploadArtImage";
+import { UploadBannerImage } from "../../application/usecases/UploadBannerImage";
+import { IUploadController } from "../interface/IUploadController";
+import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
+import { logger } from "../../infrastructure/utils/logger";
+import { validateUpload } from "../validations/validateUpload";
+import { HttpStatus } from "art-chain-shared";
+import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
 
 export class UploadController implements IUploadController {
   constructor(
@@ -23,13 +23,13 @@ export class UploadController implements IUploadController {
   //# Request body: multipart/form-data { file }
   //# Uploads a profile picture for the current user.
   //# =============================================================================================================
-  async uploadProfile(
+  uploadProfile = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
-      const { userId, file } = validateUpload(req, 'profile');
+      const { userId, file } = validateUpload(req, "profile");
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -51,7 +51,7 @@ export class UploadController implements IUploadController {
       logger.error(`Upload profile error | message=${error.message}`);
       next(error);
     }
-  }
+  };
 
   //# =============================================================================================================
   //# UPLOAD BANNER
@@ -61,13 +61,13 @@ export class UploadController implements IUploadController {
   //# Request body: multipart/form-data { file }
   //# Uploads a banner image for the current user.
   //# =============================================================================================================
-  async uploadBanner(
+  uploadBanner = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
-      const { userId, file } = validateUpload(req, 'banner');
+      const { userId, file } = validateUpload(req, "banner");
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -99,13 +99,13 @@ export class UploadController implements IUploadController {
   //# Request body: multipart/form-data { file }
   //# Uploads an artwork image for the current user.
   //# =============================================================================================================
-  async uploadArt(
+  uploadArt = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> {
+  ): Promise<Response | void> => {
     try {
-      const { userId, file } = validateUpload(req, 'art');
+      const { userId, file } = validateUpload(req, "art");
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
