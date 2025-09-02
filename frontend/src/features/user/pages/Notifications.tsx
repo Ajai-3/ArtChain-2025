@@ -1,56 +1,52 @@
 // components/Notifications.tsx
-import { useRef, useCallback, useEffect, useState } from "react";
-import { useNotifications } from "../hooks/notifications/useNotifications";
-import type { Notification } from "../../../types/notification";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { Notification } from "../../../types/notification";
+import { useNotifications } from "../hooks/notifications/useNotifications";
 import NotificationUserProfile from "../components/notification/NotificationUserProfile";
-import { useSelector } from "react-redux";
+import { setNotifications, addNotification } from "../../../redux/slices/notificationSlice";
 
 interface NotificationsProps {
-  socket: any; // pass your socket instance from provider
+  socket: any;
 }
 
 const Notifications = ({ socket }: NotificationsProps) => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useNotifications();
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const notifications: Notification[] = useSelector(
+    (state: any) => state.notification.notifications
+  );
+
   const observer = useRef<IntersectionObserver | null>(null);
 
-  // Local state for live notifications
-  const [liveNotifications, setLiveNotifications] = useState<Notification[]>([]);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useNotifications();
 
-  // Merge API + live notifications
-  const apiNotifications: Notification[] =
-    data?.pages.flatMap((page) => page) || [];
-  const notifications: Notification[] = [...liveNotifications, ...apiNotifications];
+  useEffect(() => {
+    if (data?.pages.length && notifications.length === 0) {
+      const allNotifications = data.pages.flatMap((page) => page);
+      dispatch(setNotifications(allNotifications));
+    }
+  }, [data, dispatch, notifications.length]);
 
-  // Socket listener for live notifications
   useEffect(() => {
     if (!socket) return;
-
     const handleNewNotification = (notif: Notification) => {
-      setLiveNotifications((prev) => [notif, ...prev]);
+      dispatch(addNotification(notif));
     };
-
     socket.on("notification", handleNewNotification);
-
     return () => {
       socket.off("notification", handleNewNotification);
     };
-  }, [socket]);
+  }, [socket, dispatch]);
 
   const lastNotificationRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (isFetchingNextPage) return;
       if (observer.current) observer.current.disconnect();
-
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
+        if (entries[0].isIntersecting && hasNextPage) fetchNextPage();
       });
-
       if (node) observer.current.observe(node);
     },
     [isFetchingNextPage, fetchNextPage, hasNextPage]

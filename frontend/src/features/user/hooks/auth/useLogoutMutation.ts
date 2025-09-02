@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { logout } from "../../../../redux/slices/userSlice";
 import type { ApiError } from "../../../../types/apiError";
+import { QueryClient } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export const useLogoutMutation = () => {
   const dispatch = useDispatch();
@@ -14,6 +17,7 @@ export const useLogoutMutation = () => {
     onSuccess: (res) => {
       console.log("Logout successful:", res.data);
       dispatch(logout());
+      queryClient.clear();
       navigate("/login");
       toast.success("Logout successful");
     },
