@@ -22,7 +22,6 @@ export class S3FileRepository implements IFileRepository {
           Key: key,
           Body: file,
           ContentType: mimeType,
-          ACL: acl,
         })
         .promise();
 
