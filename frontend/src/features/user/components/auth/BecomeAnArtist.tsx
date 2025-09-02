@@ -36,7 +36,7 @@ type ModalProps = {
 };
 
 const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
-  const { user } = useSelector((state: RootState) => state.user) as {
+  const { user } = useSelector((state: RootState) => state?.user) as {
     user: User | null;
   };
   const mutation = useCreateArtistRequestMutation();

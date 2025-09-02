@@ -5,7 +5,6 @@ import { logout, setAccessToken } from "../redux/slices/userSlice";
 import type { RefreshTokenResponse } from "../types/refreshTokenResponse";
 import { adminLogout, setAdminAccessToken } from "../redux/slices/adminSlice";
 
-
 const MAX_REFRESH_RETRIES = 3;
 let refreshRetryCount = 0;
 
@@ -26,7 +25,10 @@ declare module "axios" {
 apiClient.interceptors.request.use((config) => {
   const state = store.getState();
   const isAdminRequest = config.url?.includes("/api/v1/admin");
-  const isUserRequest = config.url?.includes("/api/v1/user");
+  const isUserRequest = ["/api/v1/user", "/api/v1/notifications"].some((path) =>
+    config.url?.includes(path)
+  );
+
   const token = isAdminRequest
     ? state?.admin?.accessToken ?? null
     : state?.user?.accessToken ?? null;
@@ -34,7 +36,7 @@ apiClient.interceptors.request.use((config) => {
 
   if (token) config.headers.Authorization = `Bearer ${token}`;
   if (isUserRequest && userId) config.headers["x-user-id"] = userId;
- 
+
   return config;
 });
 
@@ -51,7 +53,7 @@ apiClient.interceptors.response.use(
       "color: green; font-weight: bold;",
       response
     );
-    return response; 
+    return response;
   },
   async (error) => {
     console.error(
@@ -135,7 +137,7 @@ apiClient.interceptors.response.use(
         });
       }
     }
-    console.log(error.response)
+    console.log(error.response);
 
     return Promise.reject({
       status: error.response.status,

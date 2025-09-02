@@ -146,7 +146,7 @@ textarea:-webkit-autofill:focus {
 
 /* Dark Theme */
 .dark {
-  --scroll-track: #111827;           
+  --scroll-track: #000000;           
   --scroll-thumb: #6b7280;           
   --scroll-thumb-hover: #9ca3af;     
 }

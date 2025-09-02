@@ -12,7 +12,7 @@ const ResetPassword = lazy(() => import('../../features/user/components/auth/Res
 const SignupPassword = lazy(() => import('../../features/user/components/auth/SignupPassword'));
 const Messages = lazy(() => import('../../features/user/pages/Messages'));
 const Liora = lazy(() => import('../../features/user/pages/Liora'));
-const Notifications = lazy(() => import('../../features/user/pages/Notifications'));
+  const Notifications = lazy(() => import("../../features/user/pages/Notifications"))
 const Bidding = lazy(() => import('../../features/user/pages/Bidding'));
 const Shop = lazy(() => import('../../features/user/pages/Shop'));
 const Wallet = lazy(() => import('../../features/user/pages/Wallet'));
