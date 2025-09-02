@@ -17,15 +17,10 @@ export async function setupNotificationQueues(ch: Channel) {
   await ch.assertQueue("search_indexing", { durable: true });
   await ch.bindQueue("search_indexing", exchange, "user.created");
 
-  // Follow queue
-  await ch.assertQueue("supports", {
-    durable: true,
-    deadLetterExchange: "",
-    deadLetterRoutingKey: "supports.dlq",
-  });
-  await ch.bindQueue("supports", exchange, "support");
+  // Supporters queue
+  await ch.assertQueue("supports", { durable: true });
+  await ch.bindQueue("supports", exchange, "user.supported");
 
-  await ch.assertQueue("supports.dlq", { durable: true });
 
   // Like queue
   await ch.assertQueue("likes", { durable: true });

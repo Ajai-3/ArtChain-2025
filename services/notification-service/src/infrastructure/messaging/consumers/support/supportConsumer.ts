@@ -1,6 +1,6 @@
 import { Channel, ConsumeMessage } from "amqplib";
-import { getRabbitChannel } from "../rabbitmq";
-import { handleSupportEvent } from "../../../application/notifications/handleSupportEvent";
+import { getRabbitChannel } from "../../rabbitmq";
+import { handleSupportEvent } from "../../../../application/notifications/handleSupportEvent";
 
 export async function startSupportConsumer() {
   const ch: Channel = await getRabbitChannel();
@@ -18,7 +18,7 @@ export async function startSupportConsumer() {
       ch.ack(msg);
     } catch (err) {
       console.error("❌ Failed processing support event:", err);
-      ch.nack(msg, false, false); // send to DLQ if configured
+      ch.nack(msg, false, false);
     }
   });
 }
