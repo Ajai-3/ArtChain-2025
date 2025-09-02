@@ -2,6 +2,8 @@ import { Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../components/ui/button";
 import type { User as safeuser } from "../../../../types/user/user";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
 
 type UserInfoProps = {
   onBecomeArtist: () => void;
@@ -11,6 +13,9 @@ type UserInfoProps = {
 
 const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
   const navigate = useNavigate();
+  const unreadCount = useSelector(
+    (state: RootState) => state.notification.unreadCount
+  );
 
   return (
     <div className="flex items-center gap-3">
@@ -18,10 +23,16 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
         <>
           <button
             onClick={() => navigate("/notifications")}
-            className="p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            className="relative p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             aria-label="Notifications"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-white bg-main-color rounded-full">
+                {unreadCount}
+              </span>
+            )}
           </button>
 
           <button
