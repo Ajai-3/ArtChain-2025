@@ -23,6 +23,7 @@ app.use(
       'Content-Type',
       'Authorization',
       'Origin',
+      'x-user-id',
       'X-Requested-With',
     ],
     credentials: true,

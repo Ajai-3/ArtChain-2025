@@ -13,6 +13,7 @@ export const config = {
   services: {
     main: process.env.MAIN_SERVICE_URL,
     art: process.env.ART_SERVICE_URL,
+    upload: process.env.UPLOAD_SERVICE_URL
   },
   jwt: {
     accessSecret: secrets.jwtAccessSecret,
