@@ -5,6 +5,7 @@ import { MarkAsReadUseCase } from "../../application/usecases/MarkAsReadUseCase"
 import { MarkAllAsReadUseCase } from "../../application/usecases/MarkAllAsReadUseCase";
 import { GetUnreadCountUseCase } from "../../application/usecases/GetUnreadCountUseCase";
 import { GetUserNotificationsUseCase } from "../../application/usecases/GetUserNotificationsUseCase";
+import { logger } from '../../infrastructure/utils/logger';
 
 export class NotificationController implements INotificationController {
   constructor(
@@ -28,7 +29,7 @@ export class NotificationController implements INotificationController {
   ): Promise<any> => {
     try {
       const userId = req.headers["x-user-id"] as string;
-
+      
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 

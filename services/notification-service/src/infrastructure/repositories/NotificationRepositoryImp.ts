@@ -20,7 +20,6 @@ export class NotificationRepositoryImp {
     limit: number = 10
   ): Promise<Notification[]> {
     const skip = (page - 1) * limit;
-
     const docs = await NotificationModel.find({ userId })
       .sort({ createdAt: -1 })
       .skip(skip)
