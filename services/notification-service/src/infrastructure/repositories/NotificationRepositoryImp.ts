@@ -14,10 +14,19 @@ export class NotificationRepositoryImp {
     );
   }
 
-  async getUserNotifications(userId: string): Promise<Notification[]> {
+  async getUserNotifications(
+    userId: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<Notification[]> {
+    const skip = (page - 1) * limit;
+
     const docs = await NotificationModel.find({ userId })
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
+
     return docs.map(
       (d) =>
         new Notification(

@@ -1,3 +1,4 @@
+import { GetUserNotificationsDTO } from './../../domain/dto/GetUserNotificationsDTO';
 import { Request, Response, NextFunction } from "express";
 import { INotificationController } from "../interface/INotificationController";
 import { MarkAsReadUseCase } from "../../application/usecases/MarkAsReadUseCase";
@@ -27,17 +28,21 @@ export class NotificationController implements INotificationController {
   ): Promise<any> => {
     try {
       const userId = req.headers["x-user-id"] as string;
-      const notifications = await this._getUserNotificationsUseCase.execute(
-        userId
-      );
-      return res.json({ notifications });
+
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      const dto: GetUserNotificationsDTO = { userId, page, limit } 
+
+      const notifications = await this._getUserNotificationsUseCase.execute(dto);
+      return res.json({ notifications, page, limit });
     } catch (error) {
       next(error);
     }
   };
 
   //# ================================================================================================================
- //# GET UNREAD NOTIFICATIONS COUNT
+  //# GET UNREAD NOTIFICATIONS COUNT
   //# ================================================================================================================
   //# GET /api/v1/notifications/unread-count
   //# Request headers: x-user-id
