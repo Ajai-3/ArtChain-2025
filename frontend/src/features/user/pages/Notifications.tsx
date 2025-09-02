@@ -22,12 +22,20 @@ const Notifications = ({ socket }: NotificationsProps) => {
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useNotifications();
 
-  useEffect(() => {
-    if (data?.pages.length && notifications.length === 0) {
-      const allNotifications = data.pages.flatMap((page) => page);
-      dispatch(setNotifications(allNotifications));
+useEffect(() => {
+  if (data?.pages.length) {
+    const allNotifications = data.pages.flatMap((page) => page);
+
+    // remove duplicates (by id)
+    const existingIds = new Set(notifications.map(n => n.id));
+    const newNotifications = allNotifications.filter(n => !existingIds.has(n.id));
+
+    if (newNotifications.length > 0) {
+      dispatch(setNotifications([...notifications, ...newNotifications]));
     }
-  }, [data, dispatch, notifications.length]);
+  }
+}, [data, dispatch, notifications]);
+
 
   useEffect(() => {
     if (!socket) return;
