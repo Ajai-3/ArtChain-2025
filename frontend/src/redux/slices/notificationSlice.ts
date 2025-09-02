@@ -1,13 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-
-interface Notification {
-  id: string;
-  type: string;
-  data: any;
-  read: boolean;
-  createdAt: string;
-}
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { Notification } from '../../types/notification';
+import { logout } from './userSlice';
 
 interface NotificationState {
   notifications: Notification[];
@@ -20,7 +14,7 @@ const initialState: NotificationState = {
 };
 
 const notificationSlice = createSlice({
-  name: "notifications",
+  name: 'notifications',
   initialState,
   reducers: {
     addNotification: (state, action: PayloadAction<Notification>) => {
@@ -43,8 +37,13 @@ const notificationSlice = createSlice({
       state.unreadCount = 0;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
+  },
 });
 
-export const { addNotification, setNotifications, markAsRead, markAllAsRead } =
-  notificationSlice.actions;
+export const { addNotification, setNotifications, markAsRead, markAllAsRead } = notificationSlice.actions;
+
+export const selectNotifications = (state: { notifications: NotificationState }) => state.notifications.notifications;
+
 export default notificationSlice.reducer;
