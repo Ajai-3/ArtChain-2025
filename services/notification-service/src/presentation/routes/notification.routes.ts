@@ -1,12 +1,11 @@
-import express from "express";
-import { notificationContainer } from "../../infrastructure/container/notificationContainer";
+    import express from "express";
+    import { notificationController } from "../../infrastructure/container/notificationContainer";
 
+    const router = express.Router();
 
-const router = express.Router();
+    router.get("/", notificationController.getUserNotifications);
+    router.get("/unread-count", notificationController.getUnreadCount);
+    router.patch("/:id/read", notificationController.markAsRead);
+    router.patch("/mark-all-read", notificationController.markAllAsRead);
 
-router.get("/", notificationContainer.getUserNotifications);
-router.get("/unread-count", notificationContainer.getUnreadCount);
-router.patch("/:id/read", notificationContainer.markAsRead);
-router.patch("/mark-all-read", notificationContainer.markAllAsRead);
-
-export default router;
+    export default router;

@@ -1,12 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { INotificationController } from "../interface/INotificationController";
-import { NotificationRepositoryImp } from "../../infrastructure/repositories/NotificationRepositoryImp";
-import { GetUserNotificationsUseCase } from "../../application/usecases/GetUserNotificationsUseCase";
-import { GetUnreadCountUseCase } from "../../application/usecases/GetUnreadCountUseCase";
 import { MarkAsReadUseCase } from "../../application/usecases/MarkAsReadUseCase";
 import { MarkAllAsReadUseCase } from "../../application/usecases/MarkAllAsReadUseCase";
-
-const repo = new NotificationRepositoryImp();
+import { GetUnreadCountUseCase } from "../../application/usecases/GetUnreadCountUseCase";
+import { GetUserNotificationsUseCase } from "../../application/usecases/GetUserNotificationsUseCase";
 
 export class NotificationController implements INotificationController {
   constructor(
@@ -16,25 +13,41 @@ export class NotificationController implements INotificationController {
     private readonly _markAllAsReadUseCase: MarkAllAsReadUseCase
   ) {}
 
+  //# ================================================================================================================
+  //# GET USER NOTIFICATIONS
+  //# ================================================================================================================
+  //# GET /api/v1/notifications
+  //# Request headers: x-user-id
+  //# This controller returns all notifications for the current user, sorted by newest first.
+  //# ================================================================================================================
   getUserNotifications = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> => {
+  ): Promise<any> => {
     try {
       const userId = req.headers["x-user-id"] as string;
-      const notifications = await this._getUserNotificationsUseCase.execute(userId);
+      const notifications = await this._getUserNotificationsUseCase.execute(
+        userId
+      );
       return res.json({ notifications });
     } catch (error) {
       next(error);
     }
   };
 
+  //# ================================================================================================================
+ //# GET UNREAD NOTIFICATIONS COUNT
+  //# ================================================================================================================
+  //# GET /api/v1/notifications/unread-count
+  //# Request headers: x-user-id
+  //# This controller returns the number of unread notifications for the current user.
+  //# ================================================================================================================
   getUnreadCount = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> => {
+  ): Promise<any> => {
     try {
       const userId = req.headers["x-user-id"] as string;
       const count = await this._getUnreadCountUseCase.execute(userId);
@@ -44,11 +57,18 @@ export class NotificationController implements INotificationController {
     }
   };
 
+  //# ================================================================================================================
+  //# MARK NOTIFICATION AS READ
+  //# ================================================================================================================
+  //# PATCH /api/v1/notifications/:id/read
+  //# Request params: id
+  //# This controller marks a single notification as read by its ID.
+  //# ================================================================================================================
   markAsRead = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> => {
+  ): Promise<any> => {
     try {
       const { id } = req.params;
       await this._markAsReadUseCase.execute(id);
@@ -58,11 +78,18 @@ export class NotificationController implements INotificationController {
     }
   };
 
+  //# ================================================================================================================
+  //# MARK ALL NOTIFICATIONS AS READ
+  //# ================================================================================================================
+  //# PATCH /api/v1/notifications/mark-all-read
+  //# Request headers: x-user-id
+  //# This controller marks all notifications of the current user as read.
+  //# ================================================================================================================
   markAllAsRead = async (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void> => {
+  ): Promise<any> => {
     try {
       const userId = req.headers["x-user-id"] as string;
       await this._markAllAsReadUseCase.execute(userId);

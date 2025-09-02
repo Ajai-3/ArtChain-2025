@@ -7,7 +7,8 @@ export class GetUserNotificationsUseCase
 {
   constructor(private readonly _notificationRepo: INotificationRepository) {}
 
-  execute(userId: string): Promise<Notification[]> {
-    return this._notificationRepo.getUserNotifications(userId);
+  async execute(userId: string): Promise<Notification[]> {
+    const notificarions = await this._notificationRepo.getUserNotifications(userId);
+    return notificarions
   }
 }
