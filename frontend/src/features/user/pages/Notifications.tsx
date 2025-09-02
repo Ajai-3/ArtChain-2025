@@ -1,11 +1,13 @@
-// components/Notifications.tsx
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { Notification } from "../../../types/notification";
 import { useNotifications } from "../hooks/notifications/useNotifications";
 import NotificationUserProfile from "../components/notification/NotificationUserProfile";
-import { setNotifications, addNotification } from "../../../redux/slices/notificationSlice";
+import {
+  setNotifications,
+  addNotification,
+} from "../../../redux/slices/notificationSlice";
 
 interface NotificationsProps {
   socket: any;
@@ -20,22 +22,23 @@ const Notifications = ({ socket }: NotificationsProps) => {
 
   const observer = useRef<IntersectionObserver | null>(null);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useNotifications();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useNotifications();
 
-useEffect(() => {
-  if (data?.pages.length) {
-    const allNotifications = data.pages.flatMap((page) => page);
+  useEffect(() => {
+    if (data?.pages.length) {
+      const allNotifications = data.pages.flatMap((page) => page);
 
-    // remove duplicates (by id)
-    const existingIds = new Set(notifications.map(n => n.id));
-    const newNotifications = allNotifications.filter(n => !existingIds.has(n.id));
+      const existingIds = new Set(notifications.map((n) => n.id));
+      const newNotifications = allNotifications.filter(
+        (n) => !existingIds.has(n.id)
+      );
 
-    if (newNotifications.length > 0) {
-      dispatch(setNotifications([...notifications, ...newNotifications]));
+      if (newNotifications.length > 0) {
+        dispatch(setNotifications([...notifications, ...newNotifications]));
+      }
     }
-  }
-}, [data, dispatch, notifications]);
-
+  }, [data, dispatch, notifications]);
 
   useEffect(() => {
     if (!socket) return;
@@ -68,7 +71,7 @@ useEffect(() => {
 
   return (
     <div className="flex h-full">
-      <div className="w-full sm:w-3/12 dark:bg-black text-white overflow-y-auto shadow-lg p-2">
+      <div className="w-full sm:w-3/12 dark:bg-black text-white overflow-y-auto shadow-lg p-2 border-r border-zync-700">
         {notifications.map((n, i) => (
           <NotificationUserProfile
             key={`${n.id}-${i}`}

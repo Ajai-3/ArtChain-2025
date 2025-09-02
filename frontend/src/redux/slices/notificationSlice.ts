@@ -1,7 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import type { Notification } from '../../types/notification';
-import { logout } from './userSlice';
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { Notification } from "../../types/notification";
+import { logout } from "./userSlice";
 
 interface NotificationState {
   notifications: Notification[];
@@ -14,16 +13,25 @@ const initialState: NotificationState = {
 };
 
 const notificationSlice = createSlice({
-  name: 'notifications',
+  name: "notifications",
   initialState,
   reducers: {
     addNotification: (state, action: PayloadAction<Notification>) => {
-      state.notifications.unshift(action.payload);
-      state.unreadCount += 1;
+      const existingNotification = state.notifications.find(
+        (n) => n.id === action.payload.id
+      );
+      if (!existingNotification) {
+        state.notifications.unshift(action.payload);
+        state.unreadCount += 1;
+      }
     },
     setNotifications: (state, action: PayloadAction<Notification[]>) => {
       state.notifications = action.payload;
       state.unreadCount = action.payload.filter((n) => !n.read).length;
+    },
+    clearNotifications: (state) => {
+      state.notifications = [];
+      state.unreadCount = 0;
     },
     markAsRead: (state, action: PayloadAction<string>) => {
       const notif = state.notifications.find((n) => n.id === action.payload);
@@ -42,8 +50,16 @@ const notificationSlice = createSlice({
   },
 });
 
-export const { addNotification, setNotifications, markAsRead, markAllAsRead } = notificationSlice.actions;
+export const {
+  addNotification,
+  setNotifications,
+  clearNotifications,
+  markAsRead,
+  markAllAsRead,
+} = notificationSlice.actions;
 
-export const selectNotifications = (state: { notifications: NotificationState }) => state.notifications.notifications;
+export const selectNotifications = (state: {
+  notifications: NotificationState;
+}) => state.notifications.notifications;
 
 export default notificationSlice.reducer;

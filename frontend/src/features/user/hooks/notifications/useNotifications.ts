@@ -1,6 +1,5 @@
-// hooks/useNotifications.ts
-import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import type { Notification } from '../../../../types/notification';
 
 interface NotificationResponse {
