@@ -9,6 +9,7 @@ import { useCreateArtistRequestMutation } from "../../hooks/art/useCreateArtistR
 import toast from "react-hot-toast";
 import { z } from "zod";
 import { useHasSubmittedArtistRequest } from "../../hooks/art/useHasSubmittedArtistRequest";
+import { COUNTRIES } from "../../../../constants/countries";
 
 // Zod schema
 export const createArtistRequestSchema = z.object({
@@ -213,17 +214,24 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
                   )}
                 </div>
                 <div className="w-full">
-                  <label className="block mb-2">Country</label>
-                  <Input
-                    variant="green-focus"
+                  <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Country
+                  </label>
+                  <select
                     value={country}
-                    placeholder="Enter your country"
                     onChange={(e) => {
-                      const value = e.target.value.replace(/[^A-Za-z\s]/g, "");
-                      setCountry(value);
-                      validateField("country", value);
+                      setCountry(e.target.value);
+                      validateField("country", e.target.value);
                     }}
-                  />
+                    className="w-full rounded-md border border-gray-300 bg-white dark:bg-secondary-color dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                  >
+                    <option value="">Select your country</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                   {errors.country && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.country}
