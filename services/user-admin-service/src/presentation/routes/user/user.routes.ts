@@ -22,6 +22,7 @@ router.get(
 router.post('/change-password', securityController.changePassword);
 // Change Email
 router.post('/change-email', securityController.changeEmail);
+router.post('/verify-email-token', securityController.emailVerifyToken)
 // Deactivate Account
 router.post('/deactivate', securityController.deactivateAccount);
 

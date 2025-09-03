@@ -16,7 +16,7 @@ function generateEmail(name: string) {
   const parts = name.toLowerCase().split(" ");
   const first = parts[0];
   const last = parts[parts.length - 1];
-  return `${first}${last}@gmail.com`; // deterministic
+  return `${first}${last}@gmail.com`;
 }
 
 export async function createDummyUsers() {
@@ -34,7 +34,7 @@ export async function createDummyUsers() {
       });
 
       if (existingUser) {
-        // skip if email already exists
+
         continue;
       }
 
