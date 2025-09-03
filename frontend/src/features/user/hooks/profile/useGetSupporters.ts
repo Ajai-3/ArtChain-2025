@@ -1,10 +1,12 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
-import type { User } from "../../../../types/user/user";
+import type { UserPreview } from "../../../../types/user/UserPreview";
 
 interface UserResponse {
-  users: User[];
+  data: UserPreview[];
+  message: string;
 }
+
 
 export const useGetSupporters = (userId?: string, enabled: boolean = true) => {
   return useInfiniteQuery<UserResponse, Error>({
@@ -16,7 +18,7 @@ export const useGetSupporters = (userId?: string, enabled: boolean = true) => {
       return res.data as UserResponse;
     },
     getNextPageParam: (lastPage, allPages) =>
-      lastPage.users.length < 10 ? undefined : allPages.length * 10,
+      lastPage.data.length < 10 ? undefined : allPages.length * 10,
     enabled: !!userId && enabled, 
     initialPageParam: 0,
   });

@@ -6,6 +6,7 @@ import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
 import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
 import { useGetSupporters } from "../../hooks/profile/useGetSupporters";
 import { useGetSupporting } from "../../hooks/profile/useGetSupporting";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileTopBarProps {
   user: User;
@@ -24,6 +25,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
 }) => {
   const supportMutation = useSupportMutation();
   const unSupportMutation = useUnSupportMutation();
+  const navigate = useNavigate()
 
   const isMutating = supportMutation.isPending || unSupportMutation.isPending;
 
@@ -89,8 +91,8 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   // Flatten pages to a single array for the modal
   const modalUsers =
     modalType === "supporters"
-      ? supportersQuery.data?.pages.flatMap((p) => p.users) ?? []
-      : supportingQuery.data?.pages.flatMap((p) => p.users) ?? [];
+      ? supportersQuery.data?.pages.flatMap((p) => p.data) ?? []
+      : supportingQuery.data?.pages.flatMap((p) => p.data) ?? [];
 
   const isFetchingNext =
     modalType === "supporters"
@@ -207,21 +209,35 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                   <li
                     key={userItem.id}
                     ref={isLast ? lastUserRef : null}
-                    className="p-2 bg-gray-100 dark:bg-gray-700 rounded flex items-center gap-2"
+                    className="p-2 rounded flex items-center gap-2"
                   >
-                    {userItem.profileImage && (
+                    {/* Profile image or fallback circle */}
+                    {userItem.profileImage ? (
                       <img
                         src={userItem.profileImage}
                         alt={userItem.name}
-                        className="w-8 h-8 rounded-full object-cover"
+                        className="w-12 h-12 rounded-full object-cover"
                       />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-zinc-900 flex items-center justify-center">
+                        <span className="text-white font-medium">
+                          {userItem.name?.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
                     )}
+
+                    {/* User info */}
                     <div>
                       <p className="font-medium">{userItem.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-400">
                         @{userItem.username}
                       </p>
                     </div>
+
+                    {/* View button */}
+                    <button className="ml-auto px-4 py-2 rounded-full bg-white/10 text-white text-md hover:bg-white/15"  onClick={() => navigate(`/profile/${userItem.id}`)}>
+                      View
+                    </button>
                   </li>
                 );
               })}
