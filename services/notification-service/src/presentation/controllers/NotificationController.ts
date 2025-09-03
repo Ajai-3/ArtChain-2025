@@ -36,7 +36,9 @@ export class NotificationController implements INotificationController {
       const dto: GetUserNotificationsDTO = { userId, page, limit } 
 
       const notifications = await this._getUserNotificationsUseCase.execute(dto);
-      return res.json({ notifications, page, limit });
+
+      const unreadCount = await this._getUnreadCountUseCase.execute(userId);
+      return res.json({ notifications, page, limit, unreadCount });
     } catch (error) {
       next(error);
     }
