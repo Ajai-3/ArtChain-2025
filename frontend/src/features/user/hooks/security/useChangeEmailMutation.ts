@@ -36,5 +36,4 @@ export const useChangeEmailMutation = (
       setFormError(error.message);
     },
   });
-  
 };
