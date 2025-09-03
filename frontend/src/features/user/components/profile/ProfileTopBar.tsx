@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import type { User } from "../../../../types/user/user";
-import { ArrowDownRight, Ellipsis } from "lucide-react";
+import { ArrowDownRight, Ellipsis, X } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
 import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
 import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
+import { useGetSupporters } from "../../hooks/profile/useGetSupporters";
+import { useGetSupporting } from "../../hooks/profile/useGetSupporting";
 
 interface ProfileTopBarProps {
   user: User;
@@ -23,21 +25,81 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   const supportMutation = useSupportMutation();
   const unSupportMutation = useUnSupportMutation();
 
-  // Combine loading states
   const isMutating = supportMutation.isPending || unSupportMutation.isPending;
 
   const handleSupportClick = () => {
     if (!user?.id) return;
-
-    if (isSupporting) {
-      unSupportMutation.mutate(user.id);
-    } else {
-      supportMutation.mutate(user.id);
-    }
+    if (isSupporting) unSupportMutation.mutate(user.id);
+    else supportMutation.mutate(user.id);
   };
+
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<
+    "supporters" | "supporting" | null
+  >(null);
+
+  const openModal = (type: "supporters" | "supporting") => {
+    setModalType(type);
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalType(null);
+  };
+
+  // Queries triggered only when modal opens
+  // Inside ProfileTopBar
+  const supportersQuery = useGetSupporters(
+    user?.id,
+    modalOpen && modalType === "supporters"
+  );
+  const supportingQuery = useGetSupporting(
+    user?.id,
+    modalOpen && modalType === "supporting"
+  );
+
+  // Intersection observer for infinite scroll
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const lastUserRef = useCallback(
+    (node: HTMLLIElement | null) => {
+      if (!node) return;
+
+      if (observerRef.current) observerRef.current.disconnect();
+
+      observerRef.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          if (modalType === "supporters" && supportersQuery.hasNextPage) {
+            supportersQuery.fetchNextPage();
+          } else if (
+            modalType === "supporting" &&
+            supportingQuery.hasNextPage
+          ) {
+            supportingQuery.fetchNextPage();
+          }
+        }
+      });
+
+      observerRef.current.observe(node);
+    },
+    [modalType, supportersQuery, supportingQuery]
+  );
+
+  // Flatten pages to a single array for the modal
+  const modalUsers =
+    modalType === "supporters"
+      ? supportersQuery.data?.pages.flatMap((p) => p.users) ?? []
+      : supportingQuery.data?.pages.flatMap((p) => p.users) ?? [];
+
+  const isFetchingNext =
+    modalType === "supporters"
+      ? supportersQuery.isFetchingNextPage
+      : supportingQuery.isFetchingNextPage;
 
   return (
     <div className="relative">
+      {/* Top bar */}
       <div className="py-10 sm:py-20 px-6 relative overflow-hidden">
         {user?.bannerImage && (
           <img
@@ -46,12 +108,10 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}
-
         <div className="absolute inset-0 bg-black/30 dark:bg-black/10"></div>
 
-        {/* Content container */}
         <div className="relative z-10 flex items-center gap-6">
-          {/* Profile Image */}
+          {/* Profile image */}
           <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
             {user?.profileImage ? (
               <img
@@ -68,18 +128,23 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             )}
           </div>
 
-          {/* Profile Info */}
+          {/* Profile info */}
           <div className="flex flex-col space-y-2 text-white">
             <div className="flex flex-col">
               <h1 className="text-xl font-bold">{user?.name}</h1>
               <p className="text-gray-200">@{user?.username}</p>
             </div>
 
-            <div className="flex gap-4">
-              <p className="text-md">{supportersCount} supporters</p>
+            <div className="flex gap-4 cursor-pointer">
+              <p onClick={() => openModal("supporters")}>
+                {supportersCount} supporters
+              </p>
               <p>|</p>
-              <p className="text-md">{supportingCount} supporting</p>
+              <p onClick={() => openModal("supporting")}>
+                {supportingCount} supporting
+              </p>
             </div>
+
             {!isOwnProfile && (
               <div className="flex gap-4 items-center">
                 <Button
@@ -107,13 +172,66 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                   )}
                 </Button>
 
-                <Button variant={"profileMessage"}>Message</Button>
+                <Button variant="profileMessage">Message</Button>
                 <Ellipsis />
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={closeModal}
+          ></div>
+
+          <div className="relative z-50 bg-white dark:bg-secondary-color border border-zinc-700 rounded-3xl shadow-lg p-6 w-2/6 max-w-full">
+            <button
+              className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-700 dark:hover:text-white"
+              onClick={closeModal}
+            >
+              <X size={20} />
+            </button>
+
+            <h2 className="text-lg font-bold mb-4">
+              {modalType === "supporters" ? "Supporters" : "Supporting"}
+            </h2>
+
+            <ul className="space-y-2 max-h-64 overflow-y-auto">
+              {modalUsers.map((userItem, index) => {
+                const isLast = index === modalUsers.length - 1;
+                return (
+                  <li
+                    key={userItem.id}
+                    ref={isLast ? lastUserRef : null}
+                    className="p-2 bg-gray-100 dark:bg-gray-700 rounded flex items-center gap-2"
+                  >
+                    {userItem.profileImage && (
+                      <img
+                        src={userItem.profileImage}
+                        alt={userItem.name}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    )}
+                    <div>
+                      <p className="font-medium">{userItem.name}</p>
+                      <p className="text-sm text-gray-500">
+                        @{userItem.username}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+              {isFetchingNext && (
+                <li className="text-center p-2 text-gray-500">Loading...</li>
+              )}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
