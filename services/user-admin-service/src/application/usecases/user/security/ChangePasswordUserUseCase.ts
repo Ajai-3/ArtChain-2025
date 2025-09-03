@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ChangePasswordRequestDto } from '../../../../domain/dtos/user/auth/ChangePasswordRequestDto';
-import { IChangePasswordUserUseCase } from '../../../../domain/usecases/user/auth/IChangePasswordUserUseCase';
+import { IChangePasswordUserUseCase } from '../../../../domain/usecases/user/security/IChangePasswordUserUseCase';
 import {
   BadRequestError,
   NotFoundError,

@@ -1,11 +1,11 @@
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { USER_MESSAGES } from "./../../../../constants/userMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { IGetUserWithIdUserUseCase } from "../../../../domain/usecases/user/user-intraction/IGetUserWithIdUserUseCase";
-import { GetUserProfileWithIdResultDto } from "../../../../domain/dtos/user/user-intraction/GetUserProfileWithIdResultDto";
-import { GetUserProfileWithIdRequestDto } from "../../../../domain/dtos/user/user-intraction/GetUserProfileWithIdRequestDto";
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { USER_MESSAGES } from './../../../../constants/userMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { IGetUserWithIdUserUseCase } from '../../../../domain/usecases/user/user-intraction/IGetUserWithIdUserUseCase';
+import { GetUserProfileWithIdResultDto } from '../../../../domain/dtos/user/user-intraction/GetUserProfileWithIdResultDto';
+import { GetUserProfileWithIdRequestDto } from '../../../../domain/dtos/user/user-intraction/GetUserProfileWithIdRequestDto';
 
 export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
   constructor(

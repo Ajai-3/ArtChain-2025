@@ -1,6 +1,6 @@
-import { IndexedUser } from "../../../../types/IndexedUser";
-import { SafeUser } from "../../../../domain/repositories/IBaseRepository";
-import { logger } from "../../../../utils/logger";
+import { IndexedUser } from '../../../../types/IndexedUser';
+import { SafeUser } from '../../../../domain/repositories/IBaseRepository';
+import { logger } from '../../../../utils/logger';
 
 export class AddUserToElasticSearchUseCase {
   async execute(user: SafeUser): Promise<IndexedUser> {
@@ -9,9 +9,9 @@ export class AddUserToElasticSearchUseCase {
       username: user.username,
       name: user.name,
       email: user.email,
-      profileImage: user.profileImage || "",
-      bannerImage: user.bannerImage || "",
-      bio: user.bio || "",
+      profileImage: user.profileImage || '',
+      bannerImage: user.bannerImage || '',
+      bio: user.bio || '',
       role: user.role,
       status: user.status,
       createdAt: user.createdAt,
@@ -19,6 +19,6 @@ export class AddUserToElasticSearchUseCase {
 
     logger.debug(user);
 
-    return elasticUser
+    return elasticUser;
   }
 }

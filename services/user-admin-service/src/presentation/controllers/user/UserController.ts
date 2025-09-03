@@ -1,18 +1,18 @@
-import { HttpStatus } from "art-chain-shared";
-import { Request, Response, NextFunction } from "express";
+import { HttpStatus } from 'art-chain-shared';
+import { Request, Response, NextFunction } from 'express';
 
-import { IUserController } from "../../interfaces/user/IUserController";
-import { USER_MESSAGES } from "../../../constants/userMessages";
+import { IUserController } from '../../interfaces/user/IUserController';
+import { USER_MESSAGES } from '../../../constants/userMessages';
 
-import { SupportUnSupportRequestDto } from "../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto";
-import { GetUserProfileWithIdRequestDto } from "../../../domain/dtos/user/user-intraction/GetUserProfileWithIdRequestDto";
+import { SupportUnSupportRequestDto } from '../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto';
+import { GetUserProfileWithIdRequestDto } from '../../../domain/dtos/user/user-intraction/GetUserProfileWithIdRequestDto';
 
-import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
-import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
-import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
-import { logger } from "../../../utils/logger";
+import { SupportUserUseCase } from '../../../application/usecases/user/user-intraction/SupportUserUseCase';
+import { UnSupportUserUseCase } from '../../../application/usecases/user/user-intraction/UnSupportUserUseCase';
+import { GetCurrentUserUseCase } from '../../../application/usecases/user/user-intraction/GetCurrentUserUseCase';
+import { GetUserWithIdUserUseCase } from '../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase';
+import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
+import { logger } from '../../../utils/logger';
 // import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
 
 export class UserController implements IUserController {
@@ -36,7 +36,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { user, supportingCount, supportersCount } =
         await this._getCurrentUserUseCase.execute(userId);
 
@@ -64,7 +64,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers["x-user-id"] as string | undefined;
+      const currentUserId = req.headers['x-user-id'] as string | undefined;
       const dto: GetUserProfileWithIdRequestDto = { userId, currentUserId };
 
       const { user, isSupporting, supportingCount, supportersCount } =
@@ -94,12 +94,12 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       const result = await this._supportUserUseCase.execute(dto);
 
-      await publishNotification("user.supported", {
+      await publishNotification('user.supported', {
         supportedUserId: result.targetUser.id,
         supporterId: result.supporter.id,
         supporterName: result.supporter.username,
@@ -134,7 +134,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._unSupportUserUseCase.execute(dto);
