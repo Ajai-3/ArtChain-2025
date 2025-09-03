@@ -1,13 +1,14 @@
 import express from "express";
 import elasticUserRoutes from "./routes/userElastic.routes";
 import { errorHandler } from "./middleware/errorHandler.middleware";
+import { logger } from "./utils/logger";
 
 const app = express();
 app.use(express.json());
 
 app.use((req, res, next) => {
   const fullUrl = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
-  console.log(`Incoming request: ${req.method} ${fullUrl}`);
+  logger.info(`Incoming request: ${req.method} ${fullUrl}`);
   next();
 });
 
