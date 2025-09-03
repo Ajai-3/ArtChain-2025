@@ -27,7 +27,11 @@ export const config = {
     projectId: process.env.FIREBASE_PROJECT_ID,
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     privateKey: process.env.FIREBASE_PRIVATE_KEY
-  }
+  },
+   grpc: {
+    host: process.env.ELASTIC_GRPC_HOST || 'localhost',
+    port: process.env.ELASTIC_GRPC_PORT || '50051',
+  },
 };
 
 console.log(config);

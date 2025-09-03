@@ -1,9 +1,10 @@
-import { HttpStatus } from 'art-chain-shared';
-import { Request, Response, NextFunction } from 'express';
-import { USER_MESSAGES } from '../../../constants/userMessages';
-import { IUserManageMentController } from './../../interfaces/admin/IUserManagementController';
-import { GetAllUsersUseCase } from '../../../application/usecases/admin/user-management/GetAllUsersUseCase';
-import { BanOrUnbanUserUseCase } from '../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase';
+import { HttpStatus } from "art-chain-shared";
+import { Request, Response, NextFunction } from "express";
+import { USER_MESSAGES } from "../../../constants/userMessages";
+import { IUserManageMentController } from "./../../interfaces/admin/IUserManagementController";
+import { GetAllUsersUseCase } from "../../../application/usecases/admin/user-management/GetAllUsersUseCase";
+import { BanOrUnbanUserUseCase } from "../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase";
+import axios from "axios";
 
 export class UserManageMentController implements IUserManageMentController {
   constructor(
@@ -25,13 +26,25 @@ export class UserManageMentController implements IUserManageMentController {
       const limit = parseInt(req.query.limit as string) || 10;
       const search = (req.query.search as string)?.trim();
 
+      let userIds: string[] | undefined;
+
+      if (search) {
+        const response = await axios.get(
+          `http://elastic-search-service:4004/api/v1/elastic-user/admin/search`,
+          {
+            params: { q: search },
+          }
+        );
+
+        userIds = response.data.userIds;
+      }
+
       const result = await this._getAllUsersUseCase.execute({
         page,
         limit,
         search,
+        userIds,
       });
-
-      console.log(result);
 
       res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.GET_ALL_USERS_SUCCESS,
@@ -60,12 +73,12 @@ export class UserManageMentController implements IUserManageMentController {
       const { userId } = req.params;
 
       if (!userId) {
-        return res.status(400).json({ message: 'Missing userId' });
+        return res.status(400).json({ message: "Missing userId" });
       }
 
       const user = await this._banOrUnbanUserUseCase.execute(userId);
 
-      const action = user.status === 'banned' ? 'banned' : 'unbanned';
+      const action = user.status === "banned" ? "banned" : "unbanned";
 
       return res
         .status(200)
