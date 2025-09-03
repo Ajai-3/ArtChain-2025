@@ -19,7 +19,7 @@ export const authSocket = (socket: Socket, next: (err?: Error) => void) => {
     (socket as any).userId = decode?.id;
     next();
   } catch (err) {
-    logger.error("Invalid token", err);
-    next(new Error("Invalid token"));
+    logger.error("Invalid token : ", err);
+    // next(new Error("Invalid token"));
   }
 };
