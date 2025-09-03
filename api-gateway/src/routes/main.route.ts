@@ -5,6 +5,7 @@ import { userProxy } from "../proxy/user.proxy";
 import { adminProxy } from "../proxy/admin.proxy";
 import { uploadProxy } from "../proxy/upload.proxy";
 import { notificationsProxy } from "../proxy/notifications.proxy";
+import { elasticSearchProxy } from "../proxy/elastic-search.proxy";
 
 const router = Router();
 
@@ -21,5 +22,8 @@ router.use("/api/v1/notifications", notificationsProxy);
 
 // upload-service
 router.use("/api/v1/upload", uploadProxy);
+
+// elastic-search-service
+router.use("/api/v1/elastic-user", elasticSearchProxy)
 
 export default router;

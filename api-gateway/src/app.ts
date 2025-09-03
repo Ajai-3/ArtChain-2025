@@ -4,6 +4,7 @@ import { config } from './config/env';
 import cookieParser from 'cookie-parser';
 import mainRoutes from './routes/main.route';
 import { conditionalAuth } from './middleware/conditionalAuth';
+import { logger } from './utils/logger';
 
 const app = express();
 
@@ -11,7 +12,7 @@ app.use(cookieParser());
 
 
 app.use((req, res, next) => {
-  console.log(`Incoming request: ${req.method} ${req.path}`);
+  logger.info(`Incoming request: ${req.method} ${req.path}`);
   next();
 });
 

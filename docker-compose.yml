@@ -123,6 +123,16 @@ services:
       - "4005:4005"
     networks:
       - backend
+  upload-service:
+    container_name: upload-service
+    build: ./services/upload-service
+    env_file:
+      - .env
+      - ./services/upload-service/.env
+    ports:
+      - "4006:4006"
+    networks:
+      - backend    
 
 networks:
   backend:
