@@ -1,4 +1,5 @@
 export type UserPreview = {
+    id: string,
     name: string,
     username: string,
     profileImage: string,

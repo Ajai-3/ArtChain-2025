@@ -3,13 +3,13 @@ import { ISupporterRepository } from "../../../../domain/repositories/user/ISupp
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { UserPreview } from "../../../../types/UserPreview";
 
-export class GetUserSupportersUseCase {
+export class GetUserSupportingUseCase {
   constructor(
     private readonly _userRepo: IUserRepository,
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
   async execute(userId: string, page = 1, limit = 10): Promise<UserPreview[]> {
-    return this._supporterRepo.getSupporters(userId, page, limit);
+    return this._supporterRepo.getSupporting(userId, page, limit);
   }
 }

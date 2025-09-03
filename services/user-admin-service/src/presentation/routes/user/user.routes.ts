@@ -26,4 +26,8 @@ router.post('/verify-email-token', securityController.emailVerifyToken)
 // Deactivate Account
 router.post('/deactivate', securityController.deactivateAccount);
 
+
+router.get("/:id/supporters", userController.getSupporters)
+router.get("/:id/supporting", userController.getSupporing)
+
 export default router;
