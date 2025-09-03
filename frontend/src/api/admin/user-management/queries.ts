@@ -17,7 +17,7 @@ export const useGetAllUsers = ({
       const response = await apiClient.get("/api/v1/admin/users", {
         params: { page, limit, search },
       });
-      return response as any;
+      return response.data as any;
     },
   });
 };

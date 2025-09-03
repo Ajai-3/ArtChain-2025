@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { loginSuccess, adminLogout } from "../../../redux/slices/adminSlice";
+import { setAdmin, adminLogout } from "../../../redux/slices/adminSlice";
 
 
 export const useAdminLoginMutation = () => {
@@ -12,11 +12,14 @@ export const useAdminLoginMutation = () => {
   return useMutation({
     mutationFn: (credentials: { identifier: string; password: string }) => 
       apiClient.post("/api/v1/admin/login", credentials),
-    onSuccess: (data) => {
+    onSuccess: (response) => {
 
-      console.log("Login successful:", data);
+       const { user, accessToken } = response.data;
+      console.log("Login successful:", response);
       toast.success("Login successful");
-      dispatch(loginSuccess(data));
+      
+
+      dispatch(setAdmin({ admin: user, accessToken }));
 
       navigate('/admin/dashboard');
 
