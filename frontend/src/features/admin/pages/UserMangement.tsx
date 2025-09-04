@@ -13,15 +13,26 @@ import { Input } from "../../../components/ui/input";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { useToggleBanUserMutation } from "../../../api/admin/user-management/mutations";
 import { useGetAllUsers } from "../../../api/admin/user-management/queries";
-import { Loader2 } from "lucide-react";
+import { FileDown, LayoutDashboard, Loader2, User } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
+import UserFilters from "../components/userManagement/UserFilters";
+import UserTable from "../components/userManagement/UserTable";
 
 const UserManagement: React.FC = () => {
   const [page, setPage] = useState(1);
   const [rawSearch, setRawSearch] = useState("");
   const debouncedSearch = useDebounce(rawSearch, 500);
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [userTypeFilter, setUserTypeFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const toggleBanMutation = useToggleBanUserMutation();
-
   const { data, isLoading } = useGetAllUsers({
     page,
     limit: 10,
@@ -32,108 +43,122 @@ const UserManagement: React.FC = () => {
     ? Math.ceil(data.meta.total / data.meta.limit)
     : 0;
 
-  const isToggling = (userId: string) => toggleBanMutation.isPending && toggleBanMutation.variables?.userId === userId;
+  const isToggling = (userId: string) =>
+    toggleBanMutation.isPending &&
+    toggleBanMutation.variables?.userId === userId;
+
+  const renderPagination = () => {
+    if (!data?.meta || totalPages <= 1) return null;
+
+    const visiblePages = 3;
+    let startPage = Math.max(page - 1, 1);
+    let endPage = Math.min(startPage + visiblePages - 1, totalPages);
+
+    if (endPage - startPage < visiblePages - 1) {
+      startPage = Math.max(endPage - visiblePages + 1, 1);
+    }
+
+    const pages = [];
+    for (let i = startPage; i <= endPage; i++) pages.push(i);
+
+    return (
+      <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={page === 1 || isLoading}
+          onClick={() => setPage(1)}
+        >
+          First
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={page === 1 || isLoading}
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+        >
+          Prev
+        </Button>
+
+        {startPage > 1 && <span className="px-2">...</span>}
+        {pages.map((p) => (
+          <Button
+            key={p}
+            size="sm"
+            variant={p === page ? "default" : "outline"}
+            onClick={() => setPage(p)}
+          >
+            {p}
+          </Button>
+        ))}
+        {endPage < totalPages && <span className="px-2">...</span>}
+
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={page >= totalPages || isLoading}
+          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+        >
+          Next
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={page >= totalPages || isLoading}
+          onClick={() => setPage(totalPages)}
+        >
+          Last
+        </Button>
+      </div>
+    );
+  };
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">User Management</h1>
-
-      <Input
-        type="text"
-        placeholder="Search by name, email, or username..."
-        onChange={(e) => {
-          setPage(1);
-          setRawSearch(e.target.value);
-        }}
-        className="mb-4 w-full max-w-md"
-      />
-
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Username</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={`skeleton-${index}`}>
-                  <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-[60px]" /></TableCell>
-                </TableRow>
-              ))
-            ) : data?.data && data.data.length > 0 ? (
-              data.data.map((user: any) => (
-                <TableRow key={user.id}>
-                  <TableCell>{user.name || "-"}</TableCell>
-                  <TableCell>{user.email || "-"}</TableCell>
-                  <TableCell>{user.username || "-"}</TableCell>
-                  <TableCell className="capitalize">{user.role || "-"}</TableCell>
-                  <TableCell className="capitalize">{user.status || "-"}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant={user.status === "banned" ? "outline" : "destructive"}
-                      size="sm"
-                      disabled={isToggling(user.id)}
-                      onClick={() => {
-                        const action = user.status === "banned" ? "unban" : "ban";
-                        const confirmed = confirm(`Are you sure you want to ${action} ${user.name}?`);
-                        if (confirmed) {
-                          toggleBanMutation.mutate({ userId: user.id });
-                        }
-                      }}
-                    >
-                      {isToggling(user.id) ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        user.status === "banned" ? "Unban" : "Ban"
-                      )}
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">
-                  {data ? "No users found" : "Failed to load users"}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      <div className="mb-4">
+        <div className="flex gap-2 items-center ">
+          <LayoutDashboard />
+          <h1 className="text-2xl font-bold "> User Management</h1>
+        </div>
+        <p className="text-zinc-500">
+          Control user access, plans, verifications, and account settings
+        </p>
       </div>
 
-      {data?.meta && data.meta.total > 0 && (
-        <div className="flex items-center justify-between mt-4">
-          <Button
-            variant="outline"
-            disabled={page === 1 || isLoading}
-            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          >
-            Previous
-          </Button>
-          <span className="text-sm">
-            Page {page} of {totalPages} ({data.meta.total} total users)
-          </span>
-          <Button
-            variant="outline"
-            disabled={page >= totalPages || isLoading}
-            onClick={() => setPage((prev) => prev + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      )}
+      <UserFilters
+        search={rawSearch}
+        onSearchChange={(value) => {
+          setPage(1);
+          setRawSearch(value);
+        }}
+        roleFilter={roleFilter}
+        setRoleFilter={setRoleFilter}
+        userTypeFilter={userTypeFilter}
+        setUserTypeFilter={setUserTypeFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+      />
+
+      <UserTable
+        users={data?.data || []}
+        isLoading={isLoading}
+        page={page}
+        totalPages={totalPages}
+        onPageChange={setPage}
+        toggleBan={(userId) => {
+          const user = data?.data.find((u: any) => u.id === userId);
+          const action = user.status === "banned" ? "unban" : "ban";
+          if (confirm(`Are you sure you want to ${action} ${user.name}?`)) {
+            toggleBanMutation.mutate({ userId });
+          }
+        }}
+        isToggling={(userId) =>
+          toggleBanMutation.isPending &&
+          toggleBanMutation.variables?.userId === userId
+        }
+      />
+
+
     </div>
   );
 };

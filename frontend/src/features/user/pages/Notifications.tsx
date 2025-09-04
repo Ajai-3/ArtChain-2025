@@ -71,7 +71,7 @@ const Notifications = ({ socket }: NotificationsProps) => {
 
   return (
     <div className="flex h-full">
-      <div className="w-full sm:w-3/12 dark:bg-black text-white overflow-y-auto shadow-lg p-2 border-r border-zync-700">
+      <div className="w-full sm:w-8/12 md:w-6/12 lg:w-3/12 dark:bg-black text-white overflow-y-auto shadow-lg p-2 border-r border-zync-700">
         {notifications.map((n, i) => (
           <NotificationUserProfile
             key={`${n.id}-${i}`}

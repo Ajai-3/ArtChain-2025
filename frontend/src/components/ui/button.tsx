@@ -25,6 +25,7 @@ const buttonVariants = cva(
           "px-3 py-1 h-1 text-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm text-white hover:bg-zinc-600 dark:hover:bg-zinc-700  px-3 py-1 text-sm",
         support: "px-3 py-1 h-1 text-sm bg-main-color hover:bg-main-color-dark",
         unSupport: "px-3 py-1 h-1 text-sm bg-transparant",
+        yellow: "bg-yellow-500 hover:bg-yellow-600"
       },
       size: {
         default: "h-9 px-4 py-4",
