@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import type { ApiError } from "../../../../types/apiError";
 import { updateProfile } from "../../../../redux/slices/userSlice";
 import { useDispatch } from "react-redux";
-import type { User } from "../../../../types/user/user";
+import type { User } from "../../../../types/users/user/user";
 
 export interface VerifyEmailTokenFormData {
   token: string;
@@ -13,7 +13,7 @@ export interface VerifyEmailTokenFormData {
 
 interface VerifyEmailTokenResponse {
   message: string;
-  data: User
+  data: User;
 }
 
 export const useVerifyEmailTokenMutation = (
@@ -23,7 +23,7 @@ export const useVerifyEmailTokenMutation = (
   ApiError,
   VerifyEmailTokenFormData
 > => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   return useMutation<
     VerifyEmailTokenResponse,
     ApiError,
@@ -39,7 +39,7 @@ export const useVerifyEmailTokenMutation = (
 
     onSuccess: (data) => {
       toast.success(data.message || "Email changed successfully");
-      console.log("data", data, data.data)
+      console.log("data", data, data.data);
       if (data.data) {
         dispatch(updateProfile({ user: data.data }));
       }

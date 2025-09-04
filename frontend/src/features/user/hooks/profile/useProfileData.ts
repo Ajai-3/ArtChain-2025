@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useUserProfile } from "./useUserProfile";
-import type { User } from "../../../../types/user/user";
+import type { User } from "../../../../types/users/user/user";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { useUserProfileWithId } from "./useUserProfileWithId";

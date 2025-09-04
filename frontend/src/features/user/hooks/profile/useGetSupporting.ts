@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
-import type { UserPreview } from "../../../../types/user/UserPreview";
+import type { UserPreview } from "../../../../types/users/user/UserPreview";
 
 interface UserResponse {
   data: UserPreview[];
@@ -18,7 +18,7 @@ export const useGetSupporting = (userId?: string, enabled: boolean = true) => {
     },
     getNextPageParam: (lastPage, allPages) =>
       lastPage.data.length < 10 ? undefined : allPages.length * 10,
-    enabled: !!userId && enabled, 
+    enabled: !!userId && enabled,
     initialPageParam: 0,
   });
 };

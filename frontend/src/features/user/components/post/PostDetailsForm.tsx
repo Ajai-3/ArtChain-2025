@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowLeft } from "lucide-react";
 import { useSelector } from "react-redux";
-import type { User } from "../../../../types/user/user";
+import type { User } from "../../../../types/users/user/user";
 import { Label } from "../../../../components/ui/label";
 import { Input } from "../../../../components/ui/input";
 import type { RootState } from "../../../../redux/store";

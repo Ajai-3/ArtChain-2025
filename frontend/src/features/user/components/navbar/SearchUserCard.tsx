@@ -1,5 +1,5 @@
 import React from "react";
-import type { IndexedUser } from "../../../../types/user/IndexedUser";
+import type { IndexedUser } from "../../../../types/users/user/IndexedUser";
 import { User } from "lucide-react";
 
 interface SearchUserCardProps {

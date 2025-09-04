@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import type { User } from "../../types/user/user";
+import type { User } from "../../types/users/user/user";
 import { disconnectSocket } from "../../socket";
 
 interface UserState {
@@ -51,7 +51,7 @@ const userSlice = createSlice({
       state.accessToken = null;
       state.supportingCount = 0;
       state.supportersCount = 0;
-      disconnectSocket(); 
+      disconnectSocket();
     },
   },
 });

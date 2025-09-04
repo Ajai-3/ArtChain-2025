@@ -4,7 +4,7 @@ import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Textarea } from "../../../../components/ui/textarea";
 import type { RootState } from "../../../../redux/store";
-import type { User } from "../../../../types/user/user";
+import type { User } from "../../../../types/users/user/user";
 import { useCreateArtistRequestMutation } from "../../hooks/art/useCreateArtistRequestMutation";
 import toast from "react-hot-toast";
 import { z } from "zod";

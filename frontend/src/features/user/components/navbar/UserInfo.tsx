@@ -1,7 +1,7 @@
 import { Bell, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../components/ui/button";
-import type { User as safeuser } from "../../../../types/user/user";
+import type { User as safeuser } from "../../../../types/users/user/user";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 

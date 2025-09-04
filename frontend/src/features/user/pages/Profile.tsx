@@ -2,6 +2,7 @@ import ProfileTopBar from "../components/profile/ProfileTopBar";
 import { useProfileData } from "../hooks/profile/useProfileData";
 import ProfileContent from "../components/profile/ProfileContent";
 import ProfileSelectBar from "../components/profile/ProfileSelectBar";
+import ProfileSkeleton from "../components/skeletons/ProfileSkeleton";
 
 const Profile: React.FC = () => {
   const {
@@ -15,7 +16,7 @@ const Profile: React.FC = () => {
     displaySupportersCount,
   } = useProfileData();
 
-  if (isLoading) return <div>Loading profile...</div>;
+  if (isLoading) return <ProfileSkeleton />;
   if (!profileUser) return <div>User not found</div>;
 
   return (

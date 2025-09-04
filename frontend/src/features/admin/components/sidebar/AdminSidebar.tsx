@@ -38,11 +38,13 @@ const AdminSideBar: React.FC = () => {
 
   return (
     <>
-      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-64 flex flex-col bg-secondary-color flex-shrink-0">
-        <div className="mb-4 p-2 border-b border-zinc-200 dark:border-zinc-800">
+      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-16 sm:w-64 flex flex-col bg-secondary-color flex-shrink-0 transition-width duration-300">
+        {/* Logo */}
+        <div className="mb-4 hidden sm:flex p-2 border-b border-zinc-200 dark:border-zinc-800 justify-center sm:justify-start">
           <Logo />
         </div>
 
+        {/* Admin Links */}
         <div className="flex flex-col gap-1">
           {adminLinks.map(({ to, icon: Icon, label }) => (
             <NavLink
@@ -57,7 +59,7 @@ const AdminSideBar: React.FC = () => {
               }
             >
               <Icon className="w-5 h-5" />
-              <span>{label}</span>
+              <span className="hidden sm:inline">{label}</span>
             </NavLink>
           ))}
         </div>
@@ -74,7 +76,7 @@ const AdminSideBar: React.FC = () => {
           }
         >
           <Settings className="w-5 h-5" />
-          <span>Admin Controls</span>
+          <span className="hidden sm:inline">Admin Controls</span>
         </NavLink>
 
         {/* Logout Button */}
@@ -83,7 +85,7 @@ const AdminSideBar: React.FC = () => {
           className="w-full p-3 mt-2 rounded-md flex items-center gap-3 transition-colors text-zinc-700 dark:text-zinc-400 hover:bg-zinc-900 dark:hover:bg-zinc-600/30 dark:hover:text-white hover:text-white"
         >
           <LogOut className="w-5 h-5" />
-          <span>Logout</span>
+          <span className="hidden sm:inline">Logout</span>
         </button>
       </div>
 
