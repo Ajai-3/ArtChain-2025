@@ -49,7 +49,10 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
       {/* Notification text */}
       <div className="flex-1">
         {n.type === "support" ? (
-          <p className="dark:text-white text-black">
+          <p
+            className="dark:text-white text-black text-sm truncate w-64"
+            title={n.data.supporterName + " started supporting you."}
+          >
             <strong>{n.data.supporterName}</strong> started supporting you.
           </p>
         ) : (
