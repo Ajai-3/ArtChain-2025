@@ -9,9 +9,11 @@ interface CreatePostProps {
 
 const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
-  const onSubmitImage = () => {
 
-  }
+  const onSubmitImage = (file: File, urls: any) => {
+    console.log("Uploaded image URLs:", urls);
+    // You can store these in your post form state to submit later
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

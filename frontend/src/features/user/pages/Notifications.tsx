@@ -9,6 +9,7 @@ import {
   addNotification,
 } from "../../../redux/slices/notificationSlice";
 
+
 interface NotificationsProps {
   socket: any;
 }
