@@ -4,11 +4,12 @@ import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Textarea } from "../../../../components/ui/textarea";
 import type { RootState } from "../../../../redux/store";
-import type { User } from "../../../../types/user/user";
+import type { User } from "../../../../types/users/user/user";
 import { useCreateArtistRequestMutation } from "../../hooks/art/useCreateArtistRequestMutation";
 import toast from "react-hot-toast";
 import { z } from "zod";
-import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
+import { useHasSubmittedArtistRequest } from "../../hooks/art/useHasSubmittedArtistRequest";
+import { COUNTRIES } from "../../../../constants/countries";
 
 // Zod schema
 export const createArtistRequestSchema = z.object({
@@ -36,7 +37,7 @@ type ModalProps = {
 };
 
 const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
-  const { user } = useSelector((state: RootState) => state.user) as {
+  const { user } = useSelector((state: RootState) => state?.user) as {
     user: User | null;
   };
   const mutation = useCreateArtistRequestMutation();
@@ -51,7 +52,8 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
     country?: string;
   }>({});
 
-  const { data, isLoading, isError } = useHasSubmittedArtistRequest();
+  const { data, isLoading, isError, refetch } =
+    useHasSubmittedArtistRequest(isOpen);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -104,30 +106,74 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
     }
 
     setErrors({});
-    mutation.mutate(payload);
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        refetch();
+        toast.success("Request submitted successfully!");
+      },
+    });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white border border-zinc-800 dark:bg-secondary-color p-6 rounded-lg w-[90%] max-w-xl">
         <h2 className="text-xl text-center mb-4 font-bold">Become an Artist</h2>
-        {data?.alreadySubmitted && !isLoading ? (
-          <>
-            <div>
-              <p>
-                Your artist request is{" "}
-                <strong>{data.latestRequest.status}</strong>. Submitted on{" "}
-                <strong>
-                  {new Date(data.latestRequest.createdAt).toLocaleDateString()}
-                </strong>
-                . Our admin will review it soon.
-              </p>
-
-              <Button variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
+        {isLoading ? (
+          <p className="text-center">Loading...</p>
+        ) : isError ? (
+          <p className="text-red-500 text-center">
+            Failed to load request status.
+          </p>
+        ) : data?.alreadySubmitted &&
+          data.latestRequest.status === "pending" ? (
+          <div className="text-center">
+            <div className="mb-2">
+              <span className="font-semibold">Status:</span>{" "}
+              <span className="capitalize">{data.latestRequest.status}</span>
             </div>
-          </>
+
+            <div className="mb-2">
+              <span className="font-semibold">Submitted On:</span>{" "}
+              {new Date(data.latestRequest.createdAt).toLocaleDateString(
+                undefined,
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }
+              )}
+            </div>
+
+            {data.latestRequest.reviewedAt && (
+              <div className="mb-2">
+                <span className="font-semibold">Reviewed On:</span>{" "}
+                {new Date(data.latestRequest.reviewedAt).toLocaleDateString(
+                  undefined,
+                  {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  }
+                )}
+              </div>
+            )}
+
+            {data.latestRequest.rejectionReason?.trim() && (
+              <div className="mb-2 text-red-600">
+                <span className="font-semibold">Rejection Reason:</span>{" "}
+                {data.latestRequest.rejectionReason}
+              </div>
+            )}
+
+            <p className="text-gray-600 mt-4">
+              Your request is being reviewed by the admin. You will be notified
+              of updates.
+            </p>
+
+            <Button variant="outline" onClick={onClose} className="mt-4">
+              Close
+            </Button>
+          </div>
         ) : (
           <>
             <div className="space-y-4 mb-4">
@@ -168,17 +214,24 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
                   )}
                 </div>
                 <div className="w-full">
-                  <label className="block mb-2">Country</label>
-                  <Input
-                    variant="green-focus"
+                  <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Country
+                  </label>
+                  <select
                     value={country}
-                    placeholder="Enter your country"
                     onChange={(e) => {
-                      const value = e.target.value.replace(/[^A-Za-z\s]/g, "");
-                      setCountry(value);
-                      validateField("country", value);
+                      setCountry(e.target.value);
+                      validateField("country", e.target.value);
                     }}
-                  />
+                    className="w-full rounded-md border border-gray-300 bg-white dark:bg-secondary-color dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-green-600"
+                  >
+                    <option value="">Select your country</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </select>
                   {errors.country && (
                     <p className="text-red-500 text-sm mt-1">
                       {errors.country}

@@ -2,6 +2,7 @@ import { Route } from 'react-router-dom';
 import { lazy } from 'react';
 import UserLayout from '../../layouts/UserLayout';
 import { AuthRouteGuard } from './AuthRouteGuard';
+import ImageUploader from '../../features/user/pages/ImageUploader';
 
 // Lazy-loaded pages
 const Home = lazy(() => import('../../features/user/pages/Home'));
@@ -11,7 +12,7 @@ const ResetPassword = lazy(() => import('../../features/user/components/auth/Res
 const SignupPassword = lazy(() => import('../../features/user/components/auth/SignupPassword'));
 const Messages = lazy(() => import('../../features/user/pages/Messages'));
 const Liora = lazy(() => import('../../features/user/pages/Liora'));
-const Notifications = lazy(() => import('../../features/user/pages/Notifications'));
+  const Notifications = lazy(() => import("../../features/user/pages/Notifications"))
 const Bidding = lazy(() => import('../../features/user/pages/Bidding'));
 const Shop = lazy(() => import('../../features/user/pages/Shop'));
 const Wallet = lazy(() => import('../../features/user/pages/Wallet'));
@@ -36,6 +37,7 @@ const UserRoutes = (
       <Route path="profile" element={<Profile />} />
       <Route path="profile/:userId" element={<Profile />} />
       <Route path="settings" element={<Settings />} />
+      <Route path="test" element={<ImageUploader />} />
     </Route>
   </>
 );

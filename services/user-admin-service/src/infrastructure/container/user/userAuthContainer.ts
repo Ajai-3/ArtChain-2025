@@ -9,7 +9,7 @@ import { RefreshTokenUserUseCase } from '../../../application/usecases/user/auth
 import { ResetPasswordUserUseCase } from '../../../application/usecases/user/auth/ResetPasswordUserUseCase';
 import { StartRegisterUserUseCase } from '../../../application/usecases/user/auth/StartRegisterUserUseCase';
 import { ForgotPasswordUserUseCase } from '../../../application/usecases/user/auth/ForgotPasswordUserUseCase';
-import { ChangePasswordUserUseCase } from '../../../application/usecases/user/auth/ChangePasswordUserUseCase';
+import { AddUserToElasticSearchUseCase } from '../../../application/usecases/user/search/AddUserToElasticSearchUseCase';
 
 // Repositories
 const userRepo = new UserRepositoryImpl();
@@ -21,8 +21,8 @@ const loginUserUseCase = new LoginUserUseCase(userRepo);
 const googleAuthUserUseCase = new GoogleAuthUserUseCase(userRepo);
 const forgotPasswordUserUseCase = new ForgotPasswordUserUseCase(userRepo);
 const resetPasswordUserUseCase = new ResetPasswordUserUseCase(userRepo);
-const changePasswordUserUseCase = new ChangePasswordUserUseCase(userRepo);
 const refreshTokenUserUseCase = new RefreshTokenUserUseCase(userRepo);
+const addUserToElasticUserUseCase = new AddUserToElasticSearchUseCase();
 
 // Controller
 export const userAuthController = new UserAuthController(
@@ -32,6 +32,6 @@ export const userAuthController = new UserAuthController(
   googleAuthUserUseCase,
   forgotPasswordUserUseCase,
   resetPasswordUserUseCase,
-  changePasswordUserUseCase,
-  refreshTokenUserUseCase
+  refreshTokenUserUseCase,
+  addUserToElasticUserUseCase
 );

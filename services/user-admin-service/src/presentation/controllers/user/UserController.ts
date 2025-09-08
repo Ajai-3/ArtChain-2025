@@ -11,14 +11,19 @@ import { SupportUserUseCase } from "../../../application/usecases/user/user-intr
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
 import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
 import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
-// import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
+import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
+import { logger } from "../../../utils/logger";
+import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
+import { GetUserSupportingUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportingUseCase";
 
 export class UserController implements IUserController {
   constructor(
     private readonly _getCurrentUserUseCase: GetCurrentUserUseCase,
     private readonly _getUserWithIdUseCase: GetUserWithIdUserUseCase,
     private readonly _supportUserUseCase: SupportUserUseCase,
-    private readonly _unSupportUserUseCase: UnSupportUserUseCase // private readonly _getSupportersUseCase: GetUserSupportersUseCase
+    private readonly _unSupportUserUseCase: UnSupportUserUseCase,
+    private readonly _getSupportersUseCase: GetUserSupportersUseCase,
+    private readonly _getSupportingUseCase: GetUserSupportingUseCase
   ) {}
 
   //# ================================================================================================================
@@ -95,7 +100,19 @@ export class UserController implements IUserController {
       const currentUserId = req.headers["x-user-id"] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
-      await this._supportUserUseCase.execute(dto);
+      const result = await this._supportUserUseCase.execute(dto);
+
+      await publishNotification("user.supported", {
+        supportedUserId: result.targetUser.id,
+        supporterId: result.supporter.id,
+        supporterName: result.supporter.username,
+        supporterProfile: result.supporter.profileImage,
+        createdAt: result.createdAt,
+      });
+
+      logger.info(
+        `${result.supporter.username} supported ${result.targetUser.username} at ${result.createdAt}`
+      );
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORT_SUCCESS,
@@ -136,9 +153,9 @@ export class UserController implements IUserController {
   //# ================================================================================================================
   //# GET SUPPORTERS OF A USER
   //# ================================================================================================================
-  //# GET /api/v1/user/supporters
+  //# GET /api/v1/user/:id/supporters
   //# Request headers: x-user-id
-  //# This controller helps to fetch a list of users who support the current user.
+  //# This controller helps to fetch a list of users that supports this user
   //# ================================================================================================================
   getSupporters = async (
     req: Request,
@@ -146,12 +163,54 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      // const userId = req.headers["x-user-id"] as string;
-      // const supporters = await this._getSupportersUseCase.execute(userId);
-      // return res.status(HttpStatus.OK).json({
-      //   message: USER_MESSAGES.SUPPORTERS_FETCH_SUCCESS,
-      //   data: supporters,
-      // });
+      const userId = req.params.id;
+      const offset = Number(req.query.offset) || 0;
+      const limit = Number(req.query.limit) || 10;
+
+      logger.debug(`Get supporing user userId: ${userId}`);
+      const supporters = await this._getSupportersUseCase.execute(
+        userId,
+        offset,
+        limit
+      );
+      return res.status(HttpStatus.OK).json({
+        message: USER_MESSAGES.SUPPORTERS_FETCH_SUCCESS,
+        data: supporters,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET SUPPORTING OF A USER
+  //# ================================================================================================================
+  //# GET /api/v1/user/:id/supporting
+  //# Request headers: x-user-id
+  //# This controller helps to fetch a list of users that this user is supporting
+  //# ================================================================================================================
+  getSupporing = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const userId = req.params.id;
+      const offset = Number(req.query.offset) || 0;
+      const limit = Number(req.query.limit) || 10;
+
+      logger.debug(`Get supporing user userId: ${userId}`);
+
+      logger.info(`Sucess mesage`);
+      const supporters = await this._getSupportingUseCase.execute(
+        userId,
+        offset,
+        limit
+      );
+      return res.status(HttpStatus.OK).json({
+        message: USER_MESSAGES.SUPPORTING_FETCH_SUCCESS,
+        data: supporters,
+      });
     } catch (error) {
       next(error);
     }

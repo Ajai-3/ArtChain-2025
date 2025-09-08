@@ -1,5 +1,5 @@
 import React from "react";
-import type { IndexedUser } from "../../../../types/user/IndexedUser";
+import type { IndexedUser } from "../../../../types/users/user/IndexedUser";
 import SearchUserCard from "./SearchUserCard";
 
 interface UserSearchResultsProps {
@@ -19,7 +19,7 @@ const UserSearchResults: React.FC<UserSearchResultsProps> = ({
   if (!query.trim()) return null;
 
   return (
-    <div className="absolute mt-1 w-full bg-white border border-zinc-800 dark:bg-secondary-color rounded shadow-lg max-h-64 min-h-64 overflow-auto z-50">
+    <div className="absolute mt-1 w-full bg-white border border-zinc-800 dark:bg-secondary-color rounded shadow-lg max-h-64 min-h-72 overflow-auto z-50 scrollbar">
       {isLoading && (
         <div className="flex items-center justify-center h-full text-zinc-400">
           Loading...

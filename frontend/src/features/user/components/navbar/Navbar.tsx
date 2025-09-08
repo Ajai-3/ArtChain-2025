@@ -5,7 +5,6 @@ import { Menu } from "lucide-react";
 import ArtCoin from "./ArtCoin";
 import UserInfo from "./UserInfo";
 import { ThemeToggle } from "../../../../components/ThemeToggle";
-import { useHasSubmittedArtistRequest } from "../../../../api/user/art/queries";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 
@@ -32,7 +31,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist }) => {
 
       <div className="flex items-center gap-2 sm:gap-6">
         {user && isAuthenticated ? <ArtCoin coin={coin} /> : null}
-        {/* <ThemeToggle /> */}
+        <ThemeToggle />
         <UserInfo user={user} isAuthenticated={isAuthenticated} onBecomeArtist={onBecomeArtist} />
       </div>
     </div>

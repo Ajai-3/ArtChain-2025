@@ -29,7 +29,7 @@ export class CheckUserArtistRequestUseCase implements ICheckUserArtistRequestUse
 
     const latestRequest = requests[0];
 
-    console.log("hallo");
+    console.log('hallo');
 
     return {
       alreadySubmitted: true,

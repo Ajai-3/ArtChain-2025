@@ -7,6 +7,6 @@ export interface IndexedUser {
     bannerImage?: string;
     bio?: string;
     role?: 'admin' | 'user' | 'artist';
-    createdAt: string;
+    createdAt: Date;
     status?: 'active' | 'banned' | 'suspended' |'deleted';
 }

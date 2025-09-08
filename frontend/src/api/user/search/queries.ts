@@ -1,5 +1,5 @@
 import apiClient from "../../axios";
-import type { IndexedUser } from "../../../types/user/IndexedUser";
+import type { IndexedUser } from "../../../types/users/user/IndexedUser";
 import { useQuery } from "@tanstack/react-query";
 
 export const useSearchUsers = (query: string) => {

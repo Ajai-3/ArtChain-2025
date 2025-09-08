@@ -1,126 +1,166 @@
-import { Plus } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
-import React, { useRef, useState } from "react";
-import ImageCropModal from "../image/ImageCropModal";
+import React, { useState } from "react";
+import { Plus, ArrowLeft } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
+import CropperComponent from "./CropperComponent";
+import { useUploadArtImageMutation } from "../../hooks/art/useUploadArtImageMutation";
 
 interface ImageUploadSectionProps {
-  images: string[];
-  setImages: React.Dispatch<React.SetStateAction<string[]>>;
-   onClose: () => void;
+  onClose: () => void;
+  onSubmitImage: (file: File, urls: any) => void;
 }
 
-const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({ 
-  images, 
-  setImages,
-  onClose 
+const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
+  onClose,
+  onSubmitImage,
 }) => {
-  const [mainImageIndex, setMainImageIndex] = useState<number>(0);
-  const [tempImage, setTempImage] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  console.log(images)
+  const uploadMutation = useUploadArtImageMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (images.length >= 3) {
-      alert("Maximum 3 images allowed");
+    if (!e.target.files?.[0]) return;
+    const file = e.target.files[0];
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/webp"];
+    const maxSizeMB = 20;
+    const fileSizeMB = file.size / (1024 * 1024);
+
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only JPG, JPEG, and WEBP images are allowed!");
+      e.target.value = "";
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setTempImage(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleUploadComplete = (url: string) => {
-    setImages((prev) => {
-      const updated = [...prev, url];
-      if (updated.length === 1) setMainImageIndex(0);
-      return updated;
-    });
-    setTempImage(null);
-  };
-
-  const removeImage = (index: number) => {
-    const updated = images.filter((_, i) => i !== index);
-    setImages(updated);
-
-    if (index === mainImageIndex) {
-      setMainImageIndex(0);
-    } else if (index < mainImageIndex) {
-      setMainImageIndex((prev) => prev - 1);
+    if (fileSizeMB > maxSizeMB) {
+      setError("File size cannot exceed 20MB!");
+      e.target.value = "";
+      return;
     }
+
+    setError(null);
+
+    // ONLY set imageSrc for cropper; remove previewSrc here
+    const reader = new FileReader();
+    reader.onload = () => setImageSrc(reader.result as string);
+    reader.readAsDataURL(file);
+
+    e.target.value = "";
+  };
+
+  const handleSaveCrop = (file: File) => {
+    // Set previewSrc only after saving
+    const reader = new FileReader();
+    reader.onload = () => setPreviewSrc(reader.result as string);
+    reader.readAsDataURL(file);
+
+    uploadMutation.mutate(file, {
+      onSuccess: (res: any) => {
+        setError(null);
+        onSubmitImage(file, res.data);
+      },
+      onError: (err: any) => {
+        console.error(err);
+        setError(err?.response?.data?.message || "Upload failed!");
+        setPreviewSrc(null);
+      },
+    });
+
+    setImageSrc(null); // close cropper
   };
 
   return (
-    <div className="p-6 w-full md:w-1/2 text-white border-r border-zinc-400 dark:border-zinc-700">
-    <Button onClick={onClose} className="hover:text-main-color" variant="transparant">
-      <ArrowLeft /> Back
-    </Button>
-      <h2 className="text-lg font-semibold mb-4">Upload Images</h2>
-
-      <div className="flex flex-col justify-center items-center">
-        {images.length > 0 && (
-          <div className="mb-8">
-            <img
-              src={images[mainImageIndex]}
-              alt="Main Preview"
-              className="w-full h-96 object-contain rounded border"
-            />
-          </div>
-        )}
-
-        <div className="flex gap-2 mb-4 flex-wrap">
-          {images.map((url, idx) => (
-            <div key={idx} className="relative">
-              <img
-                src={url}
-                onClick={() => setMainImageIndex(idx)}
-                className={`w-16 h-16 object-cover border rounded cursor-pointer ${
-                  idx === mainImageIndex ? "ring-2 ring-main-color" : ""
-                }`}
-                alt={`Uploaded ${idx}`}
-              />
-              <button
-                onClick={() => removeImage(idx)}
-                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center"
-              >
-                ×
-              </button>
-            </div>
-          ))}
-
-          {images.length < 3 && (
-            <Button
-              variant="outline"
-              className="w-16 h-16 flex items-center justify-center"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Plus className="h-16 w-16 text-gray-400" />
-            </Button>
-          )}
-        </div>
+    <div className="p-6 w-full md:w-1/2 text-white border-r border-zinc-400 dark:border-zinc-700 flex flex-col relative">
+      {/* Back button */}
+      <div className="flex justify-start">
+        <Button
+          onClick={onClose}
+          className="hover:text-main-color"
+          variant="transparant"
+        >
+          <ArrowLeft /> Back
+        </Button>
       </div>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        className="hidden"
-      />
+      <h2 className="text-lg font-semibold mb-4">Upload Image</h2>
 
-      {tempImage && (
-        <ImageCropModal
-          imageBase64={tempImage}
-          onClose={() => setTempImage(null)}
-          onUploadComplete={handleUploadComplete}
+      {/* File selection */}
+      {!imageSrc && !previewSrc && (
+        <label className="w-32 h-32 flex items-center justify-center border rounded cursor-pointer mx-auto">
+          <Plus className="h-6 w-6 text-gray-400" />
+          <input
+            type="file"
+            className="hidden"
+            onChange={handleFileChange}
+            accept=".jpg,.jpeg,.webp"
+          />
+        </label>
+      )}
+
+      {/* Cropper */}
+      {imageSrc && (
+        <CropperComponent
+          imageSrc={imageSrc}
+          onCancel={() => setImageSrc(null)}
+          onSave={handleSaveCrop}
         />
       )}
+
+      {/* Preview + Uploading overlay */}
+      {previewSrc && (
+        <div className="relative mt-4 w-full h-96 max-w-4xl mx-auto rounded-xl overflow-hidden border border-gray-300 dark:border-zinc-700 shadow-lg flex items-center justify-center bg-gray-100 dark:bg-zinc-800 transition-all duration-300">
+          {uploadMutation.isPending && (
+            <img
+              src={previewSrc}
+              alt="Background preview"
+              className="absolute inset-0 w-full h-full object-cover filter blur-md opacity-40 transition-opacity duration-300"
+              aria-hidden="true"
+            />
+          )}
+
+          <img
+            src={previewSrc}
+            alt="Image preview"
+            className={`w-full h-full object-contain rounded-xl z-10 transition-all duration-300 ${
+              uploadMutation.isPending ? "filter blur-sm opacity-80" : "hover:scale-[1.02]"
+            }`}
+            loading="lazy"
+          />
+
+          {uploadMutation.isPending && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 z-20 transition-opacity duration-300">
+              <svg
+                className="animate-spin h-14 w-14 text-white mb-4 drop-shadow-lg"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                aria-label="Loading"
+              >
+                <circle
+                  className="opacity-20"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-80"
+                  fill="currentColor"
+                  d="M12 2a10 10 0 0110 10h-2a8 8 0 00-8-8V2z"
+                />
+              </svg>
+              <span className="text-white font-semibold text-lg drop-shadow-md animate-pulse">
+                Uploading...
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Error message */}
+      {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
     </div>
   );
 };

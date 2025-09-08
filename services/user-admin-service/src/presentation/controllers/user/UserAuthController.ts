@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpStatus } from 'art-chain-shared';
+import { logger } from '../../../utils/logger';
 
 import { tokenService } from '../../service/token.service';
 import { config } from '../../../infrastructure/config/env';
 import { validateWithZod } from '../../../utils/zodValidator';
-import { publishToQueue } from '../../../infrastructure/messaging/rabbitmq';
+import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
 
 import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
 
@@ -15,24 +16,22 @@ import { RegisterRequestDto } from '../../../domain/dtos/user/auth/RegisterReque
 import { GoogleAuthRequestDto } from '../../../domain/dtos/user/auth/GoogleAuthRequestDto';
 import { ResetPasswordRequestDto } from '../../../domain/dtos/user/auth/ResetPasswordRequestDto';
 import { StartRegisterRequestDto } from '../../../domain/dtos/user/auth/StartRegisterRequestDto';
-import { ChangePasswordRequestDto } from '../../../domain/dtos/user/auth/ChangePasswordRequestDto';
 
 import { loginUserSchema } from '../../../application/validations/user/LoginSchema';
 import { googleAuthSchema } from '../../../application/validations/user/GoogleAuthSchema';
 import { registerUserSchema } from '../../../application/validations/user/RegisterUserSchema';
 import { startRegisterSchema } from '../../../application/validations/user/StartRegisterSchema';
 import { passwordTokenSchema } from '../../../application/validations/user/PasswordTokenSchema';
-import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
 
 import { LoginUserUseCase } from './../../../application/usecases/user/auth/LoginUserUseCase';
+import { forgotPasswordSchema } from '../../../application/validations/user/forgotPasswordSchema';
 import { RegisterUserUseCase } from './../../../application/usecases/user/auth/RegisterUserUseCase';
 import { GoogleAuthUserUseCase } from './../../../application/usecases/user/auth/GoogleAuthUserUseCase';
 import { RefreshTokenUserUseCase } from './../../../application/usecases/user/auth/RefreshTokenUserUseCase';
 import { ResetPasswordUserUseCase } from './../../../application/usecases/user/auth/ResetPasswordUserUseCase';
-import { ChangePasswordUserUseCase } from './../../../application/usecases/user/auth/ChangePasswordUserUseCase';
-import { ForgotPasswordUserUseCase } from './../../../application/usecases/user/auth/ForgotPasswordUserUseCase';
 import { StartRegisterUserUseCase } from './../../../application/usecases/user/auth/StartRegisterUserUseCase';
-import { forgotPasswordSchema } from '../../../application/validations/user/forgotPasswordSchema';
+import { ForgotPasswordUserUseCase } from './../../../application/usecases/user/auth/ForgotPasswordUserUseCase';
+import { AddUserToElasticSearchUseCase } from '../../../application/usecases/user/search/AddUserToElasticSearchUseCase';
 
 export class UserAuthController implements IUserAuthController {
   constructor(
@@ -42,8 +41,8 @@ export class UserAuthController implements IUserAuthController {
     private readonly _googleAuthUserUseCase: GoogleAuthUserUseCase,
     private readonly _forgotPasswordUserUseCase: ForgotPasswordUserUseCase,
     private readonly _resetPasswordUserUseCase: ResetPasswordUserUseCase,
-    private readonly _changePasswordUserUseCase: ChangePasswordUserUseCase,
-    private readonly _refreshTokenUserUseCase: RefreshTokenUserUseCase
+    private readonly _refreshTokenUserUseCase: RefreshTokenUserUseCase,
+    private readonly _addUserToElasticUserUseCase: AddUserToElasticSearchUseCase
   ) {}
 
   //# ================================================================================================================
@@ -69,7 +68,7 @@ export class UserAuthController implements IUserAuthController {
         dto
       );
 
-      await publishToQueue('emails', {
+      await publishNotification('email.verification', {
         type: 'VERIFICATION',
         email: payload.email,
         payload: {
@@ -80,6 +79,7 @@ export class UserAuthController implements IUserAuthController {
       });
 
       console.log(`${config.frontend_URL}/verify?token=${token}`);
+      logger.info(`Start registration sucessfull of user ${payload.name}`);
 
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
@@ -132,8 +132,6 @@ export class UserAuthController implements IUserAuthController {
       const { user, accessToken, refreshToken } =
         await this._registerUserUseCase.execute(dto);
 
-      // await this._addUserToElastic.execute(user);
-
       res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -141,7 +139,9 @@ export class UserAuthController implements IUserAuthController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      console.log(user)
+      const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
+
+      await publishNotification('user.created', elasticUser);
 
       return res.status(HttpStatus.CREATED).json({
         message: AUTH_MESSAGES.REGISTRATION_SUCCESS,
@@ -252,7 +252,7 @@ export class UserAuthController implements IUserAuthController {
         identifier
       );
 
-      await publishToQueue('emails', {
+      await publishNotification('email.password_reset', {
         type: 'PASSWORD_RESET',
         email: user.email,
         payload: {
@@ -307,35 +307,6 @@ export class UserAuthController implements IUserAuthController {
   //# Request body: { currentPassword: string, newPassword: string }
   //# This controller changes a user's password using their current password.
   //#=================================================================================================================
-  changePassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const result = validateWithZod(
-        currentPasswordNewPasswordSchema,
-        req.body
-      );
-
-      const { currentPassword, newPassword } = result;
-
-      const userId = req.headers['x-user-id'] as string;
-
-      const dto: ChangePasswordRequestDto = {
-        userId,
-        currentPassword,
-        newPassword,
-      };
-      await this._changePasswordUserUseCase.execute(dto);
-
-      return res
-        .status(HttpStatus.OK)
-        .json({ message: AUTH_MESSAGES.PASSWORD_UPDATED });
-    } catch (error) {
-      next(error);
-    }
-  };
 
   //#=================================================================================================================
   //# REFRESH USER ACCESS TOKEN

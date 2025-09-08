@@ -5,6 +5,7 @@ import { createErrorHandler } from 'art-chain-shared';
 import authRouter from './presentation/routes/user/auth.routes';
 import userRouter from './presentation/routes/user/user.routes';
 import adminRouter from './presentation/routes/admin/admin.routes';
+import { logger } from './utils/logger';
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
-  console.log(`Incoming request: ${req.method} ${fullUrl}`);
+  logger.info(`Incoming request: ${req.method} ${fullUrl}`);
   next();
 });
 

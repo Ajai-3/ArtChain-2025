@@ -58,7 +58,7 @@
     --radius: 0.5rem;
   }
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 240 10% .9%;
 
     --foreground: 0 0% 98%;
 
@@ -117,6 +117,7 @@
   }
 }
 
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -145,7 +146,7 @@ textarea:-webkit-autofill:focus {
 
 /* Dark Theme */
 .dark {
-  --scroll-track: #111827;           
+  --scroll-track: #000000;           
   --scroll-thumb: #6b7280;           
   --scroll-thumb-hover: #9ca3af;     
 }

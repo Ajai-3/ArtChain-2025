@@ -1,4 +1,4 @@
-import { SafeUser } from "../../../repositories/IBaseRepository";
+import { SafeUser } from '../../../repositories/IBaseRepository';
 
 export interface GetCurrentUserResultDto {
   user: SafeUser;

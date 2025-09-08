@@ -5,7 +5,7 @@ import type { Crop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { Button } from "../../../../components/ui/button";
 import { X } from "lucide-react";
-import { uploadToFolder } from "../../../../utils/cloudinary";
+
 
 interface Props {
   imageBase64: string;
@@ -61,8 +61,8 @@ const ImageCropModal: React.FC<Props> = ({ imageBase64, onClose, onUploadComplet
     try {
       const blob = await getCroppedImg();
       const file = new File([blob], `cropped-${Date.now()}.jpg`, { type: "image/jpeg" });
-      const uploadedUrl = await uploadToFolder(file, "your-folder-name");
-      onUploadComplete(uploadedUrl);
+
+
       onClose();
     } catch (err) {
       console.error("Crop error:", err);

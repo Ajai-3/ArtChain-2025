@@ -1,5 +1,5 @@
 import apiClient from "../../axios";
-import type { User } from "../../../types/user/user";
+import type { User } from "../../../types/users/user/user";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllUsers = ({
@@ -17,7 +17,7 @@ export const useGetAllUsers = ({
       const response = await apiClient.get("/api/v1/admin/users", {
         params: { page, limit, search },
       });
-      return response as any;
+      return response.data as any;
     },
   });
 };

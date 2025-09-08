@@ -13,6 +13,9 @@ export const config = {
   services: {
     main: process.env.MAIN_SERVICE_URL,
     art: process.env.ART_SERVICE_URL,
+    notifications: process.env.NOTIFICATION_URL,
+    upload: process.env.UPLOAD_SERVICE_URL,
+    elastic: process.env.ELASTIC_SEARCH_SERVICE_URL,
   },
   jwt: {
     accessSecret: secrets.jwtAccessSecret,

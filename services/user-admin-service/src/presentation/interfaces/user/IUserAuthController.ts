@@ -10,7 +10,7 @@ export interface IUserAuthController {
   // Password management
   forgotPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-  changePassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  // changePassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
   // Tokens & logout
   refreshToken(req: Request, res: Response, next: NextFunction): Promise<Response | void>;

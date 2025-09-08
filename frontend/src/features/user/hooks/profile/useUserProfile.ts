@@ -1,6 +1,6 @@
 import apiClient from "../../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
-import type { UserProfileApiResponse } from "../../../../types/user/userProfileApiResponse";
+import type { UserProfileApiResponse } from "../../../../types/users/user/userProfileApiResponse";
 
 export const useUserProfile = () => {
   return useQuery<UserProfileApiResponse>({

@@ -11,7 +11,7 @@ const adminSlice = createSlice({
   name: "admin",
   initialState,
   reducers: {
-    loginSuccess(state, action) {
+    setAdmin(state, action) {
       state.isAuthenticated = true;
       state.accessToken = action.payload.accessToken;
       state.admin = action.payload.admin;
@@ -34,6 +34,6 @@ const adminSlice = createSlice({
   },
 });
 
-export const { loginSuccess, loginFailed, adminLogout, setAdminAccessToken } =
+export const { setAdmin, loginFailed, adminLogout, setAdminAccessToken } =
   adminSlice.actions;
 export default adminSlice.reducer;

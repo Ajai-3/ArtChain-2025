@@ -7,6 +7,8 @@ import { SupportUserUseCase } from '../../../application/usecases/user/user-intr
 import { UnSupportUserUseCase } from '../../../application/usecases/user/user-intraction/UnSupportUserUseCase';
 import { GetCurrentUserUseCase } from '../../../application/usecases/user/user-intraction/GetCurrentUserUseCase';
 import { GetUserWithIdUserUseCase } from '../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase';
+import { GetUserSupportersUseCase } from '../../../application/usecases/user/user-intraction/GetUserSupportersUseCase';
+import { GetUserSupportingUseCase } from '../../../application/usecases/user/user-intraction/GetUserSupportingUseCase';
 
 
 // Repositories
@@ -18,6 +20,8 @@ const supportUserUseCase = new SupportUserUseCase(userRepo, supporterRepo);
 const unSupportUserUseCase = new UnSupportUserUseCase(userRepo, supporterRepo);
 const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepo, supporterRepo);
 const getUserWithIdUseCase = new GetUserWithIdUserUseCase(userRepo, supporterRepo);
+const getUserSupportersUseCase = new GetUserSupportersUseCase(userRepo, supporterRepo)
+const getUserSupportingUseCase = new GetUserSupportingUseCase(userRepo, supporterRepo)
 
 
 // Controller
@@ -26,4 +30,6 @@ export const userController = new UserController(
   getUserWithIdUseCase,
   supportUserUseCase,
   unSupportUserUseCase,
+  getUserSupportersUseCase,
+  getUserSupportingUseCase
 );

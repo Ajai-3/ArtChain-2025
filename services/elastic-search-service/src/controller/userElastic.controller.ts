@@ -3,6 +3,7 @@ import { HttpStatus } from "art-chain-shared";
 import { UserElasticService } from "../services/userElastic.service";
 import { ELASTIC_MESSAGES } from "../constants/elasticMesages.constants";
 import { IUserElasticController } from "../interface/IUserElasticController";
+import { logger } from "../utils/logger";
 
 const service = new UserElasticService();
 
@@ -18,6 +19,7 @@ export class UserElasticController implements IUserElasticController {
   async indexUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       await service.addUser(req.body);
+      logger.info("Index created")
       res.status(HttpStatus.CREATED).json({ message: ELASTIC_MESSAGES.INDEX_SUCCESS });
     } catch (err: any) {
       next(err)
@@ -40,6 +42,7 @@ export class UserElasticController implements IUserElasticController {
         return;
       }
       const results = await service.searchForUser(q);
+      logger.info(`Search result: ${JSON.stringify(results)}`)
       res.json(results);
     } catch (err: any) {
       next(err)
@@ -62,6 +65,7 @@ export class UserElasticController implements IUserElasticController {
         return;
       }
       const ids = await service.adminSearch(q);
+      logger.info(`Admin Search result: ${JSON.stringify(ids)}`)
       res.json({ userIds: ids });
     } catch (err: any) {
       next(err)

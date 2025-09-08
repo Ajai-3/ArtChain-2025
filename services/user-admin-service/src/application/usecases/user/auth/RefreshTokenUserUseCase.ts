@@ -46,7 +46,7 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
       role: user.role,
     });
 
-    console.log(payload, accessToken, user)
+    console.log(payload, accessToken, user);
 
     return { accessToken };
   }
