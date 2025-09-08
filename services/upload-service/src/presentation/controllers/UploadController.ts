@@ -105,7 +105,11 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
+       const s = req.headers['x-user-id']
+    console.log(s)
       const { userId, file } = validateUpload(req, "art");
+      logger.info(`Art upload request recived ${userId} ${file}`)
+
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
@@ -116,13 +120,14 @@ export class UploadController implements IUploadController {
 
       const result = await this._uploadArtImage.execute(dto);
 
+      logger.info(`${JSON.stringify(result)}`)
       logger.info(
         `Art image uploaded successfully | userId=${userId} | file=${file.originalname}`
       );
 
       res
         .status(HttpStatus.CREATED)
-        .json({ message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS, result });
+        .json({ data: result, message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS});
     } catch (error: any) {
       logger.error(`Upload art error | message=${error.message}`);
       next(error);

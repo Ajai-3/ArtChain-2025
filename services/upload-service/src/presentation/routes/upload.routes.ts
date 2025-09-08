@@ -3,10 +3,10 @@ import multer from 'multer';
 import { uploadContainer } from '../../infrastructure/container/uploadContainer';
 
 const upload = multer();
-const Router = express.Router();
+const router = express.Router();
 
-Router.post('/profile', upload.single('file'), uploadContainer.uploadProfile);
-Router.post('/banner', upload.single('file'), uploadContainer.uploadBanner);
-Router.post('/art', upload.single('file'), uploadContainer.uploadBanner);
+router.post('/profile', upload.single('file'), uploadContainer.uploadProfile);
+router.post('/banner', upload.single('file'), uploadContainer.uploadBanner);
+router.post('/art', upload.single('file'), uploadContainer.uploadArt);
 
-export default Router;
+export default router;

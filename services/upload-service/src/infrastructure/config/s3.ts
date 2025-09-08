@@ -4,7 +4,8 @@ import { config } from "./env";
 const getBucketConfig = (category: "profile" | "banner" | "art") => {
   if (category === "art") {
     return {
-      bucket: config.aws.art_bucket!,
+      privateBucket: config.aws.art_bucket_private!,
+      publicBucket: config.aws.art_bucket_public!,
       acl: config.aws.art_acl!,
     };
   }
@@ -19,6 +20,5 @@ export const s3Client = new AWS.S3({
   accessKeyId: config.aws.accessKeyId,
   secretAccessKey: config.aws.secretAccessKey,
 });
-
 
 export { getBucketConfig };

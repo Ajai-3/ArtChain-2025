@@ -1,20 +1,42 @@
-import { UploadedFileDTO } from "../../domain/dto/UploadedFileDTO";
+import { S3FileRepository } from "../../infrastructure/repositories/S3FileRepository";
 import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
-import { IFileRepository } from "../../domain/repositories/IFileRepository";
+import { UploadedFileDTO } from "../../domain/dto/UploadedFileDTO";
 import { FILE_CATEGORIES } from "../../types/FileCategory";
+import { WatermarkService } from "../../presentation/service/WatermarkService";
+import { FileHashService } from "../../presentation/service/FileHashService";
+import { NsfwService } from "../../presentation/service/NsfwService";
 
 export class UploadArtImage {
-  constructor(private readonly _fileRepo: IFileRepository) {}
+  constructor(private readonly _fileRepo: S3FileRepository) {}
 
   async execute(data: UploadFileDTO): Promise<UploadedFileDTO> {
     const { fileBuffer, fileName, mimeType, userId } = data;
-    const url = await this._fileRepo.upload(
+
+    const hash = FileHashService.generateHash(fileBuffer);
+
+    const nsfwScore = NsfwService.calculateScore(fileBuffer);
+
+    const { previewBuffer, watermarkedBuffer } =
+      await WatermarkService.processAndSave(fileBuffer, userId, fileName);
+
+    const uploadResult = await this._fileRepo.upload(
       fileBuffer,
       fileName,
       mimeType,
       FILE_CATEGORIES.art,
-      userId
+      userId,
+      previewBuffer,
+      watermarkedBuffer
     );
-    return { url, userId, type: FILE_CATEGORIES.art };
+
+    return {
+      originalUrl: uploadResult.privateSignedUrl!,
+      previewUrl: uploadResult.publicPreviewUrl!,
+      watermarkedUrl: uploadResult.publicWatermarkedUrl!,
+      hash,
+      nsfwScore,
+      userId,
+      type: FILE_CATEGORIES.art,
+    };
   }
 }

@@ -10,10 +10,10 @@ export const uploadSchema = z.object({
     })
     .refine(
       (file) =>
-        ['image/png', 'image/jpeg', 'image/jpg'].includes(file.mimetype),
-      { message: 'Only PNG, JPG, and JPEG formats are allowed' }
+        ['image/webp', 'image/jpeg', 'image/jpg'].includes(file.mimetype),
+      { message: 'Only WEBP, JPG, and JPEG formats are allowed' }
     )
-    .refine((file) => file.size <= 10 * 1024 * 1024, {
-      message: 'File size must be less than or equal to 10MB',
+    .refine((file) => file.size <= 20 * 1024 * 1024, {
+      message: 'File size must be less than or equal to 20MB',
     }),
 });

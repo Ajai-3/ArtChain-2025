@@ -7,7 +7,7 @@ import { errorHandler } from './presentation/middleware/errorHandler';
 import { logger } from './infrastructure/utils/logger';
 
 app.use((req, res, next) => {
-  logger.info(`Incoming request: ${req.method} ${req.path}`);
+  logger.info(`Incoming request: ${req.method} ${req.path} ${req.file}`);
   next();
 });
 
