@@ -4,6 +4,7 @@ import { Button } from "../../../../components/ui/button";
 
 interface CropperComponentProps {
   imageSrc: string;
+  originalFileType: string;
   onCancel: () => void;
   onSave: (file: File) => void;
 }
@@ -14,7 +15,7 @@ const ASPECT_RATIOS = [
   { label: "16:9", value: 16 / 9 },
 ];
 
-function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
+function getCroppedImg(imageSrc: string, crop: any, fileType: string): Promise<File> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.src = imageSrc;
@@ -24,31 +25,26 @@ function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
       canvas.height = crop.height;
       const ctx = canvas.getContext("2d");
       if (!ctx) return reject("Canvas error");
-      ctx.drawImage(
-        image,
-        crop.x,
-        crop.y,
-        crop.width,
-        crop.height,
-        0,
-        0,
-        crop.width,
-        crop.height
+      ctx.drawImage(image, crop.x, crop.y, crop.width, crop.height, 0, 0, crop.width, crop.height);
+
+      let extension = "jpg";
+      if (fileType === "image/webp") extension = "webp";
+      else if (fileType === "image/jpeg" || fileType === "image/jpg") extension = "jpg";
+
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) return reject("Blob error");
+          resolve(new File([blob], `cropped-image.${extension}`, { type: fileType }));
+        },
+        fileType,
+        0.95
       );
-      canvas.toBlob((blob) => {
-        if (!blob) return reject("Blob error");
-        resolve(new File([blob], "cropped-image.png", { type: "image/png" }));
-      }, "image/png");
     };
     image.onerror = () => reject("Image load error");
   });
 }
 
-const CropperComponent: React.FC<CropperComponentProps> = ({
-  imageSrc,
-  onCancel,
-  onSave,
-}) => {
+const CropperComponent: React.FC<CropperComponentProps> = ({ imageSrc, originalFileType, onCancel, onSave }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [aspect, setAspect] = useState(ASPECT_RATIOS[0].value);
@@ -60,7 +56,7 @@ const CropperComponent: React.FC<CropperComponentProps> = ({
 
   const handleSave = async () => {
     if (!croppedAreaPixels) return;
-    const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels);
+    const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, originalFileType);
     onSave(croppedFile);
   };
 
@@ -84,39 +80,21 @@ const CropperComponent: React.FC<CropperComponentProps> = ({
         />
       </div>
 
-      {/* Aspect Ratio Buttons */}
       <div className="flex gap-2 justify-center w-full">
         {ASPECT_RATIOS.map((ar) => (
-          <Button
-            key={ar.label}
-            onClick={() => setAspect(ar.value)}
-            variant={aspect === ar.value ? "default" : "outline"}
-          >
+          <Button key={ar.label} onClick={() => setAspect(ar.value)} variant={aspect === ar.value ? "default" : "outline"}>
             {ar.label}
           </Button>
         ))}
       </div>
 
-      {/* Zoom Slider */}
-      <input
-        type="range"
-        min={1}
-        max={3}
-        step={0.1}
-        value={zoom}
-        onChange={(e) => setZoom(Number(e.target.value))}
-        className="w-full"
-      />
+      <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="w-full" />
 
-      {/* Save / Cancel Buttons */}
       <div className="flex gap-4 justify-center w-full">
         <Button onClick={handleSave} variant="main">
           Save & Upload
         </Button>
-        <Button
-          onClick={onCancel}
-          className="bg-red-500 hover:bg-red-600 text-white"
-        >
+        <Button onClick={onCancel} className="bg-red-500 hover:bg-red-600 text-white">
           Cancel
         </Button>
       </div>

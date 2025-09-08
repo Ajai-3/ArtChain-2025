@@ -25,7 +25,7 @@ declare module "axios" {
 apiClient.interceptors.request.use((config) => {
   const state = store.getState();
   const isAdminRequest = config.url?.includes("/api/v1/admin");
-  const isUserRequest = ["/api/v1/user", "/api/v1/notifications"].some((path) =>
+  const isUserRequest = ["/api/v1/user", "/api/v1/notifications", "/api/v1/upload/art"].some((path) =>
     config.url?.includes(path)
   );
 

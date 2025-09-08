@@ -14,6 +14,7 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
   onSubmitImage,
 }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,6 +23,7 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files?.[0]) return;
     const file = e.target.files[0];
+    setSelectedFile(file);
 
     const allowedTypes = ["image/jpeg", "image/jpg", "image/webp"];
     const maxSizeMB = 20;
@@ -41,7 +43,6 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
 
     setError(null);
 
-    // ONLY set imageSrc for cropper; remove previewSrc here
     const reader = new FileReader();
     reader.onload = () => setImageSrc(reader.result as string);
     reader.readAsDataURL(file);
@@ -49,16 +50,15 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
     e.target.value = "";
   };
 
-  const handleSaveCrop = (file: File) => {
-    // Set previewSrc only after saving
+  const handleSaveCrop = (croppedFile: File) => {
     const reader = new FileReader();
     reader.onload = () => setPreviewSrc(reader.result as string);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(croppedFile);
 
-    uploadMutation.mutate(file, {
+    uploadMutation.mutate(croppedFile, {
       onSuccess: (res: any) => {
         setError(null);
-        onSubmitImage(file, res.data);
+        onSubmitImage(croppedFile, res.data);
       },
       onError: (err: any) => {
         console.error(err);
@@ -72,20 +72,14 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
 
   return (
     <div className="p-6 w-full md:w-1/2 text-white border-r border-zinc-400 dark:border-zinc-700 flex flex-col relative">
-      {/* Back button */}
       <div className="flex justify-start">
-        <Button
-          onClick={onClose}
-          className="hover:text-main-color"
-          variant="transparant"
-        >
+        <Button onClick={onClose} className="hover:text-main-color" variant="transparant">
           <ArrowLeft /> Back
         </Button>
       </div>
 
       <h2 className="text-lg font-semibold mb-4">Upload Image</h2>
 
-      {/* File selection */}
       {!imageSrc && !previewSrc && (
         <label className="w-32 h-32 flex items-center justify-center border rounded cursor-pointer mx-auto">
           <Plus className="h-6 w-6 text-gray-400" />
@@ -98,16 +92,15 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
         </label>
       )}
 
-      {/* Cropper */}
-      {imageSrc && (
+      {imageSrc && selectedFile && (
         <CropperComponent
           imageSrc={imageSrc}
+          originalFileType={selectedFile.type}
           onCancel={() => setImageSrc(null)}
           onSave={handleSaveCrop}
         />
       )}
 
-      {/* Preview + Uploading overlay */}
       {previewSrc && (
         <div className="relative mt-4 w-full h-96 max-w-4xl mx-auto rounded-xl overflow-hidden border border-gray-300 dark:border-zinc-700 shadow-lg flex items-center justify-center bg-gray-100 dark:bg-zinc-800 transition-all duration-300">
           {uploadMutation.isPending && (
@@ -137,19 +130,8 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
                 viewBox="0 0 24 24"
                 aria-label="Loading"
               >
-                <circle
-                  className="opacity-20"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-80"
-                  fill="currentColor"
-                  d="M12 2a10 10 0 0110 10h-2a8 8 0 00-8-8V2z"
-                />
+                <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-80" fill="currentColor" d="M12 2a10 10 0 0110 10h-2a8 8 0 00-8-8V2z" />
               </svg>
               <span className="text-white font-semibold text-lg drop-shadow-md animate-pulse">
                 Uploading...
@@ -159,7 +141,6 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
         </div>
       )}
 
-      {/* Error message */}
       {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
     </div>
   );
