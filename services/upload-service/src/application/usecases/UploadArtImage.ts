@@ -4,9 +4,9 @@ import { UploadedFileDTO } from "../../domain/dto/UploadedFileDTO";
 import { FILE_CATEGORIES } from "../../types/FileCategory";
 import { WatermarkService } from "../../presentation/service/WatermarkService";
 import { FileHashService } from "../../presentation/service/FileHashService";
-import { NsfwService } from "../../presentation/service/NsfwService";
+import { IUploadArtImage } from "../../domain/usecases/IUploadArtImage";
 
-export class UploadArtImage {
+export class UploadArtImage implements IUploadArtImage {
   constructor(private readonly _fileRepo: S3FileRepository) {}
 
   async execute(data: UploadFileDTO): Promise<UploadedFileDTO> {
@@ -14,7 +14,6 @@ export class UploadArtImage {
 
     const hash = FileHashService.generateHash(fileBuffer);
 
-    const nsfwScore = NsfwService.calculateScore(fileBuffer);
 
     const { previewBuffer, watermarkedBuffer } =
       await WatermarkService.processAndSave(fileBuffer, userId, fileName);
@@ -34,7 +33,6 @@ export class UploadArtImage {
       previewUrl: uploadResult.publicPreviewUrl!,
       watermarkedUrl: uploadResult.publicWatermarkedUrl!,
       hash,
-      nsfwScore,
       userId,
       type: FILE_CATEGORIES.art,
     };

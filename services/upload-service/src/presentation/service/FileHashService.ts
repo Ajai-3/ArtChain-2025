@@ -1,8 +1,7 @@
-import imghash from "imghash";
+import crypto from "crypto";
 
 export class FileHashService {
-  static async generateHash(fileBuffer: Buffer): Promise<string> {
-    const hash = await imghash.hash(fileBuffer, 16, "hex");
-    return hash;
+  static generateHash(fileBuffer: Buffer): string {
+    return crypto.createHash("sha256").update(fileBuffer).digest("hex");
   }
 }
