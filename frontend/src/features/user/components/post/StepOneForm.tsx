@@ -10,6 +10,9 @@ import {
   SelectValue,
 } from "../../../../components/ui/select";
 import ART_TYPES from "../../../../constants/artTypesConstants";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+import { User } from "lucide-react";
 
 interface StepOneFormProps {
   title: string;
@@ -18,8 +21,8 @@ interface StepOneFormProps {
   setDescription: (val: string) => void;
   artType: string | undefined;
   setArtType: (val: string) => void;
-  hashtags: string;
-  setHashtags: (val: string) => void;
+  hashtags: string[];
+  setHashtags: (val: string[]) => void;
   errors: { [key: string]: string };
   validateField: (field: string, value: string) => void;
 }
@@ -36,8 +39,30 @@ const StepOneForm: React.FC<StepOneFormProps> = ({
   errors,
   validateField,
 }) => {
+  const user = useSelector((state: RootState) => state.user.user);
   return (
     <div className="space-y-6">
+      <div className="flex gap-4 items-center">
+        {user?.profileImage ? (
+          <img
+            src={user?.profileImage}
+            alt="Profile"
+            className="w-11 h-11 rounded-full border border-zinc-300 dark:border-zinc-600"
+          />
+        ) : (
+          <div className="w-11 h-11 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white text-xl">
+            {user?.name?.charAt(0).toUpperCase() || (
+              <User className="w-8 h-8" />
+            )}
+          </div>
+        )}
+        <div>
+          <h1>{user?.name}</h1>
+          <p className="text-sm text-zinc-900 dark:text-zinc-600">
+            {user?.username}
+          </p>
+        </div>
+      </div>
       <div>
         <Label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Title <span className="text-main-color">*</span>
@@ -116,8 +141,15 @@ const StepOneForm: React.FC<StepOneFormProps> = ({
           type="text"
           placeholder="#digitalart #ai"
           className="w-full"
-          value={hashtags}
-          onChange={(e) => setHashtags(e.target.value)}
+          value={hashtags.join(" ")}
+          onChange={(e) =>
+            setHashtags(
+              e.target.value
+                .split(/[\s,]+/)
+                .map((h) => h.trim())
+                .filter(Boolean)
+            )
+          }
         />
       </div>
     </div>

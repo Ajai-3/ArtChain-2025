@@ -6,11 +6,12 @@ interface CropperComponentProps {
   imageSrc: string;
   originalFileType: string;
   onCancel: () => void;
-  onSave: (file: File) => void;
+  onSave: (file: File, aspectRatio: string) => void; 
 }
 
 const ASPECT_RATIOS = [
   { label: "1:1", value: 1 / 1 },
+  { label: "3:5", value: 3 / 5 },
   { label: "4:5", value: 4 / 5 },
   { label: "16:9", value: 16 / 9 },
 ];
@@ -57,7 +58,8 @@ const CropperComponent: React.FC<CropperComponentProps> = ({ imageSrc, originalF
   const handleSave = async () => {
     if (!croppedAreaPixels) return;
     const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels, originalFileType);
-    onSave(croppedFile);
+    const arLabel = ASPECT_RATIOS.find((ar) => ar.value === aspect)?.label || "1:1";
+    onSave(croppedFile, arLabel); // send file + aspect ratio
   };
 
   return (
@@ -91,12 +93,8 @@ const CropperComponent: React.FC<CropperComponentProps> = ({ imageSrc, originalF
       <input type="range" min={1} max={3} step={0.1} value={zoom} onChange={(e) => setZoom(Number(e.target.value))} className="w-full" />
 
       <div className="flex gap-4 justify-center w-full">
-        <Button onClick={handleSave} variant="main">
-          Save & Upload
-        </Button>
-        <Button onClick={onCancel} className="bg-red-500 hover:bg-red-600 text-white">
-          Cancel
-        </Button>
+        <Button onClick={handleSave} variant="main">Save & Upload</Button>
+        <Button onClick={onCancel} className="bg-red-500 hover:bg-red-600 text-white">Cancel</Button>
       </div>
     </div>
   );

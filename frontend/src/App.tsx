@@ -1,47 +1,25 @@
-import React from "react";
-import { Suspense } from "react";
-import { Toaster } from "react-hot-toast";
+import React, { Suspense } from "react";
 import NotFound from "./components/NotFound";
-import { Routes, Route } from "react-router-dom";
-import UserRoutes from "./routes/user/UserRoutes";
 import PageFallback from "./components/PageFallback";
+import UserRoutes from "./routes/user/UserRoutes";
 import AdminRoutes from "./routes/admin/AdminRoutes";
+import CustomToaster from "./components/CustomToaster"; 
+
+import { Routes, Route } from "react-router-dom";
 
 const App: React.FC = () => {
   return (
     <>
-        <Toaster
-        position="top-center"
-        toastOptions={{
-          style: {
-            background: '#1f2937',
-            color: '#f9fafb',
-            fontSize: '14px',
-            borderRadius: '8px',
-          },
-          success: {
-            iconTheme: {
-              primary: '#10b981',
-              secondary: '#d1fae5',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: '#ef4444',
-              secondary: '#fee2e2',
-            },
-          },
-        }}
-      />
+      <CustomToaster /> 
       <Suspense fallback={<PageFallback />}>
         <Routes>
-          {/* Render User Routes */}
+          {/* User Routes */}
           {UserRoutes}
 
-          {/* Render Admin Routes */}
+          {/* Admin Routes */}
           {AdminRoutes}
 
-          {/* 404 Catch-all */}
+          {/* 404 */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
