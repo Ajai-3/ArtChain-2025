@@ -164,13 +164,13 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.id;
-      const offset = Number(req.query.offset) || 0;
+      const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
       logger.debug(`Get supporing user userId: ${userId}`);
       const supporters = await this._getSupportersUseCase.execute(
         userId,
-        offset,
+        page,
         limit
       );
       return res.status(HttpStatus.OK).json({
@@ -196,7 +196,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.id;
-      const offset = Number(req.query.offset) || 0;
+      const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
       logger.debug(`Get supporing user userId: ${userId}`);
@@ -204,7 +204,7 @@ export class UserController implements IUserController {
       logger.info(`Sucess mesage`);
       const supporters = await this._getSupportingUseCase.execute(
         userId,
-        offset,
+        page,
         limit
       );
       return res.status(HttpStatus.OK).json({

@@ -61,59 +61,37 @@ export class SupporterRepositoryImpl
     return count > 0;
   }
 
-  async getSupporters(
-    userId: string,
-    page?: number,
-    limit?: number
-  ): Promise<UserPreview[]> {
-    const skip = page && limit ? (page - 1) * limit : undefined;
+async getSupporters(userId: string, page = 1, limit = 10): Promise<UserPreview[]> {
+  const skip = (page - 1) * limit;
 
-    const supporters = await this.model.findMany({
-      where: { targetUserId: userId },
-      select: {
-        supporter: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profileImage: true,
-            role: true,
-            plan: true,
-          },
-        },
+  const supporters = await this.model.findMany({
+    where: { targetUserId: userId },
+    select: {
+      supporter: {
+        select: { id: true, name: true, username: true, profileImage: true, role: true, plan: true },
       },
-      take: limit,
-      skip: skip,
-    });
+    },
+    take: limit,
+    skip: skip,
+  });
 
-    return supporters.map((s: any) => s.supporter);
-  }
+  return supporters.map((s: any) => s.supporter);
+}
 
-  async getSupporting(
-    userId: string,
-    page?: number,
-    limit?: number
-  ): Promise<UserPreview[]> {
-    const skip = page && limit ? (page - 1) * limit : undefined;
+async getSupporting(userId: string, page = 1, limit = 10): Promise<UserPreview[]> {
+  const skip = (page - 1) * limit;
 
-    const supporting = await this.model.findMany({
-      where: { supporterId: userId },
-      select: {
-        targetUser: {
-          select: {
-            id: true,
-            name: true,
-            username: true,
-            profileImage: true,
-            role: true,
-            plan: true,
-          },
-        },
+  const supporting = await this.model.findMany({
+    where: { supporterId: userId },
+    select: {
+      targetUser: {
+        select: { id: true, name: true, username: true, profileImage: true, role: true, plan: true },
       },
-      take: limit,
-      skip: skip,
-    });
+    },
+    take: limit,
+    skip: skip,
+  });
 
-    return supporting.map((s: any) => s.targetUser);
-  }
+  return supporting.map((s: any) => s.targetUser);
+}
 }
