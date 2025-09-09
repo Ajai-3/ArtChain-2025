@@ -2,13 +2,13 @@ import React, { useRef, useCallback, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../../components/ui/button";
 import { ArrowDownRight } from "lucide-react";
-import apiClient from "../../../../api/axios";
 import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
 import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
 import { useGetSupporters } from "../../hooks/profile/useGetSupporters";
 import { useGetSupporting } from "../../hooks/profile/useGetSupporting";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
+import { useRemoveSupporterMutation } from "../../hooks/profile/useRemoveSupporterMutation";
 
 interface SupportUserListProps {
   type: "supporters" | "supporting";
@@ -60,16 +60,17 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
     [query]
   );
 
-  const handleRemoveSupporter = async (supporterId: string) => {
-    try {
-      await apiClient.delete(
-        `/api/v1/user/${userId}/supporters/${supporterId}`
-      );
-      query.refetch();
-    } catch (err) {
-      console.error(err);
-    }
+  const removeSupporterMutation = useRemoveSupporterMutation(userId);
+  const handleRemoveSupporter = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    supporterId: string
+  ) => {
+    e.stopPropagation();
+    removeSupporterMutation.mutate(supporterId, {
+      onSuccess: () => query.refetch(),
+    });
   };
+
   const supportMutation = useSupportMutation();
   const unSupportMutation = useUnSupportMutation();
 
@@ -166,17 +167,16 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
             {/* Button logic */}
             {isOwnProfile && type === "supporters" ? (
               <button
-                className="ml-auto px-4 py-1 rounded-full bg-red-600 text-white text-sm hover:bg-red-700"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemoveSupporter(user.id);
-                }}
+                className="ml-auto px-4 py-[.4rem] rounded-lg bg-red-600 text-white text-sm hover:bg-red-700"
+                onClick={(e) => handleRemoveSupporter(e, user.id)}
+                disabled={removeSupporterMutation.isPending}
               >
-                Remove
+                {removeSupporterMutation.isPending ? "Removing..." : "Remove"}
               </button>
             ) : (isOwnProfile && type === "supporting") || !isOwnProfile ? (
               <Button
-                variant={isSupporting ? "profileMessage" : "support"}
+                variant={isSupporting ? "unSupport" : "support"}
+                size="support"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleSupportClick(user.id, isSupporting);

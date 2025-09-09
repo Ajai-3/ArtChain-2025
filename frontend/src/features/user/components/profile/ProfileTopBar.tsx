@@ -156,7 +156,8 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             {!isOwnProfile && (
               <div className="flex gap-4 items-center">
                 <Button
-                  variant={isSupporting ? "profileMessage" : "support"}
+                  variant={isSupporting ? "unSupport" : "support"}
+                  size="support"
                   onClick={handleSupportClick}
                   disabled={isMutating}
                   className="relative flex items-center justify-center"
@@ -180,7 +181,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                   )}
                 </Button>
 
-                <Button variant="profileMessage">Message</Button>
+                <Button variant="profileMessage" size="profileMessage">Message</Button>
                 <Ellipsis />
               </div>
             )}
