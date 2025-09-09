@@ -10,7 +10,7 @@ const repo = new NotificationRepositoryImp();
 
 // Use Cases
 const getUserNotificationsUseCase = new GetUserNotificationsUseCase(repo);
-const getUnreadCountUseCase = new GetUnreadCountUseCase(repo);
+export const getUnreadCountUseCase = new GetUnreadCountUseCase(repo);
 const markAsReadUseCase = new MarkAsReadUseCase(repo);
 const markAllAsReadUseCase = new MarkAllAsReadUseCase(repo);
 
