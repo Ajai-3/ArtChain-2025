@@ -10,15 +10,17 @@ interface UserResponse {
 export const useGetSupporters = (userId?: string, enabled: boolean = true) => {
   return useInfiniteQuery<UserResponse, Error>({
     queryKey: ["supporters", userId],
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam = 1 }) => {
       const res = await apiClient.get(`/api/v1/user/${userId}/supporters`, {
-        params: { offset: pageParam, limit: 10 },
+        params: { page: pageParam, limit: 10 },
       });
       return res.data as UserResponse;
     },
     getNextPageParam: (lastPage, allPages) =>
-      lastPage.data.length < 10 ? undefined : allPages.length * 10,
+      lastPage.data.length < 10 ? undefined : allPages.length + 1,
     enabled: !!userId && enabled,
-    initialPageParam: 0,
+    initialPageParam: 1,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: false,
   });
 };

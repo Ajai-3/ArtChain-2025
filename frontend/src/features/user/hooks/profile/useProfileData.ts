@@ -1,37 +1,23 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useUserProfile } from "./useUserProfile";
-import type { User } from "../../../../types/users/user/user";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
-import { useUserProfileWithId } from "./useUserProfileWithId";
-import {
-  setCurrentUser,
-  updateSupportersCount,
-  updateSupportingCount,
-} from "../../../../redux/slices/userSlice";
+import { useUserProfile } from "./useUserProfile";
+import { useUserProfileWithId } from './useUserProfileWithId';
 
-export const useProfileData = () => {
+import { setCurrentUser, updateSupportingCount, updateSupportersCount } from "../../../../redux/slices/userSlice";
+import type { User } from "../../../../types/users/user/user";
+
+export const useProfileData = (userId?: string) => {
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState("gallery");
+  const { user: reduxUser, supportingCount, supportersCount } = useSelector((state: RootState) => state.user);
 
-  const {
-    user: reduxUser,
-    supportingCount,
-    supportersCount,
-  } = useSelector((state: RootState) => state.user);
-
-  const { userId } = useParams<{ userId?: string }>();
   const isOwnProfile = !userId || reduxUser?.id === userId;
 
   const { data: profileData, isLoading } = isOwnProfile
     ? useUserProfile()
     : useUserProfileWithId(userId ?? "");
 
-  const profileUser: User | null = isOwnProfile
-    ? profileData?.data?.user ?? reduxUser
-    : profileData?.data?.user ?? null;
-
+  const profileUser: User | null = profileData?.data?.user ?? (isOwnProfile ? reduxUser : null);
   const isSupporting = profileData?.data?.isSupporting || false;
 
   useEffect(() => {
@@ -51,10 +37,8 @@ export const useProfileData = () => {
     : profileData?.data?.supportersCount ?? 0;
 
   return {
-    activeTab,
-    setActiveTab,
-    isLoading,
     profileUser,
+    isLoading,
     isOwnProfile,
     isSupporting,
     displaySupportingCount,

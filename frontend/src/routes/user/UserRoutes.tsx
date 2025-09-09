@@ -18,6 +18,15 @@ const Shop = lazy(() => import('../../features/user/pages/Shop'));
 const Wallet = lazy(() => import('../../features/user/pages/Wallet'));
 const Settings = lazy(() => import('../../features/user/pages/Settings'));
 
+
+
+
+const ProfileGallery = lazy(() => import("../../features/user/components/profile/GalleryTab"));
+const ProfileFavorites = lazy(() => import("../../features/user/components/profile/FavoritesTab"));
+const ProfilePosts = lazy(() => import("../../features/user/components/profile/PostsTab"));
+const ProfileShop = lazy(() => import("../../features/user/components/profile/ShopTab"));
+const ProfileAbout = lazy(() => import("../../features/user/components/profile/AboutTab"));
+
 const UserRoutes = (
   <>
     <Route element={<AuthRouteGuard />}>
@@ -34,10 +43,30 @@ const UserRoutes = (
       <Route path="bidding" element={<Bidding />} />
       <Route path="shop" element={<Shop />} />
       <Route path="wallet" element={<Wallet />} />
-      <Route path="profile" element={<Profile />} />
-      <Route path="profile/:userId" element={<Profile />} />
       <Route path="settings" element={<Settings />} />
       <Route path="test" element={<ImageUploader />} />
+
+
+       {/* Profile Routes */}
+      <Route path="profile" element={<Profile />} />
+      <Route path="profile/:userId" element={<Profile />} />
+      <Route path="profile" element={<Profile />}>
+        <Route index element={<ProfileGallery />} />
+        <Route path="gallery" element={<ProfileGallery />} />
+        <Route path="favorites" element={<ProfileFavorites />} />
+        <Route path="posts" element={<ProfilePosts />} />
+        <Route path="shop" element={<ProfileShop />} />
+        <Route path="about" element={<ProfileAbout />} />
+      </Route>
+
+      <Route path="profile/:userId" element={<Profile />}>
+        <Route index element={<ProfileGallery />} />
+        <Route path="gallery" element={<ProfileGallery />} />
+        <Route path="favorites" element={<ProfileFavorites />} />
+        <Route path="posts" element={<ProfilePosts />} />
+        <Route path="shop" element={<ProfileShop />} />
+        <Route path="about" element={<ProfileAbout />} />
+      </Route>
     </Route>
   </>
 );

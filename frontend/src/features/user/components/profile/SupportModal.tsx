@@ -29,7 +29,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
           {type === "supporters" ? "Supporters" : "Supporting"}
         </h2>
 
-        <SupportUserList type={type} userId={userId} />
+        <SupportUserList type={type} onClose={onClose} userId={userId} />
       </div>
     </div>
   );

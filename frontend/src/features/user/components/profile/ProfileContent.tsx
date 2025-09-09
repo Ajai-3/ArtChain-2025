@@ -1,34 +1,14 @@
 import React from "react";
+import type { ReactNode } from "react"
 import type { User } from "../../../../types/users/user/user";
-import GalleryTab from "./GalleryTab";
-import FavoritesTab from "./FavoritesTab";
-import PostsTab from "./PostsTab";
-import ShopTab from "./ShopTab";
-import AboutTab from "./AboutTab";
 
 interface ProfileContentProps {
   activeTab: string;
   user: User;
+  children?: ReactNode;
 }
 
-const ProfileContent: React.FC<ProfileContentProps> = ({ activeTab, user }) => {
-  const getActiveComponent = () => {
-    switch (activeTab) {
-      case "gallery":
-        return <GalleryTab />;
-      case "favorites":
-        return <FavoritesTab />;
-      case "posts":
-        return <PostsTab />;
-      case "shop":
-        return <ShopTab />;
-      case "about":
-        return <AboutTab />;
-      default:
-        return <GalleryTab />;
-    }
-  };
-
+const ProfileContent: React.FC<ProfileContentProps> = ({ user, children }) => {
   return (
     <div className="w-full relative">
       {user?.backgroundImage && (
@@ -44,7 +24,7 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ activeTab, user }) => {
       )}
 
       <div className="relative z-10 pt-4 pb-20 bg-transparent">
-        {getActiveComponent()}
+        {children}
       </div>
     </div>
   );
