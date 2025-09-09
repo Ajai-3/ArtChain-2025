@@ -15,8 +15,10 @@ export class UploadArtImage implements IUploadArtImage {
     const hash = FileHashService.generateHash(fileBuffer);
 
 
-    const { previewBuffer, watermarkedBuffer } =
-      await WatermarkService.processAndSave(fileBuffer, userId, fileName);
+    // const { previewBuffer, watermarkedBuffer } =
+    //   await WatermarkService.processAndSave(fileBuffer, userId, fileName);
+const { previewBuffer, watermarkedBuffer } =
+  await WatermarkService.process(fileBuffer);
 
     const uploadResult = await this._fileRepo.upload(
       fileBuffer,
