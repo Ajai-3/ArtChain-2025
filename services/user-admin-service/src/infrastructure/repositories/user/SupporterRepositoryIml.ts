@@ -1,7 +1,7 @@
-import { prisma } from '../../db/prisma';
-import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
-import { ISupporterRepository } from '../../../domain/repositories/user/ISupporterRepository';
-import { UserPreview } from '../../../types/UserPreview';
+import { prisma } from "../../db/prisma";
+import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
+import { ISupporterRepository } from "../../../domain/repositories/user/ISupporterRepository";
+import { UserPreview } from "../../../types/UserPreview";
 
 export class SupporterRepositoryImpl
   extends BaseRepositoryImpl
@@ -61,37 +61,59 @@ export class SupporterRepositoryImpl
     return count > 0;
   }
 
-async getSupporters(userId: string, page = 1, limit = 10): Promise<UserPreview[]> {
-  const skip = (page - 1) * limit;
+  async getSupporters(
+    userId: string,
+    page = 1,
+    limit = 10
+  ): Promise<UserPreview[]> {
+    const skip = (page - 1) * limit;
 
-  const supporters = await this.model.findMany({
-    where: { targetUserId: userId },
-    select: {
-      supporter: {
-        select: { id: true, name: true, username: true, profileImage: true, role: true, plan: true },
+    const supporters = await this.model.findMany({
+      where: { targetUserId: userId },
+      select: {
+        supporter: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profileImage: true,
+            role: true,
+            plan: true,
+          },
+        },
       },
-    },
-    take: limit,
-    skip: skip,
-  });
+      take: limit,
+      skip: skip,
+    });
 
-  return supporters.map((s: any) => s.supporter);
-}
+    return supporters.map((s: any) => s.supporter);
+  }
 
-async getSupporting(userId: string, page = 1, limit = 10): Promise<UserPreview[]> {
-  const skip = (page - 1) * limit;
+  async getSupporting(
+    userId: string,
+    page = 1,
+    limit = 10
+  ): Promise<UserPreview[]> {
+    const skip = (page - 1) * limit;
 
-  const supporting = await this.model.findMany({
-    where: { supporterId: userId },
-    select: {
-      targetUser: {
-        select: { id: true, name: true, username: true, profileImage: true, role: true, plan: true },
+    const supporting = await this.model.findMany({
+      where: { supporterId: userId },
+      select: {
+        targetUser: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profileImage: true,
+            role: true,
+            plan: true,
+          },
+        },
       },
-    },
-    take: limit,
-    skip: skip,
-  });
+      take: limit,
+      skip: skip,
+    });
 
-  return supporting.map((s: any) => s.targetUser);
-}
+    return supporting.map((s: any) => s.targetUser);
+  }
 }
