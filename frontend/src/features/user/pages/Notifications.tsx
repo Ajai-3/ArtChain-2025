@@ -4,53 +4,43 @@ import { useDispatch, useSelector } from "react-redux";
 import type { Notification } from "../../../types/notification";
 import { useNotifications } from "../hooks/notifications/useNotifications";
 import NotificationUserProfile from "../components/notification/NotificationUserProfile";
-import {
-  setNotifications,
-  addNotification,
-} from "../../../redux/slices/notificationSlice";
+import { markAllAsRead, setNotifications } from "../../../redux/slices/notificationSlice";
+import { useMarkAllAsRead } from "../hooks/notifications/useMarkAllAsRead";
 
-
-interface NotificationsProps {
-  socket: any;
-}
-
-const Notifications = ({ socket }: NotificationsProps) => {
+const Notifications = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const notifications: Notification[] = useSelector(
     (state: any) => state.notification.notifications
   );
 
+
   const observer = useRef<IntersectionObserver | null>(null);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useNotifications();
 
+   const markAllMutation = useMarkAllAsRead();
+
   useEffect(() => {
-    if (data?.pages.length) {
-      const allNotifications = data.pages.flatMap((page) => page);
+    if (!data?.pages.length) return;
 
-      const existingIds = new Set(notifications.map((n) => n.id));
-      const newNotifications = allNotifications.filter(
-        (n) => !existingIds.has(n.id)
-      );
+    const allNotifications = data.pages.flatMap((page) => page);
+    const existingIds = new Set(notifications.map((n) => n.id));
+    const newNotifications = allNotifications.filter((n) => !existingIds.has(n.id));
 
-      if (newNotifications.length > 0) {
-        dispatch(setNotifications([...notifications, ...newNotifications]));
-      }
+    if (newNotifications.length > 0) {
+      dispatch(setNotifications([...notifications, ...newNotifications]));
     }
-  }, [data, dispatch, notifications]);
 
-  useEffect(() => {
-    if (!socket) return;
-    const handleNewNotification = (notif: Notification) => {
-      dispatch(addNotification(notif));
-    };
-    socket.on("notification", handleNewNotification);
-    return () => {
-      socket.off("notification", handleNewNotification);
-    };
-  }, [socket, dispatch]);
+    if (markAllMutation.status === "idle") {
+      markAllMutation.mutate(undefined, {
+        onSuccess: () => {
+          dispatch(markAllAsRead());
+        },
+      });
+    }
+  }, [data, dispatch, notifications, markAllMutation]);
 
   const lastNotificationRef = useCallback(
     (node: HTMLDivElement | null) => {
