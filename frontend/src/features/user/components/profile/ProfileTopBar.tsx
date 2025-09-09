@@ -5,6 +5,7 @@ import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
 import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
 import { SupportModal } from "./SupportModal";
 import type { ProfileTopBarProps } from "../../../../types/users/profile/ProfileTopBarProps";
+import CustomLoader from "../../../../components/CustomLoader";
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
@@ -24,9 +25,9 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
     else supportMutation.mutate(user.id);
   };
 
-  const [modalType, setModalType] = useState<
-    "supporters" | "supporting" | null
-  >(null);
+  const [modalType, setModalType] = useState<"supporters" | "supporting" | null>(
+    null
+  );
 
   const iconButtonClasses =
     "p-2 bg-zinc-700/80 rounded-full transition cursor-pointer";
@@ -71,9 +72,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                 className={`flex items-center ${iconButtonClasses}`}
               >
                 <Upload className="w-6 h-6 text-white" />
-                <p className="ml-2 hidden md:block text-white text-md">
-                  Upload
-                </p>
+                <p className="ml-2 hidden md:block text-white text-md">Upload</p>
               </div>
             )}
           </div>
@@ -93,24 +92,15 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center gap-4 opacity-0 group-hover/profile:opacity-100 transition duration-300">
                   {isOwnProfile ? (
                     <>
-                      <div
-                        title="View Profile Picture"
-                        className={iconButtonClasses}
-                      >
+                      <div title="View Profile Picture" className={iconButtonClasses}>
                         <View className="w-5 h-5 text-white" />
                       </div>
-                      <div
-                        title="Delete Profile Picture"
-                        className={iconButtonClasses}
-                      >
+                      <div title="Delete Profile Picture" className={iconButtonClasses}>
                         <Trash2 className="w-5 h-5 text-red-400" />
                       </div>
                     </>
                   ) : (
-                    <div
-                      title="View Profile Picture"
-                      className={iconButtonClasses}
-                    >
+                    <div title="View Profile Picture" className={iconButtonClasses}>
                       <View className="w-5 h-5 text-white" />
                     </div>
                   )}
@@ -124,10 +114,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                 {/* Upload if no profile image */}
                 {isOwnProfile && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/profile:opacity-100 transition duration-300">
-                    <div
-                      title="Upload Profile Picture"
-                      className={iconButtonClasses}
-                    >
+                    <div title="Upload Profile Picture" className={iconButtonClasses}>
                       <Upload className="w-5 h-5 text-white" />
                     </div>
                   </div>
@@ -160,28 +147,22 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                   size="support"
                   onClick={handleSupportClick}
                   disabled={isMutating}
-                  className="relative flex items-center justify-center"
+                  className="relative flex items-center justify-center min-w-[120px]"
                 >
-                  <span
-                    className={`${
-                      isMutating ? "invisible" : ""
-                    } flex items-center gap-1`}
-                  >
-                    {isSupporting ? (
-                      <>
-                        Supporting <ArrowDownRight />
-                      </>
-                    ) : (
-                      "Support"
-                    )}
-                  </span>
-
-                  {isMutating && (
-                    <span className="absolute w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
+                  {isMutating ? (
+                    <CustomLoader />
+                  ) : isSupporting ? (
+                    <>
+                      Supporting <ArrowDownRight />
+                    </>
+                  ) : (
+                    "Support"
                   )}
                 </Button>
 
-                <Button variant="profileMessage" size="profileMessage">Message</Button>
+                <Button variant="profileMessage" size="profileMessage">
+                  Message
+                </Button>
                 <Ellipsis />
               </div>
             )}
