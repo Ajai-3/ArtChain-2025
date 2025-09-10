@@ -15,5 +15,5 @@ export interface CreateArtPostDTO {
   isForSale?: boolean;
   priceType?: "artcoin" | "fiat";
   artcoins?: number;
-  fiatPrice?: number;
+  fiatPrice?: number | null;
 }

@@ -1,8 +1,14 @@
 import express from "express";
 import { artController } from "../../infrastructure/container/artContainer";
+import { commentController } from "../../infrastructure/container/commentContainer";
 
 const router = express.Router();
 
-router.post("/api/v1/art", artController.createArt)
+// Art
+router.post("/", artController.createArt)
+
+
+// Comment
+router.post("/comment", commentController.createComment)
 
 export default router;
