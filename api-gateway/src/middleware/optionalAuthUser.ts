@@ -17,7 +17,6 @@ export const optionalAuthUser = async (
     const accessToken = authHeader?.split(" ")[1];
 
     if (!accessToken) {
-        console.log("i am called")
       return next();
     }
 
