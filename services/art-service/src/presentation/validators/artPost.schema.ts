@@ -1,7 +1,18 @@
 import { z } from "zod";
 
 export const createArtPostSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z
+    .string()
+    .min(1, "Title is required")
+    .max(35, "Title is too long.")
+    .transform((val) =>
+      val
+        .split(" ")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ")
+    ),
   description: z.string().min(1, "Description is required"),
   artType: z.string().min(1, "Art type is required"),
   hashtags: z.array(z.string()).default([]),
@@ -12,7 +23,6 @@ export const createArtPostSchema = z.object({
   downloadingDisabled: z.boolean(),
   isPrivate: z.boolean(),
   isSensitive: z.boolean().optional(),
-  supporterOnly: z.boolean().optional(),
   isForSale: z.boolean().optional(),
   priceType: z.enum(["artcoin", "fiat"]).optional(),
   artcoins: z.number().optional(),

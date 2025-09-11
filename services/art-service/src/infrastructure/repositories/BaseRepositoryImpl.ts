@@ -8,6 +8,10 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
     this.model = model;
   }
 
+  async count(): Promise<number> {
+    return this.model.countDocuments();
+  }
+
   async create(entity: T): Promise<T> {
     const created = await this.model.create(entity);
     return created.toObject() as T;

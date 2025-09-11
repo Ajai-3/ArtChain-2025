@@ -68,7 +68,7 @@ export class ArtController implements IArtController {
       
 
       if(!art) {
-         logger.warn(`User not found: ${id}`);
+         logger.warn(`Art not found: ${id}`);
         return res.status(HttpStatus.NOT_FOUND).json({message: `Art ${id} not found`})
       }
 
@@ -77,6 +77,8 @@ export class ArtController implements IArtController {
         logger.warn(`User not found: ${art?.userId}`);
         return res.status(HttpStatus.NOT_FOUND).json({ message: "User not found" });
       }
+
+      console.log(user, art)
 
       return res
         .status(HttpStatus.OK)

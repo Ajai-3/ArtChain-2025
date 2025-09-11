@@ -6,6 +6,7 @@ export interface ArtPostDocument extends ArtPost, Document {}
 const ArtPostSchema = new Schema<ArtPostDocument>({
   userId: { type: String, required: true },
   title: { type: String, required: true },
+  artName: {type: String, required: true},
   description: { type: String, required: true },
   artType: { type: String, required: true },
   hashtags: { type: [String], default: [] },
@@ -16,7 +17,6 @@ const ArtPostSchema = new Schema<ArtPostDocument>({
   downloadingDisabled: { type: Boolean, default: false },
   isPrivate: { type: Boolean, default: false },
   isSensitive: { type: Boolean, default: false },
-  supporterOnly: { type: Boolean, default: false },
   isForSale: { type: Boolean, default: false },
   priceType: { type: String },
   artcoins: { type: Number },

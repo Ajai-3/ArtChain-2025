@@ -2,6 +2,7 @@ export class ArtPost {
   constructor(
     public readonly userId: string,
     public readonly title: string,
+    public readonly artName: string,
     public readonly description: string,
     public readonly artType: string,
     public readonly hashtags: string[],
@@ -12,7 +13,6 @@ export class ArtPost {
     public readonly downloadingDisabled = false,
     public readonly isPrivate = false,
     public readonly isSensitive = false,
-    public readonly supporterOnly = false,
     public readonly isForSale = false,
     public readonly priceType?: "artcoin" | "fiat",
     public readonly artcoins?: number,

@@ -1,4 +1,5 @@
 export interface IBaseRepository<T> {
+  count(): Promise<number>;
   create(entity: T): Promise<T>;
   getById(id: string): Promise<T | null>;
   getAll(page?: number, limit?: number): Promise<T[]>;

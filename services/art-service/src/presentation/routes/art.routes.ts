@@ -7,6 +7,7 @@ const router = express.Router();
 // Art
 router.post("/", artController.createArt)
 router.get("/:id", artController.getArtById)
+// router.get("/:artname", artController.getArtByArtName)
 router.get("/", artController.getAllArt)
 
 // Comment

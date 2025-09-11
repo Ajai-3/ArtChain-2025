@@ -5,7 +5,7 @@ export class UserService {
   static async getUserById(userId: string): Promise<any> {
     try {
         console.log("hello", userId)
-      const response = await axios.get(`${config.services.user_service_url}/profile/${userId}`);
+      const response = await axios.get(`${config.services.user_service_url}/profile-id/${userId}`);
       return response.data;
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
