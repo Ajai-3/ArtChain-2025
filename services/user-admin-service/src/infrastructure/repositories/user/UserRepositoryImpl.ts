@@ -4,6 +4,7 @@ import { IUserRepository } from "../../../domain/repositories/user/IUserReposito
 import { SafeUser } from "../../../domain/repositories/IBaseRepository";
 import { Role } from "@prisma/client";
 import { User } from "../../../domain/entities/User";
+import { ArtUser } from "../../../types/ArtUser";
 
 export class UserRepositoryImpl
   extends BaseRepositoryImpl
@@ -105,5 +106,28 @@ export class UserRepositoryImpl
       meta: { page, limit, total },
       data: sanitizedUsers,
     };
+  }
+
+  async findManyByIdsBatch(ids: string[]): Promise<ArtUser[]> {
+    if (!ids.length) return [];
+
+    const users = await this.model.findMany({
+      where: {
+        id: { in: ids },
+        role: { in: [Role.user, Role.artist] },
+      },
+      select: {
+        id: true,
+        username: true,
+        name: true,
+        email: true,
+        profileImage: true,
+        plan: true,
+        role: true,
+        status: true,
+      },
+    });
+
+    return users as ArtUser[];
   }
 }

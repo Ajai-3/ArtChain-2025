@@ -1,3 +1,4 @@
+import { UpdateUserProfileDTO } from "./../../../domain/dtos/user/profile/UpdateUserProfileDTO";
 import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
 
@@ -15,6 +16,10 @@ import { publishNotification } from "../../../infrastructure/messaging/rabbitmq"
 import { logger } from "../../../utils/logger";
 import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
 import { GetUserSupportingUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportingUseCase";
+import { GetUsersByIdsUserUseCase } from "../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase";
+import { UpdateProfileUserUseCase } from "../../../application/usecases/user/profile/UpdateProfileUserUseCase";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { updateProfileSchema } from "../../../application/validations/user/updateProfileSchema";
 
 export class UserController implements IUserController {
   constructor(
@@ -23,7 +28,9 @@ export class UserController implements IUserController {
     private readonly _supportUserUseCase: SupportUserUseCase,
     private readonly _unSupportUserUseCase: UnSupportUserUseCase,
     private readonly _getSupportersUseCase: GetUserSupportersUseCase,
-    private readonly _getSupportingUseCase: GetUserSupportingUseCase
+    private readonly _getSupportingUseCase: GetUserSupportingUseCase,
+    private readonly _getUsersByIdsUserUseCase: GetUsersByIdsUserUseCase,
+    private readonly _updateProfileUserUseCase: UpdateProfileUserUseCase
   ) {}
 
   //# ================================================================================================================
@@ -78,6 +85,38 @@ export class UserController implements IUserController {
         data: { user, isSupporting, supportingCount, supportersCount },
       });
     } catch (error) {
+      logger.error("Error infetching user with id");
+      next(error);
+    }
+  };
+
+  updateProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      if (!userId) {
+        return res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ message: "User ID missing in request headers" });
+      }
+      console.log(req.body)
+      const validatedData = validateWithZod(updateProfileSchema, req.body);
+
+      const dto: UpdateUserProfileDTO = { ...validatedData, userId };
+
+      const user = await this._updateProfileUserUseCase.execute(dto);
+
+      logger.info("User profile updated")
+   console.log(user)
+      return res.status(HttpStatus.OK).json({
+        message: USER_MESSAGES.PROFILE_UPDATE_SUCCESS,
+        user,
+      });
+    } catch (error) {
+      logger.error("Error infetching user with id");
       next(error);
     }
   };
@@ -211,6 +250,31 @@ export class UserController implements IUserController {
         message: USER_MESSAGES.SUPPORTING_FETCH_SUCCESS,
         data: supporters,
       });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAllUserWithIds = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | any> => {
+    try {
+      const { ids } = req.body;
+
+      if (!ids || !Array.isArray(ids) || !ids.length) {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: "ids array is required" });
+      }
+
+      const users = await this._getUsersByIdsUserUseCase.execute(ids);
+
+      logger.info(`user with id fetched correctly`);
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: "User fetch correcly", data: users });
     } catch (error) {
       next(error);
     }

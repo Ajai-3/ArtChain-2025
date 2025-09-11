@@ -9,6 +9,8 @@ import { GetCurrentUserUseCase } from '../../../application/usecases/user/user-i
 import { GetUserWithIdUserUseCase } from '../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase';
 import { GetUserSupportersUseCase } from '../../../application/usecases/user/user-intraction/GetUserSupportersUseCase';
 import { GetUserSupportingUseCase } from '../../../application/usecases/user/user-intraction/GetUserSupportingUseCase';
+import { GetUsersByIdsUserUseCase } from '../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase';
+import { UpdateProfileUserUseCase } from '../../../application/usecases/user/profile/UpdateProfileUserUseCase';
 
 
 // Repositories
@@ -22,6 +24,9 @@ const getCurrentUserUseCase = new GetCurrentUserUseCase(userRepo, supporterRepo)
 const getUserWithIdUseCase = new GetUserWithIdUserUseCase(userRepo, supporterRepo);
 const getUserSupportersUseCase = new GetUserSupportersUseCase(userRepo, supporterRepo)
 const getUserSupportingUseCase = new GetUserSupportingUseCase(userRepo, supporterRepo)
+const  getUsersByIdsUserUseCase = new GetUsersByIdsUserUseCase(userRepo)
+
+const updateProfileUserUseCase = new UpdateProfileUserUseCase(userRepo)
 
 
 // Controller
@@ -31,5 +36,7 @@ export const userController = new UserController(
   supportUserUseCase,
   unSupportUserUseCase,
   getUserSupportersUseCase,
-  getUserSupportingUseCase
+  getUserSupportingUseCase,
+  getUsersByIdsUserUseCase,
+  updateProfileUserUseCase
 );

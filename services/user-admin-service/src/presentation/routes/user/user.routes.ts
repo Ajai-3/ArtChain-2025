@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.get('/profile', userController.getUserProfile);
 router.get('/profile/:userId', userController.getUserProfileWithId);
+router.patch("/profile", userController.updateProfile)
 
 router.post('/support/:userId', userController.supportUser);
 router.delete('/un-support/:userId', userController.unSupportUser);
@@ -29,5 +30,8 @@ router.post('/deactivate', securityController.deactivateAccount);
 
 router.get("/:id/supporters", userController.getSupporters)
 router.get("/:id/supporting", userController.getSupporing)
+
+
+router.post("/batch", userController.getAllUserWithIds)
 
 export default router;

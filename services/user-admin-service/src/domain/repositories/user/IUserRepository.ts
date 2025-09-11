@@ -1,3 +1,4 @@
+import { ArtUser } from "../../../types/ArtUser";
 import { User } from "../../entities/User";
 import { SafeUser } from "../IBaseRepository";
 import { IBaseRepository } from "../IBaseRepository";
@@ -23,4 +24,6 @@ export interface IUserRepository<U = User, S = SafeUser>
     meta: { page: number; limit: number; total: number };
     data: SafeUser[];
   }>;
+
+  findManyByIdsBatch(ids: string[]): Promise<ArtUser[]>
 }

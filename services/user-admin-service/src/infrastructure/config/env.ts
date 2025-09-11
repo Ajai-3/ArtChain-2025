@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
+import 'dotenv-flow/config';
 import jwt from 'jsonwebtoken';
 import { getArtChainSecrets } from 'art-chain-shared';
-
-dotenv.config();
 
 const secrets = await getArtChainSecrets();
 

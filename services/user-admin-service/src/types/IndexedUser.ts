@@ -6,6 +6,7 @@ export interface IndexedUser {
     profileImage?: string;
     bannerImage?: string;
     bio?: string;
+    plan?: 'free' | 'pro' | 'pro_plus' ,
     role?: 'admin' | 'user' | 'artist';
     createdAt: Date;
     status?: 'active' | 'banned' | 'suspended' |'deleted';
