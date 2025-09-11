@@ -1,7 +1,7 @@
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
-import { ARTMESSAGES } from "../../constants/ArtMessages";
+import { ART_MESSAGES } from "../../constants/ArtMessages";
 import { IArtController } from "../interface/IArtController";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { createArtPostSchema } from "../validators/artPost.schema";
@@ -10,9 +10,42 @@ import { CreateArtPostUseCase } from "../../application/usecase/art/CreateArtPos
 import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCase";
 import { UserService } from "../../infrastructure/service/UserService";
 import { GetAllArtUseCase } from "../../application/usecase/art/GetAllArtUseCase";
+import { GetArtByNameUseCase } from "../../application/usecase/art/GetArtByNameUseCase";
 
 export class ArtController implements IArtController {
-  constructor(private readonly _createArtUseCase: CreateArtPostUseCase, private readonly _getArtByIdUseCase: GetArtByIdUseCase, private readonly _getAllArtUseCase: GetAllArtUseCase) {}
+  constructor(
+    private readonly _createArtUseCase: CreateArtPostUseCase,
+    private readonly _getArtByIdUseCase: GetArtByIdUseCase,
+    private readonly _getAllArtUseCase: GetAllArtUseCase,
+    private readonly _getArtByNameUseCase: GetArtByNameUseCase
+  ) {}
+
+  //# ================================================================================================================
+  //# GET ART WITH ART NAME
+  //# ================================================================================================================
+  //# GET /api/v1/art/:artname
+  //# Path params: artname
+  //# This controller fetches the art with the unique art name
+  //# ================================================================================================================
+  getArtByArtName = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { artname } = req.params;
+       const currentUserId = req.headers["x-user-id"] as string;
+
+      const data = await this._getArtByNameUseCase.execute(artname, currentUserId);
+
+      logger.info(`${data.art.artName} fetched succefully.`);
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: ART_MESSAGES.ART_FETCH_WITH_ART_NAME_SUCESS, data });
+    } catch (error) {
+      next(error);
+    }
+  };
 
   //# ================================================================================================================
   //# GET ALL ART
@@ -34,9 +67,9 @@ export class ArtController implements IArtController {
         `Fetching all art with pagination: page=${page}, limit=${limit}`
       );
 
-     const result = await this._getAllArtUseCase.execute(page, limit)
+      const result = await this._getAllArtUseCase.execute(page, limit);
       return res.status(HttpStatus.OK).json({
-        message: ARTMESSAGES.FETCH_ALL_SUCCESS,
+        message: ART_MESSAGES.FETCH_ALL_SUCCESS,
         page,
         limit,
         data: result,
@@ -64,25 +97,30 @@ export class ArtController implements IArtController {
 
       logger.info(`Fetching art by id=${id}`);
 
-      const art = await this._getArtByIdUseCase.execute(id)
-      
+      const art = await this._getArtByIdUseCase.execute(id);
 
-      if(!art) {
-         logger.warn(`Art not found: ${id}`);
-        return res.status(HttpStatus.NOT_FOUND).json({message: `Art ${id} not found`})
+      if (!art) {
+        logger.warn(`Art not found: ${id}`);
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: `Art ${id} not found` });
       }
 
       const user = await UserService.getUserById(art?.userId);
       if (!user) {
         logger.warn(`User not found: ${art?.userId}`);
-        return res.status(HttpStatus.NOT_FOUND).json({ message: "User not found" });
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: "User not found" });
       }
 
-      console.log(user, art)
+      console.log(user, art);
 
-      return res
-        .status(HttpStatus.OK)
-        .json({ message: `${ARTMESSAGES.FETCH_BY_ID_SUCCESS} ${id}`, user, art });
+      return res.status(HttpStatus.OK).json({
+        message: `${ART_MESSAGES.FETCH_BY_ID_SUCCESS} ${id}`,
+        user,
+        art,
+      });
     } catch (error) {
       logger.error("Error in getArtById", error);
       next(error);
@@ -110,7 +148,7 @@ export class ArtController implements IArtController {
           .json({ message: "Missing x-user-id header" });
       }
 
-      console.log("dfsdfsdf",req.body)
+      console.log("dfsdfsdf", req.body);
 
       const validatedData = validateWithZod(createArtPostSchema, req.body);
 
@@ -123,7 +161,7 @@ export class ArtController implements IArtController {
 
       return res
         .status(HttpStatus.CREATED)
-        .json({ message: ARTMESSAGES.CREATE_SUCCESS, data: createdArt });
+        .json({ message: ART_MESSAGES.CREATE_SUCCESS, data: createdArt });
     } catch (error) {
       logger.error("Error in createArt", error);
       next(error);
@@ -153,7 +191,7 @@ export class ArtController implements IArtController {
 
       // TODO: Replace with actual DB/service call
       return res.status(HttpStatus.OK).json({
-        message: ARTMESSAGES.UPDATE_SUCCESS,
+        message: ART_MESSAGES.UPDATE_SUCCESS,
         data: updateData,
       });
     } catch (error) {
@@ -182,7 +220,7 @@ export class ArtController implements IArtController {
       // TODO: Replace with actual DB/service call
       return res
         .status(HttpStatus.OK)
-        .json({ message: ARTMESSAGES.DELETE_SUCCESS });
+        .json({ message: ART_MESSAGES.DELETE_SUCCESS });
     } catch (error) {
       logger.error("Error in deleteArt", error);
       next(error);

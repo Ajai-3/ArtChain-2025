@@ -5,14 +5,13 @@ import { commentController } from "../../infrastructure/container/commentContain
 const router = express.Router();
 
 // Art
-router.post("/", artController.createArt)
-router.get("/:id", artController.getArtById)
-// router.get("/:artname", artController.getArtByArtName)
-router.get("/", artController.getAllArt)
+router.post("/", artController.createArt);
+// router.get("/:id", artController.getArtById);
+router.get("/:artname", artController.getArtByArtName);
+router.get("/", artController.getAllArt);
 
 // Comment
-router.post("/comment", commentController.createComment)
-router.get("/comments/:postId", commentController.getComments)
-
+router.post("/comment", commentController.createComment);
+router.get("/comments/:postId", commentController.getComments);
 
 export default router;

@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { ArtPost } from "../../domain/entities/ArtPost";
 import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
 import { ArtPostModel } from "../models/ArtPostModel";
@@ -10,6 +9,12 @@ export class ArtPostRepositoryImpl
 {
   constructor() {
     super(ArtPostModel);
+  }
+
+  async findByArtName(artName: string): Promise<any> {
+    const art = await ArtPostModel.findOne({ artName }).lean();
+    if (!art) throw new Error(`Art with name ${artName} not found`);
+    return art as ArtPost;
   }
 
   async getAllArt(page = 1, limit = 10): Promise<any[]> {
