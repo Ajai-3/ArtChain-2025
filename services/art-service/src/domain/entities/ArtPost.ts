@@ -5,7 +5,7 @@ export class ArtPost {
     public readonly description: string,
     public readonly artType: string,
     public readonly hashtags: string[],
-    public readonly originalUrl: string,
+    public readonly previewUrl: string,
     public readonly watermarkedUrl: string,
     public readonly aspectRatio: string,
     public readonly commentingDisabled = false,

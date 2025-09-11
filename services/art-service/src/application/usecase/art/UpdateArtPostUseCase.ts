@@ -1,6 +1,8 @@
-import { UpdateArtPostDTO } from "../../domain/dto/UpdateArtPostDTO";
-import { IArtPostRepository } from '../../domain/repositories/IArtPostRepository';
-import { IUpdateArtPostUseCase } from '../../domain/usecase/IUpdateArtPostUseCase';
+import { UpdateArtPostDTO } from "../../../domain/dto/UpdateArtPostDTO";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { IUpdateArtPostUseCase } from "../../../domain/usecase/art/IUpdateArtPostUseCase";
+
+
 
 export class UpdateArtPostUseCase implements IUpdateArtPostUseCase {
   constructor(private readonly _artRepo: IArtPostRepository) {}

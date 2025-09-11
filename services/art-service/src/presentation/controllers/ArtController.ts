@@ -6,10 +6,13 @@ import { IArtController } from "../interface/IArtController";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { createArtPostSchema } from "../validators/artPost.schema";
 import { CreateArtPostDTO } from "../../domain/dto/CreateArtPostDTO";
-import { CreateArtPostUseCase } from "../../application/usecase/CreateArtPostUseCase";
+import { CreateArtPostUseCase } from "../../application/usecase/art/CreateArtPostUseCase";
+import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCase";
+import { UserService } from "../../infrastructure/service/UserService";
+import { GetAllArtUseCase } from "../../application/usecase/art/GetAllArtUseCase";
 
 export class ArtController implements IArtController {
-  constructor(private readonly _createArtUseCase: CreateArtPostUseCase) {}
+  constructor(private readonly _createArtUseCase: CreateArtPostUseCase, private readonly _getArtByIdUseCase: GetArtByIdUseCase, private readonly _getAllArtUseCase: GetAllArtUseCase) {}
 
   //# ================================================================================================================
   //# GET ALL ART
@@ -27,14 +30,16 @@ export class ArtController implements IArtController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      logger.info(`Fetching all art with pagination: page=${page}, limit=${limit}`);
+      logger.info(
+        `Fetching all art with pagination: page=${page}, limit=${limit}`
+      );
 
-      // TODO: Replace with actual DB/service call to fetch paginated art
+     const result = await this._getAllArtUseCase.execute(page, limit)
       return res.status(HttpStatus.OK).json({
         message: ARTMESSAGES.FETCH_ALL_SUCCESS,
         page,
         limit,
-        data: [],
+        data: result,
       });
     } catch (error) {
       logger.error("Error in getAllArt", error);
@@ -59,10 +64,23 @@ export class ArtController implements IArtController {
 
       logger.info(`Fetching art by id=${id}`);
 
-      // TODO: Replace with actual DB/service call
+      const art = await this._getArtByIdUseCase.execute(id)
+      
+
+      if(!art) {
+         logger.warn(`User not found: ${id}`);
+        return res.status(HttpStatus.NOT_FOUND).json({message: `Art ${id} not found`})
+      }
+
+      const user = await UserService.getUserById(art?.userId);
+      if (!user) {
+        logger.warn(`User not found: ${art?.userId}`);
+        return res.status(HttpStatus.NOT_FOUND).json({ message: "User not found" });
+      }
+
       return res
         .status(HttpStatus.OK)
-        .json({ message: `${ARTMESSAGES.FETCH_BY_ID_SUCCESS} ${id}` });
+        .json({ message: `${ARTMESSAGES.FETCH_BY_ID_SUCCESS} ${id}`, user, art });
     } catch (error) {
       logger.error("Error in getArtById", error);
       next(error);
@@ -85,15 +103,21 @@ export class ArtController implements IArtController {
       const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         logger.error("Missing x-user-id header in createArt");
-        return res.status(HttpStatus.BAD_REQUEST).json({ message: "Missing x-user-id header" });
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: "Missing x-user-id header" });
       }
+
+      console.log("dfsdfsdf",req.body)
 
       const validatedData = validateWithZod(createArtPostSchema, req.body);
 
       const dto: CreateArtPostDTO = { ...validatedData, userId };
       const createdArt = await this._createArtUseCase.execute(dto);
 
-      logger.info(`Art created successfully by userId=${userId}, title=${dto.title}`);
+      logger.info(
+        `Art created successfully by userId=${userId}, title=${dto.title}`
+      );
 
       return res
         .status(HttpStatus.CREATED)
@@ -121,7 +145,9 @@ export class ArtController implements IArtController {
       const { id } = req.params;
       const updateData = req.body;
 
-      logger.info(`Updating art id=${id} with data=${JSON.stringify(updateData)}`);
+      logger.info(
+        `Updating art id=${id} with data=${JSON.stringify(updateData)}`
+      );
 
       // TODO: Replace with actual DB/service call
       return res.status(HttpStatus.OK).json({
@@ -152,7 +178,9 @@ export class ArtController implements IArtController {
       logger.info(`Deleting art id=${id}`);
 
       // TODO: Replace with actual DB/service call
-      return res.status(HttpStatus.OK).json({ message: ARTMESSAGES.DELETE_SUCCESS });
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: ARTMESSAGES.DELETE_SUCCESS });
     } catch (error) {
       logger.error("Error in deleteArt", error);
       next(error);

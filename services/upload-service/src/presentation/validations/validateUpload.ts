@@ -5,12 +5,14 @@ import { logger } from '../../infrastructure/utils/logger';
 
 export const validateUpload = (
   req: Request,
-  type: 'profile' | 'banner' | 'art'
+  type: 'profile' | 'banner' | 'art' | 'backgound'
 ) => {
   try {
+    const previousFileUrl = req.body.previousFileUrl as string | undefined;
     const validated = uploadSchema.parse({
       userId: req.headers['x-user-id'],
       file: req.file,
+      previousFileUrl
     });
 
     logger.debug(
@@ -19,7 +21,8 @@ export const validateUpload = (
 
     return {
       userId: validated.userId,
-      file: validated.file
+      file: validated.file,
+      previousFileUrl
     };
   } catch (err) {
     if (err instanceof ZodError) {

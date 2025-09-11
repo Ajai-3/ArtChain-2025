@@ -2,7 +2,7 @@ import { createLogger, format, transports } from 'winston';
 import LokiTransport from 'winston-loki';
 
 const { combine, timestamp, printf, colorize, json } = format;
-const serviceName = 'user-admin-service';
+const serviceName = 'art-service';
 
 const consoleFormat = printf(({ level, message, timestamp }) => {
   return `${timestamp} [${serviceName}] ${level}: ${message}`;

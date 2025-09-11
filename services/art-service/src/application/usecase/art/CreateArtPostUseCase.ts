@@ -1,21 +1,20 @@
-import { ArtPost } from "../../domain/entities/ArtPost";
-import { CreateArtPostDTO } from "../../domain/dto/CreateArtPostDTO";
-import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
-import { ICreateArtPostUseCase } from "../../domain/usecase/ICreateArtPostUseCase";
-import { ArtPostResponseDTO } from "../../domain/dto/ArtPostResponseDTO";
+import { ArtPost } from "../../../domain/entities/ArtPost";
+import { CreateArtPostDTO } from "../../../domain/dto/CreateArtPostDTO";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { ICreateArtPostUseCase } from "../../../domain/usecase/art/ICreateArtPostUseCase";
+
 
 export class CreateArtPostUseCase implements ICreateArtPostUseCase {
   constructor(private readonly _artRepo: IArtPostRepository) {}
 
- async execute(dto: CreateArtPostDTO): Promise<any> {
-
+  async execute(dto: CreateArtPostDTO): Promise<any> {
     const art = new ArtPost(
       dto.userId,
       dto.title,
       dto.description,
       dto.artType,
       dto.hashtags,
-      dto.originalUrl,
+      dto.previewUrl,
       dto.watermarkedUrl,
       dto.aspectRatio,
       dto.commentingDisabled,
@@ -30,6 +29,6 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
     );
 
     const created = await this._artRepo.create(art);
-    return created
+    return created;
   }
 }

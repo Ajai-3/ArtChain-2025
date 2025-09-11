@@ -7,9 +7,10 @@ import { ICommentController } from "../interface/ICommentController";
 import { createCommentSchema } from "../validators/createCommentSchema";
 import { CreateCommentDTO } from "./../../domain/dto/comment/CreateCommentDTO";
 import { CreateCommentUseCase } from "../../application/usecase/comment/CreateCommentUseCase";
+import { GetCommentsUseCase } from "../../application/usecase/comment/GetCommentsUseCase";
 
 export class CommentController implements ICommentController {
-  constructor(private readonly _createCommentUseCase: CreateCommentUseCase) {}
+  constructor(private readonly _createCommentUseCase: CreateCommentUseCase, private readonly _getCommentsUseCase: GetCommentsUseCase) {}
   //# ================================================================================================================
   //# CREATE NEW COMMENT
   //# ================================================================================================================
@@ -30,6 +31,7 @@ export class CommentController implements ICommentController {
           .status(HttpStatus.BAD_REQUEST)
           .json({ message: "Missing x-user-id header" });
       }
+      console.log(req.body)
 
       const result = validateWithZod(createCommentSchema, req.body);
 
@@ -97,7 +99,7 @@ export class CommentController implements ICommentController {
 
       logger.info(`Fetching comments for postId=${postId}, userId=${userId}, page=${page}, limit=${limit}`);
 
-      const comments: any[] = [];
+      const comments = await this._getCommentsUseCase.execute(postId, page, limit)
 
       return res
         .status(HttpStatus.OK)

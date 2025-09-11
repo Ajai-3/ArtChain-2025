@@ -5,6 +5,7 @@ export interface ArtPostResponseDTO {
   description: string;
   artType: string;
   hashtags: string[];
+  previewUrl: string;
   originalUrl: string;
   watermarkedUrl: string;
   aspectRatio: string;

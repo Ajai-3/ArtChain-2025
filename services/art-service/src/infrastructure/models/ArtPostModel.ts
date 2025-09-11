@@ -9,7 +9,7 @@ const ArtPostSchema = new Schema<ArtPostDocument>({
   description: { type: String, required: true },
   artType: { type: String, required: true },
   hashtags: { type: [String], default: [] },
-  originalUrl: { type: String, required: true },
+  previewUrl: { type: String, required: true },
   watermarkedUrl: { type: String, required: true },
   aspectRatio: { type: String, required: true },
   commentingDisabled: { type: Boolean, default: false },

@@ -1,5 +1,6 @@
-import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
-import { IDeleteArtPostUseCase } from "../../domain/usecase/IDeleteArtPostUseCase";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { IDeleteArtPostUseCase } from "../../../domain/usecase/art/IDeleteArtPostUseCase";
+
 
 
 export class DeleteArtPostUseCase implements IDeleteArtPostUseCase {

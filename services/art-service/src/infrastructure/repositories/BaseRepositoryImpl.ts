@@ -14,12 +14,13 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
   }
 
   async getById(id: string): Promise<T | null> {
-    const doc = await this.model.findOne({ id }).lean();
+    const doc = await this.model.findById(id).lean();
     return doc as T | null;
   }
 
   async getAll(page = 1, limit = 10): Promise<T[]> {
-    const docs = await this.model.find()
+    const docs = await this.model
+      .find()
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
@@ -27,7 +28,9 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
   }
 
   async update(id: string, entity: Partial<T>): Promise<T> {
-    const updated = await this.model.findOneAndUpdate({ id }, entity, { new: true }).lean();
+    const updated = await this.model
+      .findOneAndUpdate({ id }, entity, { new: true })
+      .lean();
     if (!updated) throw new Error("Document not found");
     return updated as T;
   }

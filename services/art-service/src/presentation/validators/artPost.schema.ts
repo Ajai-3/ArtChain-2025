@@ -5,7 +5,7 @@ export const createArtPostSchema = z.object({
   description: z.string().min(1, "Description is required"),
   artType: z.string().min(1, "Art type is required"),
   hashtags: z.array(z.string()).default([]),
-  originalUrl: z.string().url("Invalid original image URL"),
+  previewUrl: z.string().url("Invalid preview url"),
   watermarkedUrl: z.string().url("Invalid watermarked image URL"),
   aspectRatio: z.string().min(1, "Aspect ratio is required"),
   commentingDisabled: z.boolean(),

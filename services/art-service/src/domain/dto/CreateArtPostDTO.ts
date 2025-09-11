@@ -4,7 +4,7 @@ export interface CreateArtPostDTO {
   description: string;
   artType: string;
   hashtags: string[];
-  originalUrl: string;
+  previewUrl: string;
   watermarkedUrl: string;
   aspectRatio: string;
   commentingDisabled?: boolean;
