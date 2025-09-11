@@ -13,7 +13,7 @@ const Profile: React.FC = () => {
   if (!profileUser) return <div>User not found</div>;
 
   return (
-    <div className="w-full flex flex-col h-[calc(100vh-62px)]">
+    <div className="w-full flex flex-col h-[calc(100vh-62px)] overflow-y-auto scrollbar">
       <ProfileTopBar
         user={profileUser}
         supportingCount={displaySupportingCount}
@@ -22,7 +22,7 @@ const Profile: React.FC = () => {
         isSupporting={isSupporting}
       />
       <ProfileSelectBar />
-      <div className="flex-1 overflow-y-auto scrollbar">
+      <div className="flex-1">
         <Outlet /> {/* Render selected tab */}
       </div>
     </div>

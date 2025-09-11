@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import { Button } from "../../../../../components/ui/button";
+import CustomLoader from "../../../../../components/CustomLoader";
 
 interface ProfileImageCropperProps {
   file: File;
   onCancel: () => void;
   onSave: (file: File) => void;
+  isSaving?: boolean;
 }
 
 function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
@@ -33,7 +35,7 @@ function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
 
       canvas.toBlob((blob) => {
         if (!blob) return reject("Blob error");
-        resolve(new File([blob], "profile-image.png", { type: "image/png" }));
+        resolve(new File([blob], "profile-image.jpeg", { type: "image/jpeg" }));
       }, "image/png");
     };
     image.onerror = () => reject("Image load error");
@@ -44,13 +46,13 @@ const ProfileImageCropper: React.FC<ProfileImageCropperProps> = ({
   file,
   onCancel,
   onSave,
+  isSaving = false,
 }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
-  // Convert file to data URL
   useEffect(() => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -63,7 +65,8 @@ const ProfileImageCropper: React.FC<ProfileImageCropperProps> = ({
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (!imageSrc || !croppedAreaPixels) return;
     const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels);
     onSave(croppedFile);
@@ -72,17 +75,17 @@ const ProfileImageCropper: React.FC<ProfileImageCropperProps> = ({
   if (!imageSrc) return null;
 
   return (
-    <div className="fixed inset-0 min-h-screen z-50 flex items-center justify-center bg-black bg-opacity-60 m-0 p-0">
-      <div className="relative w-full max-w-md bg-zinc-200 dark:bg-zinc-800 rounded-2xl shadow-2xl overflow-hidden animate-fadeIn">
-        {/* Header */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+      <div className="relative w-full max-w-md bg-zinc-200 dark:bg-zinc-800 rounded-2xl shadow-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-zinc-600 dark:border-zinc-700 flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-black dark:text-white">Crop Profile Image</h2>
-          <Button variant="transparant" size="lg" onClick={onCancel}>
+          <h2 className="text-lg font-semibold text-black dark:text-white">
+            Crop Profile Image
+          </h2>
+          <Button type="button" variant="transparant" size="lg" onClick={onCancel}>
             X
           </Button>
         </div>
 
-        {/* Cropper */}
         <div className="relative w-full h-96 bg-zinc-300 dark:bg-zinc-800">
           <Cropper
             image={imageSrc}
@@ -97,7 +100,6 @@ const ProfileImageCropper: React.FC<ProfileImageCropperProps> = ({
           />
         </div>
 
-        {/* Zoom slider */}
         <div className="px-6 py-4 flex flex-col items-center">
           <input
             type="range"
@@ -110,12 +112,16 @@ const ProfileImageCropper: React.FC<ProfileImageCropperProps> = ({
           />
         </div>
 
-        {/* Actions */}
         <div className="px-6 py-4 flex justify-end gap-4 border-t border-zinc-300 dark:border-zinc-700">
-          <Button variant="main" onClick={handleSave}>
-            Save
+          <Button
+            type="button"
+            variant="main"
+            onClick={handleSave}
+            disabled={isSaving}
+          >
+            {isSaving ? <CustomLoader /> : "Save"}
           </Button>
-          <Button variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PostDetailsForm from "./PostDetailsForm";
 import ImageUploadSection from "./ImageUploadSection";
 import { useCreatePostMutation } from "../../hooks/art/useCreateArtPostMutation";
@@ -11,7 +11,25 @@ interface CreatePostProps {
 }
 
 const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose }) => {
-  const createPostMutation = useCreatePostMutation();
+  const createPostMutation = useCreatePostMutation(() => {
+    // Reset form after success
+    setUploadedImage(null);
+    setPostDetails({
+      title: "",
+      description: "",
+      artType: "",
+      hashtags: [],
+      commentingDisabled: false,
+      downloadingDisabled: false,
+      isPrivate: false,
+      isSensitive: false,
+      isForSale: false,
+      priceType: "artcoin",
+      artcoins: 0,
+      fiatPrice: 0,
+    });
+    onClose();
+  });
 
   const [uploadedImage, setUploadedImage] = useState<{
     file: File;

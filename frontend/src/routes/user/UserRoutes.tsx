@@ -4,6 +4,7 @@ import UserLayout from '../../layouts/UserLayout';
 import { AuthRouteGuard } from './AuthRouteGuard';
 import ImageUploader from '../../features/user/pages/ImageUploader';
 
+
 // Lazy-loaded pages
 const Home = lazy(() => import('../../features/user/pages/Home'));
 const Profile = lazy(() => import('../../features/user/pages/Profile'));
@@ -17,7 +18,7 @@ const Bidding = lazy(() => import('../../features/user/pages/Bidding'));
 const Shop = lazy(() => import('../../features/user/pages/Shop'));
 const Wallet = lazy(() => import('../../features/user/pages/Wallet'));
 const Settings = lazy(() => import('../../features/user/pages/Settings'));
-
+const ArtPage = lazy(() => import('../../features/user/pages/ArtPage'))
 
 
 
@@ -45,6 +46,7 @@ const UserRoutes = (
       <Route path="wallet" element={<Wallet />} />
       <Route path="settings" element={<Settings />} />
       <Route path="test" element={<ImageUploader />} />
+      <Route path="art/:id" element={<ArtPage />} />
 
 
        {/* Profile Routes */}
@@ -67,6 +69,7 @@ const UserRoutes = (
         <Route path="shop" element={<ProfileShop />} />
         <Route path="about" element={<ProfileAbout />} />
       </Route>
+
     </Route>
   </>
 );
