@@ -50,9 +50,7 @@ const UserRoutes = (
 
 
        {/* Profile Routes */}
-      <Route path="profile" element={<Profile />} />
-      <Route path="profile/:userId" element={<Profile />} />
-      <Route path="profile" element={<Profile />}>
+      <Route path="/:username" element={<Profile />}>
         <Route index element={<ProfileGallery />} />
         <Route path="gallery" element={<ProfileGallery />} />
         <Route path="favorites" element={<ProfileFavorites />} />

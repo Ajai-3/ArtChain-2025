@@ -6,8 +6,15 @@ import { useProfileData } from "../hooks/profile/useProfileData";
 import ProfileSkeleton from "../components/skeletons/ProfileSkeleton";
 
 const Profile: React.FC = () => {
-  const { userId } = useParams<{ userId?: string }>();
-  const { profileUser, isLoading, isOwnProfile, displaySupportingCount, displaySupportersCount, isSupporting } = useProfileData(userId);
+  const { username } = useParams<{ username?: string }>();
+  const {
+    profileUser,
+    isLoading,
+    isOwnProfile,
+    displaySupportingCount,
+    displaySupportersCount,
+    isSupporting,
+  } = useProfileData(username);
 
   if (isLoading) return <ProfileSkeleton />;
   if (!profileUser) return <div>User not found</div>;
@@ -23,7 +30,7 @@ const Profile: React.FC = () => {
       />
       <ProfileSelectBar />
       <div className="flex-1">
-        <Outlet /> {/* Render selected tab */}
+        <Outlet />
       </div>
     </div>
   );

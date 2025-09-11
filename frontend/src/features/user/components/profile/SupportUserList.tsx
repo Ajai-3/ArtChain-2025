@@ -140,7 +140,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
             className="p-2 rounded flex items-center gap-2 mx-2 cursor-pointer"
             onClick={() => {
               onClose();
-              navigate(`/profile/${user.id}`);
+              navigate(`/${user?.username}`);
             }}
           >
             {user.profileImage ? (

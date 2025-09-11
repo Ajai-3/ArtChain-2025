@@ -36,7 +36,7 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
           </button>
 
           <button
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate(`/${user?.username}`)}
             className="rounded-full hidden sm:block hover:bg-zinc-100 dark:hover:bg-zinc-800"
             aria-label="Profile"
           >

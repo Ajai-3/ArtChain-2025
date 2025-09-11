@@ -17,7 +17,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
   };
 
   const handleProfileClick = () => {
-    navigate(`/profile/${item?.user?.id}`);
+    navigate(`/${item?.user?.username}`);
   };
 
   return (
