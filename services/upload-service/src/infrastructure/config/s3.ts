@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
 import { config } from "./env";
 
-const getBucketConfig = (category: "profile" | "banner" | "art") => {
+const getBucketConfig = (category: "profile" | "banner" | "art" | "backgound") => {
   if (category === "art") {
     return {
       privateBucket: config.aws.art_bucket_private!,

@@ -6,7 +6,7 @@ export const generateFileName = (
   const timestamp = Date.now();
   switch (category) {
     case "profile":
-      return `profile/${userId}_avatar.${originalName.split(".").pop()}`;
+      return `profile/${userId}_avatar.${Date.now()}${originalName.split(".").pop()}`;
     case "banner":
       return `banner/${userId}_cover.${originalName.split(".").pop()}`;
     case "art":

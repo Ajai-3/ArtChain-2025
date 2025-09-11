@@ -8,12 +8,14 @@ import { logger } from "../../infrastructure/utils/logger";
 import { validateUpload } from "../validations/validateUpload";
 import { HttpStatus } from "art-chain-shared";
 import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
+import { UploadBackGroundImage } from "../../application/usecases/UploadBackGroundImage";
 
 export class UploadController implements IUploadController {
   constructor(
     private readonly _uploadProfileImage: UploadProfileImage,
     private readonly _uploadBannerImage: UploadBannerImage,
-    private readonly _uploadArtImage: UploadArtImage
+    private readonly _uploadArtImage: UploadArtImage,
+    private readonly _uploadBackgoundImage: UploadBackGroundImage
   ) {}
 
   //# =============================================================================================================
@@ -29,13 +31,17 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { userId, file } = validateUpload(req, "profile");
+      
+      const { userId, file, previousFileUrl } = validateUpload(req, "profile");
+
+      console.log(previousFileUrl)
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
         fileName: file.originalname,
         mimeType: file.mimetype,
         userId,
+        previousFileUrl
       };
 
       const result = await this._uploadProfileImage.execute(dto);
@@ -87,6 +93,36 @@ export class UploadController implements IUploadController {
         .json({ message: UPLOAD_MESSAGES.BANNER_UPLOAD_SUCCESS, result });
     } catch (error: any) {
       logger.error(`Upload banner error | message=${error.message}`);
+      next(error);
+    }
+  }
+
+  uploadBackgroundImage  = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { userId, file } = validateUpload(req, "backgound");
+
+      const dto: UploadFileDTO = {
+        fileBuffer: file.buffer,
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        userId,
+      };
+
+      const result = await this._uploadBackgoundImage.execute(dto);
+
+      logger.info(
+        `Backgound image uploaded successfully | userId=${userId} | file=${file.originalname}`
+      );
+
+      res
+        .status(HttpStatus.CREATED)
+        .json({ message: UPLOAD_MESSAGES.BANNER_UPLOAD_SUCCESS, result });
+    } catch (error: any) {
+      logger.error(`Upload Backgound error | message=${error.message}`);
       next(error);
     }
   }

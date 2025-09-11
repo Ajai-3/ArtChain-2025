@@ -3,4 +3,5 @@ export interface UploadFileDTO {
   fileName: string;
   mimeType: string;
   userId: string;
+  previousFileUrl?: string;
 }

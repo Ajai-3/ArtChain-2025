@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/profile', upload.single('file'), uploadContainer.uploadProfile);
 router.post('/banner', upload.single('file'), uploadContainer.uploadBanner);
+router.post('/backround', upload.single('file'), uploadContainer.uploadBackgroundImage);
 router.post('/art', upload.single('file'), uploadContainer.uploadArt);
 
 export default router;
