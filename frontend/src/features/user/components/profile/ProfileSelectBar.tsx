@@ -2,8 +2,8 @@ import React from "react";
 import { NavLink, useParams } from "react-router-dom";
 
 const ProfileSelectBar: React.FC = () => {
-  const { userId } = useParams<{ userId?: string }>();
-  const basePath = userId ? `/profile/${userId}` : "/profile";
+  const { username } = useParams<{ username?: string }>();
+  const basePath = `/${username}`;
 
   const tabs = [
     { id: "gallery", label: "Gallery" },

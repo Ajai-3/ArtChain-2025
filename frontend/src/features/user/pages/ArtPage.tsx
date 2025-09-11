@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetArtById } from "../hooks/art/useGetArtById";
+import { useGetArtByName } from "../hooks/art/useGetArtByName";
 import CommentInputSection from "../components/art/CommentInputSection";
 import CommentList from "../components/art/CommentList";
 
 const ArtPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading, isError, error } = useGetArtById(id!);
+const { artname } = useParams<{ artname: string }>();
+console.log(artname)
+  const { data, isLoading, isError, error } = useGetArtByName(artname!);
   const [activeTab, setActiveTab] = useState<"description" | "favorites" | "comments" | "about">("description");
   const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const art = data?.art;
-  const actualUser = data?.user?.data?.user;
+  const art = data?.data?.art;
+  const actualUser = data?.data?.user;
 
   // Scroll to top **after data is loaded**
   useEffect(() => {
@@ -25,12 +26,12 @@ const ArtPage: React.FC = () => {
 
   // Get image dimensions
   useEffect(() => {
-    if (art?.previewUrl) {
+    if (art?.imageUrl) {
       const img = new Image();
-      img.src = art.previewUrl;
+      img.src = art.imageUrl;
       img.onload = () => setImageSize({ width: img.width, height: img.height });
     }
-  }, [art?.previewUrl]);
+  }, [art?.imageUrl]);
 
   // Show loader until data is ready
   if (isLoading) return <div className="text-center mt-10">Loading art...</div>;
@@ -43,7 +44,7 @@ const ArtPage: React.FC = () => {
         {/* Art Preview */}
         <div className="w-full flex justify-center">
           <img
-            src={art.previewUrl}
+            src={art.imageUrl}
             alt={art.title}
             className="max-h-[500px] w-full object-contain rounded shadow-lg"
           />
@@ -99,8 +100,8 @@ const ArtPage: React.FC = () => {
 
             {activeTab === "comments" && (
               <div className="flex flex-col gap-4">
-                <CommentInputSection postId={art._id} />
-                <CommentList postId={art._id} />
+                <CommentInputSection postId={art.id} />
+                <CommentList postId={art.id} />
               </div>
             )}
 
@@ -108,10 +109,9 @@ const ArtPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-4 text-gray-300">
                 <div><strong>Art Type:</strong> {art.artType || "-"}</div>
                 <div><strong>Aspect Ratio:</strong> {art.aspectRatio || "-"}</div>
-                <div><strong>Artcoins:</strong> {art.artcoins || 0}</div>
-                <div><strong>Fiat Price:</strong> {art.fiatPrice || 0}</div>
+                <div><strong>Artcoins:</strong> {art?.price?.artcoins || 0}</div>
+                <div><strong>Fiat Price:</strong> {art?.price?.fiat || 0}</div>
                 <div><strong>Is For Sale:</strong> {art.isForSale ? "Yes" : "No"}</div>
-                <div><strong>Supporter Only:</strong> {art.supporterOnly ? "Yes" : "No"}</div>
                 <div><strong>Commenting Disabled:</strong> {art.commentingDisabled ? "Yes" : "No"}</div>
                 <div><strong>Downloading Disabled:</strong> {art.downloadingDisabled ? "Yes" : "No"}</div>
                 <div><strong>Private:</strong> {art.isPrivate ? "Yes" : "No"}</div>

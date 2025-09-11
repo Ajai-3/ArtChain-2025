@@ -46,20 +46,13 @@ const UserRoutes = (
       <Route path="wallet" element={<Wallet />} />
       <Route path="settings" element={<Settings />} />
       <Route path="test" element={<ImageUploader />} />
-      <Route path="art/:id" element={<ArtPage />} />
+
+
+      <Route path="/:username/art/:artname" element={<ArtPage />} />
 
 
        {/* Profile Routes */}
       <Route path="/:username" element={<Profile />}>
-        <Route index element={<ProfileGallery />} />
-        <Route path="gallery" element={<ProfileGallery />} />
-        <Route path="favorites" element={<ProfileFavorites />} />
-        <Route path="posts" element={<ProfilePosts />} />
-        <Route path="shop" element={<ProfileShop />} />
-        <Route path="about" element={<ProfileAbout />} />
-      </Route>
-
-      <Route path="profile/:userId" element={<Profile />}>
         <Route index element={<ProfileGallery />} />
         <Route path="gallery" element={<ProfileGallery />} />
         <Route path="favorites" element={<ProfileFavorites />} />

@@ -19,6 +19,7 @@ export interface ArtPostResponseDTO {
   description: string;
   artType: string;
   hashtags: string[];
+  artName: string;
   previewUrl: string;
   originalUrl: string;
   watermarkedUrl: string;

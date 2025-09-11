@@ -13,7 +13,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
   const navigate = useNavigate();
 
   const handleArtClick = () => {
-    navigate(`/art/${item.art._id}`);
+    navigate(`/${item?.user?.username}/art/${item.art.artName}`);
   };
 
   const handleProfileClick = () => {
