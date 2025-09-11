@@ -10,7 +10,7 @@ import { SupportUnSupportRequestDto } from "../../../domain/dtos/user/user-intra
 import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
 import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/user-intraction/GetUserWithIdUserUseCase";
+import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/profile/GetUserWithIdUserUseCase";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 import { logger } from "../../../utils/logger";
 import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
@@ -81,11 +81,10 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers["x-user-id"] as string | undefined;
+      const currentUserId = req.headers["x-user-id"] as string;
       const dto: GetUserProfileRequestDto = { userId, currentUserId };
 
-      const user =
-        await this._getUserWithIdUseCase.execute(dto);
+      const user = await this._getUserWithIdUseCase.execute(dto);
 
       logger.info(`User ${user.username} Profile fetched with id ${user.id}.`);
 
