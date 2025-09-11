@@ -6,7 +6,7 @@ export interface ArtPostDocument extends ArtPost, Document {}
 const ArtPostSchema = new Schema<ArtPostDocument>({
   userId: { type: String, required: true },
   title: { type: String, required: true },
-  artName: {type: String, required: true},
+  artName: {type: String, unique: true, required: true},
   description: { type: String, required: true },
   artType: { type: String, required: true },
   hashtags: { type: [String], default: [] },

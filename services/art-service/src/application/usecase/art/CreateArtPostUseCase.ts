@@ -9,9 +9,15 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
   async execute(dto: CreateArtPostDTO): Promise<any> {
     const baseName = dto.title.replace(/\s+/g, "-");
 
-    const artCount = await this._artRepo.count();
+    const count = (await this._artRepo.count()) + 1;
 
-    const artName = `${baseName}-${artCount + 1}`;
+    const countStr = count.toString().padStart(4, "0");
+
+    const letters = Array.from({ length: 4 }, () =>
+      String.fromCharCode(65 + Math.floor(Math.random() * 26))
+    ).join("");
+
+    const artName = `${baseName}-${countStr}${letters}`;
 
     const art = new ArtPost(
       dto.userId,
@@ -30,7 +36,7 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
       dto.isForSale,
       dto.priceType,
       dto.artcoins,
-      dto.fiatPrice,
+      dto.fiatPrice
     );
 
     const created = await this._artRepo.create(art);
