@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export interface IUserController {
   // Profile Management
-  getUserProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  getProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   getUserProfileWithId(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
   updateProfile(req: Request, res: Response, next: NextFunction): Promise<Response | void>;

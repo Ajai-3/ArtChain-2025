@@ -5,6 +5,7 @@ import { IBaseRepository } from "../IBaseRepository";
 
 export interface IUserRepository<U = User, S = SafeUser>
   extends IBaseRepository {
+    
   findById(id: string): Promise<S | null>;
   findByUsernameRaw(username: string): Promise<U | null>;
   findByEmailRaw(email: string): Promise<U | null>;

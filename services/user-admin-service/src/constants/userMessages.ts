@@ -1,5 +1,6 @@
 export const USER_MESSAGES = {
   // Profile
+  USERNAME_REQUIRED: "User name require",
   PROFILE_FETCH_SUCCESS: 'User profile fetched successfully.',
   PROFILE_UPDATE_SUCCESS: 'User profile updated successfully.',
   PROFILE_UPDATE_FAILED: 'Failed to update user profile.',

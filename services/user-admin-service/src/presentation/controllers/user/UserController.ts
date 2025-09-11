@@ -6,7 +6,6 @@ import { IUserController } from "../../interfaces/user/IUserController";
 import { USER_MESSAGES } from "../../../constants/userMessages";
 
 import { SupportUnSupportRequestDto } from "../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto";
-import { GetUserProfileWithIdRequestDto } from "../../../domain/dtos/user/user-intraction/GetUserProfileWithIdRequestDto";
 
 import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
@@ -20,10 +19,12 @@ import { GetUsersByIdsUserUseCase } from "../../../application/usecases/user/use
 import { UpdateProfileUserUseCase } from "../../../application/usecases/user/profile/UpdateProfileUserUseCase";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { updateProfileSchema } from "../../../application/validations/user/updateProfileSchema";
+import { GetUserProfileUseCase } from "../../../application/usecases/user/profile/GetProfileUserUseCase";
+import { GetUserProfileRequestDto } from "../../../domain/dtos/user/profile/GetUserProfileRequestDto";
 
 export class UserController implements IUserController {
   constructor(
-    private readonly _getCurrentUserUseCase: GetCurrentUserUseCase,
+    private readonly _getUserProfileUseCase: GetUserProfileUseCase,
     private readonly _getUserWithIdUseCase: GetUserWithIdUserUseCase,
     private readonly _supportUserUseCase: SupportUserUseCase,
     private readonly _unSupportUserUseCase: UnSupportUserUseCase,
@@ -34,27 +35,33 @@ export class UserController implements IUserController {
   ) {}
 
   //# ================================================================================================================
-  //# GET CURRENT USER PROFILE
+  //# GET USER PROFILE (public/private)
   //# ================================================================================================================
-  //# GET /api/v1/user/profile
-  //# Request headers: x-user-id
-  //# This controller helps to fetch the currently logged-in user's profile.
+  //# GET /api/v1/user/profile/:username
+  //# Request headers: x-user-id (optional)
+  //# Request params: username
+  //# This controller help to get the user profile both current and other user also it will act as public and private route
   //# ================================================================================================================
-  getUserProfile = async (
+  getProfile = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      const { user, supportingCount, supportersCount } =
-        await this._getCurrentUserUseCase.execute(userId);
+      const { username } = req.params;
+      const currentUserId = req.headers["x-user-id"] as string | undefined;
+
+      const dto: GetUserProfileRequestDto = { username, currentUserId };
+      const result = await this._getUserProfileUseCase.execute(dto);
+
+      logger.info(`User profle fetched ${JSON.stringify(result)}`);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
-        data: { user, supportingCount, supportersCount },
+        data: result,
       });
     } catch (error) {
+      logger.error("Error in fetching user profile");
       next(error);
     }
   };
@@ -75,14 +82,16 @@ export class UserController implements IUserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers["x-user-id"] as string | undefined;
-      const dto: GetUserProfileWithIdRequestDto = { userId, currentUserId };
+      const dto: GetUserProfileRequestDto = { userId, currentUserId };
 
-      const { user, isSupporting, supportingCount, supportersCount } =
+      const user =
         await this._getUserWithIdUseCase.execute(dto);
+
+      logger.info(`User ${user.username} Profile fetched with id ${user.id}.`);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
-        data: { user, isSupporting, supportingCount, supportersCount },
+        data: user,
       });
     } catch (error) {
       logger.error("Error infetching user with id");
@@ -102,15 +111,15 @@ export class UserController implements IUserController {
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: "User ID missing in request headers" });
       }
-      console.log(req.body)
+      console.log(req.body);
       const validatedData = validateWithZod(updateProfileSchema, req.body);
 
       const dto: UpdateUserProfileDTO = { ...validatedData, userId };
 
       const user = await this._updateProfileUserUseCase.execute(dto);
 
-      logger.info("User profile updated")
-   console.log(user)
+      logger.info("User profile updated");
+      console.log(user);
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_UPDATE_SUCCESS,
         user,
