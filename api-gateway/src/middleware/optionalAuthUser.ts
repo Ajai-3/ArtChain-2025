@@ -6,9 +6,8 @@ import {
   HttpStatus,
   UnauthorizedError,
 } from "art-chain-shared";
-import { decode } from "punycode";
 
-export const authUser = async (
+export const optionalAuthUser = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -18,7 +17,8 @@ export const authUser = async (
     const accessToken = authHeader?.split(" ")[1];
 
     if (!accessToken) {
-      throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
+        console.log("i am called")
+      return next();
     }
 
     const decoded = tokenService.verifyAccessToken(accessToken);
@@ -30,11 +30,11 @@ export const authUser = async (
     if (decoded.role !== "user" && decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
-    console.log("user auth middleware")
-    console.log("user auth middleware", decoded.id)
-    req.headers["x-user-id"] = decoded.id;
 
+    
+    req.headers["x-user-id"] = decoded.id;
     (req as any).user = decoded;
+
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {
