@@ -1,13 +1,12 @@
-import dotenv from "dotenv";
+import 'dotenv-flow/config';
 import jwt from "jsonwebtoken";
 import { getArtChainSecrets } from "art-chain-shared";
-
-dotenv.config();
 
 const secrets = await getArtChainSecrets();
 
 
 export const config = {
+  node_env: process.env.NODE_ENV,
   port: process.env.PORT || 3000,
   frontend_url: process.env.FRONTEND_URL,
   services: {

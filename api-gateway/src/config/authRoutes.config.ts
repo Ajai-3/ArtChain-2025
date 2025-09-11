@@ -8,7 +8,9 @@ export const authRoutesConfig = {
     "/api/v1/user/artist-request",
     "/api/v1/user/artist-request/status",
     "/api/v1/user/change-password",
-    "/api/v1/notifications"
+    "/api/v1/notifications",
+    "/api/v1/art",
+    "/api/v1/art/comment"
   ],
   admin: [
     "/api/v1/admin/dashboard",

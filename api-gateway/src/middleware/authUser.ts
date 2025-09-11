@@ -6,6 +6,7 @@ import {
   HttpStatus,
   UnauthorizedError,
 } from "art-chain-shared";
+import { decode } from "punycode";
 
 export const authUser = async (
   req: Request,
@@ -25,11 +26,13 @@ export const authUser = async (
     if (!decoded || typeof decoded !== "object" || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
-    
+
     if (decoded.role !== "user" && decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
-    
+    console.log(decoded.id)
+    req.headers["x-user-id"] = decoded.id;
+
     (req as any).user = decoded;
     next();
   } catch (error) {
