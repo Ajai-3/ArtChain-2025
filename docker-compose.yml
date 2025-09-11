@@ -77,7 +77,7 @@ services:
     build: ./api-gateway
     env_file:
       - .env
-      - ./api-gateway/.env
+      - ./api-gateway/.env.docker
     ports:
       - "4000:4000"
     depends_on:
@@ -90,7 +90,7 @@ services:
     build: ./services/user-admin-service
     env_file:
       - .env
-      - ./services/user-admin-service/.env
+      - ./services/user-admin-service/.env.docker
     ports:
       - "4001:4001"
     depends_on:
@@ -132,7 +132,20 @@ services:
     ports:
       - "4006:4006"
     networks:
-      - backend    
+      - backend
+
+  art-service:
+    container_name: art-service
+    build: ./services/art-service
+    env_file:
+      - .env
+      - ./services/art-service/.env.docker
+    ports:
+      - "4002:4002"
+    depends_on:
+      - user-admin-service  
+    networks:
+      - backend
 
 networks:
   backend:
