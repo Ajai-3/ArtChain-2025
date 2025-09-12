@@ -7,6 +7,7 @@ import {
   UnauthorizedError,
 } from "art-chain-shared";
 import { decode } from "punycode";
+import { logger } from "../utils/logger";
 
 export const authUser = async (
   req: Request,
@@ -35,6 +36,7 @@ export const authUser = async (
     req.headers["x-user-id"] = decoded.id;
 
     (req as any).user = decoded;
+    logger.info(`User auth middleware called ${req.path} - ${req.method}`)
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {
