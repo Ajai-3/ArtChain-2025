@@ -1,4 +1,3 @@
-import AWS from "aws-sdk";
 import { logger } from "../utils/logger";
 import { IFileRepository } from "../../domain/repositories/IFileRepository";
 import { generateFileName } from "../utils/generateFileName";

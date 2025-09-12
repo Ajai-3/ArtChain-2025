@@ -1,3 +1,4 @@
+import { DeleteImageUseCase } from './../../application/usecases/DeleteImageUseCase';
 import { Request, Response, NextFunction } from "express";
 import { UploadProfileImage } from "../../application/usecases/UploadProfileImage";
 import { UploadArtImage } from "../../application/usecases/UploadArtImage";
@@ -9,13 +10,15 @@ import { validateUpload } from "../validations/validateUpload";
 import { HttpStatus } from "art-chain-shared";
 import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
 import { UploadBackGroundImage } from "../../application/usecases/UploadBackGroundImage";
+import { DeleteImageRequestDTO } from "../../domain/dto/DeleteImageRequestDTO";
 
 export class UploadController implements IUploadController {
   constructor(
     private readonly _uploadProfileImage: UploadProfileImage,
     private readonly _uploadBannerImage: UploadBannerImage,
     private readonly _uploadArtImage: UploadArtImage,
-    private readonly _uploadBackgoundImage: UploadBackGroundImage
+    private readonly _uploadBackgoundImage: UploadBackGroundImage,
+    private readonly _deleteImageUseCase: DeleteImageUseCase
   ) {}
 
   //# =============================================================================================================
@@ -141,8 +144,6 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-       const s = req.headers['x-user-id']
-    console.log(s)
       const { userId, file } = validateUpload(req, "art");
       logger.info(`Art upload request recived ${userId} ${file}`)
 
@@ -169,4 +170,25 @@ export class UploadController implements IUploadController {
       next(error);
     }
   }
+
+//# =============================================================================================================
+  //# DELETE IMAGE
+  //# =============================================================================================================
+  //# POST /api/v1/upload/delete
+  //# Request body: filename
+  //# This controller will help you to delete the image like profile, banner, background, art any type of images.
+  //# =============================================================================================================
+  deleteImage = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const { fileUrl, category } = req.body;
+
+      const dto: DeleteImageRequestDTO = { fileUrl, category }
+      await this._deleteImageUseCase.execute(dto)
+      
+      return res.status(HttpStatus.OK).json({ message: UPLOAD_MESSAGES.IMAGE_DELETED_SUCCESSFULLY })
+    } catch (error) {
+      logger.error(`Error deleting the image ${error}`)
+      next(error)
+    }
+  } 
 }

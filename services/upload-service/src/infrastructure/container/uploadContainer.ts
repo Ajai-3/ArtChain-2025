@@ -5,6 +5,7 @@ import { UploadBannerImage } from './../../application/usecases/UploadBannerImag
 import { UploadArtImage } from '../../application/usecases/UploadArtImage';
 import { UploadController } from '../../presentation/controllers/UploadController';
 import { UploadBackGroundImage } from '../../application/usecases/UploadBackGroundImage';
+import { DeleteImageUseCase } from '../../application/usecases/DeleteImageUseCase';
 
 // Repositories
 const s3Repo  = new S3FileRepository();
@@ -14,10 +15,12 @@ const uploadProfileImage = new UploadProfileImage(s3Repo );
 const uploadBannerImage = new UploadBannerImage(s3Repo );
 const uploadArtImage = new UploadArtImage(s3Repo );
 const uploadBackgoundImage = new UploadBackGroundImage(s3Repo)
+const deleteImageUseCase = new DeleteImageUseCase(s3Repo)
 // Controller
-export const uploadContainer = new UploadController(
+export const uploadController = new UploadController(
   uploadProfileImage,
   uploadBannerImage,
   uploadArtImage,
-  uploadBackgoundImage
+  uploadBackgoundImage,
+  deleteImageUseCase
 );
