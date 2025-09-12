@@ -6,6 +6,8 @@ import CustomLoader from "../../../../components/CustomLoader";
 import type { ProfileTopBarProps } from "../../../../types/users/profile/ProfileTopBarProps";
 import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
 import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
+import { useDeleteProfileImage } from "../../hooks/profile/useDeleteProfileImage";
+import { useDeleteUserImage } from "../../hooks/profile/useDeleteUserImage";
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
@@ -14,12 +16,23 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   supportersCount,
   isSupporting,
 }) => {
-  const [modalType, setModalType] = useState<"supporters" | "supporting" | null>(null);
+  const [modalType, setModalType] = useState<
+    "supporters" | "supporting" | null
+  >(null);
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
   const supportMutation = useSupportMutation();
   const unSupportMutation = useUnSupportMutation();
 
+  const deleteUserImageMutation = useDeleteUserImage();
+
+  const handleDeleteProfileImage = () => {
+    deleteUserImageMutation.mutate({ type: "profileImage" });
+  };
+
+  const handleDeleteBannerImage = () => {
+    deleteUserImageMutation.mutate({ type: "bannerImage" });
+  };
   const isMutating = supportMutation.isPending || unSupportMutation.isPending;
 
   const handleSupportClick = () => {
@@ -31,7 +44,8 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   const handleViewImage = (imageUrl: string) => setZoomImage(imageUrl);
   const handleCloseZoom = () => setZoomImage(null);
 
-  const iconButtonClasses = "p-2 bg-zinc-700/80 rounded-full transition cursor-pointer";
+  const iconButtonClasses =
+    "p-2 bg-zinc-700/80 rounded-full transition cursor-pointer";
 
   return (
     <div className="relative">
@@ -61,14 +75,23 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                 <div title="View Banner" className={iconButtonClasses}>
                   <View className="w-6 h-6 text-white" />
                 </div>
-                <div title="Delete Banner" className={iconButtonClasses}>
+                <div
+                  title="Delete Banner"
+                  className={iconButtonClasses}
+                  onClick={handleDeleteBannerImage}
+                >
                   <Trash2 className="w-6 h-6 text-red-400" />
                 </div>
               </>
             ) : (
-              <div title="Upload Banner" className={`flex items-center ${iconButtonClasses}`}>
+              <div
+                title="Upload Banner"
+                className={`flex items-center ${iconButtonClasses}`}
+              >
                 <Upload className="w-6 h-6 text-white" />
-                <p className="ml-2 hidden md:block text-white text-md">Upload</p>
+                <p className="ml-2 hidden md:block text-white text-md">
+                  Upload
+                </p>
               </div>
             )}
           </div>
@@ -95,7 +118,11 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                     <View className="w-5 h-5 text-white" />
                   </div>
                   {isOwnProfile && (
-                    <div title="Delete Profile Picture" className={iconButtonClasses}>
+                    <div
+                      title="Delete Profile Picture"
+                      className={iconButtonClasses}
+                      onClick={handleDeleteProfileImage}
+                    >
                       <Trash2 className="w-5 h-5 text-red-400" />
                     </div>
                   )}
@@ -108,7 +135,10 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                 </span>
                 {isOwnProfile && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/profile:opacity-100 transition duration-300">
-                    <div title="Upload Profile Picture" className={iconButtonClasses}>
+                    <div
+                      title="Upload Profile Picture"
+                      className={iconButtonClasses}
+                    >
                       <Upload className="w-5 h-5 text-white" />
                     </div>
                   </div>
@@ -126,9 +156,13 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
 
             {/* Supporters Info */}
             <div className="flex gap-4 cursor-pointer">
-              <p onClick={() => setModalType("supporters")}>{supportersCount} supporters</p>
+              <p onClick={() => setModalType("supporters")}>
+                {supportersCount} supporters
+              </p>
               <p>|</p>
-              <p onClick={() => setModalType("supporting")}>{supportingCount} supporting</p>
+              <p onClick={() => setModalType("supporting")}>
+                {supportingCount} supporting
+              </p>
             </div>
 
             {/* Action Buttons */}

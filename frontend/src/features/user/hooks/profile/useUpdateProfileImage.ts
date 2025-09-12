@@ -32,7 +32,7 @@ export const useUpdateProfileImage = () => {
       if (previousFileUrl) {
         formData.append("previousFileUrl", previousFileUrl);
       }
-      // Upload the image
+
       const uploadRes = await apiClient.post<UploadResponse>(
         "/api/v1/upload/profile",
         formData,
@@ -43,7 +43,6 @@ export const useUpdateProfileImage = () => {
 
       const profileImageUrl = uploadRes.data?.result.url;
 
-      // Update user profile on backend
       const patchRes = await apiClient.patch<{ message: string; user: User }>(
         "/api/v1/user/profile",
         {
@@ -51,11 +50,11 @@ export const useUpdateProfileImage = () => {
         }
       );
 
-      return patchRes.data.user; // return the full updated user
+      return patchRes.data.user;
     },
     onSuccess: (updatedUser: User) => {
-      dispatch(updateProfile({ user: updatedUser })); // store full SafeUser in Redux
-      queryClient.invalidateQueries({ queryKey: ["userProfile", "me"] });
+      dispatch(updateProfile({ user: updatedUser }));
+      queryClient.invalidateQueries({ queryKey: ["userProfile", user?.username] });
     },
     onError: (error: Error) => {
       console.error("Profile update failed:", error);

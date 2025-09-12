@@ -15,7 +15,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="absolute inset-0   backdrop-blur-sm" onClick={onClose}></div>
 
       <div className="relative z-50 bg-white dark:bg-secondary-color border border-zinc-700 rounded-3xl shadow-lg p-6 sm:p-6 sm:w-2/6 max-w-full">
         <button
