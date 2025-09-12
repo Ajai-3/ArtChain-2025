@@ -98,6 +98,14 @@ export class UserController implements IUserController {
     }
   };
 
+  //# ================================================================================================================
+  //# UPDATE USER PROFILE
+  //# ================================================================================================================
+  //# PATCH /api/v1/user/profile
+  //# Request headers: x-user-id
+  //# Request body: field to update
+  //# This controller helps to update the user profile
+  //# ================================================================================================================
   updateProfile = async (
     req: Request,
     res: Response,
@@ -110,21 +118,21 @@ export class UserController implements IUserController {
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: "User ID missing in request headers" });
       }
-      console.log(req.body);
+      console.log(req.body, userId);
       const validatedData = validateWithZod(updateProfileSchema, req.body);
 
       const dto: UpdateUserProfileDTO = { ...validatedData, userId };
 
       const user = await this._updateProfileUserUseCase.execute(dto);
 
-      logger.info("User profile updated");
+      logger.info(`User profile updated ${JSON.stringify(user)}`);
       console.log(user);
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_UPDATE_SUCCESS,
         user,
       });
     } catch (error) {
-      logger.error("Error infetching user with id");
+      logger.error("Error in fetching user with id");
       next(error);
     }
   };
