@@ -1,5 +1,4 @@
-import apiClient from "../../axios";
-import type { User } from "../../../types/users/user/user";
+import apiClient from "../../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetAllUsers = ({

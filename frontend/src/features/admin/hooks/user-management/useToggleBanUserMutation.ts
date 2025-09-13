@@ -1,5 +1,5 @@
+import apiClient from '../../../../api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import apiClient from '../../axios';
 
 export const useToggleBanUserMutation = () => {
   const queryClient = useQueryClient();

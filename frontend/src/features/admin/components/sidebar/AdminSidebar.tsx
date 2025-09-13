@@ -11,8 +11,8 @@ import {
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import Logo from "../../../../components/logo/Logo";
-import ConfirmLogoutModal from "../../../../components/modals/ConfirmLogoutModal"; 
-import { useAdminLogoutMutation } from "../../../../api/admin/Auth/mutations";
+import { useAdminLogoutMutation } from "../../hooks/auth/useAdminLogoutMutation";
+import ConfirmModal from "../../../../components/modals/ConfirmModal";
 
 const adminLinks = [
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -90,9 +90,13 @@ const AdminSideBar: React.FC = () => {
       </div>
 
       {/* Logout Confirmation Modal */}
-      <ConfirmLogoutModal
+      <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={handleCloseModal}
+        title="Confirm Logout"
+        description="Are you sure you want to logout?"
+        confirmText="Logout"
+        confirmVariant="destructive"
         onConfirm={handleConfirmLogout}
       />
     </>

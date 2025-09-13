@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../../../../components/ui/input";
-import { Button } from "../../../../components/ui/button";
-import { LoginSchema } from "../../schema/adminAuthSchema";
-import { type LoginFormInputs } from "../../schema/adminAuthSchema";
-import { useAdminLoginMutation } from "../../../../api/admin/Auth/mutations";
 import { useForm } from "react-hook-form";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Input } from "../../../components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "../../../components/ui/button";
+import { LoginSchema } from "../schema/adminAuthSchema";
+import { type LoginFormInputs } from "../schema/adminAuthSchema";
+import { useAdminLoginMutation } from "../hooks/auth/useAdminLoginMutation";
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
