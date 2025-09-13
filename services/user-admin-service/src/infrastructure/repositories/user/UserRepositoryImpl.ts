@@ -37,6 +37,7 @@ export class UserRepositoryImpl
   async findByIdRaw(id: string): Promise<User | null> {
     return this.model.findUnique({ where: { id } });
   }
+
   async findAllUsers({
     page,
     limit,
@@ -130,4 +131,5 @@ export class UserRepositoryImpl
 
     return users as ArtUser[];
   }
+
 }
