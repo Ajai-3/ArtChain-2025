@@ -2,10 +2,11 @@ import { Request } from 'express';
 import { z, ZodError } from 'zod';
 import { uploadSchema } from './uploadSchema';
 import { logger } from '../../infrastructure/utils/logger';
+import { FileCategory } from '../../types/FileCategory';
 
 export const validateUpload = (
   req: Request,
-  type: 'profile' | 'banner' | 'art' | 'backgound'
+  type: FileCategory
 ) => {
   try {
     const previousFileUrl = req.body.previousFileUrl as string | undefined;
