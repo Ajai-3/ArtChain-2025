@@ -2,7 +2,7 @@ import { Route } from 'react-router-dom';
 import { lazy } from 'react';
 import UserLayout from '../../layouts/UserLayout';
 import { AuthRouteGuard } from './AuthRouteGuard';
-import ImageUploader from '../../features/user/pages/ImageUploader';
+import Test from '../../components/Test';
 
 
 // Lazy-loaded pages
@@ -45,7 +45,7 @@ const UserRoutes = (
       <Route path="shop" element={<Shop />} />
       <Route path="wallet" element={<Wallet />} />
       <Route path="settings" element={<Settings />} />
-      <Route path="test" element={<ImageUploader />} />
+      <Route path="test" element={<Test />} />
 
 
       <Route path="/:username/art/:artname" element={<ArtPage />} />

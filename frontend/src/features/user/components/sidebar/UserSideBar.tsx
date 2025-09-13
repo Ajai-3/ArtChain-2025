@@ -17,7 +17,7 @@ import type { RootState } from "../../../../redux/store";
 const UserSideBar: React.FC<{ createPostClick: () => void }> = ({ createPostClick }) => {
   const navigate = useNavigate();
   const unreadCount = useSelector((state: any) => state.notification.unreadCount);
-  const user = useSelector((state: RootState) => state.user.user); // null if not logged in
+  const user = useSelector((state: RootState) => state.user.user); 
 
   const links = [
     { to: "/", icon: House, label: "Home", authRequired: false, showOn: "all" },

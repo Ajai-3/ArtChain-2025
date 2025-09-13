@@ -18,8 +18,8 @@ const CommentList: React.FC<Props> = ({ postId }) => {
   if (!data?.pages?.[0]?.comments.length)
     return <p className="text-gray-400">No comments yet.</p>;
 
-  const handleUserClick = (userId: string) => {
-    navigate(`/profile/${userId}`);
+  const handleUserClick = (username: string) => {
+    navigate(`/${username}`);
   };
 
   return (
@@ -50,7 +50,7 @@ const CommentList: React.FC<Props> = ({ postId }) => {
               <div className="flex items-center gap-2">
                 {/* Clickable user name */}
                 <span
-                  onClick={() => handleUserClick(c.userId)}
+                  onClick={() => handleUserClick(c.userName)}
                   className="font-semibold text-white cursor-pointer hover:text-main-color"
                 >
                   {c.name}

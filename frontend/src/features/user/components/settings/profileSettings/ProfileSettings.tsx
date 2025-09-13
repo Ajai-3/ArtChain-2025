@@ -7,15 +7,24 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../../../redux/store";
 import ProfileImageSection from "./ProfileImageSection";
 import ImageCropper from "./ImageCropper";
+import { useUploadUserImage } from "../../../hooks/profile/useUploadUserImage";
 
 const ProfileSettings: React.FC = () => {
   const userData = useSelector((state: RootState) => state.user.user);
 
-  const [bannerImage, setBannerImage] = useState<string | null>(null);
-  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [bannerImage, setBannerImage] = useState<string | null>(
+    userData?.bannerImage || null
+  );
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(
+    userData?.backgroundImage || null
+  );
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [cropType, setCropType] = useState<"banner" | "background">("banner");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const uploadUserImage = useUploadUserImage();
 
   const handleFileSelect = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -30,12 +39,31 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleCropSave = (file: File) => {
-    const previewUrl = URL.createObjectURL(file);
-    if (cropType === "banner") setBannerImage(previewUrl);
-    else setBackgroundImage(previewUrl);
+    if (!file) return;
 
-    setCropperOpen(false);
-    setSelectedFile(null);
+    setIsSaving(true);
+
+    const imageType = cropType === "banner" ? "bannerImage" : "backgroundImage";
+
+    uploadUserImage.mutate(
+      { file, type: imageType },
+      {
+        onSuccess: (updatedUser) => {
+          if (cropType === "banner")
+            setBannerImage(updatedUser.bannerImage || null);
+          else setBackgroundImage(updatedUser.backgroundImage || null);
+
+          setCropperOpen(false);
+          setSelectedFile(null);
+          setIsSaving(false);
+        },
+        onError: () => {
+          setCropperOpen(false);
+          setSelectedFile(null);
+          setIsSaving(false);
+        },
+      }
+    );
   };
 
   const handleCropCancel = () => {
@@ -69,7 +97,7 @@ const ProfileSettings: React.FC = () => {
                 <img
                   src={bannerImage}
                   alt="Banner Preview"
-                  className="w-full h-full object-contain rounded-xl"
+                  className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
                 <span className="text-zinc-500 text-sm">
@@ -95,7 +123,7 @@ const ProfileSettings: React.FC = () => {
                 <img
                   src={backgroundImage}
                   alt="Background Preview"
-                  className="w-full h-full object-contain rounded-xl"
+                  className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
                 <span className="text-zinc-500 text-sm">
@@ -112,16 +140,17 @@ const ProfileSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* Text inputs */}
+        {/* Text Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Full Name
             </label>
             <Input
-              variant={"green-focus"}
+              variant="green-focus"
               placeholder="Your full name"
               className="text-sm"
+              defaultValue={userData?.name || ""}
             />
           </div>
 
@@ -130,9 +159,10 @@ const ProfileSettings: React.FC = () => {
               Username
             </label>
             <Input
-              variant={"green-focus"}
+              variant="green-focus"
               placeholder="Your username"
               className="text-sm"
+              defaultValue={userData?.username || ""}
             />
           </div>
 
@@ -141,10 +171,11 @@ const ProfileSettings: React.FC = () => {
               Bio
             </label>
             <Textarea
-              variant={"green-focus"}
+              variant="green-focus"
               placeholder="Tell something about yourself..."
               rows={3}
               className="text-sm"
+              defaultValue={userData?.bio || ""}
             />
           </div>
 
@@ -152,13 +183,16 @@ const ProfileSettings: React.FC = () => {
             <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Country
             </label>
-            <select className="w-full rounded-md border border-gray-300 bg-transparent dark:border-zinc-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600">
+            <select
+              defaultValue={userData?.country || ""}
+              className="w-full rounded-md border border-gray-300 bg-transparent dark:border-zinc-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600"
+            >
               <option value="">Select your country</option>
               {COUNTRIES.map((c) => (
                 <option
-                  className="bg-zinc-200 dark:bg-zinc-950"
                   key={c}
                   value={c}
+                  className="bg-zinc-200 dark:bg-zinc-950"
                 >
                   {c}
                 </option>
@@ -167,7 +201,7 @@ const ProfileSettings: React.FC = () => {
           </div>
         </div>
 
-        {/* Submit button */}
+        {/* Submit Button */}
         <div className="flex justify-end pt-2">
           <Button type="submit" variant="main" className="px-6 py-2 text-sm">
             Save Changes
@@ -175,13 +209,15 @@ const ProfileSettings: React.FC = () => {
         </div>
       </form>
 
-      {/* Cropper modal */}
+      {/* Cropper Modal */}
       {cropperOpen && selectedFile && (
         <ImageCropper
           file={selectedFile}
-          aspect={cropType === "banner" ? 16 / 9 : 4 / 3}
+          aspect={cropType === "banner" ? 21 / 4 : 4 / 3}
+          cropShape="rect"
           onSave={handleCropSave}
           onCancel={handleCropCancel}
+          isSaving={isSaving}
         />
       )}
     </div>

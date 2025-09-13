@@ -66,7 +66,7 @@ console.log(artname)
                 by{" "}
                 <span
                   className="text-gray-200 hover:text-main-color hover:cursor-pointer"
-                  onClick={() => navigate(`/profile/${actualUser.id}`)}
+                  onClick={() => navigate(`/${actualUser.username}`)}
                 >
                   {actualUser.name}
                 </span>

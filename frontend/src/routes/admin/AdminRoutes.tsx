@@ -3,7 +3,7 @@ import { lazy } from "react";
 import AdminLayout from "../../layouts/AdminLayout";
 import { AdminAuthRouteGuard } from "./AdminAuthRouteGuard";
 
-const Login = lazy(() => import("../../features/admin/components/auth/Login"));
+const Login = lazy(() => import("../../features/admin/pages/Login"));
 const Dashboard = lazy(() => import("../../features/admin/pages/Dashboard"));
 const UserManagement = lazy(
   () => import("../../features/admin/pages/UserMangement")

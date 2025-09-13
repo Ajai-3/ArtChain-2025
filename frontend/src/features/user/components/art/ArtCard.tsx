@@ -98,7 +98,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
       {/* Zoom modal */}
       {isZoomOpen && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+          className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50"
           onClick={() => setIsZoomOpen(false)}
         >
           <img

@@ -8,7 +8,7 @@ import type { User } from "../../../../types/users/user/user";
 type ImageType = "profileImage" | "bannerImage";
 
 interface DeleteImageInput {
-  type: ImageType; // profile or banner
+  type: ImageType;
 }
 
 export const useDeleteUserImage = () => {
@@ -21,7 +21,6 @@ export const useDeleteUserImage = () => {
       const currentImageUrl = user?.[type];
       if (!currentImageUrl) throw new Error(`No ${type} to delete`);
 
-      console.log(currentImageUrl, type)
       await apiClient.post("/api/v1/upload/delete", { fileUrl: currentImageUrl });
 
 

@@ -9,7 +9,7 @@ import PrivacySettings from "../components/settings/PrivacySettings";
 import PurchaseHistory from "../components/settings/PurchaseHistory";
 import PasswordSettings from "../components/settings/passwordsecurity/PasswordSettings";
 import UserSettingsSideBar from "../components/sidebar/UserSettingsSideBar";
-import ConfirmLogoutModal from "../../../components/modals/ConfirmLogoutModal";
+import ConfirmModal from "../../../components/modals/ConfirmModal";
 import NotificationSettings from "../components/settings/NotificationSettings";
 import SubscriptionSettings from "../components/settings/SubscriptionSettings";
 import EmailPreferencesSettings from "../components/settings/EmailPreferencesSettings";
@@ -45,9 +45,13 @@ const Settings: React.FC = () => {
         {activeTab === "communications" && <EmailPreferencesSettings />}
       </div>
 
-      <ConfirmLogoutModal
+      <ConfirmModal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
+        title="Confirm Logout"
+        description="Are you sure you want to logout?"
+        confirmText="Logout"
+        confirmVariant="destructive"
         onConfirm={handleLogout}
       />
     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
 import { Button } from "../../../../../components/ui/button";
 import ProfileImageCropper from "./ProfileImageCropper";
-import { useUpdateProfileImage } from "../../../hooks/profile/useUpdateProfileImage";
+import { useUploadUserImage } from "../../../hooks/profile/useUploadUserImage";
+import ImageCropper from "./ImageCropper";
 
 interface ProfileImageSectionProps {
   profileImage?: string | null;
@@ -19,7 +20,7 @@ const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const updateProfileImageMutation = useUpdateProfileImage();
+  const updateProfileImageMutation = useUploadUserImage();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -35,7 +36,7 @@ const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
 
   const handleCropSave = (file: File) => {
     setIsSaving(true);
-    updateProfileImageMutation.mutate({ file }, {
+    updateProfileImageMutation.mutate({ file, type: "profileImage" }, {
       onSuccess: () => {
         setIsSaving(false);
         setIsCropperOpen(false);
@@ -90,9 +91,11 @@ const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
         </Button>
       </div>
 
-      {isCropperOpen && selectedFile && (
-        <ProfileImageCropper
+     {isCropperOpen && selectedFile && (
+        <ImageCropper
           file={selectedFile}
+          aspect={1}
+          cropShape="round"
           onSave={handleCropSave}
           onCancel={handleCropCancel}
           isSaving={isSaving}
