@@ -28,7 +28,7 @@ export class LoginAdminUseCase implements ILoginAdminUseCase {
     if (rawUser.status !== 'active') {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
-
+console.log(rawUser)
     const isValid = bcrypt.compareSync(password, rawUser.password);
     if (!isValid) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
