@@ -2,7 +2,7 @@ import React from "react";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
-import { FileDown, User } from "lucide-react";
+import { FileDown } from "lucide-react";
 import ArtistRequestsModal from "./ArtistRequestModal";
 
 interface UserFiltersProps {
@@ -42,7 +42,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           <SelectValue placeholder="All Roles" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Roles</SelectItem>
+          <SelectItem value="all">All Plans</SelectItem>
           <SelectItem value="free">Free</SelectItem>
           <SelectItem value="pro">Pro</SelectItem>
           <SelectItem value="pro_plus">Pro Plus</SelectItem>
@@ -54,7 +54,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           <SelectValue placeholder="All Types" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="all">All Roles</SelectItem>
           <SelectItem value="user">User</SelectItem>
           <SelectItem value="artist">Artist</SelectItem>
         </SelectContent>

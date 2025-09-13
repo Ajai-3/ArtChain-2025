@@ -13,11 +13,14 @@ import { Loader2, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../../../../components/modals/ConfirmModal";
 import CustomLoader from "../../../../components/CustomLoader";
+import UserTableSkeleton from "../skeletons/UserTableSkeleton";
+
 interface UserTableProps {
   users: any[];
   isLoading: boolean;
   page: number;
   totalPages: number;
+  limit: number;
   onPageChange: (page: number) => void;
   toggleBan: (userId: string) => void;
   isToggling: (userId: string) => boolean;
@@ -28,6 +31,7 @@ const UserTable: React.FC<UserTableProps> = ({
   isLoading,
   page,
   totalPages,
+  limit,
   onPageChange,
   toggleBan,
   isToggling,
@@ -37,7 +41,6 @@ const UserTable: React.FC<UserTableProps> = ({
   const [selectedUser, setSelectedUser] = React.useState<any>(null);
   const [actionType, setActionType] = React.useState<"ban" | "unban">("ban");
 
-  // function to open modal
   const openConfirmModal = (user: any) => {
     setSelectedUser(user);
     setActionType(user.status === "banned" ? "unban" : "ban");
@@ -115,9 +118,11 @@ const UserTable: React.FC<UserTableProps> = ({
       <Table className="min-w-full border border-zinc-800">
         <TableHeader>
           <TableRow className="bg-gray-50 dark:bg-zinc-900">
+            <TableHead className="px-2 py-2 text-left">No</TableHead>
             <TableHead className="px-4 py-2 text-left">Name</TableHead>
             <TableHead className="px-4 py-2 text-left">Email</TableHead>
             <TableHead className="px-4 py-2 text-left">Username</TableHead>
+            <TableHead className="px-4 py-2 text-left">Plan</TableHead>
             <TableHead className="px-4 py-2 text-left">Role</TableHead>
             <TableHead className="px-4 py-2 text-left">Joined At</TableHead>
             <TableHead className="px-4 py-2 text-left">Status</TableHead>
@@ -127,49 +132,60 @@ const UserTable: React.FC<UserTableProps> = ({
 
         <TableBody>
           {isLoading ? (
-            Array.from({ length: 10 }).map((_, index) => (
-              <TableRow
-                key={index}
-                className="hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
-              >
-                {[...Array(6)].map((_, i) => (
-                  <TableCell key={i}>
-                    <Skeleton className="h-4 w-full" />
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))
+            <UserTableSkeleton rows={limit} />
           ) : users && users.length > 0 ? (
-            users.map((user: any) => (
+            users.map((user: any, idx: number) => (
               <TableRow
                 key={user.id}
                 className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors"
               >
+                <TableCell>{(page - 1) * limit + idx + 1}</TableCell>
                 <TableCell className="flex items-center gap-2 px-4 py-2">
                   {user.profileImage ? (
-                    <>
-                      <img
-                        src={user.profileImage}
-                        alt=""
-                        className="w-14 h-14 rounded-sm"
-                      />
-                    </>
+                    <img
+                      src={user.profileImage}
+                      alt=""
+                      className="w-14 h-14 rounded-sm"
+                    />
                   ) : (
-                    <>
-                      <User className="w-14 h-14 p-2 bg-zinc-800 rounded-sm" />
-                    </>
+                    <User className="w-14 h-14 p-2 bg-zinc-800 rounded-sm" />
                   )}
-
                   {user.name || "-"}
                 </TableCell>
                 <TableCell className="px-4 py-2">{user.email || "-"}</TableCell>
                 <TableCell className="px-4 py-2">
                   {user.username || "-"}
                 </TableCell>
+                <TableCell className="px-4 py-2 capitalize">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      user.plan === "free"
+                        ? "bg-lime-600"
+                        : user.plan === "pro"
+                        ? "bg-blue-600"
+                        : user.plan === "pro_plus"
+                        ? "bg-purple-600"
+                        : "bg-gray-600"
+                    }`}
+                  >
+                    {user.plan || "-"}
+                  </span>
+                </TableCell>
 
                 <TableCell className="px-4 py-2 capitalize">
-                  {user.role || "-"}
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      user.role === "user"
+                        ? "bg-cyan-600"
+                        : user.role === "artist"
+                        ? "bg-pink-600"
+                        : "bg-gray-900"
+                    }`}
+                  >
+                    {user.role || "-"}
+                  </span>
                 </TableCell>
+
                 <TableCell className="px-4 py-2">
                   {user.createdAt ? (
                     <>
@@ -192,7 +208,6 @@ const UserTable: React.FC<UserTableProps> = ({
                     "-"
                   )}
                 </TableCell>
-
                 <TableCell className="px-4 py-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -204,7 +219,6 @@ const UserTable: React.FC<UserTableProps> = ({
                     {user.status}
                   </span>
                 </TableCell>
-
                 <TableCell className="px-4 py-2">
                   <Button
                     variant="outline"
@@ -236,13 +250,14 @@ const UserTable: React.FC<UserTableProps> = ({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+              <TableCell colSpan={7} className="text-center py-8 text-gray-500">
                 No users found
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+
       <ConfirmModal
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}

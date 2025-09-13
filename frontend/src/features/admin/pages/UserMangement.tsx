@@ -127,6 +127,7 @@ const UserManagement: React.FC = () => {
         page={page}
         totalPages={totalPages}
         onPageChange={setPage}
+        limit={6}
         toggleBan={(userId) => {
           toggleBanMutation.mutate({ userId });
         }}
