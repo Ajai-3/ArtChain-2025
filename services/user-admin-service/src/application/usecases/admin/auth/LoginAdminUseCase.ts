@@ -1,11 +1,14 @@
-import bcrypt from 'bcrypt';
-
-import { tokenService } from '../../../presentation/service/token.service';
-import { AuthResultDto } from '../../../domain/dtos/user/auth/AuthResultDto';
-import { LoginRequestDto } from '../../../domain/dtos/user/auth/LoginRequestDto';
-import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
-import { ERROR_MESSAGES, ForbiddenError, UnauthorizedError } from 'art-chain-shared';
-import { ILoginAdminUseCase } from '../../../domain/usecases/admin/auth/ILoginAdminUseCase';
+import bcrypt from "bcrypt";
+import { tokenService } from "../../../../presentation/service/token.service";
+import { AuthResultDto } from "../../../../domain/dtos/user/auth/AuthResultDto";
+import { LoginRequestDto } from "../../../../domain/dtos/user/auth/LoginRequestDto";
+import {
+  ERROR_MESSAGES,
+  ForbiddenError,
+  UnauthorizedError,
+} from "art-chain-shared";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ILoginAdminUseCase } from "../../../../domain/usecases/admin/auth/ILoginAdminUseCase";
 
 export class LoginAdminUseCase implements ILoginAdminUseCase {
   constructor(private _userRepo: IUserRepository) {}
@@ -21,14 +24,14 @@ export class LoginAdminUseCase implements ILoginAdminUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== 'admin') {
+    if (rawUser.role !== "admin") {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 
-    if (rawUser.status !== 'active') {
+    if (rawUser.status !== "active") {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
-console.log(rawUser)
+    console.log(rawUser);
     const isValid = bcrypt.compareSync(password, rawUser.password);
     if (!isValid) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS);
