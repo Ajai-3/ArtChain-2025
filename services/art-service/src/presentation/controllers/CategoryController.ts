@@ -3,6 +3,7 @@ import { ICategoryController } from "../interface/ICategoryController";
 import { logger } from "../../utils/logger";
 
 export class CategoryController implements ICategoryController {
+    
   //# ================================================================================================================
   //# GET CATEGORIES
   //# ================================================================================================================
