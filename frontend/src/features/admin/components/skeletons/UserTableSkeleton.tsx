@@ -22,17 +22,15 @@ const UserTableSkeleton: React.FC<UserTableSkeletonProps> = ({ rows = 6 }) => {
           {/* Name with avatar */}
           <TableCell className="flex items-center gap-2 px-4 py-2">
             <Skeleton className="w-14 h-14 rounded-sm" />
-            <Skeleton className="h-4 w-24" />
+            <div>
+              <Skeleton className="h-4 w-24 mb-1" />
+              <Skeleton className="h-4 w-24" />
+            </div>
           </TableCell>
 
           {/* Email */}
           <TableCell className="px-4 py-2">
             <Skeleton className="h-4 w-32" />
-          </TableCell>
-
-          {/* Username */}
-          <TableCell className="px-4 py-2">
-            <Skeleton className="h-4 w-24" />
           </TableCell>
 
           {/* Plan */}

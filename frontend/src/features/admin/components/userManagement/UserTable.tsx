@@ -121,7 +121,6 @@ const UserTable: React.FC<UserTableProps> = ({
             <TableHead className="px-2 py-2 text-left">No</TableHead>
             <TableHead className="px-4 py-2 text-left">Name</TableHead>
             <TableHead className="px-4 py-2 text-left">Email</TableHead>
-            <TableHead className="px-4 py-2 text-left">Username</TableHead>
             <TableHead className="px-4 py-2 text-left">Plan</TableHead>
             <TableHead className="px-4 py-2 text-left">Role</TableHead>
             <TableHead className="px-4 py-2 text-left">Joined At</TableHead>
@@ -140,7 +139,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors"
               >
                 <TableCell>{(page - 1) * limit + idx + 1}</TableCell>
-                <TableCell className="flex items-center gap-2 px-4 py-2">
+                <TableCell className="flex items-center gap-3 px-4 py-2">
                   {user.profileImage ? (
                     <img
                       src={user.profileImage}
@@ -150,12 +149,12 @@ const UserTable: React.FC<UserTableProps> = ({
                   ) : (
                     <User className="w-14 h-14 p-2 bg-zinc-800 rounded-sm" />
                   )}
-                  {user.name || "-"}
+                  <div className="">
+                    <p>{user.name || "-"} </p> 
+                  <p className="text-zinc-400">{user.username || "-"}</p>
+                  </div>
                 </TableCell>
                 <TableCell className="px-4 py-2">{user.email || "-"}</TableCell>
-                <TableCell className="px-4 py-2">
-                  {user.username || "-"}
-                </TableCell>
                 <TableCell className="px-4 py-2 capitalize">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
@@ -222,7 +221,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 <TableCell className="px-4 py-2">
                   <Button
                     variant="outline"
-                    size="support"
+                    size="sm"
                     className="px-[.7rem] mr-2"
                     onClick={() => navigate(`/${user.username}`)}
                   >

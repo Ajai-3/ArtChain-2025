@@ -95,7 +95,7 @@ apiClient.interceptors.response.use(
       try {
         const isAdminRequest = originalRequest.url?.includes("/api/v1/admin");
         const refreshEndpoint = isAdminRequest
-          ? "/api/v1/auth/refresh-token"
+          ? "/api/v1/admin/refresh-token"
           : "/api/v1/auth/refresh-token";
 
         const response = await apiClient.get<RefreshTokenResponse>(
