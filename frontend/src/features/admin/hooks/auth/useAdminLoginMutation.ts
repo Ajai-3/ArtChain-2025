@@ -4,25 +4,24 @@ import apiClient from "../../../../api/axios";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { setAdmin } from "../../../../redux/slices/adminSlice";
-
+import { logout } from "../../../../redux/slices/userSlice";
 
 export const useAdminLoginMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (credentials: { identifier: string; password: string }) => 
+    mutationFn: (credentials: { identifier: string; password: string }) =>
       apiClient.post("/api/v1/admin/login", credentials),
     onSuccess: (response) => {
-
-       const { user, accessToken } = response.data;
+      const { user, accessToken } = response.data;
       console.log("Login successful:", response);
       toast.success("Login successful");
-      
 
       dispatch(setAdmin({ admin: user, accessToken }));
 
-      navigate('/admin/dashboard');
+      dispatch(logout());
 
+      navigate("/admin/dashboard");
     },
     onError: (error: any) => {
       const errorMessage =
