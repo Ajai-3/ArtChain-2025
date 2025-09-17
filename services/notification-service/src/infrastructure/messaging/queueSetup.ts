@@ -16,6 +16,7 @@ export async function setupNotificationQueues(ch: Channel) {
   // Elasticsearch indexing queue
   await ch.assertQueue("search_indexing", { durable: true });
   await ch.bindQueue("search_indexing", exchange, "user.created");
+  await ch.bindQueue("search_indexing", exchange, "user.update");
 
   // Supporters queue
   await ch.assertQueue("supports", { durable: true });
