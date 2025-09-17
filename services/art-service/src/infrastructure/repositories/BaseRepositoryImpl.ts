@@ -34,7 +34,7 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
 
   async update(id: string, entity: Partial<T>): Promise<T> {
     const updated = await this.model
-      .findOneAndUpdate({ id }, entity, { new: true })
+      .findOneAndUpdate({ _id: id }, entity, { new: true })
       .lean();
     if (!updated) throw new Error("Document not found");
     return updated as T;

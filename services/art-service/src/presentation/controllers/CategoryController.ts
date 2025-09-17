@@ -7,6 +7,8 @@ import { CATEGORY_MESSAGES } from "../../constants/categoryMessages";
 import { EditCategoryDTO } from "../../domain/dto/category/EditCategoryDTO";
 import { EditCategoryUseCase } from "../../application/usecase/category/EditCategoryUseCase";
 import { GetAllCategoryUseCase } from "../../application/usecase/category/GetAllCategoryUseCase";
+import { validateWithZod } from "../../utils/validateWithZod";
+import { editCategorySchema } from "../validators/editCategorySchema";
 
 export class CategoryController implements ICategoryController {
   constructor(
@@ -83,7 +85,8 @@ export class CategoryController implements ICategoryController {
   //# EDIT CATEGORY
   //# ================================================================================================================
   //# Endpoint: PATCH /api/v1/art/category
-  //# Request body: { name }
+  //# Req params: id (category id)
+  //# Request body: { name, count }
   //# This controller Updates the name or details of an existing category.
   //# ================================================================================================================
   editCategory = async (
@@ -92,9 +95,11 @@ export class CategoryController implements ICategoryController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { id, name, count, status } = req.body;
+      const id = req.params.id
 
-      const dto: EditCategoryDTO = { id, name, count, status };
+      const result = validateWithZod(editCategorySchema, req.body)
+
+      const dto: EditCategoryDTO = { ...result, id };
       const category = await this._editCategoryUseCase.execute(dto);
 
       return res

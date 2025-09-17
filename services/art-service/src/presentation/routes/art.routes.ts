@@ -8,7 +8,7 @@ const router = express.Router();
 // Category
 router.get("/category", categoryController.getCategory)
 router.post("/category", categoryController.createCategory)
-router.patch("/category", categoryController.editCategory)
+router.patch("/category/:id", categoryController.editCategory)
 
 // Art
 router.get("/", artController.getAllArt);
