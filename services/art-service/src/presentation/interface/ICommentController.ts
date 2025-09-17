@@ -16,7 +16,7 @@ export interface ICommentController {
     res: Response,
     next: NextFunction
   ) => Promise<Response | void>;
-  delete: (
+  deleteComment: (
     req: Request,
     res: Response,
     next: NextFunction

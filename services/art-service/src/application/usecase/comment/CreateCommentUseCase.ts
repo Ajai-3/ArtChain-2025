@@ -1,3 +1,4 @@
+import { CommentStatus } from './../../../domain/entities/Comment';
 import { Comment } from "../../../domain/entities/Comment";
 import { CreateCommentDTO } from "../../../domain/dto/comment/CreateCommentDTO";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
@@ -11,9 +12,7 @@ export class CreateCommentUseCase implements ICreateCommentUseCase {
       dto.postId,
       dto.userId,
       dto.content,
-      "active",
-      new Date(),
-      new Date()
+      "original"
     );
 
     const created = await this._commentRepo.create(comment);
