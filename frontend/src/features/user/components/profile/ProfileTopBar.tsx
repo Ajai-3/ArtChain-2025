@@ -41,8 +41,9 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   // ======= Actions =======
   const handleSupportClick = () => {
     if (!user?.id) return;
-    if (isSupporting) unSupportMutation.mutate(user.id);
-    else supportMutation.mutate(user.id);
+    console.log(user.id, user.username)
+    if (isSupporting) unSupportMutation.mutate({ userId: user.id, username: user.username });
+    else supportMutation.mutate({ userId: user.id, username: user.username });
   };
 
   const handleViewImage = (imageUrl: string) => setZoomImage(imageUrl);
@@ -109,40 +110,42 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
           </div>
         )}
 
-        {/* Banner Actions */}
-        {isOwnProfile && (
-          <div className="absolute bottom-4 right-4 flex gap-3 z-20">
-            {user?.bannerImage ? (
-              <>
-                <div
-                  title="View Banner"
-                  className={iconButtonClasses}
-                  onClick={() => handleViewImage(user.bannerImage!)}
-                >
-                  <View className="w-6 h-6 text-white" />
-                </div>
-                <div
-                  title="Delete Banner"
-                  className={iconButtonClasses}
-                  onClick={handleDeleteBannerImage}
-                >
-                  <Trash2 className="w-6 h-6 text-red-400" />
-                </div>
-              </>
-            ) : (
-              <div
-                title="Upload Banner"
-                className={`flex items-center ${iconButtonClasses}`}
-                onClick={() => handleUploadClick("bannerImage")}
-              >
-                <Upload className="w-6 h-6 text-white" />
-                <p className="ml-2 hidden md:block text-white text-md">
-                  Upload
-                </p>
-              </div>
-            )}
-          </div>
-        )}
+      {/* Banner Actions */}
+<div className="absolute bottom-4 right-4 flex gap-3 z-20">
+  {user?.bannerImage && (
+    <div
+      title="View Banner"
+      className={iconButtonClasses}
+      onClick={() => handleViewImage(user.bannerImage!)}
+    >
+      <View className="w-6 h-6 text-white" />
+    </div>
+  )}
+
+  {isOwnProfile && (
+    <>
+      {user?.bannerImage ? (
+        <div
+          title="Delete Banner"
+          className={iconButtonClasses}
+          onClick={handleDeleteBannerImage}
+        >
+          <Trash2 className="w-6 h-6 text-red-400" />
+        </div>
+      ) : (
+        <div
+          title="Upload Banner"
+          className={`flex items-center ${iconButtonClasses}`}
+          onClick={() => handleUploadClick("bannerImage")}
+        >
+          <Upload className="w-6 h-6 text-white" />
+          <p className="ml-2 hidden md:block text-white text-md">Upload</p>
+        </div>
+      )}
+    </>
+  )}
+</div>
+
 
         {/* Profile Image & Info */}
         <div className="relative z-10 flex items-center gap-6 sm:h-28">

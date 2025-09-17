@@ -54,8 +54,8 @@ const Notifications = () => {
     [isFetchingNextPage, fetchNextPage, hasNextPage]
   );
 
-  const handleSelectUser = (userId: string) => {
-    navigate(`/profile/${userId}`);
+  const handleSelectUser = (username: string) => {
+    navigate(`/${username}`);
   };
 
   if (!notifications.length) return <p>No notifications</p>;
