@@ -24,19 +24,20 @@ declare module "axios" {
 
 apiClient.interceptors.request.use((config) => {
   const state = store.getState();
-  const isAdminRequest = config.url?.includes("/api/v1/admin");
-  const isUserRequest = ["/api/v1/user", "/api/v1/notifications", "/api/v1/upload/art", "/api/v1/upload"].some((path) =>
-    config.url?.includes(path)
-  );
 
-  const token = isAdminRequest
-    ? state?.admin?.accessToken ?? null
-    : state?.user?.accessToken ?? null;
-  const userId = isUserRequest ? state?.user?.user?.id ?? null : null;
+  let token: string | null = null;
+  let userId: string | null = null;
+
+  if (state?.admin?.accessToken) {
+    token = state.admin.accessToken;
+  } else {
+    token = state?.user?.accessToken ?? null;
+    userId = state?.user?.user?.id ?? null;
+  }
 
   if (token) config.headers.Authorization = `Bearer ${token}`;
-  if (isUserRequest && userId) config.headers["x-user-id"] = userId;
-  console.log(userId)
+  if (userId) config.headers["x-user-id"] = userId;
+
   return config;
 });
 
@@ -76,7 +77,7 @@ apiClient.interceptors.response.use(
       }
       return Promise.reject(networkError);
     }
-
+    
     const originalRequest = error.config;
     const isAuthEndpoint = AUTH_ENDPOINTS.some((url) =>
       originalRequest.url?.startsWith(url)
@@ -93,10 +94,9 @@ apiClient.interceptors.response.use(
       refreshRetryCount++;
 
       try {
-        const isAdminRequest = originalRequest.url?.includes("/api/v1/admin");
-        const refreshEndpoint = isAdminRequest
-          ? "/api/v1/admin/refresh-token"
-          : "/api/v1/auth/refresh-token";
+        const state = store.getState();
+        const isAdminRequest = state.admin.isAuthenticated ? state.admin.isAuthenticated : state.user.isAuthenticated
+        const refreshEndpoint = "/api/v1/auth/refresh-token";
 
         const response = await apiClient.get<RefreshTokenResponse>(
           refreshEndpoint,
