@@ -12,13 +12,19 @@ export async function startUserConsumer() {
     if (!msg) return;
 
     try {
-      const user = JSON.parse(msg.content.toString());
-      await userService.addUser(user);
+      const payload = JSON.parse(msg.content.toString());
+      const eventType = msg.fields.routingKey;
+
+      if (eventType === "user.created") {
+        await userService.addUser(payload);
+      } else if (eventType === "user.update") {
+        await userService.updateUser(payload);
+      }
       ch.ack(msg);
-      console.log(`✅ User indexed in Elasticsearch: ${user.id}`);
+      console.log(`✅ User indexed in Elasticsearch: ${payload.id}`);
     } catch (err) {
       console.error("❌ Failed to index user:", err);
-      ch.nack(msg, false, false); 
+      ch.nack(msg, false, false);
     }
   });
 

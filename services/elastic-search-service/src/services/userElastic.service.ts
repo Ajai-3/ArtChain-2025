@@ -1,5 +1,5 @@
 import { UserElasticRepository } from "../repositories/userElastic.repository";
-import { IndexedUser} from "../interface/indexUser";
+import { IndexedUser } from "../interface/indexUser";
 import { IUserElasticService } from "../interface/IUserElasticService";
 
 const repo = new UserElasticRepository();
@@ -7,6 +7,10 @@ const repo = new UserElasticRepository();
 export class UserElasticService implements IUserElasticService {
   async addUser(user: IndexedUser) {
     await repo.indexUser(user);
+  }
+
+  async updateUser(user: IndexedUser) {
+    await repo.updateUser(user);
   }
 
   async searchForUser(query: string): Promise<IndexedUser[]> {

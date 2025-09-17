@@ -13,7 +13,7 @@ export class UserElasticController implements IUserElasticController {
   //# ================================================================================================================
   //# POST /elastic/users
   //# Request body: IndexedUserDto
-  //# This endpoint indexes (adds/updates) a user document in Elasticsearch.
+  //# This endpoint indexes adds a user document in Elasticsearch.
   //# Used typically after user registration or profile update.
   //# ================================================================================================================
   async indexUser(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -21,6 +21,24 @@ export class UserElasticController implements IUserElasticController {
       await service.addUser(req.body);
       logger.info("Index created")
       res.status(HttpStatus.CREATED).json({ message: ELASTIC_MESSAGES.INDEX_SUCCESS });
+    } catch (err: any) {
+      next(err)
+    }
+  }
+
+   //# ================================================================================================================
+  //# UPDATE USER
+  //# ================================================================================================================
+  //# PUT /elastic/users
+  //# Request body: IndexedUserDto
+  //# This endpoint indexes updates existing user in the document in Elasticsearch.
+  //# Used typically after user profile update.
+  //# ================================================================================================================
+  async updateUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = await service.updateUser(req.body);
+      logger.info(`User index updated ${JSON.stringify(user)}`)
+      res.status(HttpStatus.CREATED).json({ message: ELASTIC_MESSAGES.INDEX_UPDATED_SUCESS });
     } catch (err: any) {
       next(err)
     }
