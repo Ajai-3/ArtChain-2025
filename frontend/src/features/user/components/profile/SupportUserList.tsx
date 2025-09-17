@@ -73,12 +73,14 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
   const supportMutation = useSupportMutation();
   const unSupportMutation = useUnSupportMutation();
 
-  const handleSupportClick = (targetUserId: string, isSupporting: boolean) => {
+  const handleSupportClick = (targetUser: { id: string; username: string }, isSupporting: boolean) => {
     if (loadingUserId) return;
-    setLoadingUserId(targetUserId);
-
+    setLoadingUserId(targetUser.id);
+    console.log("Clicked user:", targetUser);
+    const payload = { userId: targetUser.id, username: targetUser.username };
+    console.log("Clicked user payload:", payload);
     if (isSupporting) {
-      unSupportMutation.mutate(targetUserId, {
+      unSupportMutation.mutate(payload, {
         onSuccess: () => {
           setLoadingUserId(null);
           currentUserSupportingQuery.refetch();
@@ -87,7 +89,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
         onError: () => setLoadingUserId(null),
       });
     } else {
-      supportMutation.mutate(targetUserId, {
+      supportMutation.mutate(payload, {
         onSuccess: () => {
           setLoadingUserId(null);
           currentUserSupportingQuery.refetch();
@@ -101,7 +103,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
 
   return (
-    <ul className="space-y-2 max-h-80 overflow-y-auto">
+    <ul className="space-y-2 h-full sm:max-h-80 overflow-y-auto">
       {/* Logged-in user on top */}
       {!isOwnProfile && currentUserInList && (
         <li className="p-2 rounded flex items-center gap-2 mx-2 cursor-default">
@@ -137,7 +139,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
           <li
             key={user.id}
             ref={isLast ? lastUserRef : null}
-            className="p-2 rounded flex items-center gap-2 mx-2 cursor-pointer"
+            className="p-2 rounded flex items-center gap-6 mx-2 cursor-pointer"
             onClick={() => {
               onClose();
               navigate(`/${user?.username}`);
@@ -190,7 +192,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
                 size="support"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleSupportClick(user.id, isSupporting);
+                  handleSupportClick({id: user.id, username: user.username}, isSupporting);
                 }}
                 disabled={loadingUserId === user.id}
                 className="relative flex items-center justify-center ml-auto"
@@ -227,7 +229,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
       )}
 
       {users.length === 0 && !query.isFetching && (
-        <li className="text-center p-2 text-gray-500">No users found</li>
+        <li className="text-center p-2 text-gray-500 px-40">No users found</li>
       )}
     </ul>
   );
