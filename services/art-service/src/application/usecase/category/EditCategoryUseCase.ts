@@ -10,14 +10,20 @@ export class EditCategoryUseCase implements IEditCategoryUseCase {
 
   async execute(data: EditCategoryDTO): Promise<Category> {
     const { id, name, count, status } = data;
-    console.log(data)
-   if (name) {
-     const category = await this._categoryRepo.findByName(name)
-     if (category) {
-      throw new ConflictError(CATEGORY_MESSAGES.DUPLICATE_NAME)
-     }
-   }
-    const updatedCategory = await this._categoryRepo.update(id, { name, count, status });
+    console.log(data);
+
+    if (name) {
+      const category = await this._categoryRepo.findByName(name);
+
+      if (category) {
+        throw new ConflictError(CATEGORY_MESSAGES.DUPLICATE_NAME);
+      }
+    }
+    const updatedCategory = await this._categoryRepo.update(id, {
+      name,
+      count,
+      status,
+    });
     return updatedCategory;
   }
 }
