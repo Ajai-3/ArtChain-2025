@@ -1,4 +1,5 @@
 import React from "react";
+import { format } from "date-fns";
 import {
   Table,
   TableBody,
@@ -8,8 +9,7 @@ import {
   TableRow,
 } from "../../../../components/ui/table";
 import { Button } from "../../../../components/ui/button";
-import { Skeleton } from "../../../../components/ui/skeleton";
-import { Loader2, User } from "lucide-react";
+import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../../../../components/modals/ConfirmModal";
 import CustomLoader from "../../../../components/CustomLoader";
@@ -114,8 +114,8 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   return (
-    <div className="overflow-x-auto rounded-lg">
-      <Table className="min-w-full border border-zinc-800">
+<>    <div className="overflow-x-auto rounded-lg border border-zinc-800">
+      <Table className="min-w-full">
         <TableHeader>
           <TableRow className="bg-gray-50 dark:bg-zinc-900">
             <TableHead className="px-2 py-2 text-left">No</TableHead>
@@ -150,14 +150,14 @@ const UserTable: React.FC<UserTableProps> = ({
                     <User className="w-14 h-14 p-2 bg-zinc-800 rounded-sm" />
                   )}
                   <div className="">
-                    <p>{user.name || "-"} </p> 
-                  <p className="text-zinc-400">{user.username || "-"}</p>
+                    <p>{user.name || "-"} </p>
+                    <p className="text-zinc-400">{user.username || "-"}</p>
                   </div>
                 </TableCell>
                 <TableCell className="px-4 py-2">{user.email || "-"}</TableCell>
                 <TableCell className="px-4 py-2 capitalize">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    className={`inline-block w-20 text-center py-[.2rem] rounded-full text-xs font-semibold ${
                       user.plan === "free"
                         ? "bg-lime-600"
                         : user.plan === "pro"
@@ -173,7 +173,7 @@ const UserTable: React.FC<UserTableProps> = ({
 
                 <TableCell className="px-4 py-2 capitalize">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    className={`inline-block w-20 text-center py-[.2rem] rounded-full text-xs font-semibold ${
                       user.role === "user"
                         ? "bg-cyan-600"
                         : user.role === "artist"
@@ -189,19 +189,9 @@ const UserTable: React.FC<UserTableProps> = ({
                   {user.createdAt ? (
                     <>
                       <div>
-                        {new Date(user.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {format(new Date(user.createdAt), "MMMM d, yyyy")}
                       </div>
-                      <div>
-                        {new Date(user.createdAt).toLocaleTimeString("en-US", {
-                          hour: "numeric",
-                          minute: "2-digit",
-                          hour12: true,
-                        })}
-                      </div>
+                      <div>{format(new Date(user.createdAt), "hh:mm a")}</div>
                     </>
                   ) : (
                     "-"
@@ -209,7 +199,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 </TableCell>
                 <TableCell className="px-4 py-2">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                    className={`inline-block w-16 text-center py-[.2rem] rounded-full text-xs font-semibold ${
                       user.status === "banned"
                         ? "bg-red-700/30 text-red-600"
                         : "bg-green-700/30 text-green-600"
@@ -219,31 +209,33 @@ const UserTable: React.FC<UserTableProps> = ({
                   </span>
                 </TableCell>
                 <TableCell className="px-4 py-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="px-[.7rem] mr-2"
-                    onClick={() => navigate(`/${user.username}`)}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    variant={
-                      user.status === "banned" ? "outline" : "destructive"
-                    }
-                    size="sm"
-                    disabled={isToggling(user.id)}
-                    onClick={() => openConfirmModal(user)}
-                    className="bg-red-600"
-                  >
-                    {isToggling(user.id) ? (
-                      <CustomLoader />
-                    ) : user.status === "banned" ? (
-                      "Unban"
-                    ) : (
-                      "Ban"
-                    )}
-                  </Button>
+                  <div className="flex items-center ">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="px-[.7rem] mr-2"
+                      onClick={() => navigate(`/${user.username}`)}
+                    >
+                      View
+                    </Button>
+                    <Button
+                      variant={
+                        user.status === "banned" ? "outline" : "destructive"
+                      }
+                      size="sm"
+                      disabled={isToggling(user.id)}
+                      onClick={() => openConfirmModal(user)}
+                      className="bg-red-600"
+                    >
+                      {isToggling(user.id) ? (
+                        <CustomLoader size={16} />
+                      ) : user.status === "banned" ? (
+                        "Unban"
+                      ) : (
+                        "Ban"
+                      )}
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))
@@ -261,7 +253,11 @@ const UserTable: React.FC<UserTableProps> = ({
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         title={`Confirm ${actionType}`}
-        description={`Are you sure you want to ${actionType} ${selectedUser?.name}?`}
+        description={
+          actionType === "ban"
+            ? `Are you sure you want to ban ${selectedUser?.name}? This will temporarily restrict their access to the platform. You can unban them later if needed.`
+            : `Are you sure you want to unban ${selectedUser?.name}? This will restore their access to the platform.`
+        }
         confirmText={actionType === "ban" ? "Ban" : "Unban"}
         confirmVariant={actionType === "ban" ? "destructive" : "default"}
         onConfirm={() => {
@@ -271,8 +267,9 @@ const UserTable: React.FC<UserTableProps> = ({
         isLoading={isToggling(selectedUser?.id)}
       />
 
-      {renderPagination()}
     </div>
+      {renderPagination()}
+      </>
   );
 };
 

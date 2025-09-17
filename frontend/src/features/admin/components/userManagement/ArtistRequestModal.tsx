@@ -61,7 +61,7 @@ const ArtistRequestsModal: React.FC = () => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-5xl h-[600px] bg-secondary-color">
+      <DialogContent className="sm:max-w-5xl h-[600px]">
         <DialogHeader>
           <DialogTitle>Pending Artist Requests</DialogTitle>
           <DialogDescription>
@@ -70,7 +70,7 @@ const ArtistRequestsModal: React.FC = () => {
         </DialogHeader>
 
         <div className="overflow-x-auto mt-4 rounded-lg border border-zinc-800">
-          <Table className="min-w-full">
+          <Table className="min-w-full dark:bg-secondary-color">
             <TableHeader>
               <TableRow className="bg-gray-50 dark:bg-zinc-950">
                 <TableHead>No</TableHead>

@@ -49,7 +49,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
   };
 
   return (
-    <div className="bg-zinc-950 border border-zinc-800 p-4 rounded-lg mb-3 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+    <div className="bg-zinc-100 dark:bg-zinc-950 border dark:border-zinc-800 p-4 rounded-lg mb-3 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
       <Input
         type="text"
         placeholder="Search by name, email, or username..."

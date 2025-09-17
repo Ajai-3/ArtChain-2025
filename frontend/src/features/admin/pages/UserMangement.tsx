@@ -99,7 +99,7 @@ const UserManagement: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-4">
-        <div className="flex gap-2 items-center ">
+        <div className="flex gap-2 items-center">
           <LayoutDashboard />
           <h1 className="text-2xl font-bold "> User Management</h1>
         </div>
