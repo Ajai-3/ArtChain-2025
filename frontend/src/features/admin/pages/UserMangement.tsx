@@ -20,6 +20,9 @@ const UserManagement: React.FC = () => {
     page,
     limit: 6,
     search: debouncedSearch,
+    role: userTypeFilter,   
+  status: statusFilter,   
+  plan: roleFilter,
   });
 
   const totalPages = data?.meta
