@@ -21,6 +21,7 @@ import { validateWithZod } from "../../../utils/zodValidator";
 import { updateProfileSchema } from "../../../application/validations/user/updateProfileSchema";
 import { GetUserProfileUseCase } from "../../../application/usecases/user/profile/GetProfileUserUseCase";
 import { GetUserProfileRequestDto } from "../../../domain/dtos/user/profile/GetUserProfileRequestDto";
+import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
 
 export class UserController implements IUserController {
   constructor(
@@ -31,7 +32,8 @@ export class UserController implements IUserController {
     private readonly _getSupportersUseCase: GetUserSupportersUseCase,
     private readonly _getSupportingUseCase: GetUserSupportingUseCase,
     private readonly _getUsersByIdsUserUseCase: GetUsersByIdsUserUseCase,
-    private readonly _updateProfileUserUseCase: UpdateProfileUserUseCase
+    private readonly _updateProfileUserUseCase: UpdateProfileUserUseCase,
+    private readonly _addUserToElasticUserUseCase: AddUserToElasticSearchUseCase
   ) {}
 
   //# ================================================================================================================
@@ -124,6 +126,10 @@ export class UserController implements IUserController {
       const dto: UpdateUserProfileDTO = { ...validatedData, userId };
 
       const user = await this._updateProfileUserUseCase.execute(dto);
+
+      const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
+
+      await publishNotification("user.update", elasticUser);
 
       logger.info(`User profile updated ${JSON.stringify(user)}`);
       console.log(user);

@@ -37,6 +37,7 @@ export class UserRepositoryImpl
   async findByIdRaw(id: string): Promise<User | null> {
     return this.model.findUnique({ where: { id } });
   }
+
   async findAllUsers({
     page,
     limit,
@@ -49,37 +50,29 @@ export class UserRepositoryImpl
     role?: string;
     status?: string;
     plan?: string;
-  }): Promise<{
-    meta: { page: number; limit: number; total: number };
-    data: SafeUser[];
-  }> {
+  }): Promise<{ meta: { page: number; limit: number; total: number }; data: SafeUser[] }> {
     const where: any = {
       role: { in: [Role.user, Role.artist] },
     };
 
-    if (role && role !== "all") where.role = role;
+    if (role && role !== "all") {
+      if (role === "user") where.role = Role.user;
+      else if (role === "artist") where.role = Role.artist;
+    }
+
     if (status && status !== "all") where.status = status;
     if (plan && plan !== "all") where.plan = plan;
 
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
-      this.model.findMany({
-        where,
-        skip,
-        take: limit,
-      }),
+      this.model.findMany({ where, skip, take: limit }),
       this.model.count({ where }),
     ]);
 
-    const sanitizedUsers: SafeUser[] = users.map(
-      ({ password, ...rest }) => rest
-    );
+    const sanitizedUsers: SafeUser[] = users.map(({ password, ...rest }) => rest);
 
-    return {
-      meta: { page, limit, total },
-      data: sanitizedUsers,
-    };
+    return { meta: { page, limit, total }, data: sanitizedUsers };
   }
 
   async findManyByIds(
@@ -87,39 +80,30 @@ export class UserRepositoryImpl
     page: number,
     limit: number,
     filters?: { role?: string; status?: string; plan?: string }
-  ): Promise<{
-    meta: { page: number; limit: number; total: number };
-    data: SafeUser[];
-  }> {
+  ): Promise<{ meta: { page: number; limit: number; total: number }; data: SafeUser[] }> {
     const where: any = {
       id: { in: ids },
       role: { in: [Role.user, Role.artist] },
     };
 
-    if (filters?.role && filters.role !== "all") where.role = filters.role;
-    if (filters?.status && filters.status !== "all")
-      where.status = filters.status;
+    if (filters?.role && filters.role !== "all") {
+      if (filters.role === "user") where.role = Role.user;
+      else if (filters.role === "artist") where.role = Role.artist;
+    }
+
+    if (filters?.status && filters.status !== "all") where.status = filters.status;
     if (filters?.plan && filters.plan !== "all") where.plan = filters.plan;
 
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
-      this.model.findMany({
-        where,
-        skip,
-        take: limit,
-      }),
+      this.model.findMany({ where, skip, take: limit }),
       this.model.count({ where }),
     ]);
 
-    const sanitizedUsers: SafeUser[] = users.map(
-      ({ password, ...rest }) => rest
-    );
+    const sanitizedUsers: SafeUser[] = users.map(({ password, ...rest }) => rest);
 
-    return {
-      meta: { page, limit, total },
-      data: sanitizedUsers,
-    };
+    return { meta: { page, limit, total }, data: sanitizedUsers };
   }
 
   async findManyByIdsBatch(ids: string[]): Promise<ArtUser[]> {

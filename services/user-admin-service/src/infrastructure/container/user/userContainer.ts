@@ -11,6 +11,7 @@ import { GetUserSupportersUseCase } from "../../../application/usecases/user/use
 import { GetUserSupportingUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportingUseCase";
 import { GetUsersByIdsUserUseCase } from "../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase";
 import { UpdateProfileUserUseCase } from "../../../application/usecases/user/profile/UpdateProfileUserUseCase";
+import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
 
 // Repositories
 const userRepo = new UserRepositoryImpl();
@@ -35,6 +36,7 @@ const getUserProfileUseCase = new GetUserProfileUseCase(
 const getUsersByIdsUserUseCase = new GetUsersByIdsUserUseCase(userRepo);
 
 const updateProfileUserUseCase = new UpdateProfileUserUseCase(userRepo);
+const addUserToElasticSearchUseCase = new AddUserToElasticSearchUseCase()
 
 // Controller
 export const userController = new UserController(
@@ -45,5 +47,6 @@ export const userController = new UserController(
   getUserSupportersUseCase,
   getUserSupportingUseCase,
   getUsersByIdsUserUseCase,
-  updateProfileUserUseCase
+  updateProfileUserUseCase,
+  addUserToElasticSearchUseCase
 );

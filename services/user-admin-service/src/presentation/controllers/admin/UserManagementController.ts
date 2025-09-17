@@ -34,21 +34,10 @@ export class UserManageMentController implements IUserManageMentController {
       const status = req.query.status as string;
       const plan = req.query.plan as string;
 
-      let userIds: string[] | undefined;
-
-      if (search) {
-        const response = await axios.get(
-          `http://elastic-search-service:4004/api/v1/elastic-user/admin/search`,
-          { params: { q: search } }
-        );
-        userIds = response.data.userIds;
-      }
-
       const result = await this._getAllUsersUseCase.execute({
         page,
         limit,
         search,
-        userIds,
         role,
         status,
         plan,
