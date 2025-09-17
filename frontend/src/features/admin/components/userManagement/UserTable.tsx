@@ -225,7 +225,7 @@ const UserTable: React.FC<UserTableProps> = ({
                       size="sm"
                       disabled={isToggling(user.id)}
                       onClick={() => openConfirmModal(user)}
-                      className="bg-red-600"
+                      className="inline-block w-14 bg-red-600"
                     >
                       {isToggling(user.id) ? (
                         <CustomLoader size={16} />
