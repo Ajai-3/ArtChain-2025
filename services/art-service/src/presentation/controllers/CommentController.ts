@@ -117,7 +117,7 @@ export class CommentController implements ICommentController {
   //# Request params: id
   //# This controller deletes a comment by ID.
   //# ================================================================================================================
-  delete = async (
+  deleteComment = async (
     req: Request,
     res: Response,
     next: NextFunction
