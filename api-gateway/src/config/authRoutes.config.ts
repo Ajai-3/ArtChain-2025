@@ -42,5 +42,6 @@ export const authRoutesConfig = {
   admin: [
     { path: "/api/v1/admin/dashboard", methods: ["GET"] },
     { path: "/api/v1/admin/users", methods: ["GET", "PATCH", "DELETE"] },
+      { path: "/api/v1/art/category", methods: ["POST", "PATCH", "DELETE"] },
   ],
 };

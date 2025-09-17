@@ -16,6 +16,7 @@ export const adminAuth = async (
     if (!accessToken) {
       throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
+    console.log(accessToken)
 
     const decoded = tokenService.verifyAccessToken(accessToken);
 

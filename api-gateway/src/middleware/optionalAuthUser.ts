@@ -26,7 +26,7 @@ export const optionalAuthUser = async (
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
 
-    if (decoded.role !== "user" && decoded.role !== "artist") {
+    if (decoded.role !== "user" && decoded.role !== "artist" && decoded.role !== "admin") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 

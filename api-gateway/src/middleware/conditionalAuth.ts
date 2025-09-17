@@ -1,4 +1,5 @@
 import { authUser } from "./authUser";
+import { match } from "path-to-regexp";
 import { adminAuth } from "./adminAuth";
 import { Request, Response, NextFunction } from "express"
 import { authRoutesConfig } from "../config/authRoutes.config";
@@ -9,8 +10,11 @@ export function conditionalAuth(req: Request, res: Response, next: NextFunction)
   const method = req.method.toUpperCase();
 
   const matchRoute = (routes: { path: string; methods: string[] }[]) =>
-    routes.some(route => path.startsWith(route.path) && route.methods.includes(method));
-
+  routes.some(route => {
+    const isMatch = match(route.path, { end: true })(path); match
+    return isMatch && route.methods.includes(method);
+  });
+  
   console.log("f")
   if (matchRoute(authRoutesConfig.user_optional)) {
   console.log("f1")

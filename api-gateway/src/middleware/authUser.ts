@@ -31,8 +31,7 @@ export const authUser = async (
     if (decoded.role !== "user" && decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
-    console.log("user auth middleware")
-    console.log("user auth middleware", decoded.id)
+
     req.headers["x-user-id"] = decoded.id;
 
     (req as any).user = decoded;
