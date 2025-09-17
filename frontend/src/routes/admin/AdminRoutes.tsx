@@ -2,6 +2,7 @@ import { lazy } from "react";
 import { Route, Navigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import { AdminAuthRouteGuard } from "./AdminAuthRouteGuard";
+import { AdminGuestRouteGuard } from "./AdminGuestRouteGuard";
 
 const Login = lazy(() => import("../../features/admin/pages/Login"));
 const Dashboard = lazy(() => import("../../features/admin/pages/Dashboard"));
@@ -14,7 +15,10 @@ const CategoryMangement = lazy(
 
 const AdminRoutes = (
   <>
-    <Route path="/admin/login" element={<Login />} />
+    <Route element={<AdminGuestRouteGuard />}>
+      <Route path="/admin/login" element={<Login />} />
+    </Route>
+
     <Route element={<AdminAuthRouteGuard />}>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
