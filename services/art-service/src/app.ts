@@ -1,4 +1,5 @@
 import express from "express";
+import { createErrorHandler } from "art-chain-shared";
 
 import artRouter from "./presentation/routes/art.routes";
 import { logger } from "./utils/logger";
@@ -15,5 +16,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/v1/art", artRouter);
+
+app.use(createErrorHandler(false))
 
 export default app;
