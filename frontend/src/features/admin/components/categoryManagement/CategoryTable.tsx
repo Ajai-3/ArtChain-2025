@@ -16,7 +16,6 @@ import {
   TableRow,
 } from "../../../../components/ui/table";
 
-
 interface CategoryTableProps {
   categories: Category[];
   isLoading?: boolean;
@@ -35,48 +34,20 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   onPageChange,
 }) => {
   const { mutate: updateCategory, isPending } = useUpdateCategory();
-
   const [open, setOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
-  const [formData, setFormData] = useState({
-    name: "",
-    count: 0,
-    status: "active" as "active" | "inactive",
-  });
-  const [originalData, setOriginalData] = useState(formData);
 
-  // Confirmation modal state for toggle
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [toggleCategory, setToggleCategory] = useState<Category | null>(null);
 
-  // Edit modal
   const handleEdit = (cat: Category) => {
     setSelectedCategory(cat);
-    const data = {
-      name: cat.name,
-      count: cat.count,
-      status: cat.status,
-    };
-    setFormData(data);
-    setOriginalData(data);
     setOpen(true);
   };
 
-  const getChangedFields = () => {
-    const changed: Partial<Category> = {};
-    if (!selectedCategory) return changed;
 
-    if (formData.name !== originalData.name) changed.name = formData.name;
-    if (formData.count !== originalData.count) changed.count = formData.count;
-    if (formData.status !== originalData.status)
-      changed.status = formData.status;
-
-    return changed;
-  };
-
-  // Toggle status
   const handleToggleClick = (cat: Category) => {
     setToggleCategory(cat);
     setConfirmOpen(true);
@@ -88,19 +59,15 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
       toggleCategory.status === "active" ? "inactive" : "active";
     updateCategory(
       { _id: toggleCategory._id, status: newStatus },
-      {
-        onSuccess: () => setConfirmOpen(false),
-      }
+      { onSuccess: () => setConfirmOpen(false) }
     );
   };
 
-  // Pagination logic
   const pageWindow = 5;
   let startPage = Math.max(1, page - Math.floor(pageWindow / 2));
   let endPage = Math.min(totalPages, startPage + pageWindow - 1);
-  if (endPage - startPage < pageWindow - 1) {
+  if (endPage - startPage < pageWindow - 1)
     startPage = Math.max(1, endPage - pageWindow + 1);
-  }
   const pages = Array.from(
     { length: endPage - startPage + 1 },
     (_, i) => startPage + i
@@ -177,7 +144,7 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
                       }
                       size="sm"
                       className={`w-20 ${
-                        cat.status === "active" ? "bg-red-600" : "gb"
+                        cat.status === "active" ? "bg-red-600" : ""
                       }`}
                       onClick={() => handleToggleClick(cat)}
                     >
@@ -191,7 +158,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
         </Table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
           <Button
@@ -239,22 +205,24 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
         </div>
       )}
 
-      {/* Edit Modal */}
-      <EditCategoryModal
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        category={selectedCategory}
-        onSave={(data) => {
-          if (!selectedCategory) return;
-          updateCategory(
-            { _id: selectedCategory._id, ...data },
-            { onSuccess: () => setOpen(false) }
-          );
-        }}
-        isSaving={isPending}
-      />
+      {selectedCategory && (
+        <EditCategoryModal
+          isOpen={open}
+          onClose={() => {
+            setOpen(false);
+            setSelectedCategory(null);
+          }}
+          category={selectedCategory}
+          onSave={(data) => {
+            if (!selectedCategory) return;
+            updateCategory(data,
+              { onSuccess: () => setOpen(false) }
+            );
+          }}
+          isSaving={isPending}
+        />
+      )}
 
-      {/* Confirm Toggle Modal */}
       {toggleCategory && (
         <ConfirmModal
           isOpen={confirmOpen}

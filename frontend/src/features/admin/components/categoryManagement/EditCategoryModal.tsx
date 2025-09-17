@@ -7,15 +7,19 @@ import { Switch } from "../../../../components/ui/switch";
 import CustomLoader from "../../../../components/CustomLoader";
 import type { Category } from "../../../../types/category/Category";
 import type { EditCategory } from "../../schema/editCategorySchema";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../../components/ui/dialog";
-
-
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../../../../components/ui/dialog";
 
 type EditCategoryModalProps = {
   isOpen: boolean;
   onClose: () => void;
   category: Category | null;
-  onSave: (data: EditCategory) => void;
+  onSave: (data: Partial<EditCategory> & { _id: string }) => void;
   isSaving?: boolean;
 };
 
@@ -26,13 +30,7 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
   onSave,
   isSaving = false,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-    setValue,
-  } = useForm<EditCategory>({
+  const { register, handleSubmit, watch, setValue } = useForm<EditCategory>({
     defaultValues: { name: "", count: 0, status: "active" },
   });
 
@@ -55,8 +53,21 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
     );
   }, [formValues, category]);
 
-  const submitHandler = (data: EditCategory) => {
-    onSave(data);
+  const getChangedFields = () => {
+    if (!category) return {};
+    const changed: Partial<EditCategory> = {};
+    if (formValues.name !== category.name) changed.name = formValues.name;
+    if (formValues.count !== category.count) changed.count = formValues.count;
+    if (formValues.status !== category.status)
+      changed.status = formValues.status;
+    return changed;
+  };
+
+  const submitHandler = () => {
+    if (!category) return;
+    const changedFields = getChangedFields();
+    if (Object.keys(changedFields).length === 0) return;
+    onSave({ _id: category._id, ...changedFields });
   };
 
   if (!category) return null;
@@ -69,33 +80,30 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
         </DialogHeader>
 
         <form className="space-y-5" onSubmit={handleSubmit(submitHandler)}>
-          {/* Name */}
           <div className="space-y-2">
             <Label>Name</Label>
             <Input {...register("name")} />
-            {errors.name && (
-              <p className="text-xs text-red-500">{errors.name.message}</p>
-            )}
           </div>
 
-          {/* Count */}
           <div className="space-y-2">
             <Label>Count</Label>
-            <Input type="number" {...register("count", { valueAsNumber: true })} />
-            {errors.count && (
-              <p className="text-xs text-red-500">{errors.count.message}</p>
-            )}
+            <Input
+              type="number"
+              {...register("count", { valueAsNumber: true })}
+            />
             <p className="text-xs text-muted-foreground">
-              ⚠️ This number represents how many artworks are linked to this category. Changing it manually may cause inconsistencies.
+              ⚠️ This number represents how many artworks are linked to this
+              category. Changing it manually may cause inconsistencies.
             </p>
           </div>
 
-          {/* Status */}
           <div className="flex items-center justify-between">
             <Label>Status</Label>
             <span
               className={`inline-block w-12 text-sm font-medium ${
-                formValues.status === "active" ? "text-green-600" : "text-rose-600"
+                formValues.status === "active"
+                  ? "text-green-600"
+                  : "text-rose-600"
               }`}
             >
               {formValues.status === "active" ? "Active" : "Inactive"}
@@ -108,7 +116,6 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
             />
           </div>
 
-          {/* Dates */}
           <div className="border-t pt-3 space-y-1 text-sm text-zinc-500">
             <div>
               <span className="font-medium text-zinc-700">Created At: </span>
@@ -116,21 +123,27 @@ const EditCategoryModal: React.FC<EditCategoryModalProps> = ({
                 ? new Date(category.createdAt).toLocaleString()
                 : "-"}
             </div>
-            {category.updatedAt && category.updatedAt !== category.createdAt && (
-              <div>
-                <span className="font-medium text-zinc-700">Last Updated: </span>
-                {new Date(category.updatedAt).toLocaleString()}
-              </div>
-            )}
+            {category.updatedAt &&
+              category.updatedAt !== category.createdAt && (
+                <div>
+                  <span className="font-medium text-zinc-700">
+                    Last Updated:{" "}
+                  </span>
+                  {new Date(category.updatedAt).toLocaleString()}
+                </div>
+              )}
           </div>
 
           <DialogFooter className="mt-5">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="green" disabled={!hasChanges || isSaving}>
-              {isSaving && <CustomLoader className="mr-2" />}
-              Save
+            <Button
+              type="submit"
+              variant="green"
+              disabled={!hasChanges || isSaving}
+            >
+              {isSaving && <CustomLoader className="mr-2" />} Save
             </Button>
           </DialogFooter>
         </form>
