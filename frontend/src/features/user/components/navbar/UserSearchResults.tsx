@@ -41,7 +41,7 @@ const UserSearchResults: React.FC<UserSearchResultsProps> = ({
             >
               <SearchUserCard
                 user={user}
-                onSelect={() => onSelectUser(user.id)}
+                onSelect={() => onSelectUser(user.username)}
               />
             </li>
           ))}

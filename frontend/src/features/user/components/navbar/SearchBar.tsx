@@ -21,10 +21,10 @@ const SearchBar: React.FC = () => {
 
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const handleSelectUser = (userId: string) => {
+  const handleSelectUser = (username: string) => {
     setQuery("");
     setIsFocused(false);
-    navigate(`/profile/${userId}`);
+    navigate(`/${username}`);
   };
 
   useEffect(() => {
