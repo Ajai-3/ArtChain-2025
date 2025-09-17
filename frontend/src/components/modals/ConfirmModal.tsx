@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
 import CustomLoader from "../CustomLoader";
 
 interface ConfirmModalProps {
@@ -25,34 +26,29 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   confirmVariant = "destructive",
   isLoading = false,
 }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-      <div className="bg-white dark:bg-secondary-color p-6 rounded-lg shadow-lg w-[90%] max-w-sm border border-zinc-800">
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-white mb-4">
-          {title}
-        </h2>
-        <p className="text-zinc-600 dark:text-zinc-300 mb-6">{description}</p>
-        <div className="flex justify-end gap-4">
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className="px-4 py-2"
-          >
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter className="flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>
             {cancelText}
           </Button>
           <Button
             onClick={onConfirm}
             variant={confirmVariant}
-            className="px-4 py-2 bg-red-600"
             disabled={isLoading}
+            className={confirmVariant === "destructive" ? "bg-red-600 hover:bg-red-700 text-white" : ""}
           >
-            {isLoading ?<CustomLoader /> : confirmText}
+            {isLoading ? <CustomLoader /> : confirmText}
           </Button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
