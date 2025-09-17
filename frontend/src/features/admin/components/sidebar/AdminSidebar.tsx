@@ -14,6 +14,7 @@ import { NavLink } from "react-router-dom";
 import Logo from "../../../../components/logo/Logo";
 import { useAdminLogoutMutation } from "../../hooks/auth/useAdminLogoutMutation";
 import ConfirmModal from "../../../../components/modals/ConfirmModal";
+import { ThemeToggle } from "../../../../components/ThemeToggle";
 
 const adminLinks = [
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -40,7 +41,7 @@ const AdminSideBar: React.FC = () => {
 
   return (
     <>
-      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-16 sm:w-64 flex flex-col bg-secondary-color flex-shrink-0 transition-width duration-300">
+      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-16 sm:w-64 flex flex-col bg-slate-100 dark:bg-secondary-color flex-shrink-0 transition-width duration-300">
         {/* Logo */}
         <div className="mb-4 hidden sm:flex p-2 border-b border-zinc-200 dark:border-zinc-800 justify-center sm:justify-start">
           <Logo />
@@ -66,6 +67,7 @@ const AdminSideBar: React.FC = () => {
           ))}
         </div>
 
+        <ThemeToggle />
         {/* Admin Controls */}
         <NavLink
           to="/admin/controls"
