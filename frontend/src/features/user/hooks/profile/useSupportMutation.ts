@@ -1,16 +1,23 @@
 import type { AxiosResponse } from "axios";
 import apiClient from "../../../../api/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+
+interface SupportPayload {
+  userId: string;
+  username: string;
+}
 
 export const useSupportMutation = () => {
   const queryClient = useQueryClient();
+  const user = useSelector((state: RootState) => state.user.user)
 
-  return useMutation<AxiosResponse<any>, Error, string>({
-    mutationFn: (userId: string) =>
+  return useMutation<AxiosResponse<any>, Error, SupportPayload>({
+    mutationFn: ({ userId }: { userId: string }) =>
       apiClient.post(`/api/v1/user/support/${userId}`),
-    onSuccess: (_, userId) => {
-        // Update the visited user profile.
-      queryClient.setQueryData(["userProfile", userId], (old: any) => {
+    onSuccess: (_, {username}) => {
+      queryClient.setQueryData(["userProfile", username], (old: any) => {
         if (!old) return old;
         return {
             ...old,
@@ -22,17 +29,17 @@ export const useSupportMutation = () => {
         }
       });
 
-      // Update current user profile ("me")
-      queryClient.setQueriesData({ queryKey: ["userProfile", "me"] }, (old: any) => {
+      queryClient.setQueryData(["userProfile", user?.username], (old: any) => {
         if (!old) return old;
         return {
-            ...old,
-            data: {
-                ...old.data,
-                supportingCount: old.data.supportingCount + 1
-            }
-        }
-      })
+          ...old,
+          data: {
+            ...old.data,
+            isSupporting: true,
+            supportingCount: old.data.supportingCount + 1,
+          },
+        };
+      });
     },
     onError: (error) => {
       console.error("Support failed:", error);
