@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 interface UpdateCategoryData {
   _id: string;
-  name: string;
+  name?: string;
   count?: number;
   status?: "active" | "inactive";
 }
@@ -14,7 +14,7 @@ export const useUpdateCategory = () => {
 
   return useMutation({
     mutationFn: async (data: UpdateCategoryData) => {
-      const res = await apiClient.patch("/api/v1/art/category/", data);
+      const res = await apiClient.patch(`/api/v1/art/category/${data._id}`, data);
       return res.data;
     },
     onSuccess: (data) => {
@@ -37,7 +37,7 @@ export const useUpdateCategory = () => {
       toast.success(data.message || "Category updated successfully");
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Failed to update category");
+      toast.error(err?.message || "Failed to update category");
     },
   });
 };

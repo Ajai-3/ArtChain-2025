@@ -1,7 +1,12 @@
-import React from "react";
 import { format } from "date-fns";
 import { Pencil } from "lucide-react";
+import React, { useState } from "react";
+import EditCategoryModal from "./EditCategoryModal";
 import { Button } from "../../../../components/ui/button";
+import type { Category } from "../../../../types/category/Category";
+import ConfirmModal from "../../../../components/modals/ConfirmModal";
+import CategoryTableSkeleton from "../skeletons/CategoryTableSkeleton";
+import { useUpdateCategory } from "../../hooks/category-management/useUpdateCategory";
 import {
   Table,
   TableBody,
@@ -10,8 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../components/ui/table";
-import CategoryTableSkeleton from "../skeletons/CategoryTableSkeleton";
-import type { Category } from "../../../../types/category/Category";
 
 
 interface CategoryTableProps {
@@ -31,7 +34,67 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
   totalPages,
   onPageChange,
 }) => {
+  const { mutate: updateCategory, isPending } = useUpdateCategory();
 
+  const [open, setOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [formData, setFormData] = useState({
+    name: "",
+    count: 0,
+    status: "active" as "active" | "inactive",
+  });
+  const [originalData, setOriginalData] = useState(formData);
+
+  // Confirmation modal state for toggle
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [toggleCategory, setToggleCategory] = useState<Category | null>(null);
+
+  // Edit modal
+  const handleEdit = (cat: Category) => {
+    setSelectedCategory(cat);
+    const data = {
+      name: cat.name,
+      count: cat.count,
+      status: cat.status,
+    };
+    setFormData(data);
+    setOriginalData(data);
+    setOpen(true);
+  };
+
+  const getChangedFields = () => {
+    const changed: Partial<Category> = {};
+    if (!selectedCategory) return changed;
+
+    if (formData.name !== originalData.name) changed.name = formData.name;
+    if (formData.count !== originalData.count) changed.count = formData.count;
+    if (formData.status !== originalData.status)
+      changed.status = formData.status;
+
+    return changed;
+  };
+
+  // Toggle status
+  const handleToggleClick = (cat: Category) => {
+    setToggleCategory(cat);
+    setConfirmOpen(true);
+  };
+
+  const handleConfirmToggle = () => {
+    if (!toggleCategory) return;
+    const newStatus =
+      toggleCategory.status === "active" ? "inactive" : "active";
+    updateCategory(
+      { _id: toggleCategory._id, status: newStatus },
+      {
+        onSuccess: () => setConfirmOpen(false),
+      }
+    );
+  };
+
+  // Pagination logic
   const pageWindow = 5;
   let startPage = Math.max(1, page - Math.floor(pageWindow / 2));
   let endPage = Math.min(totalPages, startPage + pageWindow - 1);
@@ -45,126 +108,174 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
 
   return (
     <>
-    <div className="overflow-x-auto rounded-lg border border-zinc-800">
-      <Table className="min-w-full border">
-        <TableHeader>
-          <TableRow className="bg-gray-50 dark:bg-zinc-900">
-            <TableHead>No</TableHead>
-            <TableHead>Id</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Use Count</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created At</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading ? <CategoryTableSkeleton /> : categories.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={7} className="text-center py-4 text-zinc-500">
-                No categories found
-              </TableCell>
+      <div className="overflow-x-auto rounded-lg border border-zinc-800">
+        <Table className="min-w-full border">
+          <TableHeader>
+            <TableRow className="bg-gray-50 dark:bg-zinc-900">
+              <TableHead>No</TableHead>
+              <TableHead>Id</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Use Count</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created At</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
-          ) : (
-            categories.map((cat, idx) => (
-              <TableRow key={cat._id}>
-                <TableCell>{(page - 1) * limit + idx + 1}</TableCell>
-                <TableCell>{cat._id}</TableCell>
-                <TableCell>{cat.name || "No category"}</TableCell>
-                <TableCell>{cat.count}</TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-block w-16 text-center py-[.2rem] rounded-full text-xs ${
-                      cat.status === "active" ? "bg-green-700/30 text-green-600" : "bg-rose-700/30 text-rose-600"
-                    }`}
-                  >
-                    {cat.status}
-                  </span>
-                </TableCell>
-                <TableCell className="px-4 py-2">
-                  {cat.createdAt ? (
-                    <>
-                      <div>
-                        {format(new Date(cat.createdAt), "MMMM d, yyyy")}
-                      </div>
-                      <div>{format(new Date(cat.createdAt), "hh:mm a")}</div>
-                    </>
-                  ) : (
-                    "-"
-                  )}
-                </TableCell>
-                <TableCell className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Pencil />
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="bg-red-600"
-                  >
-                    Block
-                  </Button>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <CategoryTableSkeleton />
+            ) : categories.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="text-center py-4 text-zinc-500"
+                >
+                  No categories found
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              categories.map((cat, idx) => (
+                <TableRow key={cat._id}>
+                  <TableCell>{(page - 1) * limit + idx + 1}</TableCell>
+                  <TableCell>{cat._id}</TableCell>
+                  <TableCell>{cat.name || "No category"}</TableCell>
+                  <TableCell>{cat.count}</TableCell>
+                  <TableCell>
+                    <span
+                      className={`inline-block w-16 text-center py-[.2rem] rounded-full text-xs ${
+                        cat.status === "active"
+                          ? "bg-green-700/30 text-green-600"
+                          : "bg-rose-700/30 text-rose-600"
+                      }`}
+                    >
+                      {cat.status}
+                    </span>
+                  </TableCell>
+                  <TableCell className="px-4 py-2">
+                    {cat.createdAt ? (
+                      <>
+                        <div>
+                          {format(new Date(cat.createdAt), "MMMM d, yyyy")}
+                        </div>
+                        <div>{format(new Date(cat.createdAt), "hh:mm a")}</div>
+                      </>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  <TableCell className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleEdit(cat)}
+                    >
+                      <Pencil />
+                    </Button>
+                    <Button
+                      variant={
+                        cat.status === "active" ? "destructive" : "green"
+                      }
+                      size="sm"
+                      className={`w-20 ${
+                        cat.status === "active" ? "bg-red-600" : "gb"
+                      }`}
+                      onClick={() => handleToggleClick(cat)}
+                    >
+                      {cat.status === "active" ? "Deactivate" : "Activate"}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
-      
-    </div>
-    {totalPages > 1 && (
+      {/* Pagination */}
+      {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
           <Button
-            size="sm"
             variant="outline"
+            size="sm"
             disabled={page === 1}
             onClick={() => onPageChange(1)}
           >
             First
           </Button>
           <Button
-            size="sm"
             variant="outline"
+            size="sm"
             disabled={page === 1}
             onClick={() => onPageChange(page - 1)}
           >
             Prev
           </Button>
-
-          {startPage > 1 && <span className="px-2">...</span>}
-
           {pages.map((p) => (
             <Button
               key={p}
+              variant={page === p ? "default" : "outline"}
               size="sm"
-              variant={p === page ? "default" : "outline"}
               onClick={() => onPageChange(p)}
             >
               {p}
             </Button>
           ))}
-
-          {endPage < totalPages && <span className="px-2">...</span>}
-
           <Button
-            size="sm"
             variant="outline"
+            size="sm"
             disabled={page === totalPages}
             onClick={() => onPageChange(page + 1)}
           >
             Next
           </Button>
           <Button
-            size="sm"
             variant="outline"
+            size="sm"
             disabled={page === totalPages}
             onClick={() => onPageChange(totalPages)}
           >
             Last
           </Button>
         </div>
-      )} </>
+      )}
+
+      {/* Edit Modal */}
+      <EditCategoryModal
+        isOpen={open}
+        onClose={() => setOpen(false)}
+        category={selectedCategory}
+        onSave={(data) => {
+          if (!selectedCategory) return;
+          updateCategory(
+            { _id: selectedCategory._id, ...data },
+            { onSuccess: () => setOpen(false) }
+          );
+        }}
+        isSaving={isPending}
+      />
+
+      {/* Confirm Toggle Modal */}
+      {toggleCategory && (
+        <ConfirmModal
+          isOpen={confirmOpen}
+          onClose={() => setConfirmOpen(false)}
+          onConfirm={handleConfirmToggle}
+          title={
+            toggleCategory.status === "active"
+              ? "Deactivate Category?"
+              : "Activate Category?"
+          }
+          description={
+            toggleCategory.status === "active"
+              ? "Deactivating this category will hide its artworks from users and it cannot be selected as an artwork category."
+              : "Activating this category will make it visible to users and selectable for artworks."
+          }
+          confirmText={
+            toggleCategory.status === "active" ? "Deactivate" : "Activate"
+          }
+        />
+      )}
+    </>
   );
 };
 
