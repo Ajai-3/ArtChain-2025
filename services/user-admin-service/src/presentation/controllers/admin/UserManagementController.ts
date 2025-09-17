@@ -30,17 +30,17 @@ export class UserManageMentController implements IUserManageMentController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const search = (req.query.search as string)?.trim();
+      const role = req.query.role as string;
+      const status = req.query.status as string;
+      const plan = req.query.plan as string;
 
       let userIds: string[] | undefined;
 
       if (search) {
         const response = await axios.get(
           `http://elastic-search-service:4004/api/v1/elastic-user/admin/search`,
-          {
-            params: { q: search },
-          }
+          { params: { q: search } }
         );
-
         userIds = response.data.userIds;
       }
 
@@ -49,6 +49,9 @@ export class UserManageMentController implements IUserManageMentController {
         limit,
         search,
         userIds,
+        role,
+        status,
+        plan,
       });
 
       res.status(HttpStatus.OK).json({
@@ -109,11 +112,13 @@ export class UserManageMentController implements IUserManageMentController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      const dto: GetAllUsersQueryDTO = {page, limit}
-      const result = await this._getAllArtistRequestsUseCase.execute(dto)
+      const dto: GetAllUsersQueryDTO = { page, limit };
+      const result = await this._getAllArtistRequestsUseCase.execute(dto);
 
       logger.info(`Artist request fetched.`);
-      return res.status(HttpStatus.OK).json({ message: ARTIST_MESSAGES.ARTISRT_REQUEST_FETCHED , result })
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: ARTIST_MESSAGES.ARTISRT_REQUEST_FETCHED, result });
     } catch (error) {
       logger.error(`Error getting all artist request ${error}`);
       next(error);

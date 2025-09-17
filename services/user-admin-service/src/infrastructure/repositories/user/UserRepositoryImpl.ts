@@ -37,31 +37,39 @@ export class UserRepositoryImpl
   async findByIdRaw(id: string): Promise<User | null> {
     return this.model.findUnique({ where: { id } });
   }
-
   async findAllUsers({
     page,
     limit,
+    role,
+    status,
+    plan,
   }: {
     page: number;
     limit: number;
+    role?: string;
+    status?: string;
+    plan?: string;
   }): Promise<{
     meta: { page: number; limit: number; total: number };
     data: SafeUser[];
   }> {
-    const skip = (page - 1) * limit;
-
-    const where = {
+    const where: any = {
       role: { in: [Role.user, Role.artist] },
     };
 
-    const [total, users] = await Promise.all([
-      this.model.count({ where }),
+    if (role && role !== "all") where.role = role;
+    if (status && status !== "all") where.status = status;
+    if (plan && plan !== "all") where.plan = plan;
+
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await Promise.all([
       this.model.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
       }),
+      this.model.count({ where }),
     ]);
 
     const sanitizedUsers: SafeUser[] = users.map(
@@ -77,26 +85,31 @@ export class UserRepositoryImpl
   async findManyByIds(
     ids: string[],
     page: number,
-    limit: number
+    limit: number,
+    filters?: { role?: string; status?: string; plan?: string }
   ): Promise<{
     meta: { page: number; limit: number; total: number };
     data: SafeUser[];
   }> {
-    const skip = (page - 1) * limit;
-
-    const where = {
+    const where: any = {
       id: { in: ids },
       role: { in: [Role.user, Role.artist] },
     };
 
-    const [total, users] = await Promise.all([
-      this.model.count({ where }),
+    if (filters?.role && filters.role !== "all") where.role = filters.role;
+    if (filters?.status && filters.status !== "all")
+      where.status = filters.status;
+    if (filters?.plan && filters.plan !== "all") where.plan = filters.plan;
+
+    const skip = (page - 1) * limit;
+
+    const [users, total] = await Promise.all([
       this.model.findMany({
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
       }),
+      this.model.count({ where }),
     ]);
 
     const sanitizedUsers: SafeUser[] = users.map(
@@ -131,5 +144,4 @@ export class UserRepositoryImpl
 
     return users as ArtUser[];
   }
-
 }
