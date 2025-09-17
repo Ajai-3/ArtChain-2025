@@ -19,6 +19,7 @@ export class ArtPostRepositoryImpl
 
   async getAllArt(page = 1, limit = 10): Promise<any[]> {
     const arts = await ArtPostModel.find()
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();

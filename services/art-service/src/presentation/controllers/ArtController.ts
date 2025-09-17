@@ -5,7 +5,7 @@ import { ART_MESSAGES } from "../../constants/ArtMessages";
 import { IArtController } from "../interface/IArtController";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { createArtPostSchema } from "../validators/artPost.schema";
-import { CreateArtPostDTO } from "../../domain/dto/CreateArtPostDTO";
+import { CreateArtPostDTO } from "../../domain/dto/art/CreateArtPostDTO";
 import { CreateArtPostUseCase } from "../../application/usecase/art/CreateArtPostUseCase";
 import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCase";
 import { UserService } from "../../infrastructure/service/UserService";
@@ -34,9 +34,12 @@ export class ArtController implements IArtController {
   ): Promise<Response | void> => {
     try {
       const { artname } = req.params;
-       const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers["x-user-id"] as string;
 
-      const data = await this._getArtByNameUseCase.execute(artname, currentUserId);
+      const data = await this._getArtByNameUseCase.execute(
+        artname,
+        currentUserId
+      );
 
       logger.info(`${data.art.artName} fetched succefully.`);
       return res
