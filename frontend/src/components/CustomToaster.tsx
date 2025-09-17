@@ -6,22 +6,20 @@ const CustomToaster: React.FC = () => {
     <Toaster
       position="top-center"
       toastOptions={{
-        style: {
-          background: "#1f2937", // gray-800
-          color: "#f9fafb",     // gray-50
-          fontSize: "14px",
-          borderRadius: "8px",
-        },
+        className:
+          "rounded-lg text-sm border shadow-lg " +
+          "bg-zinc-100 text-zinc-900 border-zinc-200 " +
+          "dark:bg-zinc-900 dark:text-zinc-100 dark:border-zinc-700",
         success: {
           iconTheme: {
-            primary: "#10b981",  // green-500
-            secondary: "#d1fae5", // green-100
+            primary: "#10b981", // green-500
+            secondary: "#064e3b", // dark green
           },
         },
         error: {
           iconTheme: {
-            primary: "#ef4444",  // red-500
-            secondary: "#fee2e2", // red-100
+            primary: "#ef4444", // red-500
+            secondary: "#7f1d1d", // dark red
           },
         },
       }}
