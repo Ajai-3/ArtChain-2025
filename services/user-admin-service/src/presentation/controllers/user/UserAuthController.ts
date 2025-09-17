@@ -303,7 +303,6 @@ export class UserAuthController implements IUserAuthController {
     }
   };
 
-
   //#=================================================================================================================
   //# REFRESH USER ACCESS TOKEN
   //#=================================================================================================================
@@ -317,7 +316,8 @@ export class UserAuthController implements IUserAuthController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const refreshToken = req.cookies.userRefreshToken;
+      const refreshToken =
+        req.cookies.adminRefreshToken || req.cookies.userRefreshToken;
 
       const { accessToken } = await this._refreshTokenUserUseCase.execute(
         refreshToken
