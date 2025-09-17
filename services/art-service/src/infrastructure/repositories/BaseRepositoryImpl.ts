@@ -25,6 +25,7 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
   async getAll(page = 1, limit = 10): Promise<T[]> {
     const docs = await this.model
       .find()
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();

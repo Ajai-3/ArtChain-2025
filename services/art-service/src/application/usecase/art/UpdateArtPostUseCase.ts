@@ -1,4 +1,4 @@
-import { UpdateArtPostDTO } from "../../../domain/dto/UpdateArtPostDTO";
+import { UpdateArtPostDTO } from "../../../domain/dto/art/UpdateArtPostDTO";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { IUpdateArtPostUseCase } from "../../../domain/usecase/art/IUpdateArtPostUseCase";
 

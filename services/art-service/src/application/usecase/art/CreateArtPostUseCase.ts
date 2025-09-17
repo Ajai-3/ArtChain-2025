@@ -1,5 +1,5 @@
 import { ArtPost } from "../../../domain/entities/ArtPost";
-import { CreateArtPostDTO } from "../../../domain/dto/CreateArtPostDTO";
+import { CreateArtPostDTO } from "../../../domain/dto/art/CreateArtPostDTO";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ICreateArtPostUseCase } from "../../../domain/usecase/art/ICreateArtPostUseCase";
 

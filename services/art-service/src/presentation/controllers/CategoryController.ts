@@ -1,9 +1,20 @@
-import { Request, Response, NextFunction } from "express";
-import { ICategoryController } from "../interface/ICategoryController";
 import { logger } from "../../utils/logger";
+import { Request, Response, NextFunction } from "express";
+import { CreateCategoryUseCase } from "../../application/usecase/category/CreateCategoryUseCase";
+import { ICategoryController } from "../interface/ICategoryController";
+import { HttpStatus } from "art-chain-shared";
+import { CATEGORY_MESSAGES } from "../../constants/categoryMessages";
+import { EditCategoryDTO } from "../../domain/dto/category/EditCategoryDTO";
+import { EditCategoryUseCase } from "../../application/usecase/category/EditCategoryUseCase";
+import { GetAllCategoryUseCase } from "../../application/usecase/category/GetAllCategoryUseCase";
 
 export class CategoryController implements ICategoryController {
-    
+  constructor(
+    private readonly _getAllCategoryUseCase: GetAllCategoryUseCase,
+    private readonly _createCategoryUseCase: CreateCategoryUseCase,
+    private readonly _editCategoryUseCase: EditCategoryUseCase
+  ) {}
+
   //# ================================================================================================================
   //# GET CATEGORIES
   //# ================================================================================================================
@@ -17,9 +28,28 @@ export class CategoryController implements ICategoryController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
+      const status = req.query.status as string | undefined;
+      const countFilter = req.query.count
+        ? parseInt(req.query.count as string)
+        : undefined;
+
+      const  {data, total} = await this._getAllCategoryUseCase.execute(
+        page,
+        limit,
+        search,
+        status,
+        countFilter
+      );
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS,  data, total });
     } catch (error) {
-        logger.error("Error in getting categories", error)
-        next(error)
+      logger.error("Error in getting categories", error);
+      next(error);
     }
   };
 
@@ -36,9 +66,16 @@ export class CategoryController implements ICategoryController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
+      const { name } = req.body;
+
+      const category = await this._createCategoryUseCase.execute(name);
+
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: CATEGORY_MESSAGES.CREATE_SUCCESS, category });
     } catch (error) {
-        logger.error("Error in creating category", error)
-        next(error)
+      logger.error("Error in creating category", error);
+      next(error);
     }
   };
 
@@ -55,28 +92,17 @@ export class CategoryController implements ICategoryController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-    } catch (error) {
-        logger.error("Error in editing category", error)
-        next(error)
-    }
-  };
+      const { id, name, count, status } = req.body;
 
-  //# ================================================================================================================
-  //# TOGGLE CATEGORY STATUS
-  //# ================================================================================================================
-  //# Endpoint: PATCH /api/v1/art/category-toggle
-  //# Request body: { status }
-  //# This controller Toggles the status of a category between active and inactive.
-  //# ================================================================================================================
-  toggleCategory = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
+      const dto: EditCategoryDTO = { id, name, count, status };
+      const category = await this._editCategoryUseCase.execute(dto);
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: CATEGORY_MESSAGES.UPDATE_SUCCESS, category });
     } catch (error) {
-        logger.error("Error chaging the status of the category", error)
-        next(error)
+      logger.error("Error in editing category", error);
+      next(error);
     }
   };
 }
