@@ -8,7 +8,7 @@ import { useGetSupporters } from "../../hooks/profile/useGetSupporters";
 import { useGetSupporting } from "../../hooks/profile/useGetSupporting";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
-import { useRemoveSupporterMutation } from "../../hooks/profile/useRemoveSupporterMutation";
+import { useRemoveSupporter } from "../../hooks/profile/useRemoveSuppoter";
 import CustomLoader from "../../../../components/CustomLoader";
 
 interface SupportUserListProps {
@@ -59,21 +59,28 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
     [query]
   );
 
-  const removeSupporterMutation = useRemoveSupporterMutation(userId);
+  const removeSupporterMutation = useRemoveSupporter();
+
   const handleRemoveSupporter = (
     e: React.MouseEvent<HTMLButtonElement>,
-    supporterId: string
+    supporter: { id: string; username: string }
   ) => {
     e.stopPropagation();
-    removeSupporterMutation.mutate(supporterId, {
-      onSuccess: () => query.refetch(),
-    });
+    removeSupporterMutation.mutate(
+      { supporterId: supporter.id, supporterUsername: supporter.username },
+      {
+        onSuccess: () => query.refetch(),
+      }
+    );
   };
 
   const supportMutation = useSupportMutation();
   const unSupportMutation = useUnSupportMutation();
 
-  const handleSupportClick = (targetUser: { id: string; username: string }, isSupporting: boolean) => {
+  const handleSupportClick = (
+    targetUser: { id: string; username: string },
+    isSupporting: boolean
+  ) => {
     if (loadingUserId) return;
     setLoadingUserId(targetUser.id);
     console.log("Clicked user:", targetUser);
@@ -168,7 +175,12 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
             {isOwnProfile && type === "supporters" ? (
               <button
                 className="ml-auto px-4 py-[.4rem] rounded-lg bg-red-600 text-white text-sm flex items-center justify-center relative"
-                onClick={(e) => handleRemoveSupporter(e, user.id)}
+                onClick={(e) =>
+                  handleRemoveSupporter(e, {
+                    id: user.id,
+                    username: user.username,
+                  })
+                }
                 disabled={removeSupporterMutation.isPending}
               >
                 {/* Keep text invisible to preserve width */}
@@ -192,7 +204,10 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
                 size="support"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleSupportClick({id: user.id, username: user.username}, isSupporting);
+                  handleSupportClick(
+                    { id: user.id, username: user.username },
+                    isSupporting
+                  );
                 }}
                 disabled={loadingUserId === user.id}
                 className="relative flex items-center justify-center ml-auto"
