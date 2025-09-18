@@ -14,13 +14,13 @@ const ProfileSelectBar: React.FC = () => {
   ];
 
   return (
-    <div className="border-t border-b px-4 bg-white dark:bg-secondary-color border-gray-200 dark:border-gray-800 flex justify-start gap-4 items-center overflow-x-auto sticky top-0 z-100 no-scrollbar flex-shrink-0">
+    <div className="border-t border-b px-2 sm:px-4 bg-white dark:bg-secondary-color border-gray-200 dark:border-gray-800 flex justify-start gap-3 sm:gap-4 items-center overflow-x-auto sticky top-0 z-100 no-scrollbar flex-shrink-0">
       {tabs.map((tab) => (
         <NavLink
           key={tab.id}
           to={`${basePath}/${tab.id}`}
           className={({ isActive }) =>
-            `flex-shrink-0 px-4 py-3 font-medium text-sm ${
+            `flex-shrink-0 px-3 sm:px-4 py-3 font-medium text-sm ${
               isActive
                 ? "text-main-color font-semibold border-b-4 border-main-color"
                 : "text-gray-600 dark:text-gray-300"

@@ -26,17 +26,17 @@ apiClient.interceptors.request.use((config) => {
   const state = store.getState();
 
   let token: string | null = null;
-  let userId: string | null = null;
+  // let userId: string | null = null;
 
   if (state?.admin?.accessToken) {
     token = state.admin.accessToken;
   } else {
     token = state?.user?.accessToken ?? null;
-    userId = state?.user?.user?.id ?? null;
+    // userId = state?.user?.user?.id ?? null;
   }
 
   if (token) config.headers.Authorization = `Bearer ${token}`;
-  if (userId) config.headers["x-user-id"] = userId;
+  // if (userId) config.headers["x-user-id"] = userId;
 
   return config;
 });

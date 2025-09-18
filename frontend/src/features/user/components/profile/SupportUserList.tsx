@@ -229,7 +229,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
       )}
 
       {users.length === 0 && !query.isFetching && (
-        <li className="text-center p-2 text-gray-500 px-40">No users found</li>
+        <li className="text-center p-2 text-gray-500">No users found</li>
       )}
     </ul>
   );

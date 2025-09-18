@@ -9,6 +9,9 @@ import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
 import { useDeleteUserImage } from "../../hooks/profile/useDeleteUserImage";
 import { useUploadUserImage } from "../../hooks/profile/useUploadUserImage";
 import ImageCropper from "../settings/profileSettings/ImageCropper";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+import { useNavigate } from "react-router-dom";
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
@@ -17,9 +20,12 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   supportersCount,
   isSupporting,
 }) => {
+  const navigate = useNavigate();
   const [modalType, setModalType] = useState<
     "supporters" | "supporting" | null
   >(null);
+  const currentUser = useSelector((state: RootState) => state.user);
+
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -41,9 +47,29 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   // ======= Actions =======
   const handleSupportClick = () => {
     if (!user?.id) return;
-    console.log(user.id, user.username)
-    if (isSupporting) unSupportMutation.mutate({ userId: user.id, username: user.username });
+    if (!currentUser.user || !currentUser.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    if (isSupporting)
+      unSupportMutation.mutate({ userId: user.id, username: user.username });
     else supportMutation.mutate({ userId: user.id, username: user.username });
+  };
+
+  const handleSupportersModal = () => {
+    if (!currentUser.user || !currentUser.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    setModalType("supporters");
+  };
+
+  const handleSupportingModal = () => {
+    if (!currentUser.user || !currentUser.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    setModalType("supporting");
   };
 
   const handleViewImage = (imageUrl: string) => setZoomImage(imageUrl);
@@ -93,7 +119,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   return (
     <div className="relative">
       {/* Banner Section */}
-      <div className="py-10 sm:py-20 px-6 relative overflow-hidden">
+      <div className="py-10 sm:py-20 px-4 sm:px-6 relative overflow-hidden">
         {user?.bannerImage ? (
           <>
             <img
@@ -110,53 +136,54 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
           </div>
         )}
 
-      {/* Banner Actions */}
-<div className="absolute bottom-4 right-4 flex gap-3 z-20">
-  {user?.bannerImage && (
-    <div
-      title="View Banner"
-      className={iconButtonClasses}
-      onClick={() => handleViewImage(user.bannerImage!)}
-    >
-      <View className="w-6 h-6 text-white" />
-    </div>
-  )}
+        {/* Banner Actions */}
+        <div className="absolute right-4 flex gap-3 z-20 top-2 sm:top-auto sm:bottom-4">
+          {user?.bannerImage && (
+            <div
+              title="View Banner"
+              className={iconButtonClasses}
+              onClick={() => handleViewImage(user.bannerImage!)}
+            >
+              <View className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            </div>
+          )}
 
-  {isOwnProfile && (
-    <>
-      {user?.bannerImage ? (
-        <div
-          title="Delete Banner"
-          className={iconButtonClasses}
-          onClick={handleDeleteBannerImage}
-        >
-          <Trash2 className="w-6 h-6 text-red-400" />
+          {isOwnProfile && (
+            <>
+              {user?.bannerImage ? (
+                <div
+                  title="Delete Banner"
+                  className={iconButtonClasses}
+                  onClick={handleDeleteBannerImage}
+                >
+                  <Trash2 className="w-5 h-5 sm:w-6 sm:h-6 text-red-400" />
+                </div>
+              ) : (
+                <div
+                  title="Upload Banner"
+                  className={`flex items-center ${iconButtonClasses}`}
+                  onClick={() => handleUploadClick("bannerImage")}
+                >
+                  <Upload className="w-6 h-6 text-white" />
+                  <p className="ml-2 hidden md:block text-white text-md">
+                    Upload
+                  </p>
+                </div>
+              )}
+            </>
+          )}
         </div>
-      ) : (
-        <div
-          title="Upload Banner"
-          className={`flex items-center ${iconButtonClasses}`}
-          onClick={() => handleUploadClick("bannerImage")}
-        >
-          <Upload className="w-6 h-6 text-white" />
-          <p className="ml-2 hidden md:block text-white text-md">Upload</p>
-        </div>
-      )}
-    </>
-  )}
-</div>
-
 
         {/* Profile Image & Info */}
         <div className="relative z-10 flex items-center gap-6 sm:h-28">
           {/* Profile Image */}
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden relative group/profile">
+          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden relative group/profile aspect-square">
             {user?.profileImage ? (
               <>
                 <img
                   src={user.profileImage}
                   alt="Profile"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-full"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center gap-4 opacity-0 group-hover/profile:opacity-100 transition duration-300">
                   <div
@@ -205,11 +232,11 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             </div>
 
             <div className="flex gap-4 cursor-pointer">
-              <p onClick={() => setModalType("supporters")}>
+              <p onClick={handleSupportersModal}>
                 {supportersCount} supporters
               </p>
               <p>|</p>
-              <p onClick={() => setModalType("supporting")}>
+              <p onClick={handleSupportingModal}>
                 {supportingCount} supporting
               </p>
             </div>
@@ -278,7 +305,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
       {isCropperOpen && selectedFile && (
         <ImageCropper
           file={selectedFile}
-          aspect={uploadType === "profileImage" ? 1 : 21 / 4} 
+          aspect={uploadType === "profileImage" ? 1 : 21 / 4}
           cropShape={uploadType === "profileImage" ? "round" : "rect"}
           onSave={handleCropSave}
           onCancel={handleCropCancel}
