@@ -26,11 +26,14 @@ export const optionalAuthUser = async (
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
 
-    if (decoded.role !== "user" && decoded.role !== "artist" && decoded.role !== "admin") {
+    if (
+      decoded.role !== "user" &&
+      decoded.role !== "artist" &&
+      decoded.role !== "admin"
+    ) {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 
-    
     req.headers["x-user-id"] = decoded.id;
     (req as any).user = decoded;
 

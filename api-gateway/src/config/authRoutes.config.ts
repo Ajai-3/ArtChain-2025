@@ -14,11 +14,10 @@ export const authRoutesConfig = {
     { path: "/api/v1/user/deactivate", methods: ["POST"] },
 
     { path: "/api/v1/user/profile", methods: ["PATCH"] },
-
-    { path: "/api/v1/user/batch", methods: ["POST"] },
-
     { path: "/api/v1/user/:id/supporters", methods: ["GET"] },
     { path: "/api/v1/user/:id/supporting", methods: ["GET"] },
+
+    { path: "/api/v1/user/batch", methods: ["POST"] },
 
     { path: "/api/v1/notifications", methods: ["GET"] },
 
@@ -30,7 +29,7 @@ export const authRoutesConfig = {
   ],
 
   user_optional: [
-    { path: "/api/v1/user/profile/:username", methods: ["GET"] },
+    { path: "/api/v1/user/:username", methods: ["GET"] },
 
     { path: "/api/v1/art", methods: ["GET"] },
     { path: "/api/v1/art/comments", methods: ["GET"] },
