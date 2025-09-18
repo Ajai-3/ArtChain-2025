@@ -14,7 +14,11 @@ const ProfileSelectBar: React.FC = () => {
   ];
 
   return (
-    <div className="border-t border-b px-2 sm:px-4 bg-white dark:bg-secondary-color border-gray-200 dark:border-gray-800 flex justify-start gap-3 sm:gap-4 items-center overflow-x-auto sticky top-0 z-100 no-scrollbar flex-shrink-0">
+    <div
+      className="border-t border-b px-2 sm:px-4 bg-white dark:bg-secondary-color 
+                border-gray-200 dark:border-gray-800 flex justify-start gap-3 sm:gap-4 
+                items-center overflow-x-auto sticky top-0 z-20 no-scrollbar flex-shrink-0"
+    >
       {tabs.map((tab) => (
         <NavLink
           key={tab.id}

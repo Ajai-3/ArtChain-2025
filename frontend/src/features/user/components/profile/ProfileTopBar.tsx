@@ -127,7 +127,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
               alt="Banner"
               className="absolute inset-0 w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-black/30 dark:bg-black/10"></div>
+            <div className="absolute inset-0 bg-black/10 dark:bg-black/10"></div>
           </>
         ) : (
           <div className="absolute inset-0 bg-zinc-950">

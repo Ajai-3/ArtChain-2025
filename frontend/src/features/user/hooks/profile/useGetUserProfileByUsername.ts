@@ -7,7 +7,6 @@ export const useGetUserProfileByUsername = (username?: string) => {
     queryKey: ["userProfile", username],
     queryFn: async (): Promise<UserProfileApiResponse> => {
       const res = await apiClient.get(`/api/v1/user/profile/${username}`);
-      console.log("haii", res.data)
       return res.data;
     },
     enabled: true,

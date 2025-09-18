@@ -213,7 +213,7 @@ const ProfileSettings: React.FC = () => {
       {cropperOpen && selectedFile && (
         <ImageCropper
           file={selectedFile}
-          aspect={cropType === "banner" ? 21 / 4 : 4 / 3}
+          aspect={cropType === "banner" ? 21 / 4 : 6 / 2.75}
           cropShape="rect"
           onSave={handleCropSave}
           onCancel={handleCropCancel}
