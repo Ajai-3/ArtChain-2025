@@ -10,6 +10,7 @@ export interface IUserController {
   // Suppoters & Supporting 
   supportUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   unSupportUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  removeSupporter(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   getSupporters(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   getSupporing(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   getAllUserWithIds(req: Request, res: Response, next: NextFunction): Promise<Response | void>;

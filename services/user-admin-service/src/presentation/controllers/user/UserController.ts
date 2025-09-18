@@ -212,6 +212,35 @@ export class UserController implements IUserController {
   };
 
   //# ================================================================================================================
+  //# REMOVE THE SUPPORTER
+  //# ================================================================================================================
+  //# DELETE /api/v1/user/remove/:supporterId
+  //# Request headers: x-user-id
+  //# This controller helps to remove the supporter of current users suppoters.
+  //# ================================================================================================================
+  removeSupporter = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | any> => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      const currentUserId = req.params.supporterId;
+
+      console.log(userId, currentUserId);
+      const dto: SupportUnSupportRequestDto = { userId, currentUserId };
+
+      await this._unSupportUserUseCase.execute(dto);
+
+      return res.status(HttpStatus.OK).json({
+        message: USER_MESSAGES.SUPPORTER_REMOVED,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
   //# GET SUPPORTERS OF A USER
   //# ================================================================================================================
   //# GET /api/v1/user/:id/supporters
@@ -235,7 +264,7 @@ export class UserController implements IUserController {
         page,
         limit
       );
-     console.log(currentUserId)
+      console.log(currentUserId);
       if (userId === currentUserId) {
         supporters = supporters.filter((s) => s.id !== currentUserId);
       }

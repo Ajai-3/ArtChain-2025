@@ -11,15 +11,14 @@ export const USER_MESSAGES = {
 
   // Followers & Supporters
   USER_ID_REQUIRED: 'User ID is missing.',
-  SUPPORTER_ADDED: 'User is now supporting this account.',
-  SUPPORTER_REMOVED: 'User stopped supporting this account.',
   SUPPORTERS_FETCH_SUCCESS: 'List of supporters fetched successfully.',
   SUPPORTING_FETCH_SUCCESS: 'List of users you are supporting fetched successfully.',
   SUPPORTER_ALREADY_EXISTS: 'You are already supporting this user.',
   NO_SUPPORTERS_FOUND: 'No supporters found.',
   NO_SUPPORTING_FOUND: 'You are not supporting any users.',
-  SUPPORT_SUCCESS: 'Support action completed successfully.',
-  UNSUPPORT_SUCCESS: 'Unsupport action completed successfully.',
+  SUPPORTER_REMOVED: 'User remved the supporter.',
+  SUPPORT_SUCCESS: 'User is now supporting this account..',
+  UNSUPPORT_SUCCESS: 'User stopped supporting this account.',
 
   // Account & Status
   ACCOUNT_DEACTIVATED: 'Your account has been deactivated.',

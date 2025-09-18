@@ -12,6 +12,7 @@ router.patch("/profile", userController.updateProfile);
 
 router.post("/support/:userId", userController.supportUser);
 router.delete("/un-support/:userId", userController.unSupportUser);
+router.delete("/remove/:supporterId", userController.removeSupporter)
 
 router.post("/artist-request", artistRequestController.createArtistRequest);
 router.get(
