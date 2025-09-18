@@ -4,6 +4,7 @@ export const authRoutesConfig = {
 
     { path: "/api/v1/user/support/:userId", methods: ["POST"] },
     { path: "/api/v1/user/un-support/:userId", methods: ["DELETE"] },
+    { path: "/api/v1/user/remove/:supporterId", methods: ["DELETE"] },
 
     { path: "/api/v1/user/artist-request", methods: ["POST"] },
     { path: "/api/v1/user/artist-request/status", methods: ["GET"] },
