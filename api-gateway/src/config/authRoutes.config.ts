@@ -30,7 +30,7 @@ export const authRoutesConfig = {
   ],
 
   user_optional: [
-    { path: "/api/v1/user/:username", methods: ["GET"] },
+    { path: "/api/v1/user/profile/:username", methods: ["GET"] },
 
     { path: "/api/v1/art", methods: ["GET"] },
     { path: "/api/v1/art/comments", methods: ["GET"] },
