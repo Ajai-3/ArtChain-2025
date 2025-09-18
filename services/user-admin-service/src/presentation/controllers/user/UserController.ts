@@ -53,6 +53,8 @@ export class UserController implements IUserController {
       const { username } = req.params;
       const currentUserId = req.headers["x-user-id"] as string | undefined;
 
+      console.log(currentUserId)
+
       const dto: GetUserProfileRequestDto = { username, currentUserId };
       const result = await this._getUserProfileUseCase.execute(dto);
 
