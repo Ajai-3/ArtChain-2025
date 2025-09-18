@@ -118,14 +118,14 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
               autoFocus
-              maxLength={15}
+              maxLength={20}
             />
 
             <div className="flex justify-between text-sm text-zinc-400 mt-1">
               {validationError && (
                 <p className="text-red-600 ml-1">{validationError}</p>
               )}
-              <span>{categoryName.trim().length}/15</span>
+              <span>{categoryName.trim().length}/20</span>
             </div>
           </div>
 
