@@ -14,11 +14,11 @@ export class SupporterRepositoryImpl
     supportingCount: number;
   }> {
     const supportersCount = await this.model.count({
-      where: { targetUserId: userId },
+      where: { targetUserId: userId , supporterId: { not: userId }, },
     });
 
     const supportingCount = await this.model.count({
-      where: { supporterId: userId },
+      where: { supporterId: userId, targetUserId: { not: userId },  },
     });
 
     return { supportersCount, supportingCount };

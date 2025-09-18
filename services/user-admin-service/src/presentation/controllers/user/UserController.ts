@@ -225,15 +225,22 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.id;
+      const currentUserId = req.headers["x-user-id"] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
       logger.debug(`Get supporing user userId: ${userId}`);
-      const supporters = await this._getSupportersUseCase.execute(
+      let supporters = await this._getSupportersUseCase.execute(
         userId,
         page,
         limit
       );
+     console.log(currentUserId)
+      if (userId === currentUserId) {
+        supporters = supporters.filter((s) => s.id !== currentUserId);
+      }
+
+      logger.info(`Suppoters fetched ${JSON.stringify(supporters)}`);
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORTERS_FETCH_SUCCESS,
         data: supporters,
@@ -257,17 +264,22 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.id;
+      const currentUserId = req.headers["x-user-id"] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
       logger.debug(`Get supporing user userId: ${userId}`);
 
-      logger.info(`Sucess mesage`);
-      const supporters = await this._getSupportingUseCase.execute(
+      let supporters = await this._getSupportingUseCase.execute(
         userId,
         page,
         limit
       );
+
+      if (userId === currentUserId) {
+        supporters = supporters.filter((s) => s.id !== currentUserId);
+      }
+
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORTING_FETCH_SUCCESS,
         data: supporters,
