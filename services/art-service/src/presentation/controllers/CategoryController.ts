@@ -24,36 +24,36 @@ export class CategoryController implements ICategoryController {
   //# Query params: page, limit, search, status filter, and count filter
   //# This controller Fetches categories with pagination and optional status filter.
   //# ================================================================================================================
-  getCategory = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const search = req.query.search as string | undefined;
-      const status = req.query.status as string | undefined;
-      const countFilter = req.query.count
-        ? parseInt(req.query.count as string)
-        : undefined;
+    getCategory = async (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ): Promise<Response | void> => {
+      try {
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const search = req.query.search as string | undefined;
+        const status = req.query.status as string | undefined;
+        const countFilter = req.query.count
+          ? parseInt(req.query.count as string)
+          : undefined;
 
-      const  {data, total} = await this._getAllCategoryUseCase.execute(
-        page,
-        limit,
-        search,
-        status,
-        countFilter
-      );
+        const  {data, total} = await this._getAllCategoryUseCase.execute(
+          page,
+          limit,
+          search,
+          status,
+          countFilter
+        );
 
-      return res
-        .status(HttpStatus.OK)
-        .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS,  data, total });
-    } catch (error) {
-      logger.error("Error in getting categories", error);
-      next(error);
-    }
-  };
+        return res
+          .status(HttpStatus.OK)
+          .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS,  data, total });
+      } catch (error) {
+        logger.error("Error in getting categories", error);
+        next(error);
+      }
+    };
 
   //# ================================================================================================================
   //# CREATE CATEGORY

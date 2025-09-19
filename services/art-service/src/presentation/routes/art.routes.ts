@@ -13,7 +13,7 @@ router.patch("/category/:id", categoryController.editCategory)
 // Art
 router.get("/", artController.getAllArt);
 router.post("/", artController.createArt);
-router.get("/:artname", artController.getArtByArtName);
+router.get("/by-name/:artname", artController.getArtByArtName);
 
 
 

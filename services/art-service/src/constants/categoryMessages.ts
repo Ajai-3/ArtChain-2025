@@ -10,4 +10,6 @@ export enum CATEGORY_MESSAGES {
   TOGGLE_SUCCESS = "Category status updated successfully",
   TOGGLE_FAIL = "Failed to update category status",
   DUPLICATE_NAME = "Category with this name already exists",
+  NOT_FOUND = "Category not found",
+  INVALID_CATEGORY = "Category is invalid"
 }

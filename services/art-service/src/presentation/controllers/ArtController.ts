@@ -11,13 +11,16 @@ import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCa
 import { UserService } from "../../infrastructure/service/UserService";
 import { GetAllArtUseCase } from "../../application/usecase/art/GetAllArtUseCase";
 import { GetArtByNameUseCase } from "../../application/usecase/art/GetArtByNameUseCase";
+import { publishNotification } from "../../infrastructure/rabbit/rabbit";
+import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToElasticSearchUseCase";
 
 export class ArtController implements IArtController {
   constructor(
     private readonly _createArtUseCase: CreateArtPostUseCase,
     private readonly _getArtByIdUseCase: GetArtByIdUseCase,
     private readonly _getAllArtUseCase: GetAllArtUseCase,
-    private readonly _getArtByNameUseCase: GetArtByNameUseCase
+    private readonly _getArtByNameUseCase: GetArtByNameUseCase,
+    private readonly _artToElasticSearchUseCase: ArtToElasticSearchUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -151,15 +154,17 @@ export class ArtController implements IArtController {
           .json({ message: "Missing x-user-id header" });
       }
 
-      console.log("dfsdfsdf", req.body);
-
       const validatedData = validateWithZod(createArtPostSchema, req.body);
 
       const dto: CreateArtPostDTO = { ...validatedData, userId };
       const createdArt = await this._createArtUseCase.execute(dto);
 
+      const art = await this._artToElasticSearchUseCase.execute(createdArt)
+
+      await publishNotification("art.created", art)
+
       logger.info(
-        `Art created successfully by userId=${userId}, title=${dto.title}`
+        `Art created successfully by userId=${userId}, title=${JSON.stringify(createdArt)}`
       );
 
       return res

@@ -2,6 +2,7 @@ import { IArtPostRepository } from "../../../domain/repositories/IArtPostReposit
 import { ArtPost } from "../../../domain/entities/ArtPost";
 import { IGetAllArtUseCase } from "../../../domain/usecase/art/IGetAllArtUseCase";
 import { UserService } from "../../../infrastructure/service/UserService";
+import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
 
 export class GetAllArtUseCase implements IGetAllArtUseCase {
   constructor(private readonly _artRepo: IArtPostRepository) {}
@@ -26,9 +27,9 @@ export class GetAllArtUseCase implements IGetAllArtUseCase {
 
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
-    return arts.map((art: ArtPost) => ({
-      art,
-      user: userMap.get(art.userId) || null,
-    }));
+    return arts.map((art: ArtPost) => {
+      const userData = userMap.get(art.userId) || null;
+      return toArtWithUserResponse(art, userData);
+    });
   }
 }
