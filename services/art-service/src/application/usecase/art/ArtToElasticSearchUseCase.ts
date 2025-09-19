@@ -7,6 +7,7 @@ async execute(art: any): Promise<any> {
       artname: art.artname,
       title: art.title,
       imageUrl: art.watermarkedUrl,
+      hashtags: art.hashtags,
       createAt: art.createdAt
     };
 
