@@ -17,6 +17,8 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.16.2",
+    "art-chain-shared": "^1.0.22",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.2",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@types/cookie-parser": "^1.4.9",
     "@types/express": "^5.0.3",
     "@types/node": "^24.5.2",
     "@typescript-eslint/eslint-plugin": "^8.44.0",

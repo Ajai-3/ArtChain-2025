@@ -11,6 +11,8 @@ model Wallet {
   id        String       @id @default(uuid())
   userId    String       @unique
   balance   Float        @default(0)
+  lockedAmount    Float        @default(0)
+  status    WalletStatus @default(active)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   transactions Transaction[]
@@ -19,7 +21,7 @@ model Wallet {
 model Transaction {
   id          String    @id @default(uuid())
   walletId    String
-  type        TransactionType    // "credit" or "debit"
+  type        TransactionType    // "credited" or "debited"
   amount      Float
   method      Method
   description String?
@@ -28,6 +30,11 @@ model Transaction {
   wallet Wallet @relation(fields: [walletId], references: [id])
 }
 
+enum WalletStatus {
+  active      
+  locked   
+  suspended
+}
 enum TransactionType {
   credited
   debited
@@ -37,3 +44,5 @@ enum Method {
   strpe
   razorpay
 }
+
+
