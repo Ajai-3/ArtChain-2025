@@ -21,11 +21,13 @@ export const authRoutesConfig = {
     { path: "/api/v1/user/batch", methods: ["POST"] },
 
     { path: "/api/v1/notifications", methods: ["GET"] },
+    { path: "/api/v1/notifications/mark-all-read", methods: ["PATCH"] },
 
     { path: "/api/v1/art", methods: ["POST", "PATCH", "DELETE"] },
     { path: "/api/v1/art/comment", methods: ["POST", "PATCH", "DELETE"] },
 
     { path: "/api/v1/upload", methods: ["POST", "PATCH"] },
+    { path: "/api/v1/upload/art", methods: ["POST", "PATCH"] },
     { path: "/api/v1/upload/delete", methods: ["POST"] },
   ],
 

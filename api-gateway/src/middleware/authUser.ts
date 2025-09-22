@@ -27,7 +27,7 @@ export const authUser = async (
     if (!decoded || typeof decoded !== "object" || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
-
+    
     if (decoded.role !== "user" && decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
