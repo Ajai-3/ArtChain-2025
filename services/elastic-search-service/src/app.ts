@@ -1,5 +1,5 @@
 import express from "express";
-import elasticUserRoutes from "./routes/userElastic.routes";
+import elasticSearchRoutes from "./routes/userElastic.routes";
 import { errorHandler } from "./middleware/errorHandler.middleware";
 import { logger } from "./utils/logger";
 
@@ -12,7 +12,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/v1/elastic-user", elasticUserRoutes);
+app.use("/api/v1/elastic", elasticSearchRoutes);
 
 app.use(errorHandler);
 
