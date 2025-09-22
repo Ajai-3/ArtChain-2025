@@ -163,6 +163,8 @@ export class ArtController implements IArtController {
 
       await publishNotification("art.created", art)
 
+      console.log("haii", art)
+
       logger.info(
         `Art created successfully by userId=${userId}, title=${JSON.stringify(createdArt)}`
       );
