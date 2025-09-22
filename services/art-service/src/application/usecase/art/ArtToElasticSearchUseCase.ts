@@ -4,11 +4,11 @@ export class ArtToElasticSearchUseCase {
 async execute(art: any): Promise<any> {
     const elasticArt = {
       id: art._id,
-      artname: art.artname,
+      artname: art.artName,
       title: art.title,
       imageUrl: art.watermarkedUrl,
       hashtags: art.hashtags,
-      createAt: art.createdAt
+      createdAt: art.createdAt
     };
 
     logger.debug(elasticArt);
