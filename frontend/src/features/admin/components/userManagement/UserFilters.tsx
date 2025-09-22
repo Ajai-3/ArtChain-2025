@@ -45,7 +45,6 @@ const UserFilters: React.FC<UserFiltersProps> = ({
     format: string;
   }) => {
     console.log("Exporting USERS:", startDate, endDate, format);
-    // call your API here
   };
 
   return (

@@ -7,32 +7,29 @@ export interface ArtUser {
   name: string;
   email: string;
   profileImage?: string;
-  plan?: 'free' | 'pro' | 'pro_plus';
-  role?: 'admin' | 'user' | 'artist';
-  status?: 'active' | 'banned' | 'suspended' | 'deleted';
+  plan?: "free" | "pro" | "pro_plus";
+  role?: "admin" | "user" | "artist";
+  status?: "active" | "banned" | "suspended" | "deleted";
 }
 
 export interface ArtPostResponseDTO {
-  _id: string;
+  id: string; 
   userId: string;
   title: string;
   description: string;
   artType: string;
   hashtags: string[];
   artName: string;
-  previewUrl: string;
-  originalUrl: string;
-  watermarkedUrl: string;
+  imageUrl: string;
   aspectRatio: string;
   isForSale: boolean;
   priceType?: "artcoin" | "fiat";
   artcoins?: number;
   fiatPrice?: number;
   postType: "original" | "repost" | "purchased";
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
-
 
 export interface ArtWithUser {
   art: ArtPostResponseDTO;
@@ -45,6 +42,7 @@ export interface PaginatedResponse {
   limit: number;
   data: ArtWithUser[];
 }
+
 
 export const useGetAllArt = () => {
   return useInfiniteQuery<PaginatedResponse, Error>({

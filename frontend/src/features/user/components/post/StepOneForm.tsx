@@ -9,11 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../components/ui/select";
-import ART_TYPES from "../../../../constants/artTypesConstants";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { User } from "lucide-react";
-
+import { useFetchArtCategories, type ArtCategory } from "../../hooks/art/useFetchArtCategories";
 interface StepOneFormProps {
   title: string;
   setTitle: (val: string) => void;
@@ -40,6 +39,8 @@ const StepOneForm: React.FC<StepOneFormProps> = ({
   validateField,
 }) => {
   const user = useSelector((state: RootState) => state.user.user);
+  const { data: categories, isLoading, error } = useFetchArtCategories();
+
   return (
     <div className="space-y-6">
       <div className="flex gap-4 items-center">
@@ -117,16 +118,32 @@ const StepOneForm: React.FC<StepOneFormProps> = ({
           value={artType}
         >
           <SelectTrigger variant="green-focus" className="w-full">
-            <SelectValue placeholder="Select art type" />
+            <SelectValue
+              placeholder={
+                isLoading ? "Loading categories..." : "Select art type"
+              }
+            />
           </SelectTrigger>
+
           <SelectContent>
-            {ART_TYPES.map((type, i) => (
-              <SelectItem key={i} value={type}>
-                {type}
+            {isLoading && (
+              <SelectItem value="loading" disabled>
+                Loading...
+              </SelectItem>
+            )}
+            {error && (
+              <SelectItem value="error" disabled>
+                Failed to load
+              </SelectItem>
+            )}
+            {categories?.data.map((cat: ArtCategory) => (
+              <SelectItem key={cat._id} value={cat._id}>
+                {cat.name}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+
         {errors.artType && (
           <p className="text-red-500 text-sm mt-1">{errors.artType}</p>
         )}

@@ -3,7 +3,7 @@ import apiClient from "../../../../api/axios";
 
 // ------------------ Types ------------------
 export interface Price {
-  type: string;        // "artcoins" | "fiat"
+  type: string;       
   artcoins?: number;
   fiat?: number;
 }
@@ -43,7 +43,6 @@ export interface Art {
   createdAt: string;
   updatedAt: string;
   imageUrl: string;
-  price?: Price;
 }
 
 // full response
@@ -52,6 +51,7 @@ export interface ArtWithUserResponse {
   data: {
     user: User;
   art: Art;
+  price: Price;
   }
 }
 
@@ -61,7 +61,7 @@ export const useGetArtByName = (artname: string) => {
     queryKey: ["art", artname],
     queryFn: async () => {
       const { data } = await apiClient.get<ArtWithUserResponse>(
-        `/api/v1/art/${artname}`
+        `/api/v1/art/by-name/${artname}`
       );
       return data;
     },

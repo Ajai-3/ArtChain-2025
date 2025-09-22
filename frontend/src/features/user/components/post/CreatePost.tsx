@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PostDetailsForm from "./PostDetailsForm";
 import ImageUploadSection from "./ImageUploadSection";
 import { useCreatePostMutation } from "../../hooks/art/useCreateArtPostMutation";

@@ -46,7 +46,7 @@ const CommentList: React.FC<Props> = ({ postId }) => {
             </div>
 
             {/* Comment content */}
-            <div className="flex flex-col">
+            <div className="flex flex-col bg-zinc-900 w-full p-2 border border-zinc-800 rounded-lg">
               <div className="flex items-center gap-2">
                 {/* Clickable user name */}
                 <span
@@ -59,7 +59,7 @@ const CommentList: React.FC<Props> = ({ postId }) => {
                   {formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}
                 </span>
               </div>
-              <span className="text-gray-400 text-sm mt-0.5 mb-1">@{c.userName}</span>
+              {/* <span className="text-gray-400 text-sm mt-0.5 mb-1">@{c.userName}</span> */}
               <p className="text-gray-300 mt-1">{c.content}</p>
             </div>
           </div>

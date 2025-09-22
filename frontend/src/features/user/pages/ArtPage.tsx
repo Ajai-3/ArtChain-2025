@@ -1,136 +1,241 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetArtByName } from "../hooks/art/useGetArtByName";
 import CommentInputSection from "../components/art/CommentInputSection";
 import CommentList from "../components/art/CommentList";
+import {
+  Gem,
+  Star,
+  MoreVertical,
+  ZoomIn,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  MessageSquare,
+  ImageDown,
+  User,
+} from "lucide-react";
 
 const ArtPage: React.FC = () => {
-const { artname } = useParams<{ artname: string }>();
-console.log(artname)
+  const { artname } = useParams<{ artname: string }>();
   const { data, isLoading, isError, error } = useGetArtByName(artname!);
-  const [activeTab, setActiveTab] = useState<"description" | "favorites" | "comments" | "about">("description");
-  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [zoomed, setZoomed] = useState(false);
+  const [fullscreenZoom, setFullscreenZoom] = useState(false);
   const navigate = useNavigate();
 
   const art = data?.data?.art;
   const actualUser = data?.data?.user;
+  const price = data?.data.price;
 
-  // Scroll to top **after data is loaded**
-  useEffect(() => {
-    if (art) {
-      window.scrollTo(0, 0);
-      if (containerRef.current) containerRef.current.scrollTop = 0;
-    }
-  }, [art]);
-
-  // Get image dimensions
-  useEffect(() => {
-    if (art?.imageUrl) {
-      const img = new Image();
-      img.src = art.imageUrl;
-      img.onload = () => setImageSize({ width: img.width, height: img.height });
-    }
-  }, [art?.imageUrl]);
-
-  // Show loader until data is ready
   if (isLoading) return <div className="text-center mt-10">Loading art...</div>;
-  if (isError) return <div className="text-center mt-10">Error: {error?.message}</div>;
+  if (isError)
+    return <div className="text-center mt-10">Error: {error?.message}</div>;
   if (!art) return <div className="text-center mt-10">Art not found</div>;
 
+  const handleImageClick = () => {
+    setZoomed(true);
+    setFullscreenZoom(false);
+  };
+
+  const handleZoomIconClick = () => {
+    setZoomed(true);
+    setFullscreenZoom(true);
+    document.documentElement.requestFullscreen?.();
+  };
+
+  const handleCloseZoom = () => {
+    setZoomed(false);
+    setFullscreenZoom(false);
+    document.fullscreenElement && document.exitFullscreen();
+  };
+
+  const formattedDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
   return (
-    <div ref={containerRef} className="flex justify-center gap-6 p-4 min-h-screen">
-      <div className="w-3/4 flex flex-col items-center">
-        {/* Art Preview */}
-        <div className="w-full flex justify-center">
+    <div className="flex flex-col md:flex-row justify-center gap-6 p-4 min-h-screen">
+      {/* Main content */}
+      <div className="w-full md:w-3/4 flex flex-col items-center relative">
+        {/* Art image */}
+        <div className="relative w-full flex justify-center items-center">
+          {/* Left Arrow */}
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 p-2 rounded-full cursor-pointer z-10 hover:bg-black/50">
+            <ChevronLeft size={50} />
+          </div>
+
+          {/* Right Arrow */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 p-2 rounded-full cursor-pointer z-10 hover:bg-black/50">
+            <ChevronRight size={50} />
+          </div>
+
+          {/* Image */}
           <img
-            src={art.imageUrl}
+            src={art.imageUrl || "/placeholder.png"}
             alt={art.title}
-            className="max-h-[500px] w-full object-contain rounded shadow-lg"
+            className="w-full max-h-[500px] sm:max-h-[400px] md:max-h-[500px] object-contain rounded cursor-zoom-in"
+            onClick={handleImageClick}
           />
         </div>
 
-        {/* Artist Info */}
-        {actualUser && (
-          <div className="flex items-center gap-4 mt-4 w-full px-20">
-            {actualUser.profileImage ? (
-              <img src={actualUser.profileImage} alt={actualUser.name} className="w-14 h-14 rounded-full border" />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-zinc-600 dark:bg-zinc-700 flex items-center justify-center text-white text-2xl">
-                {actualUser.name.charAt(0).toUpperCase()}
+        {/* Action buttons */}
+        {/* Action buttons - below the image */}
+        <div className="flex flex-wrap justify-between sm:justify-between items-center w-full mt-4 gap-3 sm:gap-6 sm:px-20">
+          {/* Left side actions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 cursor-pointer hover:text-yellow-400">
+              <Star size={22} />
+              <span className="hidden sm:inline">Add to favorites</span>
+            </div>
+            <div className="flex items-center gap-2 cursor-pointer hover:text-green-400">
+              <MessageSquare size={22} />
+              <span className="hidden sm:inline">Comments</span>
+            </div>
+          </div>
+
+          {/* Right side actions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Gem className="cursor-pointer hover:text-pink-700" size={22} />
+            {art.isForSale && (
+              <div className="bg-main-color/20 hover:bg-main-color/40 py-[.2rem] text-main-color px-3 rounded-full cursor-pointer text-sm sm:text-base">
+                Buy {price?.artcoins} AC
               </div>
             )}
-            <div className="flex flex-col">
-              <span className="text-xl font-bold">{art.title}</span>
-              <span className="text-gray-500">
+            {!art.downloadingDisabled && (
+              <ImageDown className="cursor-pointer" />
+            )}
+            <button
+              onClick={handleZoomIconClick}
+              className="bg-main-color/20 hover:bg-main-color/40 p-2 rounded-full flex items-center justify-center"
+            >
+              <ZoomIn size={20} className="dark:text-gray-300" />
+            </button>
+            <MoreVertical
+              className="cursor-pointer hover:text-gray-400"
+              size={22}
+            />
+          </div>
+        </div>
+
+        {/* Artist info */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full mt-4 sm:px-20 gap-4">
+          <div className="flex gap-4 items-center">
+            {actualUser?.profileImage ? (
+              <img
+                src={actualUser.profileImage}
+                alt={actualUser.username}
+                className="w-12 h-12 rounded-full"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
+                {actualUser?.name?.charAt(0).toUpperCase() || (
+                  <User className="w-4 h-4" />
+                )}
+              </div>
+            )}
+            <div>
+              <h1 className="text-xl font-bold">{art.title}</h1>
+              <p className="text-md font-medium">
                 by{" "}
                 <span
-                  className="text-gray-200 hover:text-main-color hover:cursor-pointer"
-                  onClick={() => navigate(`/${actualUser.username}`)}
+                  className="text-zinc-500 font-semibold cursor-pointer hover:text-main-color"
+                  onClick={() => navigate(`/${actualUser?.username}`)}
                 >
-                  {actualUser.name}
+                  {actualUser?.username}
                 </span>
-              </span>
+              </p>
             </div>
+          </div>
+
+          <div className="text-gray-400 font-medium">
+            Published At: {formattedDate(art.createdAt)}
+          </div>
+        </div>
+
+        {/* Tags */}
+        {art.hashtags?.length > 0 && (
+          <div className="w-full mt-6 sm:px-20 flex flex-wrap gap-2">
+            {art.hashtags.map((tag) => (
+              <span
+                key={tag}
+                className="bg-main-color/20 hover:bg-main-color/40 text-main-color px-3 py-1 rounded-full cursor-pointer text-sm"
+              >
+                #{tag}
+              </span>
+            ))}
           </div>
         )}
 
-        {/* Tabs */}
-        <div className="w-full mt-6 px-20">
-          <div className="flex border-b border-gray-300">
-            {["description", "favorites", "comments", "about"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab as any)}
-                className={`px-4 py-2 font-semibold ${
-                  activeTab === tab
-                    ? "border-b-2 border-main-color text-main-color"
-                    : "text-gray-400 hover:text-main-color-dark"
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
-          </div>
+        {/* Description */}
+        <div className="w-full mt-6 sm:px-20 text-gray-400">
+          <h2 className="text-lg font-semibold mb-2">Description</h2>
+          <p>{art.description || "No description available."}</p>
+        </div>
 
-          <div className="mt-4 w-full">
-            {activeTab === "description" && <p className="text-gray-400 break-words">{art.description || "No description available."}</p>}
-
-            {activeTab === "favorites" && <p className="text-gray-400">Favorites feature will be implemented here.</p>}
-
-            {activeTab === "comments" && (
-              <div className="flex flex-col gap-4">
-                <CommentInputSection postId={art.id} />
-                <CommentList postId={art.id} />
-              </div>
-            )}
-
-            {activeTab === "about" && (
-              <div className="grid grid-cols-2 gap-4 text-gray-300">
-                <div><strong>Art Type:</strong> {art.artType || "-"}</div>
-                <div><strong>Aspect Ratio:</strong> {art.aspectRatio || "-"}</div>
-                <div><strong>Artcoins:</strong> {art?.price?.artcoins || 0}</div>
-                <div><strong>Fiat Price:</strong> {art?.price?.fiat || 0}</div>
-                <div><strong>Is For Sale:</strong> {art.isForSale ? "Yes" : "No"}</div>
-                <div><strong>Commenting Disabled:</strong> {art.commentingDisabled ? "Yes" : "No"}</div>
-                <div><strong>Downloading Disabled:</strong> {art.downloadingDisabled ? "Yes" : "No"}</div>
-                <div><strong>Private:</strong> {art.isPrivate ? "Yes" : "No"}</div>
-                <div><strong>Sensitive:</strong> {art.isSensitive ? "Yes" : "No"}</div>
-                <div><strong>Created At:</strong> {new Date(art.createdAt).toLocaleString()}</div>
-                <div><strong>Updated At:</strong> {new Date(art.updatedAt).toLocaleString()}</div>
-                <div><strong>Hashtags:</strong> {art.hashtags?.join(", ") || "-"}</div>
-                {imageSize && <div><strong>Image Size:</strong> {imageSize.width} x {imageSize.height}px</div>}
-              </div>
-            )}
-          </div>
+        {/* Comments section */}
+        <div className="w-full mt-6 sm:px-20">
+          <h2 className="text-lg font-semibold mb-2">Comments</h2>
+          <CommentInputSection postId={art.id} />
+          <CommentList postId={art.id} />
         </div>
       </div>
 
-      {/* Sidebar */}
-      <div className="w-1/4 bg-zinc-900 rounded p-4 text-white">
-        <p>TO DO RECOMMENDATIONS</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Recommendations go here.</p>
+      {/* Recommendations sidebar */}
+      <div className="w-full md:w-1/4 bg-zinc-900 rounded p-4 text-white mt-6 md:mt-0">
+        <p className="font-semibold mb-2">Recommendations</p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Recommendations go here.
+        </p>
       </div>
+
+      {/* Zoom overlay */}
+      {zoomed && (
+        <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-50 p-6 overflow-auto">
+          <div className="relative w-full flex justify-center items-center">
+            <div className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full z-10">
+              <ChevronLeft size={50} />
+            </div>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full z-10">
+              <ChevronRight size={50} />
+            </div>
+            <img
+              src={art.imageUrl || "/placeholder.png"}
+              alt={art.title}
+              className="max-h-[80vh] w-auto object-contain"
+            />
+          </div>
+
+          {fullscreenZoom && actualUser && (
+            <div className="mt-4 text-center text-white">
+              <h3 className="text-2xl font-bold">{art.title}</h3>
+              <p className="text-lg">by {actualUser.name}</p>
+            </div>
+          )}
+
+          <button
+            onClick={handleCloseZoom}
+            className="absolute top-6 right-6 text-white hover:text-gray-400"
+          >
+            <X size={28} />
+          </button>
+
+          {fullscreenZoom && (
+            <button
+              onClick={() => {
+                handleCloseZoom();
+                navigate("/");
+              }}
+              className="absolute top-6 left-6 text-white hover:text-gray-400 flex items-center gap-1"
+            >
+              <ChevronLeft size={24} /> Home
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 };

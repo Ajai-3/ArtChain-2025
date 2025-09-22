@@ -28,7 +28,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
         onClick={handleArtClick} 
       >
         <img
-          src={item.art.previewUrl}
+          src={item?.art?.imageUrl}
           alt={item.art.title}
           className="h-72 w-auto object-contain group-hover:brightness-50 transition-all duration-300"
         />
@@ -102,7 +102,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
           onClick={() => setIsZoomOpen(false)}
         >
           <img
-            src={item.art.previewUrl}
+            src={item.art.imageUrl}
             alt={item.art.title}
             className="max-h-full max-w-full object-contain"
           />

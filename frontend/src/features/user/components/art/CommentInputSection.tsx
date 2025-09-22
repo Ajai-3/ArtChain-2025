@@ -2,14 +2,17 @@ import React, { useState } from "react";
 import { usePostComment } from "../../hooks/art/usePostComment";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
-import { SendHorizonal } from "lucide-react";
+import { SendHorizonal, User } from "lucide-react";
 import CustomLoader from "../../../../components/CustomLoader";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
 
 interface Props {
   postId: string;
 }
 
 const CommentInputSection: React.FC<Props> = ({ postId }) => {
+  const user = useSelector((state: RootState) => state.user.user);
   const [comment, setComment] = useState("");
   const mutation = usePostComment();
 
@@ -21,14 +24,12 @@ const CommentInputSection: React.FC<Props> = ({ postId }) => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length <= 500) {
-      setComment(e.target.value);
-    }
+    if (e.target.value.length <= 500) setComment(e.target.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // prevent form submission or new line
+      e.preventDefault();
       handleSend();
     }
   };
@@ -36,17 +37,31 @@ const CommentInputSection: React.FC<Props> = ({ postId }) => {
   return (
     <div className="relative w-full flex flex-col">
       <div className="relative w-full">
+        {/* Profile image inside input */}
+        <div className="absolute left-1 top-1/2 -translate-y-1/2">
+          {user?.profileImage ? (
+            <img
+              src={user.profileImage}
+              alt="Profile"
+              className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-600"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
+              {user?.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
+            </div>
+          )}
+        </div>
+
         <Input
           type="text"
           value={comment}
           onChange={handleChange}
-          onKeyDown={handleKeyDown} // added Enter key support
+          onKeyDown={handleKeyDown}
           placeholder="Write a comment..."
           variant="search"
-          className="rounded-full pr-12 w-full"
+          className="py-5 pl-14 pr-10" 
         />
 
-        {/* Send icon or loader */}
         {comment.trim().length > 0 && (
           <div className="absolute inset-y-0 right-2 flex items-center">
             <Button

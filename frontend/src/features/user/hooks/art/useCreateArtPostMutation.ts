@@ -15,7 +15,8 @@ export const useCreatePostMutation = (onClose: ()=> void) => {
       navigate("/")
     },
     onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Failed to create post!");
+      console.log(err)
+      toast.error(err?.message || "Failed to create post!");
     },
   });
 };

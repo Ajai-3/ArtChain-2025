@@ -50,7 +50,7 @@ const Home: React.FC = () => {
               index === page.data.length - 1;
 
             return (
-              <div key={item.art._id}>
+              <div key={item.art.id}>
                 <ArtCard
                   item={item}
                   lastArtRef={isLastItem ? lastArtRef : undefined}
