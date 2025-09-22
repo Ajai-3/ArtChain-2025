@@ -29,6 +29,9 @@ export const authRoutesConfig = {
     { path: "/api/v1/upload", methods: ["POST", "PATCH"] },
     { path: "/api/v1/upload/art", methods: ["POST", "PATCH"] },
     { path: "/api/v1/upload/delete", methods: ["POST"] },
+
+
+    { path: "/api/v1/wallet", methods: ["POST", "GET", "PATCH"] }
   ],
 
   user_optional: [
