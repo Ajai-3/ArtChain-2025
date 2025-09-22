@@ -20,10 +20,13 @@ export async function setupNotificationQueues(ch: Channel) {
   await ch.bindQueue("search_indexing", exchange, "art.created");
   await ch.bindQueue("search_indexing", exchange, "art.update");
 
+  // Wallet queue
+  await ch.assertQueue("wallet_service", { durable: true });
+  await ch.bindQueue("wallet_service", exchange, "user.created");
+
   // Supporters queue
   await ch.assertQueue("supports", { durable: true });
   await ch.bindQueue("supports", exchange, "user.supported");
-
 
   // Like queue
   await ch.assertQueue("likes", { durable: true });
