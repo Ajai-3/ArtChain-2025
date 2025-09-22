@@ -78,8 +78,9 @@ export class NotificationController implements INotificationController {
     next: NextFunction
   ): Promise<any> => {
     try {
-      const { id } = req.params;
-      await this._markAsReadUseCase.execute(id);
+      const userId = req.headers["x-user-id"] as string;
+      await this._markAsReadUseCase.execute(userId);
+    
       return res.json({ message: "Notification marked as read" });
     } catch (error) {
       next(error);
