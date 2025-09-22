@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+/dist/
+/build/
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.local
+.env.docker
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE files
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+/src/generated/prisma
