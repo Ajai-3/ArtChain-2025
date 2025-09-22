@@ -33,6 +33,20 @@ services:
       timeout: 5s
       retries: 5
 
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: pgadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
     container_name: elasticsearch
@@ -100,6 +114,34 @@ services:
       - backend
     command: sh -c "npx prisma migrate deploy && npm run dev"
 
+  art-service:
+    container_name: art-service
+    build: ./services/art-service
+    env_file:
+      - .env
+      - ./services/art-service/.env.docker
+    ports:
+      - "4002:4002"
+    depends_on:
+      - user-admin-service
+    networks:
+      - backend
+
+  wallet-service:
+    container_name: wallet-service
+    build: ./services/wallet-service
+    env_file:
+      - .env
+      - ./services/wallet-service/.env.docker
+    ports:
+      - "4007:4007"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    command: sh -c "npx prisma migrate deploy && npm run dev"
+
   elastic-search-service:
     container_name: elastic-search-service
     build: ./services/elastic-search-service
@@ -131,19 +173,6 @@ services:
       - ./services/upload-service/.env
     ports:
       - "4006:4006"
-    networks:
-      - backend
-
-  art-service:
-    container_name: art-service
-    build: ./services/art-service
-    env_file:
-      - .env
-      - ./services/art-service/.env.docker
-    ports:
-      - "4002:4002"
-    depends_on:
-      - user-admin-service  
     networks:
       - backend
 
