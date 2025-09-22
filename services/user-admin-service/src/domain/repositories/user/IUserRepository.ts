@@ -1,3 +1,4 @@
+import { ArtUser } from "../../../types/ArtUser";
 import { User } from "../../entities/User";
 import { SafeUser } from "../IBaseRepository";
 import { IBaseRepository } from "../IBaseRepository";
@@ -10,7 +11,13 @@ export interface IUserRepository<U = User, S = SafeUser>
   findByIdRaw(id: string): Promise<U | null>;
   findByEmail(email: string): Promise<S | null>;
   findByUsername(username: string): Promise<S | null>;
-  findAllUsers(query: { page: number; limit: number }): Promise<{
+  findAllUsers(query: {
+    page: number;
+    limit: number;
+    role?: string;
+    status?: string;
+    plan?: string;
+  }): Promise<{
     meta: { page: number; limit: number; total: number };
     data: SafeUser[];
   }>;
@@ -18,9 +25,12 @@ export interface IUserRepository<U = User, S = SafeUser>
   findManyByIds(
     ids: string[],
     page: number,
-    limit: number
+    limit: number,
+    filters?: { role?: string; status?: string; plan?: string }
   ): Promise<{
     meta: { page: number; limit: number; total: number };
     data: SafeUser[];
   }>;
+
+  findManyByIdsBatch(ids: string[]): Promise<ArtUser[]>;
 }

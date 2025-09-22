@@ -1,3 +1,4 @@
+import { DeleteImageUseCase } from "./../../application/usecases/DeleteImageUseCase";
 import { Request, Response, NextFunction } from "express";
 import { UploadProfileImage } from "../../application/usecases/UploadProfileImage";
 import { UploadArtImage } from "../../application/usecases/UploadArtImage";
@@ -8,12 +9,16 @@ import { logger } from "../../infrastructure/utils/logger";
 import { validateUpload } from "../validations/validateUpload";
 import { HttpStatus } from "art-chain-shared";
 import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
+import { DeleteImageRequestDTO } from "../../domain/dto/DeleteImageRequestDTO";
+import { UploadImageUseCase } from "../../application/usecases/UploadImageUseCase";
 
 export class UploadController implements IUploadController {
   constructor(
     private readonly _uploadProfileImage: UploadProfileImage,
     private readonly _uploadBannerImage: UploadBannerImage,
-    private readonly _uploadArtImage: UploadArtImage
+    private readonly _uploadArtImage: UploadArtImage,
+    private readonly _uploadImageUseCase: UploadImageUseCase,
+    private readonly _deleteImageUseCase: DeleteImageUseCase
   ) {}
 
   //# =============================================================================================================
@@ -29,13 +34,17 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { userId, file } = validateUpload(req, "profile");
+      const { userId, file, previousFileUrl } = validateUpload(req, "profile");
+
+      console.log(previousFileUrl);
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
         fileName: file.originalname,
         mimeType: file.mimetype,
         userId,
+        category: "profile",
+        previousFileUrl,
       };
 
       const result = await this._uploadProfileImage.execute(dto);
@@ -73,6 +82,7 @@ export class UploadController implements IUploadController {
         fileBuffer: file.buffer,
         fileName: file.originalname,
         mimeType: file.mimetype,
+        category: "art",
         userId,
       };
 
@@ -89,8 +99,66 @@ export class UploadController implements IUploadController {
       logger.error(`Upload banner error | message=${error.message}`);
       next(error);
     }
-  }
+  };
 
+  //# =============================================================================================================
+  //# UPLOAD PROFILE RELATED IAMGES
+  //# =============================================================================================================
+  //# POST /api/v1/upload/
+  //# Request headers: x-user-id
+  //# Request body: multipart/form-data { file }
+  //# This controller will help to upload the profile related images like profile, banner, background images
+  //# =============================================================================================================
+  uploadImage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const frontendType =
+        (req.body.type as "profileImage" | "bannerImage" | "backgroundImage") ||
+        "profileImage";
+
+      const typeMapping: Record<
+        "profileImage" | "bannerImage" | "backgroundImage",
+        "profile" | "banner" | "background"
+      > = {
+        profileImage: "profile",
+        bannerImage: "banner",
+        backgroundImage: "background",
+      };
+
+      const fileType = typeMapping[frontendType];
+
+      console.log("filetype", fileType);
+
+      const { userId, file, previousFileUrl } = validateUpload(req, fileType);
+
+
+      const dto: UploadFileDTO = {
+        fileBuffer: file.buffer,
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        userId,
+        category: fileType,
+        previousFileUrl,
+      };
+
+      const result = await this._uploadImageUseCase.execute(dto);
+
+      logger.info(`${JSON.stringify(result)}`);
+      logger.info(
+        `Image uploaded successfully | userId=${userId} | file=${file.originalname}`
+      );
+
+      res
+        .status(HttpStatus.CREATED)
+        .json({ data: result, message: UPLOAD_MESSAGES.IMAGE_UPLOAD_SUCCESS });
+    } catch (error: any) {
+      logger.error(`Upload art error | message=${error.message}`);
+      next(error);
+    }
+  };
   //# =============================================================================================================
   //# UPLOAD ART
   //# =============================================================================================================
@@ -105,32 +173,57 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-       const s = req.headers['x-user-id']
-    console.log(s)
       const { userId, file } = validateUpload(req, "art");
-      logger.info(`Art upload request recived ${userId} ${file}`)
-
+      logger.info(`Art upload request recived ${userId} ${file}`);
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
         fileName: file.originalname,
         mimeType: file.mimetype,
+        category: "art",
         userId,
       };
 
       const result = await this._uploadArtImage.execute(dto);
 
-      logger.info(`${JSON.stringify(result)}`)
+      logger.info(`${JSON.stringify(result)}`);
       logger.info(
         `Art image uploaded successfully | userId=${userId} | file=${file.originalname}`
       );
 
       res
         .status(HttpStatus.CREATED)
-        .json({ data: result, message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS});
+        .json({ data: result, message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS });
     } catch (error: any) {
       logger.error(`Upload art error | message=${error.message}`);
       next(error);
     }
-  }
+  };
+
+  //# =============================================================================================================
+  //# DELETE IMAGE
+  //# =============================================================================================================
+  //# POST /api/v1/upload/delete
+  //# Request body: filename
+  //# This controller will help you to delete the image like profile, banner, background, art any type of images.
+  //# =============================================================================================================
+  deleteImage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { fileUrl, category } = req.body;
+
+      const dto: DeleteImageRequestDTO = { fileUrl, category };
+      await this._deleteImageUseCase.execute(dto);
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: UPLOAD_MESSAGES.IMAGE_DELETED_SUCCESSFULLY });
+    } catch (error) {
+      logger.error(`Error deleting the image ${error}`);
+      next(error);
+    }
+  };
 }

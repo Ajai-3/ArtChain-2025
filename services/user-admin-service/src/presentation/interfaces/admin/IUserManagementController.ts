@@ -7,4 +7,9 @@ export interface IUserManageMentController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>
+  getAllArtistRequests(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>
 }

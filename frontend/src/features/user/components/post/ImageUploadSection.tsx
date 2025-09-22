@@ -1,3 +1,4 @@
+// ImageUploadSection.tsx
 import React, { useState } from "react";
 import { Plus, ArrowLeft } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
@@ -6,7 +7,11 @@ import { useUploadArtImageMutation } from "../../hooks/art/useUploadArtImageMuta
 
 interface ImageUploadSectionProps {
   onClose: () => void;
-  onSubmitImage: (file: File, urls: any) => void;
+  onSubmitImage: (
+    file: File,
+    urls: { originalUrl: string; previewUrl: string; watermarkedUrl: string },
+    aspectRatio: string
+  ) => void;
 }
 
 const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
@@ -50,15 +55,20 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
     e.target.value = "";
   };
 
-  const handleSaveCrop = (croppedFile: File) => {
+  const handleSaveCrop = (croppedFile: File, aspectRatio: string) => {
     const reader = new FileReader();
     reader.onload = () => setPreviewSrc(reader.result as string);
     reader.readAsDataURL(croppedFile);
 
     uploadMutation.mutate(croppedFile, {
       onSuccess: (res: any) => {
+        const urls = {
+          originalUrl: res.data.data.originalUrl,
+          previewUrl: res.data.data.previewUrl,
+          watermarkedUrl: res.data.data.watermarkedUrl
+        };
         setError(null);
-        onSubmitImage(croppedFile, res.data);
+        onSubmitImage(croppedFile, urls, aspectRatio);
       },
       onError: (err: any) => {
         console.error(err);
@@ -67,18 +77,22 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
       },
     });
 
-    setImageSrc(null); // close cropper
+    setImageSrc(null);
   };
 
   return (
     <div className="p-6 w-full md:w-1/2 text-white border-r border-zinc-400 dark:border-zinc-700 flex flex-col relative">
-      <div className="flex justify-start">
-        <Button onClick={onClose} className="hover:text-main-color" variant="transparant">
+      <div className="flex justify-start mb-4">
+        <Button
+          onClick={onClose}
+          className="hover:text-main-color text-black dark:text-white"
+          variant="transparant"
+        >
           <ArrowLeft /> Back
         </Button>
       </div>
 
-      <h2 className="text-lg font-semibold mb-4">Upload Image</h2>
+      <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Upload Image</h2>
 
       {!imageSrc && !previewSrc && (
         <label className="w-32 h-32 flex items-center justify-center border rounded cursor-pointer mx-auto">
@@ -130,8 +144,19 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
                 viewBox="0 0 24 24"
                 aria-label="Loading"
               >
-                <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-80" fill="currentColor" d="M12 2a10 10 0 0110 10h-2a8 8 0 00-8-8V2z" />
+                <circle
+                  className="opacity-20"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-80"
+                  fill="currentColor"
+                  d="M12 2a10 10 0 0110 10h-2a8 8 0 00-8-8V2z"
+                />
               </svg>
               <span className="text-white font-semibold text-lg drop-shadow-md animate-pulse">
                 Uploading...

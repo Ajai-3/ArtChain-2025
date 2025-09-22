@@ -29,8 +29,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ),
           variant === "search" &&
             cn(
-              "rounded-full border dark:border-zinc-700",
-              "focus:border-main-color"
+              "rounded-full border border-gray-300 dark:border-zinc-700 transition-colors",
+              "focus:outline-none focus:border-main-color focus:ring-1 focus:ring-main-color"
             ),
           variant === "prompt" &&
             cn(

@@ -50,4 +50,37 @@ export class ArtistRequestRepositoryImpl
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  async getArtistRequests(page: number, limit: number) {
+  const skip = (page - 1) * limit;
+
+  const total = await this.model.count();
+
+  const requests = await this.model.findMany({
+    skip,
+    take: limit,
+    orderBy: { createdAt: "desc" },
+    where: { status: "pending" },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          email: true,
+          profileImage: true,
+        },
+      },
+    },
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: requests,
+  };
+}
 }

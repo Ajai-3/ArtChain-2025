@@ -15,9 +15,9 @@ export const SupportModal: React.FC<SupportModalProps> = ({
 }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}></div>
+      <div className="absolute inset-0   backdrop-blur-sm" onClick={onClose}></div>
 
-      <div className="relative z-50 bg-white dark:bg-secondary-color border border-zinc-700 rounded-3xl shadow-lg p-6 sm:p-6 sm:w-2/6 max-w-full">
+      <div className="relative z-50 bg-white dark:bg-secondary-color border sm:dark:border-zinc-700 sm:rounded-3xl shadow-lg h-full sm:h-[420px] w-full sm:w-[470px] p-2 sm:p-6">
         <button
           className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-700 dark:hover:text-white"
           onClick={onClose}
@@ -25,11 +25,11 @@ export const SupportModal: React.FC<SupportModalProps> = ({
           <X size={20} />
         </button>
 
-        <h2 className="text-lg font-bold mb-4">
+        <h2 className="text-lg text-center font-bold mb-4 pb-2 border-b border-zinc-300 dark:border-zinc-700">
           {type === "supporters" ? "Supporters" : "Supporting"}
         </h2>
 
-        <SupportUserList type={type} userId={userId} />
+        <SupportUserList type={type} onClose={onClose} userId={userId} />
       </div>
     </div>
   );

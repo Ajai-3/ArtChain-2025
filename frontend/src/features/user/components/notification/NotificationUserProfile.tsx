@@ -18,8 +18,8 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
   onSelectUser,
 }) => {
   const handleClick = () => {
-    if (onSelectUser && n.data?.supporterId) {
-      onSelectUser(n.data.supporterId);
+    if (onSelectUser && n.data?.supporterName) {
+      onSelectUser(n.data.supporterName);
     }
   };
 

@@ -15,15 +15,18 @@ import {
   SelectContent,
 } from "../../../components/ui/select";
 import { Label } from "../../../components/ui/label";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../redux/store";
 
 const Liora: React.FC = () => {
   const [tab, setTab] = useState("generate");
+  const user = useSelector((state: RootState) => state.user.user)
 
   return (
     <div className="flex h-full">
       {/* Left Sidebar (Settings) */}
       <div className="w-1/4 border-r border-zinc-400 dark:border-zinc-800 p-4 space-y-4">
-        <h2 className="text-lg font-semibold">Settings</h2>
+        <h2 className="text-lg font-semibold">Settings {user?.username}</h2>
 
         {/* Model */}
         <div className="space-y-1">

@@ -5,11 +5,16 @@ import { IUserManageMentController } from "./../../interfaces/admin/IUserManagem
 import { GetAllUsersUseCase } from "../../../application/usecases/admin/user-management/GetAllUsersUseCase";
 import { BanOrUnbanUserUseCase } from "../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase";
 import axios from "axios";
+import { logger } from "../../../utils/logger";
+import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
+import { GetAllArtistRequestsUseCase } from "../../../application/usecases/admin/user-management/GetAllArtistRequests";
+import { GetAllUsersQueryDTO } from "../../../domain/dtos/admin/GetAllUsersQueryDTO";
 
 export class UserManageMentController implements IUserManageMentController {
   constructor(
     private readonly _getAllUsersUseCase: GetAllUsersUseCase,
-    private readonly _banOrUnbanUserUseCase: BanOrUnbanUserUseCase
+    private readonly _banOrUnbanUserUseCase: BanOrUnbanUserUseCase,
+    private readonly _getAllArtistRequestsUseCase: GetAllArtistRequestsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -25,25 +30,17 @@ export class UserManageMentController implements IUserManageMentController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const search = (req.query.search as string)?.trim();
-
-      let userIds: string[] | undefined;
-
-      if (search) {
-        const response = await axios.get(
-          `http://elastic-search-service:4004/api/v1/elastic-user/admin/search`,
-          {
-            params: { q: search },
-          }
-        );
-
-        userIds = response.data.userIds;
-      }
+      const role = req.query.role as string;
+      const status = req.query.status as string;
+      const plan = req.query.plan as string;
 
       const result = await this._getAllUsersUseCase.execute({
         page,
         limit,
         search,
-        userIds,
+        role,
+        status,
+        plan,
       });
 
       res.status(HttpStatus.OK).json({
@@ -84,6 +81,35 @@ export class UserManageMentController implements IUserManageMentController {
         .status(200)
         .json({ message: `User ${action} successfully`, data: user });
     } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET ARTIST REQUEST
+  //# ================================================================================================================
+  //# PATCH /api/v1/admin/get-artist-requests
+  //# Query params: ?page=<number>&limit=<number>
+  //# This controller allows the admin to fetch a paginated list of all artist requests
+  //# ================================================================================================================
+  getAllArtistRequests = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      const dto: GetAllUsersQueryDTO = { page, limit };
+      const result = await this._getAllArtistRequestsUseCase.execute(dto);
+
+      logger.info(`Artist request fetched.`);
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: ARTIST_MESSAGES.ARTISRT_REQUEST_FETCHED, result });
+    } catch (error) {
+      logger.error(`Error getting all artist request ${error}`);
       next(error);
     }
   };

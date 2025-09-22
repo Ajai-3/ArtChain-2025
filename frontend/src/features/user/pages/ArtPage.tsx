@@ -1,0 +1,243 @@
+import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useGetArtByName } from "../hooks/art/useGetArtByName";
+import CommentInputSection from "../components/art/CommentInputSection";
+import CommentList from "../components/art/CommentList";
+import {
+  Gem,
+  Star,
+  MoreVertical,
+  ZoomIn,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  MessageSquare,
+  ImageDown,
+  User,
+} from "lucide-react";
+
+const ArtPage: React.FC = () => {
+  const { artname } = useParams<{ artname: string }>();
+  const { data, isLoading, isError, error } = useGetArtByName(artname!);
+  const [zoomed, setZoomed] = useState(false);
+  const [fullscreenZoom, setFullscreenZoom] = useState(false);
+  const navigate = useNavigate();
+
+  const art = data?.data?.art;
+  const actualUser = data?.data?.user;
+  const price = data?.data.price;
+
+  if (isLoading) return <div className="text-center mt-10">Loading art...</div>;
+  if (isError)
+    return <div className="text-center mt-10">Error: {error?.message}</div>;
+  if (!art) return <div className="text-center mt-10">Art not found</div>;
+
+  const handleImageClick = () => {
+    setZoomed(true);
+    setFullscreenZoom(false);
+  };
+
+  const handleZoomIconClick = () => {
+    setZoomed(true);
+    setFullscreenZoom(true);
+    document.documentElement.requestFullscreen?.();
+  };
+
+  const handleCloseZoom = () => {
+    setZoomed(false);
+    setFullscreenZoom(false);
+    document.fullscreenElement && document.exitFullscreen();
+  };
+
+  const formattedDate = (date: string) =>
+    new Date(date).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+
+  return (
+    <div className="flex flex-col md:flex-row justify-center gap-6 p-4 min-h-screen">
+      {/* Main content */}
+      <div className="w-full md:w-3/4 flex flex-col items-center relative">
+        {/* Art image */}
+        <div className="relative w-full flex justify-center items-center">
+          {/* Left Arrow */}
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 p-2 rounded-full cursor-pointer z-10 hover:bg-black/50">
+            <ChevronLeft size={50} />
+          </div>
+
+          {/* Right Arrow */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 p-2 rounded-full cursor-pointer z-10 hover:bg-black/50">
+            <ChevronRight size={50} />
+          </div>
+
+          {/* Image */}
+          <img
+            src={art.imageUrl || "/placeholder.png"}
+            alt={art.title}
+            className="w-full max-h-[500px] sm:max-h-[400px] md:max-h-[500px] object-contain rounded cursor-zoom-in"
+            onClick={handleImageClick}
+          />
+        </div>
+
+        {/* Action buttons */}
+        {/* Action buttons - below the image */}
+        <div className="flex flex-wrap justify-between sm:justify-between items-center w-full mt-4 gap-3 sm:gap-6 sm:px-20">
+          {/* Left side actions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2 cursor-pointer hover:text-yellow-400">
+              <Star size={22} />
+              <span className="hidden sm:inline">Add to favorites</span>
+            </div>
+            <div className="flex items-center gap-2 cursor-pointer hover:text-green-400">
+              <MessageSquare size={22} />
+              <span className="hidden sm:inline">Comments</span>
+            </div>
+          </div>
+
+          {/* Right side actions */}
+          <div className="flex flex-wrap items-center gap-3">
+            <Gem className="cursor-pointer hover:text-pink-700" size={22} />
+            {art.isForSale && (
+              <div className="bg-main-color/20 hover:bg-main-color/40 py-[.2rem] text-main-color px-3 rounded-full cursor-pointer text-sm sm:text-base">
+                Buy {price?.artcoins} AC
+              </div>
+            )}
+            {!art.downloadingDisabled && (
+              <ImageDown className="cursor-pointer" />
+            )}
+            <button
+              onClick={handleZoomIconClick}
+              className="bg-main-color/20 hover:bg-main-color/40 p-2 rounded-full flex items-center justify-center"
+            >
+              <ZoomIn size={20} className="dark:text-gray-300" />
+            </button>
+            <MoreVertical
+              className="cursor-pointer hover:text-gray-400"
+              size={22}
+            />
+          </div>
+        </div>
+
+        {/* Artist info */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full mt-4 sm:px-20 gap-4">
+          <div className="flex gap-4 items-center">
+            {actualUser?.profileImage ? (
+              <img
+                src={actualUser.profileImage}
+                alt={actualUser.username}
+                className="w-12 h-12 rounded-full"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
+                {actualUser?.name?.charAt(0).toUpperCase() || (
+                  <User className="w-4 h-4" />
+                )}
+              </div>
+            )}
+            <div>
+              <h1 className="text-xl font-bold">{art.title}</h1>
+              <p className="text-md font-medium">
+                by{" "}
+                <span
+                  className="text-zinc-500 font-semibold cursor-pointer hover:text-main-color"
+                  onClick={() => navigate(`/${actualUser?.username}`)}
+                >
+                  {actualUser?.username}
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div className="text-gray-400 font-medium">
+            Published At: {formattedDate(art.createdAt)}
+          </div>
+        </div>
+
+        {/* Tags */}
+        {art.hashtags?.length > 0 && (
+          <div className="w-full mt-6 sm:px-20 flex flex-wrap gap-2">
+            {art.hashtags.map((tag) => (
+              <span
+                key={tag}
+                className="bg-main-color/20 hover:bg-main-color/40 text-main-color px-3 py-1 rounded-full cursor-pointer text-sm"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Description */}
+        <div className="w-full mt-6 sm:px-20 text-gray-400">
+          <h2 className="text-lg font-semibold mb-2">Description</h2>
+          <p>{art.description || "No description available."}</p>
+        </div>
+
+        {/* Comments section */}
+        <div className="w-full mt-6 sm:px-20">
+          <h2 className="text-lg font-semibold mb-2">Comments</h2>
+          <CommentInputSection postId={art.id} />
+          <CommentList postId={art.id} />
+        </div>
+      </div>
+
+      {/* Recommendations sidebar */}
+      <div className="w-full md:w-1/4 bg-zinc-900 rounded p-4 text-white mt-6 md:mt-0">
+        <p className="font-semibold mb-2">Recommendations</p>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Recommendations go here.
+        </p>
+      </div>
+
+      {/* Zoom overlay */}
+      {zoomed && (
+        <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-50 p-6 overflow-auto">
+          <div className="relative w-full flex justify-center items-center">
+            <div className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full z-10">
+              <ChevronLeft size={50} />
+            </div>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full z-10">
+              <ChevronRight size={50} />
+            </div>
+            <img
+              src={art.imageUrl || "/placeholder.png"}
+              alt={art.title}
+              className="max-h-[80vh] w-auto object-contain"
+            />
+          </div>
+
+          {fullscreenZoom && actualUser && (
+            <div className="mt-4 text-center text-white">
+              <h3 className="text-2xl font-bold">{art.title}</h3>
+              <p className="text-lg">by {actualUser.name}</p>
+            </div>
+          )}
+
+          <button
+            onClick={handleCloseZoom}
+            className="absolute top-6 right-6 text-white hover:text-gray-400"
+          >
+            <X size={28} />
+          </button>
+
+          {fullscreenZoom && (
+            <button
+              onClick={() => {
+                handleCloseZoom();
+                navigate("/");
+              }}
+              className="absolute top-6 left-6 text-white hover:text-gray-400 flex items-center gap-1"
+            >
+              <ChevronLeft size={24} /> Home
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ArtPage;

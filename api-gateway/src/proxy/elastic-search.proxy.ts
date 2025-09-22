@@ -4,9 +4,9 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 console.log("Elastic search service target:", config.services.elastic)
 
 export const elasticSearchProxy = createProxyMiddleware({
-  target: `${config.services.elastic}/api/v1/elastic-user`,
+  target: `${config.services.elastic}/api/v1/elastic`,
   changeOrigin: true,
   pathRewrite: { 
-    "^/api/v1/elastic-user": ""
+    "^/api/v1/elastic": ""
   },
 }); 

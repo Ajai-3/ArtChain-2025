@@ -15,8 +15,4 @@ export interface IUserAuthController {
   // Tokens & logout
   refreshToken(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   logoutUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
-
-  // Account Updates / Identity Management
-  changeEmail?(req: Request, res: Response, next: NextFunction): Promise<Response | void>; 
-  changePhoneNumber?(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

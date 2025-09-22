@@ -12,6 +12,7 @@ app.use(cookieParser());
 
 
 app.use((req, res, next) => {
+  console.log(req.headers['x-user-id'])
   logger.info(`Incoming request: ${req.method} ${req.path}`);
   next();
 });

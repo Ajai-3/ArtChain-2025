@@ -13,6 +13,7 @@ export class AddUserToElasticSearchUseCase {
       bannerImage: user.bannerImage || '',
       bio: user.bio || '',
       role: user.role,
+      plan: user.plan,
       status: user.status,
       createdAt: user.createdAt,
     };

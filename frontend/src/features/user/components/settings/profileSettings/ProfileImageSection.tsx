@@ -1,25 +1,26 @@
 import React, { useState, useRef } from "react";
 import { Button } from "../../../../../components/ui/button";
 import ProfileImageCropper from "./ProfileImageCropper";
+import { useUploadUserImage } from "../../../hooks/profile/useUploadUserImage";
+import ImageCropper from "./ImageCropper";
 
 interface ProfileImageSectionProps {
   profileImage?: string | null;
   name?: string;
   username?: string;
-  onProfileImageChange?: (file: File) => void;
 }
 
 const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
   profileImage,
   name,
   username,
-  onProfileImageChange,
 }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
-
-  // Ref to the hidden file input
+  const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const updateProfileImageMutation = useUploadUserImage();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -30,13 +31,19 @@ const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
   };
 
   const handleChangePhotoClick = () => {
-    fileInputRef.current?.click(); // trigger file input
+    fileInputRef.current?.click();
   };
 
   const handleCropSave = (file: File) => {
-    setIsCropperOpen(false);
-    setSelectedFile(null);
-    if (onProfileImageChange) onProfileImageChange(file);
+    setIsSaving(true);
+    updateProfileImageMutation.mutate({ file, type: "profileImage" }, {
+      onSuccess: () => {
+        setIsSaving(false);
+        setIsCropperOpen(false);
+        setSelectedFile(null);
+      },
+      onError: () => setIsSaving(false),
+    });
   };
 
   const handleCropCancel = () => {
@@ -67,7 +74,6 @@ const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
           </div>
         </div>
 
-        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"
@@ -75,17 +81,24 @@ const ProfileImageSection: React.FC<ProfileImageSectionProps> = ({
           className="hidden"
           onChange={handleFileSelect}
         />
-        <Button variant="main" className="px-4 py-2" type="button" onClick={handleChangePhotoClick}>
+        <Button
+          type="button"
+          variant="main"
+          className="px-4 py-2"
+          onClick={handleChangePhotoClick}
+        >
           Change photo
         </Button>
       </div>
 
-      {/* Cropper modal */}
-      {isCropperOpen && selectedFile && (
-        <ProfileImageCropper
+     {isCropperOpen && selectedFile && (
+        <ImageCropper
           file={selectedFile}
+          aspect={1}
+          cropShape="round"
           onSave={handleCropSave}
           onCancel={handleCropCancel}
+          isSaving={isSaving}
         />
       )}
     </>

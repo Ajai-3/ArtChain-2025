@@ -36,7 +36,7 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
           </button>
 
           <button
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate(`/${user?.username}`)}
             className="rounded-full hidden sm:block hover:bg-zinc-100 dark:hover:bg-zinc-800"
             aria-label="Profile"
           >
@@ -47,7 +47,7 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
                 className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-600"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-white">
+              <div className="w-9 h-9 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
                 {user.name?.charAt(0).toUpperCase() || (
                   <User className="w-4 h-4" />
                 )}

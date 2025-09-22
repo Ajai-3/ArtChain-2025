@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Cropper from "react-easy-crop";
 import { Button } from "../../../../../components/ui/button";
+import CustomLoader from "../../../../../components/CustomLoader";
 
 interface ImageCropperProps {
   file: File;
-  aspect: number; // ratio: banner = 16/9, background = 4/3 etc
+  aspect: number; // e.g. profile = 1, banner = 16/9, background = 4/3
+  cropShape?: "rect" | "round"; // NEW: control crop shape
   onCancel: () => void;
   onSave: (file: File) => void;
+  isSaving?: boolean;
 }
 
 function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
@@ -34,8 +37,8 @@ function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
 
       canvas.toBlob((blob) => {
         if (!blob) return reject("Blob error");
-        resolve(new File([blob], "cropped-image.png", { type: "image/png" }));
-      }, "image/png");
+        resolve(new File([blob], "cropped-image.jpeg", { type: "image/jpeg" }));
+      }, "image/jpeg");
     };
     image.onerror = () => reject("Image load error");
   });
@@ -44,8 +47,10 @@ function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
 const ImageCropper: React.FC<ImageCropperProps> = ({
   file,
   aspect,
+  cropShape = "rect",
   onCancel,
   onSave,
+  isSaving = false,
 }) => {
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -64,7 +69,8 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
-  const handleSave = async () => {
+  const handleSave = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
     if (!imageSrc || !croppedAreaPixels) return;
     const croppedFile = await getCroppedImg(imageSrc, croppedAreaPixels);
     onSave(croppedFile);
@@ -90,10 +96,10 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
             crop={crop}
             zoom={zoom}
             aspect={aspect}
+            cropShape={cropShape}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
-            cropShape="rect"
             showGrid
           />
         </div>
@@ -113,10 +119,10 @@ const ImageCropper: React.FC<ImageCropperProps> = ({
 
         {/* Actions */}
         <div className="px-6 py-4 flex justify-end gap-4 border-t border-zinc-700">
-          <Button variant="main" onClick={handleSave}>
-            Save
+          <Button type="button" variant="main" onClick={handleSave} disabled={isSaving}>
+            {isSaving ? <CustomLoader /> : "Save"}
           </Button>
-          <Button variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel}>
             Cancel
           </Button>
         </div>

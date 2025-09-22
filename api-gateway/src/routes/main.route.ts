@@ -24,6 +24,6 @@ router.use("/api/v1/notifications", notificationsProxy);
 router.use("/api/v1/upload", uploadProxy);
 
 // elastic-search-service
-router.use("/api/v1/elastic-user", elasticSearchProxy)
+router.use("/api/v1/elastic", elasticSearchProxy)
 
 export default router;

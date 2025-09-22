@@ -9,32 +9,42 @@ const service = new UserElasticService();
 
 export class UserElasticController implements IUserElasticController {
   //# ================================================================================================================
-  //# START INDEX USER
-  //# ================================================================================================================
-  //# POST /elastic/users
+  //# POST /elastic/users → INDEX USER
   //# Request body: IndexedUserDto
-  //# This endpoint indexes (adds/updates) a user document in Elasticsearch.
-  //# Used typically after user registration or profile update.
+  //# Adds a new user document in Elasticsearch (after registration or profile update).
   //# ================================================================================================================
-  async indexUser(req: Request, res: Response, next: NextFunction): Promise<void> {
+  indexUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await service.addUser(req.body);
-      logger.info("Index created")
+      logger.info("Index created");
       res.status(HttpStatus.CREATED).json({ message: ELASTIC_MESSAGES.INDEX_SUCCESS });
     } catch (err: any) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   //# ================================================================================================================
-  //# START USER SEARCH
+  //# PUT /elastic/users → UPDATE USER
+  //# Request body: IndexedUserDto
+  //# Updates existing user document in Elasticsearch.
   //# ================================================================================================================
-  //# GET /elastic/users/search?q=<query>
+  updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const user = await service.updateUser(req.body);
+      logger.info(`User index updated ${JSON.stringify(user)}`);
+      res.status(HttpStatus.CREATED).json({ message: ELASTIC_MESSAGES.INDEX_UPDATED_SUCCESS });
+    } catch (err: any) {
+      next(err);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET /elastic/users/search?q=<query> → SEARCH USERS
   //# Query params: { q: string }
-  //# This endpoint allows client (user side) to search users in Elasticsearch.
-  //# Returns: Array of matched user objects with { id, username, name, email, createdAt }.
+  //# Allows client-side search for users in Elasticsearch.
+  //# Returns: Array of matched users { id, username, name, email, createdAt }.
   //# ================================================================================================================
-  async searchUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+  searchUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const q = (req.query.q as string)?.trim();
       if (!q) {
@@ -42,22 +52,19 @@ export class UserElasticController implements IUserElasticController {
         return;
       }
       const results = await service.searchForUser(q);
-      logger.info(`Search result: ${JSON.stringify(results)}`)
+      logger.info(`Search result: ${JSON.stringify(results)}`);
       res.json(results);
     } catch (err: any) {
-      next(err)
+      next(err);
     }
-  }
+  };
 
   //# ================================================================================================================
-  //# START ADMIN SEARCH USERS
-  //# ================================================================================================================
-  //# GET /elastic/users/admin/search?q=<query>
+  //# GET /elastic/users/admin/search?q=<query> → ADMIN SEARCH USERS
   //# Query params: { q: string }
-  //# This endpoint allows admin side to search users in Elasticsearch.
-  //# Returns: { userIds: string[] } → Admin uses these IDs to fetch fresh data from the DB.
+  //# Admin-only search: returns { userIds: string[] } to fetch fresh data from DB.
   //# ================================================================================================================
-  async adminSearchUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
+  adminSearchUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const q = (req.query.q as string)?.trim();
       if (!q) {
@@ -65,10 +72,10 @@ export class UserElasticController implements IUserElasticController {
         return;
       }
       const ids = await service.adminSearch(q);
-      logger.info(`Admin Search result: ${JSON.stringify(ids)}`)
+      logger.info(`Admin Search result: ${JSON.stringify(ids)}`);
       res.json({ userIds: ids });
     } catch (err: any) {
-      next(err)
+      next(err);
     }
-  }
+  };
 }

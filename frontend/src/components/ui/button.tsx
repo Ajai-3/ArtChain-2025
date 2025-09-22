@@ -22,16 +22,20 @@ const buttonVariants = cva(
         main: "bg-main-color text-white shadow hover:bg-main-color/90",
         transparant: "bg-transparent hover:bg-transparent",
         profileMessage:
-          "px-3 py-1 h-1 text-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm text-white hover:bg-zinc-600 dark:hover:bg-zinc-700  px-3 py-1 text-sm",
-        support: "px-3 py-1 h-1 text-sm bg-main-color hover:bg-main-color-dark",
-        unSupport: "px-3 py-1 h-1 text-sm bg-transparant",
-        yellow: "bg-yellow-500 hover:bg-yellow-600"
+          "px-4 py-1 h-1 text-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm text-white hover:bg-zinc-600 dark:hover:bg-zinc-700",
+        support: "px-4 py-1 h-1 text-sm bg-main-color hover:bg-main-color-dark",
+        unSupport: "px-4 py-1 h-1 text-sm bg-zinc-500 dark:bg-zinc-800 shadow-sm text-white hover:bg-zinc-600 dark:hover:bg-zinc-700",
+        yellow: "bg-yellow-500 hover:bg-yellow-600",
+        green: "bg-lime-600 hover:bg-lime-700",
       },
       size: {
         default: "h-9 px-4 py-4",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9",
+        support: "px-4 py-[.4rem] h-auto text-sm",
+        unSupport: "px-4 py-[.4rem] h-auto text-sm",
+        profileMessage: "px-4 py-[.4rem] h-auto text-sm"
       },
     },
     defaultVariants: {

@@ -1,28 +1,11 @@
 import React, { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../components/ui/table";
+import { LayoutDashboard } from "lucide-react";
 import { Button } from "../../../components/ui/button";
-import { Skeleton } from "../../../components/ui/skeleton";
-import { Input } from "../../../components/ui/input";
 import { useDebounce } from "../../../hooks/useDebounce";
-import { useToggleBanUserMutation } from "../../../api/admin/user-management/mutations";
-import { useGetAllUsers } from "../../../api/admin/user-management/queries";
-import { FileDown, LayoutDashboard, Loader2, User } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../../components/ui/select";
-import UserFilters from "../components/userManagement/UserFilters";
 import UserTable from "../components/userManagement/UserTable";
+import UserFilters from "../components/userManagement/UserFilters";
+import { useGetAllUsers } from "../hooks/user-management/useGetAllUsers";
+import { useToggleBanUserMutation } from "../hooks/user-management/useToggleBanUserMutation";
 
 const UserManagement: React.FC = () => {
   const [page, setPage] = useState(1);
@@ -35,8 +18,11 @@ const UserManagement: React.FC = () => {
   const toggleBanMutation = useToggleBanUserMutation();
   const { data, isLoading } = useGetAllUsers({
     page,
-    limit: 10,
+    limit: 6,
     search: debouncedSearch,
+    role: userTypeFilter,   
+  status: statusFilter,   
+  plan: roleFilter,
   });
 
   const totalPages = data?.meta
@@ -116,7 +102,7 @@ const UserManagement: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="mb-4">
-        <div className="flex gap-2 items-center ">
+        <div className="flex gap-2 items-center">
           <LayoutDashboard />
           <h1 className="text-2xl font-bold "> User Management</h1>
         </div>
@@ -138,27 +124,21 @@ const UserManagement: React.FC = () => {
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
       />
-
       <UserTable
         users={data?.data || []}
         isLoading={isLoading}
         page={page}
         totalPages={totalPages}
         onPageChange={setPage}
+        limit={6}
         toggleBan={(userId) => {
-          const user = data?.data.find((u: any) => u.id === userId);
-          const action = user.status === "banned" ? "unban" : "ban";
-          if (confirm(`Are you sure you want to ${action} ${user.name}?`)) {
-            toggleBanMutation.mutate({ userId });
-          }
+          toggleBanMutation.mutate({ userId });
         }}
         isToggling={(userId) =>
           toggleBanMutation.isPending &&
           toggleBanMutation.variables?.userId === userId
         }
       />
-
-
     </div>
   );
 };

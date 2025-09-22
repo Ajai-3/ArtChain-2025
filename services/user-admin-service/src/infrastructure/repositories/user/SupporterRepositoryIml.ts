@@ -1,7 +1,7 @@
-import { prisma } from '../../db/prisma';
-import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
-import { ISupporterRepository } from '../../../domain/repositories/user/ISupporterRepository';
-import { UserPreview } from '../../../types/UserPreview';
+import { prisma } from "../../db/prisma";
+import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
+import { ISupporterRepository } from "../../../domain/repositories/user/ISupporterRepository";
+import { UserPreview } from "../../../types/UserPreview";
 
 export class SupporterRepositoryImpl
   extends BaseRepositoryImpl
@@ -14,11 +14,11 @@ export class SupporterRepositoryImpl
     supportingCount: number;
   }> {
     const supportersCount = await this.model.count({
-      where: { targetUserId: userId },
+      where: { targetUserId: userId , supporterId: { not: userId }, },
     });
 
     const supportingCount = await this.model.count({
-      where: { supporterId: userId },
+      where: { supporterId: userId, targetUserId: { not: userId },  },
     });
 
     return { supportersCount, supportingCount };
@@ -63,10 +63,10 @@ export class SupporterRepositoryImpl
 
   async getSupporters(
     userId: string,
-    page?: number,
-    limit?: number
+    page = 1,
+    limit = 10
   ): Promise<UserPreview[]> {
-    const skip = page && limit ? (page - 1) * limit : undefined;
+    const skip = (page - 1) * limit;
 
     const supporters = await this.model.findMany({
       where: { targetUserId: userId },
@@ -91,10 +91,10 @@ export class SupporterRepositoryImpl
 
   async getSupporting(
     userId: string,
-    page?: number,
-    limit?: number
+    page = 1,
+    limit = 10
   ): Promise<UserPreview[]> {
-    const skip = page && limit ? (page - 1) * limit : undefined;
+    const skip = (page - 1) * limit;
 
     const supporting = await this.model.findMany({
       where: { supporterId: userId },

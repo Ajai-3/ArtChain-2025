@@ -1,6 +1,7 @@
 import { tokenService } from "../service/tokenService";
 import { Request, Response, NextFunction } from "express";
 import { ERROR_MESSAGES, ForbiddenError, HttpStatus, UnauthorizedError } from "art-chain-shared";
+import { logger } from "../utils/logger";
 
 
 export const adminAuth = async (
@@ -15,6 +16,7 @@ export const adminAuth = async (
     if (!accessToken) {
       throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
+    console.log(accessToken)
 
     const decoded = tokenService.verifyAccessToken(accessToken);
 
@@ -26,7 +28,9 @@ export const adminAuth = async (
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN_REQUIRED);
     }
 
+    
     (req as any).user = decoded;
+    logger.info(`Admin auth middleware called ${req.path} - ${req.method}`)
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {

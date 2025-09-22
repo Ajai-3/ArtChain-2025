@@ -3,7 +3,7 @@ import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { RefreshTokenResultDto } from './../../../../domain/dtos/user/auth/RefreshTokenResultDto';
-import { IRefreshTokenUserUseCase } from '../../../../domain/usecases/user/auth/IRefreshTokenUserUseCase';
+import { IRefreshTokenUseCase } from '../../../../domain/usecases/user/auth/IRefreshTokenUseCase';
 import {
   BadRequestError,
   ERROR_MESSAGES,
@@ -11,7 +11,7 @@ import {
   UnauthorizedError,
 } from 'art-chain-shared';
 
-export class RefreshTokenUserUseCase implements IRefreshTokenUserUseCase {
+export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
   constructor(private _userRepo: IUserRepository) {}
 
   async execute(refreshToken: string): Promise<RefreshTokenResultDto> {

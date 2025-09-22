@@ -1,0 +1,51 @@
+import { BadRequestError, NotFoundError } from "art-chain-shared";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { USER_MESSAGES } from "../../../../constants/userMessages";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
+import { GetUserProfileRequestDto } from "../../../../domain/dtos/user/profile/GetUserProfileRequestDto";
+
+export class GetUserProfileUseCase {
+  constructor(
+    private _userRepo: IUserRepository,
+    private _supporterRepo: ISupporterRepository
+  ) {}
+
+  async execute(
+    data: GetUserProfileRequestDto
+  ): Promise<GetUserProfileResultDto> {
+    const { username, currentUserId } = data;
+
+    if (!username) {
+      throw new BadRequestError(USER_MESSAGES.USERNAME_REQUIRED);
+    }
+
+    const user = await this._userRepo.findByUsername(username);
+    if (!user) {
+      throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
+    }
+
+    const isCurrentUser = currentUserId
+      ? user.id.toString() === currentUserId
+      : false;
+
+    let isSupporting = false;
+    if (!isCurrentUser && currentUserId) {
+      isSupporting = await this._supporterRepo.isSupporting(
+        currentUserId,
+        user.id
+      );
+    }
+
+    const { supportersCount, supportingCount } =
+      await this._supporterRepo.getUserSupportersAndSupportingCounts(user.id);
+
+    return {
+      user,
+      isCurrentUser,
+      isSupporting: isCurrentUser ? undefined : isSupporting,
+      supportingCount,
+      supportersCount,
+    };
+  }
+}

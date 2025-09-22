@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
-import { FileDown, User } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../../components/ui/select";
+import { FileDown } from "lucide-react";
 import ArtistRequestsModal from "./ArtistRequestModal";
+import ExportModal from "../../../../components/modals/ExportModal";
 
 interface UserFiltersProps {
   search: string;
@@ -26,8 +33,22 @@ const UserFilters: React.FC<UserFiltersProps> = ({
   statusFilter,
   setStatusFilter,
 }) => {
+  const [exportOpen, setExportOpen] = useState(false);
+
+  const handleExportUsers = ({
+    startDate,
+    endDate,
+    format,
+  }: {
+    startDate: Date;
+    endDate: Date;
+    format: string;
+  }) => {
+    console.log("Exporting USERS:", startDate, endDate, format);
+  };
+
   return (
-    <div className="bg-zinc-950 border border-zinc-800 p-4 rounded-lg mb-3 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+    <div className="bg-zinc-100 dark:bg-zinc-950 border dark:border-zinc-800 p-4 rounded-lg mb-3 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
       <Input
         type="text"
         placeholder="Search by name, email, or username..."
@@ -42,7 +63,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           <SelectValue placeholder="All Roles" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Roles</SelectItem>
+          <SelectItem value="all">All Plans</SelectItem>
           <SelectItem value="free">Free</SelectItem>
           <SelectItem value="pro">Pro</SelectItem>
           <SelectItem value="pro_plus">Pro Plus</SelectItem>
@@ -54,7 +75,7 @@ const UserFilters: React.FC<UserFiltersProps> = ({
           <SelectValue placeholder="All Types" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="all">All Roles</SelectItem>
           <SelectItem value="user">User</SelectItem>
           <SelectItem value="artist">Artist</SelectItem>
         </SelectContent>
@@ -75,10 +96,16 @@ const UserFilters: React.FC<UserFiltersProps> = ({
 
       <div className="flex gap-2 mt-2 sm:mt-0">
         <ArtistRequestsModal />
-        <Button>
+        <Button onClick={() => setExportOpen(true)}>
           <FileDown />
         </Button>
       </div>
+      <ExportModal
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        title="Export Users"
+        onExport={handleExportUsers}
+      />
     </div>
   );
 };

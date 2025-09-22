@@ -10,10 +10,14 @@ interface Props {
 export const NotificationProvider = ({ children }: Props) => {
   const accessToken = useSelector((state: any) => state.user.accessToken);
 
+  console.log(accessToken)
+
   useEffect(() => {
     if (!accessToken) return;
     const socket = initSocket(accessToken, "http://localhost:4005");
     registerSocketEvents(socket);
+
+    console.log("Connected to socket")
 
     return () => {
       disconnectSocket();

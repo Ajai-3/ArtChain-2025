@@ -3,6 +3,9 @@ import { IUserRepository } from '../../../../domain/repositories/user/IUserRepos
 import { CreateArtistRequestDto } from '../../../../domain/dtos/user/artist-request/CreateArtistRequestDto';
 import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
 import { ICreateArtistRequestUseCase } from '../../../../domain/usecases/user/artist-request/ICreateArtistRequestUseCase';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
+import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
 
 export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
   constructor(
@@ -12,6 +15,16 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
 
   async execute(data: CreateArtistRequestDto): Promise<ArtistRequest> {
     const { userId, bio, phone, country } = data;
+
+    const user = await this._userRepo.findById(userId)
+
+    if (!user) {
+      throw new NotFoundError(USER_MESSAGES.USER_NOT_FOUND)
+    }
+
+    if (user.isVerified) {
+      throw new BadRequestError(ARTIST_MESSAGES.ALREADY_ARTIST)
+    }
 
     const newRequest = await this._artistRequestRepo.createArtistRequest({
       userId,

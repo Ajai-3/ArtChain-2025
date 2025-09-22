@@ -8,15 +8,18 @@ import {
   FileEdit,
   Settings,
   LogOut,
+  Tags,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import Logo from "../../../../components/logo/Logo";
-import ConfirmLogoutModal from "../../../../components/modals/ConfirmLogoutModal"; 
-import { useAdminLogoutMutation } from "../../../../api/admin/Auth/mutations";
+import { useAdminLogoutMutation } from "../../hooks/auth/useAdminLogoutMutation";
+import ConfirmModal from "../../../../components/modals/ConfirmModal";
+import { ThemeToggle } from "../../../../components/ThemeToggle";
 
 const adminLinks = [
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/admin/user-management", icon: Users, label: "User Management" },
+  { to: "/admin/category-management", icon: Tags, label: "Category Mangement" },
   { to: "/admin/content", icon: Shield, label: "Content Moderation" },
   { to: "/admin/reports", icon: Flag, label: "Report & Abuse" },
   { to: "/admin/wallet", icon: Wallet, label: "Wallet & Financial" },
@@ -38,7 +41,7 @@ const AdminSideBar: React.FC = () => {
 
   return (
     <>
-      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-16 sm:w-64 flex flex-col bg-secondary-color flex-shrink-0 transition-width duration-300">
+      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-16 sm:w-64 flex flex-col bg-slate-100 dark:bg-secondary-color flex-shrink-0 transition-width duration-300">
         {/* Logo */}
         <div className="mb-4 hidden sm:flex p-2 border-b border-zinc-200 dark:border-zinc-800 justify-center sm:justify-start">
           <Logo />
@@ -64,6 +67,7 @@ const AdminSideBar: React.FC = () => {
           ))}
         </div>
 
+        <ThemeToggle />
         {/* Admin Controls */}
         <NavLink
           to="/admin/controls"
@@ -90,9 +94,13 @@ const AdminSideBar: React.FC = () => {
       </div>
 
       {/* Logout Confirmation Modal */}
-      <ConfirmLogoutModal
+      <ConfirmModal
         isOpen={isLogoutModalOpen}
         onClose={handleCloseModal}
+        title="Confirm Logout"
+        description="Are you sure you want to logout?"
+        confirmText="Logout"
+        confirmVariant="destructive"
         onConfirm={handleConfirmLogout}
       />
     </>

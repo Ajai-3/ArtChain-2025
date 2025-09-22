@@ -1,20 +1,19 @@
-# Use official Node.js LTS image
-FROM node:20-alpine
+FROM node:20
 
-# Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+RUN npm install -g npm@11.6.0
+
 COPY package*.json ./
 
-# Install dependencies
+RUN npm cache clean --force
+
 RUN npm install 
 
-# Copy rest of the source code
 COPY . .
 
-# Expose port
 EXPOSE 4004
 
-# Start the service
 CMD ["npm", "run", "dev"]
