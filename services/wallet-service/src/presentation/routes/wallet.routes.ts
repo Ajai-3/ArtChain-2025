@@ -2,9 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import { walletController } from "../../infrastructure/container/WalletContainer";
 import { transactionController } from "../../infrastructure/container/TransactionContainer";
-import { StripeController } from "../controllers/StripeController";
-
-const stripeController = new StripeController();
+import { stripeController } from "../../infrastructure/container/StripeContainer";
 
 const router = express.Router();
 
