@@ -10,6 +10,7 @@ import {
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import TopUpModal from "./TopUpModal";
+import CurrencyConverter from "./CurrencyConverter";
 
 interface DashboardContentProps {
   balance: number;
@@ -68,38 +69,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
 
         {/* Quick Stats + Currency Converter */}
         <div className="flex flex-col md:flex-row gap-4">
-          <Card className="flex-1 dark:bg-secondary-color border border-zinc-600">
-            <CardHeader>
-              <CardTitle>Currency Converter</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-1">
-              <label>From</label>
-              <Input
-                type="text"
-                value="INR"
-                disabled
-                className="bg-background dark:text-gray-100"
-              />
-              <label>To</label>
-              <Input
-                type="text"
-                value="ArtCoin (AC)"
-                disabled
-                className="bg-main-color/20"
-              />
-              <Input
-                type="number"
-                placeholder="₹1000"
-                className="bg-transparent"
-              />
-              <p className="text-green-400 font-semibold">
-                Converts to 1.34 AC
-              </p>
-              <p className="text-gray-400 text-xs mt-1">
-                Exchange rate: 1 AC = ₹10 INR
-              </p>
-            </CardContent>
-          </Card>
+          <CurrencyConverter />
 
           <Card className="flex-1 dark:bg-secondary-color border border-zinc-600">
             <CardHeader>
