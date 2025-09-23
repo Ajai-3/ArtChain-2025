@@ -31,7 +31,9 @@ export const authRoutesConfig = {
     { path: "/api/v1/upload/delete", methods: ["POST"] },
 
 
-    { path: "/api/v1/wallet", methods: ["POST", "GET", "PATCH"] }
+    { path: "/api/v1/wallet", methods: ["POST", "GET", "PATCH"] },
+    { path: "/api/v1/wallet/stripe/create-checkout-session", methods: ["POST", "GET", "PATCH"] }
+    
   ],
 
   user_optional: [
