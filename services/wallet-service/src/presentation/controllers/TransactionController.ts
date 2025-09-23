@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from "express";
 import { TRANSACTION_MESSAGES } from "../../constants/TransactionMessages";
 import { ITransactionController } from "../interface/ITransactionController";
 
+
 export class TransactionController implements ITransactionController {
   constructor() {}
 
@@ -48,6 +49,7 @@ export class TransactionController implements ITransactionController {
       next(error);
     }
   };
+
 
   //# ================================================================================================================
   //# CREATE TRANSACTION

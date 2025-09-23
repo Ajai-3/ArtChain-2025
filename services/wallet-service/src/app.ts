@@ -8,7 +8,13 @@ import walletRouter from "./presentation/routes/wallet.routes"
 const app = express();
 
 app.use(cookieParser());
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api/v1/wallet/stripe/webhook") {
+    next(); // skip JSON parsing for webhook
+  } else {
+    express.json()(req, res, next);
+  }
+});
 app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
@@ -17,7 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/wallet", walletRouter)
+app.use("/api/v1/wallet", walletRouter)
 
 app.use(createErrorHandler(false));
 

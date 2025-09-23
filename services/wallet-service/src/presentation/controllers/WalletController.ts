@@ -4,8 +4,32 @@ import { Request, Response, NextFunction } from "express";
 import { WALLET_MESSAGES } from "../../constants/WalletMessages";
 import { IWalletController } from "../interface/IWalletController";
 
+
+
 export class WalletController implements IWalletController {
   constructor() {}
+
+//   createStripePaymentIntent = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const userId = req.headers["x-user-id"] as string;
+//       const { amount } = req.body;
+//       const paymentIntent = await walletService.createStripePaymentIntent(userId, amount);
+//       return res.status(HttpStatus.OK).json({ clientSecret: paymentIntent.client_secret });
+//     } catch (err) {
+//       next(err);
+//     }
+//   };
+
+//   confirmTopUp = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const userId = req.headers["x-user-id"] as string;
+//       const { amount } = req.body;
+//       const result = await walletService.topUpWalletAfterPayment(userId, amount);
+//       return res.status(HttpStatus.OK).json(result);
+//     } catch (err) {
+//       next(err);
+//     }
+//   };
 
   //# ================================================================================================================
   //# GET WALLET
@@ -22,12 +46,16 @@ export class WalletController implements IWalletController {
     try {
       const userId = req.headers["x-user-id"] as string;
       logger.info(`[WalletController] Fetching wallet for userId: ${userId}`);
-      
+
       // Your logic to get wallet goes here
       // const wallet = await walletRepo.getByUserId(userId);
 
-      logger.info(`[WalletController] Successfully fetched wallet for userId: ${userId}`);
-      return res.status(HttpStatus.OK).json({ message: WALLET_MESSAGES.FETCH_SUCCESS});
+      logger.info(
+        `[WalletController] Successfully fetched wallet for userId: ${userId}`
+      );
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: WALLET_MESSAGES.FETCH_SUCCESS });
     } catch (error) {
       logger.error(`[WalletController] Error in getting wallet: ${error}`);
       next(error);
@@ -49,12 +77,16 @@ export class WalletController implements IWalletController {
     try {
       const userId = req.headers["x-user-id"] as string;
       logger.info(`[WalletController] Creating wallet for userId: ${userId}`);
-      
+
       // Your logic to create wallet goes here
       // const wallet = await walletRepo.create(userId);
 
-      logger.info(`[WalletController] Wallet created successfully for userId: ${userId}`);
-      return res.status(HttpStatus.CREATED).json({ message: WALLET_MESSAGES.CREATE_SUCCESS });
+      logger.info(
+        `[WalletController] Wallet created successfully for userId: ${userId}`
+      );
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: WALLET_MESSAGES.CREATE_SUCCESS });
     } catch (error) {
       logger.error(`[WalletController] Error in creating wallet: ${error}`);
       next(error);
@@ -76,13 +108,21 @@ export class WalletController implements IWalletController {
     try {
       const userId = req.headers["x-user-id"] as string;
       const updateData = req.body;
-      logger.info(`[WalletController] Updating wallet for userId: ${userId} with data: ${JSON.stringify(updateData)}`);
-      
+      logger.info(
+        `[WalletController] Updating wallet for userId: ${userId} with data: ${JSON.stringify(
+          updateData
+        )}`
+      );
+
       // Your logic to update wallet goes here
       // const wallet = await walletRepo.update(userId, updateData);
 
-      logger.info(`[WalletController] Wallet updated successfully for userId: ${userId}`);
-      return res.status(HttpStatus.OK).json({ message: WALLET_MESSAGES.UPDATE_SUCCESS });
+      logger.info(
+        `[WalletController] Wallet updated successfully for userId: ${userId}`
+      );
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: WALLET_MESSAGES.UPDATE_SUCCESS });
     } catch (error) {
       logger.error(`[WalletController] Error updating wallet: ${error}`);
       next(error);
