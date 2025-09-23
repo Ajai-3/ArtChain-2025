@@ -7,23 +7,19 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../components/ui/card";
-import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import TopUpModal from "./TopUpModal";
 import CurrencyConverter from "./CurrencyConverter";
+import type { Wallet } from "../../hooks/wallet/useGetWallet";
 
 interface DashboardContentProps {
-  balance: number;
-  inrValue: number;
-  quickStats: Record<string, string | number>;
+  wallet: Wallet;
 }
 
-const DashboardContent: React.FC<DashboardContentProps> = ({
-  balance,
-  inrValue,
-  quickStats,
-}) => {
-  const [showBalance, setShowBalance] = useState(false);
+const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
+  const [showBalance, setShowBalance] = useState(true);
+
+  const { balance, inrValue, quickStats } = wallet;
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
@@ -32,17 +28,17 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
         <Card className="bg-main-color/20 border border-main-color rounded-lg p-0 shadow-md relative">
           <CardHeader>
             <div className="flex justify-between items-center">
-                <CardTitle>
-              Balance{" "}
-              <span className="text-yellow-400 text-sm">★ Real-time</span>
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowBalance(!showBalance)}
-            >
-              {showBalance ? <EyeOff /> : <Eye />}
-            </Button>
+              <CardTitle>
+                Balance{" "}
+                <span className="text-yellow-400 text-sm">★ Real-time</span>
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowBalance(!showBalance)}
+              >
+                {showBalance ? <EyeOff /> : <Eye />}
+              </Button>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-2">
@@ -74,10 +70,14 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
           <Card className="flex-1 dark:bg-secondary-color border border-zinc-600">
             <CardHeader>
               <CardTitle>Quick Stats</CardTitle>
+              <p className="text-xs dark:text-zinc-400">This Month</p>
             </CardHeader>
             <CardContent className="space-y-2">
               {Object.entries(quickStats).map(([key, value]) => (
-                <div className="flex justify-between capitalize" key={key}>
+                <div
+                  className="flex justify-between capitalize border-b border-zinc-800 py-1"
+                  key={key}
+                >
                   <span>{key.replace(/([A-Z])/g, " $1")}</span>
                   <span
                     className={
@@ -90,7 +90,9 @@ const DashboardContent: React.FC<DashboardContentProps> = ({
                         : ""
                     }
                   >
-                    {value}
+                    {["earned", "spent", "avgTransaction"].includes(key)
+                      ? `${value} AC`
+                      : value}
                   </span>
                 </div>
               ))}

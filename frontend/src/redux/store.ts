@@ -4,6 +4,7 @@ import storage from "redux-persist/lib/storage";
 import userSlice from "./slices/userSlice";
 import adminSlice from "./slices/adminSlice";
 import notificationSlice from "./slices/notificationSlice";
+import wallet from "./slices/walletSlice"
 
 const persistConfig = {
   key: "root",
@@ -11,6 +12,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  wallet: wallet,
   user: userSlice,
   admin: adminSlice,
   notification: notificationSlice,

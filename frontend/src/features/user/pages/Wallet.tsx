@@ -3,19 +3,18 @@ import DashboardContent from "../components/wallet/DashboardContent";
 import TransactionsContent from "../components/wallet/TransactionsContent";
 import { Coins } from "lucide-react";
 import HorizontalTabs from "../components/wallet/HorizontalTabs";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../redux/store";
+import { useGetWallet } from "../hooks/wallet/useGetWallet";
 
 const Wallet: React.FC = () => {
-  const balance = 2500;
-  const inrValue = 25000;
+  const wallet = useSelector((state: RootState) => state.wallet)
 
-  const quickStats = { earned: 1250, spent: 850, avgTransaction: 125, roi: "92%", grade: "A" };
-  const transactionSummary = { earned: 1250, spent: 850, netGain: 400 };
-  const transactions = [
-    { id: 1, date: "2025-09-01", type: "Earned", amount: 500 },
-    { id: 2, date: "2025-09-02", type: "Spent", amount: 200 },
-    { id: 3, date: "2025-09-03", type: "Earned", amount: 750 },
-    { id: 4, date: "2025-09-04", type: "Spent", amount: 650 },
-  ];
+  const { data, isLoading, isError } = useGetWallet();
+
+  // Optional: show loading or error state
+  if (isLoading) return <p className="text-center mt-20">Loading wallet...</p>;
+  // if (isError) return <p className="text-center mt-20 text-red-500">Failed to load wallet data.</p>;
 
   return (
     <div className="p-2 sm:p-4 dark:text-gray-100">
@@ -37,8 +36,8 @@ const Wallet: React.FC = () => {
 
       {/* Tabs */}
       <HorizontalTabs
-        dashboardContent={<DashboardContent balance={balance} inrValue={inrValue} quickStats={quickStats} />}
-        transactionsContent={<TransactionsContent transactionSummary={transactionSummary} transactions={transactions} />}
+        dashboardContent={<DashboardContent wallet={wallet} />}
+        transactionsContent={<TransactionsContent transactionSummary={wallet.transactionSummary} transactions={wallet.transactions} />}
       />
     </div>
   );
