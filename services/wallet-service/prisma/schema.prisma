@@ -22,14 +22,14 @@ model Transaction {
   id          String           @id @default(uuid())
   walletId    String
   type        TransactionType  // credited or debited
-  amount      Decimal          // safer than Float for money
+  amount      Float           // safer than Float for money
   method      Method           // stripe or razorpay
   status      TransactionStatus @default(pending)
-  externalId  String?          // stripeSessionId / razorpayOrderId
-  description String?
+  externalId  String           @unique  // stripeSessionId / razorpayOrderId
+  description String
   meta        Json?            // flexible storage for raw payload (optional)
   createdAt   DateTime         @default(now())
-
+  updatedAt DateTime @default(now())
   wallet Wallet @relation(fields: [walletId], references: [id])
 }
 

@@ -34,7 +34,9 @@ export class CreateStripeCheckoutSessionUseCase
       client_reference_id: userId,
       success_url: `${config.client_url}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${config.client_url}/wallet`,
-      metadata: { userId, amount },
+      payment_intent_data: {
+        metadata: { userId },
+      },
     });
 
     return session;
