@@ -157,7 +157,7 @@ const SuccessPage = () => {
               </h3>
               <div className="space-y-3">
                 {[
-                  ["Payment ID", session.sessionId],
+                  ["Payment ID", session.paymentId],
                   ["User ID", session.userId],
                   ["Status", session.paymentStatus || "Completed"],
                   ["Date", new Date().toLocaleDateString()],
@@ -206,6 +206,7 @@ const SuccessPage = () => {
               {/* Action Button */}
               <div className="mt-6">
                 <Button
+                variant={"outline"}
                   className="w-full bg-main-color hover:bg-main-color-dark h-11 text-base font-semibold flex items-center justify-center gap-2 text-white"
                   onClick={() => navigate("/wallet")}
                 >
@@ -240,7 +241,7 @@ const SuccessPage = () => {
         <div className="mt-6 bg-gray-50 dark:bg-zinc-800/50 backdrop-blur-lg border border-gray-200 dark:border-zinc-700 rounded-xl p-4 text-center">
           <p className="text-gray-600 dark:text-gray-400 text-sm">
             <span className="font-semibold text-main-color">Terms:</span> You
-            agree to share information with ArtChain and Razorpay, adhering to
+            agree to share information with ArtChain and Stripe, adhering to
             applicable laws.
           </p>
         </div>
@@ -250,7 +251,7 @@ const SuccessPage = () => {
       <footer className="relative max-w-3xl mx-auto mt-4 text-center z-10 px-4">
         <p className="text-gray-600 dark:text-gray-500 text-xs sm:text-sm">
           © 2024 ArtChain. All rights reserved. Secure payments powered by
-          Razorpay.
+          Stripe.
         </p>
       </footer>
     </div>

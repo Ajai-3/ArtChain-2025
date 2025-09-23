@@ -1,11 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 
-export interface StripeLineItem {
-  name: string;
-  quantity: number;
-  amount: number;
-}
 
 export interface StripeSessionResponse {
   sessionId: string;
@@ -14,10 +9,10 @@ export interface StripeSessionResponse {
   userId: string;
   paymentMethod?: string;
   paymentStatus?: string;
+  paymentId?: string;
   created?: number;
   receiptUrl?: string;
   customerEmail?: string;
-  lineItems?: StripeLineItem[];
 }
 
 export const useStripeSession = (sessionId: string | null) => {
