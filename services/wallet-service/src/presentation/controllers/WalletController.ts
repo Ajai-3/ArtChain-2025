@@ -3,11 +3,12 @@ import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
 import { WALLET_MESSAGES } from "../../constants/WalletMessages";
 import { IWalletController } from "../interface/IWalletController";
+import { GetWalletUseCase } from "../../application/usecases/wallet/GetWalletUseCase";
 
 
 
 export class WalletController implements IWalletController {
-  constructor() {}
+  constructor(private readonly _getWalletUseCase: GetWalletUseCase) {}
 
 
   //# ================================================================================================================
@@ -26,15 +27,20 @@ export class WalletController implements IWalletController {
       const userId = req.headers["x-user-id"] as string;
       logger.info(`[WalletController] Fetching wallet for userId: ${userId}`);
 
-      // Your logic to get wallet goes here
-      // const wallet = await walletRepo.getByUserId(userId);
+      const walletData = await this._getWalletUseCase.execute(userId)
+
+      if (!walletData) {
+        return res.status(HttpStatus.NOT_FOUND).json({
+          message: WALLET_MESSAGES.NOT_FOUND,
+        });
+      }
 
       logger.info(
         `[WalletController] Successfully fetched wallet for userId: ${userId}`
       );
       return res
         .status(HttpStatus.OK)
-        .json({ message: WALLET_MESSAGES.FETCH_SUCCESS });
+        .json({ message: WALLET_MESSAGES.FETCH_SUCCESS, wallet: walletData, });
     } catch (error) {
       logger.error(`[WalletController] Error in getting wallet: ${error}`);
       next(error);

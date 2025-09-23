@@ -1,3 +1,5 @@
+import { Transaction } from "./Transaction";
+
 export class Wallet {
   constructor(
     public readonly id: string,

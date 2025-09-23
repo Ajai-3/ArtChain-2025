@@ -4,7 +4,8 @@ import { config } from "../../infrastructure/config/env";
 import { IWalletRepository } from "../../domain/repository/IWalletRepository";
 import { ITransactionRepository } from "../../domain/repository/ITransactionRepository";
 import {
-  Method,
+  TransactionMethod,
+  TransactionCategory,
   TransactionStatus,
   TransactionType,
 } from "../../domain/entities/Transaction";
@@ -77,12 +78,12 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
     await this._transactionRepo.create({
       walletId: wallet.id,
       type: "credited" as TransactionType,
+      category: "TOP_UP" as TransactionCategory,
       amount: amountInArtCoins,
-      method: "stripe" as Method,
+      method: "stripe" as TransactionMethod,
       status: "success" as TransactionStatus,
       externalId,
       description: "Wallet top-up via Stripe (Art Coins)",
-      meta: session,
     });
 
     await this._walletRepo.update(

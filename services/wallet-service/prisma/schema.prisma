@@ -22,10 +22,11 @@ model Transaction {
   id          String           @id @default(uuid())
   walletId    String
   type        TransactionType  // credited or debited
+  category    TransactionCategory @default(OTHER) // Distinguish between top-ups, sales, etc.
   amount      Float           // safer than Float for money
   method      Method           // stripe or razorpay
   status      TransactionStatus @default(pending)
-  externalId  String           @unique  // stripeSessionId / razorpayOrderId
+  externalId  String?           @unique  // stripeSessionId / razorpayOrderId
   description String
   meta        Json?            // flexible storage for raw payload (optional)
   createdAt   DateTime         @default(now())
@@ -42,6 +43,16 @@ enum WalletStatus {
 enum TransactionType {
   credited
   debited
+}
+
+enum TransactionCategory {
+  TOP_UP       // User adding money
+  SALE         // Earnings from selling art
+  PURCHASE     // Spending on purchases
+  WITHDRAWAL   // Taking money out
+  COMMISSION   // Platform earnings
+  REFUND       // Money returned
+  OTHER        // Miscellaneous
 }
 
 enum Method {

@@ -8,6 +8,8 @@ export interface ITransactionRepository extends IBaseRepository<Transaction> {
     page?: number,
     limit?: number,
     method?: string,
-    type?: string
-  ): Promise<Transaction[]>;
+    type?: string,
+    status?: string,
+    category?: string
+  ): Promise<{ transactions: Transaction[]; total: number }>;
 }

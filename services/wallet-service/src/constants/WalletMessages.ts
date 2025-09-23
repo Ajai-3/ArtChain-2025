@@ -6,6 +6,7 @@ export enum WALLET_MESSAGES {
   TRANSACTION_ALREADY_EXIST = "Transaction alredy exist.",
   STRIPE_SGNATURE_MISSING = "Missing Stripe signature",
   INVALID_WEBHOOK_SIGNATURE = "Invalid webhook signature",
+  NOT_FOUND = "Wallet not found",
   WALLET_NOT_FOUND = "Wallet not found",
   ERROR_FETCH = "Error fetching wallet",
   ERROR_CREATE = "Error creating wallet",

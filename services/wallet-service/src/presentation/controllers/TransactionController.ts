@@ -1,12 +1,15 @@
+import { TransactionMethod, TransactionCategory, TransactionType, TransactionStatus } from './../../domain/entities/Transaction';
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
 import { TRANSACTION_MESSAGES } from "../../constants/TransactionMessages";
 import { ITransactionController } from "../interface/ITransactionController";
+import { GetTransactionsUseCase } from '../../application/usecases/transaction/GetTransactionsUseCase';
+import { GetTransactionsDto } from '../../domain/dto/transaction/GetTransactionsDto';
 
 
 export class TransactionController implements ITransactionController {
-  constructor() {}
+  constructor(private readonly _getTransactionsUseCase: GetTransactionsUseCase) {}
 
   //# ================================================================================================================
   //# GET TRANSACTIONS
@@ -26,22 +29,26 @@ export class TransactionController implements ITransactionController {
       const userId = req.headers["x-user-id"] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
-      const method = req.query.method as "stripe" | "razorpay" | undefined;
-      const type = req.query.type as "credited" | "debited" | undefined;
+      const status = req.query.status as TransactionStatus
+      const method = req.query.method as TransactionMethod
+      const category =  req.query.category as TransactionCategory
+      const type = req.query.type as TransactionType
 
       logger.info(
         `[TransactionController] Fetching transactions for userId: ${userId} | page: ${page}`
       );
 
-      // Your logic to fetch transactions goes here
-      // const transactions = await transactionRepo.getByWalletId(userId, page, limit);
+
+      const dto: GetTransactionsDto = {userId, page, limit, method, category, status, type}
+      console.log(dto)
+      const transactionData = await this._getTransactionsUseCase.execute(dto)
 
       logger.info(
         `[TransactionController] Successfully fetched transactions for userId: ${userId}`
       );
       return res
         .status(HttpStatus.OK)
-        .json({ message: TRANSACTION_MESSAGES.FETCH_SUCCESS });
+        .json({ message: TRANSACTION_MESSAGES.FETCH_SUCCESS, ...transactionData });
     } catch (error) {
       logger.error(
         `[TransactionController] Error fetching transactions: ${error}`
@@ -66,7 +73,7 @@ export class TransactionController implements ITransactionController {
   ): Promise<Response | void> => {
     try {
       const userId = req.headers["x-user-id"] as string;
-      const { type, amount, description } = req.body;
+      const { type, category, amount, description } = req.body;
 
       logger.info(
         `[TransactionController] Creating transaction for userId: ${userId} | data: ${JSON.stringify(
