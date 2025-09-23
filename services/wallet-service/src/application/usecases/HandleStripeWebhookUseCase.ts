@@ -1,17 +1,9 @@
 import Stripe from "stripe";
-import { config } from "../../infrastructure/config/env";
 import { IHandleStripeWebhookUseCase } from "../../domain/usecase/IHandleStripeWebhookUseCase";
-
-
+import { config } from "../../infrastructure/config/env";
 
 export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
-  private stripe: Stripe;
-
-  constructor() {
-    this.stripe = new Stripe(config.stripe_secret_key, {
-      apiVersion: "2025-08-27.basil",
-    });
-  }
+  constructor(private readonly _stripe: Stripe) {}
 
   async execute(payload: Buffer, signature: string): Promise<void> {
     if (!signature) throw new Error("Missing Stripe signature");
@@ -19,7 +11,7 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
     let event: Stripe.Event;
 
     try {
-      event = this.stripe.webhooks.constructEvent(
+      event = this._stripe.webhooks.constructEvent(
         payload,
         signature,
         config.stripe_webhook_secret

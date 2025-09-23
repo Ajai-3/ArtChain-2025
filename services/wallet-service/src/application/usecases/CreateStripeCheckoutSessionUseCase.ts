@@ -5,13 +5,7 @@ import { ICreateStripeCheckoutSessionUseCase } from "../../domain/usecase/ICreat
 export class CreateStripeCheckoutSessionUseCase
   implements ICreateStripeCheckoutSessionUseCase
 {
-  private stripe: Stripe;
-
-  constructor() {
-    this.stripe = new Stripe(config.stripe_secret_key, {
-      apiVersion: "2025-08-27.basil",
-    });
-  }
+  constructor(private readonly _stripe: Stripe) {}
 
   async execute(
     userId: string,
@@ -20,7 +14,7 @@ export class CreateStripeCheckoutSessionUseCase
     if (!userId) throw new Error("Missing user ID");
     if (!amount || amount <= 0) throw new Error("Invalid amount");
 
-    const session = await this.stripe.checkout.sessions.create({
+    const session = await this._stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
         {
