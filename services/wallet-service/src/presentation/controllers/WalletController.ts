@@ -9,27 +9,6 @@ import { IWalletController } from "../interface/IWalletController";
 export class WalletController implements IWalletController {
   constructor() {}
 
-//   createStripePaymentIntent = async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const userId = req.headers["x-user-id"] as string;
-//       const { amount } = req.body;
-//       const paymentIntent = await walletService.createStripePaymentIntent(userId, amount);
-//       return res.status(HttpStatus.OK).json({ clientSecret: paymentIntent.client_secret });
-//     } catch (err) {
-//       next(err);
-//     }
-//   };
-
-//   confirmTopUp = async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const userId = req.headers["x-user-id"] as string;
-//       const { amount } = req.body;
-//       const result = await walletService.topUpWalletAfterPayment(userId, amount);
-//       return res.status(HttpStatus.OK).json(result);
-//     } catch (err) {
-//       next(err);
-//     }
-//   };
 
   //# ================================================================================================================
   //# GET WALLET
