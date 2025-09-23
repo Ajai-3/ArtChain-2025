@@ -51,10 +51,14 @@ export class StripeController {
     }
   };
 
-   handleWebhook = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  handleWebhook = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const sig = req.headers["stripe-signature"]!;
-      console.log(sig)
+      console.log(sig);
       let event;
 
       try {
@@ -67,7 +71,7 @@ export class StripeController {
         console.error("Webhook signature verification failed:", err);
         return res.sendStatus(400);
       }
-      console.log(event)
+      console.log(event);
 
       if (event.type === "checkout.session.completed") {
         const session = event.data.object as Stripe.Checkout.Session;
@@ -88,34 +92,27 @@ export class StripeController {
     }
   };
 
+  getSession = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(req.params.id);
 
-getSession = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
-  try {
-    const session = await stripe.checkout.sessions.retrieve(req.params.id);
-
-    // Fetch line items
-    const lineItems = await stripe.checkout.sessions.listLineItems(req.params.id, {
-      limit: 100,
-    });
-
-    return res.json({
-      sessionId: session.id,
-      amountPaid: session.amount_total! / 100,
-      currency: session.currency,
-      userId: session.client_reference_id,
-      paymentMethod: session.payment_method_types?.[0],
-      paymentStatus: session.payment_status,
-      created: session.created,
-      customerEmail: session.customer_details?.email,
-      lineItems: lineItems.data.map(item => ({
-        name: item.description,
-        quantity: item.quantity,
-        amount: item.amount_total! / 100,
-      })),
-    });
-  } catch (error) {
-    res.status(500).json({ error });
-  }
-};
-
+      return res.json({
+        sessionId: session.id,
+        currency: session.currency,
+        userId: session.client_reference_id,
+        paymentMethod: session.payment_method_types?.[0],
+        paymentStatus: session.payment_status,
+        amountPaid: Number((session.amount_total! / 100).toFixed(2)),
+        paymentId: session.payment_intent,
+        created: session.created,
+        customerEmail: session.customer_details?.email,
+      });
+    } catch (error) {
+      res.status(500).json({ error });
+    }
+  };
 }

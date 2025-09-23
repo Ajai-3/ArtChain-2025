@@ -19,13 +19,16 @@ model Wallet {
 }
 
 model Transaction {
-  id          String    @id @default(uuid())
+  id          String           @id @default(uuid())
   walletId    String
-  type        TransactionType    // "credited" or "debited"
-  amount      Float
-  method      Method
+  type        TransactionType  // credited or debited
+  amount      Decimal          // safer than Float for money
+  method      Method           // stripe or razorpay
+  status      TransactionStatus @default(pending)
+  externalId  String?          // stripeSessionId / razorpayOrderId
   description String?
-  createdAt   DateTime  @default(now())
+  meta        Json?            // flexible storage for raw payload (optional)
+  createdAt   DateTime         @default(now())
 
   wallet Wallet @relation(fields: [walletId], references: [id])
 }
@@ -35,14 +38,22 @@ enum WalletStatus {
   locked   
   suspended
 }
+
 enum TransactionType {
   credited
   debited
 }
 
 enum Method {
-  strpe
+  stripe
   razorpay
 }
+
+enum TransactionStatus {
+  pending
+  success
+  failed
+}
+
 
 
