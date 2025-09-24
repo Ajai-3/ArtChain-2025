@@ -11,6 +11,10 @@ export class CategoryRepositoryImpl
     super(CategorytModel);
   }
 
+   async findById(id: string): Promise<Category | null> {
+    return await CategorytModel.findById(id).lean<Category | null>();
+  }
+
   async findByName(name: string): Promise<any> {
     const category = await CategorytModel.findOne({ name });
     return category;
