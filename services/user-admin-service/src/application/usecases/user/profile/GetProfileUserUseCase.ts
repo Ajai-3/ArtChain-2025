@@ -4,11 +4,13 @@ import { USER_MESSAGES } from "../../../../constants/userMessages";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { GetUserProfileRequestDto } from "../../../../domain/dtos/user/profile/GetUserProfileRequestDto";
+import { ArtService } from "../../../../infrastructure/http/ArtService";
 
 export class GetUserProfileUseCase {
   constructor(
-    private _userRepo: IUserRepository,
-    private _supporterRepo: ISupporterRepository
+    private readonly _artService: ArtService,
+    private readonly _userRepo: IUserRepository,
+    private readonly _supporterRepo: ISupporterRepository
   ) {}
 
   async execute(
@@ -40,10 +42,13 @@ export class GetUserProfileUseCase {
     const { supportersCount, supportingCount } =
       await this._supporterRepo.getUserSupportersAndSupportingCounts(user.id);
 
+    const artWorkCount = await this._artService.getUserArtCount(user.id);
+
     return {
       user,
       isCurrentUser,
       isSupporting: isCurrentUser ? undefined : isSupporting,
+      artWorkCount,
       supportingCount,
       supportersCount,
     };

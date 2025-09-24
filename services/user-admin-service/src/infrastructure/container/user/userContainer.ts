@@ -12,8 +12,10 @@ import { GetUserSupportingUseCase } from "../../../application/usecases/user/use
 import { GetUsersByIdsUserUseCase } from "../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase";
 import { UpdateProfileUserUseCase } from "../../../application/usecases/user/profile/UpdateProfileUserUseCase";
 import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+import { ArtService } from "../../http/ArtService";
 
 // Repositories
+const artService = new ArtService()
 const userRepo = new UserRepositoryImpl();
 const supporterRepo = new SupporterRepositoryImpl();
 
@@ -30,6 +32,7 @@ const getUserSupportingUseCase = new GetUserSupportingUseCase(
   supporterRepo
 );
 const getUserProfileUseCase = new GetUserProfileUseCase(
+  artService,
   userRepo,
   supporterRepo
 );

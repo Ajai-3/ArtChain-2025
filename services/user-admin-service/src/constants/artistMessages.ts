@@ -10,5 +10,6 @@ export const ARTIST_MESSAGES = {
   ARTIST_REQUEST_APPROVED: "Artist request approved",
   ARTIST_REQUEST_REJECTED: "Artist request rejected",
   ARTIST_REQUEST_REJECT_REASON_NOT_FOUND: "Artist request reject reason not found",
-  ARTISRT_REQUEST_NOT_FOUND: "Artist request not found"
+  ARTISRT_REQUEST_NOT_FOUND: "Artist request not found",
+  REQUEST_ALREADY_EXISTS: "Request already exist"
 } as const;
