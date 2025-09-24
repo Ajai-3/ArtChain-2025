@@ -40,12 +40,19 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
   const { user } = useSelector((state: RootState) => state?.user) as {
     user: User | null;
   };
+  const { supportersCount, supportingCount, artWorkCount } = useSelector(
+    (state: RootState) => state.user
+  );
+
+  const [communityChecked, setCommunityChecked] = useState(false);
+  const [artworkChecked, setArtworkChecked] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+
   const mutation = useCreateArtistRequestMutation();
 
   const [phoneNumber, setPhoneNumber] = useState("");
   const [bio, setBio] = useState("");
   const [country, setCountry] = useState("");
-  const [termsAccepted, setTermsAccepted] = useState(false);
   const [errors, setErrors] = useState<{
     phone?: string;
     bio?: string;
@@ -257,12 +264,56 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
                 )}
               </div>
 
+              <div className="flex flex-col space-y-2 mt-4">
+                <label className="text-sm font-medium">
+                  Eligibility Requirements:
+                </label>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={communityChecked}
+                    onChange={(e) =>
+                      setCommunityChecked(
+                        supportersCount >= 20 && supportingCount >= 20
+                          ? e.target.checked
+                          : false
+                      )
+                    }
+                    disabled={supportersCount < 20 || supportingCount < 20}
+                    className="mt-1"
+                  />
+                  <span className="text-sm">
+                    I have at least 20 supporters ({supportersCount}) and
+                    supportings at least 20 users ({supportingCount})
+                  </span>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    checked={artworkChecked}
+                    onChange={(e) =>
+                      setArtworkChecked(
+                        artWorkCount >= 10 ? e.target.checked : false
+                      )
+                    }
+                    disabled={artWorkCount < 10}
+                    className="mt-1"
+                  />
+                  <span className="text-sm">
+                    I have at least 10 artworks ({artWorkCount})
+                  </span>
+                </div>
+              </div>
+
               <div className="flex items-start space-x-2 mt-4">
                 <input
                   type="checkbox"
                   id="terms"
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
+                  disabled={!(communityChecked && artworkChecked)}
                   className="mt-1"
                 />
                 <label htmlFor="terms" className="text-sm">

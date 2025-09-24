@@ -6,6 +6,7 @@ interface UserState {
   user: User | null;
   isAuthenticated: boolean;
   accessToken: string | null;
+  artWorkCount: number;
   supportingCount: number;
   supportersCount: number;
 }
@@ -14,6 +15,7 @@ const initialState: UserState = {
   user: null,
   isAuthenticated: false,
   accessToken: null,
+  artWorkCount: 0,
   supportingCount: 0,
   supportersCount: 0,
 };
@@ -39,6 +41,9 @@ const userSlice = createSlice({
     updateProfile: (state, action: { payload: { user: User } }) => {
       state.user = action.payload.user;
     },
+    updateArtworkCount: (state, action: { payload: number }) => {
+      state.artWorkCount = action.payload;
+    },
     updateSupportingCount: (state, action: { payload: number }) => {
       state.supportingCount = action.payload;
     },
@@ -49,6 +54,7 @@ const userSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.accessToken = null;
+      state.artWorkCount = 0;
       state.supportingCount = 0;
       state.supportersCount = 0;
       disconnectSocket();
@@ -63,6 +69,7 @@ export const {
   updateProfile,
   updateSupportingCount,
   updateSupportersCount,
+  updateArtworkCount,
   logout,
 } = userSlice.actions;
 export default userSlice.reducer;

@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
   isOwnProfile,
+  artWorkCount,
   supportingCount,
   supportersCount,
   isSupporting,
@@ -232,6 +233,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             </div>
 
             <div className="flex gap-4 cursor-pointer">
+              <p>{artWorkCount} Arts</p>
               <p onClick={handleSupportersModal}>
                 {supportersCount} supporters
               </p>

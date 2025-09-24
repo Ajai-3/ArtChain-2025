@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { useGetUserProfileByUsername } from "./useGetUserProfileByUsername";
-import { setCurrentUser, updateSupportingCount, updateSupportersCount } from "../../../../redux/slices/userSlice";
+import { setCurrentUser, updateSupportingCount, updateSupportersCount, updateArtworkCount } from "../../../../redux/slices/userSlice";
 import type { User } from "../../../../types/users/user/user";
 
 export const useProfileData = (username?: string) => {
   const dispatch = useDispatch();
-  const { user: reduxUser, supportingCount, supportersCount } = useSelector((state: RootState) => state.user);
+  const { user: reduxUser, artWorkCount, supportingCount, supportersCount } = useSelector((state: RootState) => state.user);
 
   const { data, isLoading } = useGetUserProfileByUsername(username);
 
@@ -19,9 +19,13 @@ export const useProfileData = (username?: string) => {
     if (!profileUser || !isOwnProfile) return;
 
     dispatch(setCurrentUser(profileUser));
+    dispatch(updateArtworkCount(data?.data?.artWorkCount ?? 0));
     dispatch(updateSupportingCount(data?.data?.supportingCount ?? 0));
     dispatch(updateSupportersCount(data?.data?.supportersCount ?? 0));
   }, [profileUser, data, dispatch, isOwnProfile]);
+
+const displayArtworkCount = isOwnProfile ? artWorkCount : data?.data?.artWorkCount ?? 0
+
 
   const displaySupportingCount = isOwnProfile
     ? supportingCount
@@ -36,6 +40,7 @@ export const useProfileData = (username?: string) => {
     isLoading,
     isOwnProfile,
     isSupporting,
+    displayArtworkCount,
     displaySupportingCount,
     displaySupportersCount,
   };
