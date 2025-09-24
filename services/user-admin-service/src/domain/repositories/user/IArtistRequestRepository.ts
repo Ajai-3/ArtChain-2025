@@ -3,6 +3,7 @@ import { ArtistRequest } from "../../entities/ArtistRequest";
 
 export interface IArtistRequestRepository
   extends IBaseRepository<ArtistRequest> {
+  findById(id: string): Promise<ArtistRequest | null>;
   createArtistRequest(
     data: Omit<ArtistRequest, "id" | "createdAt" | "reviewedAt">
   ): Promise<ArtistRequest>;

@@ -19,5 +19,7 @@ router.get(
   "/get-artist-requests",
   userManageMentController.getAllArtistRequests
 );
+router.patch("/artist-request/:id/approve", userManageMentController.approveArtistRequest)
+router.patch("/artist-request/:id/reject", userManageMentController.rejectArtistRequest)
 
 export default router;
