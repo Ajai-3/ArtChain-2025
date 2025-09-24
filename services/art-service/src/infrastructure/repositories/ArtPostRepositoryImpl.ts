@@ -17,6 +17,10 @@ export class ArtPostRepositoryImpl
     return art as ArtPost;
   }
 
+  async countByUser(userId: string): Promise<number> {
+    return ArtPostModel.countDocuments({ userId });
+  }
+
   async getAllArt(page = 1, limit = 10): Promise<any[]> {
     const arts = await ArtPostModel.find()
       .sort({ createdAt: -1 })

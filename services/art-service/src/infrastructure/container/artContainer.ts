@@ -1,3 +1,4 @@
+import { CountArtWorkUseCase } from "./../../application/usecase/art/CountArtWorkUseCase";
 import { GetArtByNameUseCase } from "./../../application/usecase/art/GetArtByNameUseCase";
 import { GetAllArtUseCase } from "./../../application/usecase/art/GetAllArtUseCase";
 import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
@@ -16,9 +17,10 @@ const categoryRepo = new CategoryRepositoryImpl();
 // Use Cases
 const getAllArtUseCase = new GetAllArtUseCase(artRepo);
 const getArtByIdUseCase = new GetArtByIdUseCase(artRepo);
-const createArtUseCase = new CreateArtPostUseCase(artRepo, categoryRepo);
+const countArtWorkUseCase = new CountArtWorkUseCase(artRepo);
 const getArtByNameUseCase = new GetArtByNameUseCase(artRepo);
-const artToElasticSearchUseCase = new ArtToElasticSearchUseCase()
+const artToElasticSearchUseCase = new ArtToElasticSearchUseCase();
+const createArtUseCase = new CreateArtPostUseCase(artRepo, categoryRepo);
 
 // Controller
 export const artController = new ArtController(
@@ -26,5 +28,6 @@ export const artController = new ArtController(
   getArtByIdUseCase,
   getAllArtUseCase,
   getArtByNameUseCase,
-  artToElasticSearchUseCase
+  artToElasticSearchUseCase,
+  countArtWorkUseCase
 );

@@ -13,6 +13,7 @@ import { GetAllArtUseCase } from "../../application/usecase/art/GetAllArtUseCase
 import { GetArtByNameUseCase } from "../../application/usecase/art/GetArtByNameUseCase";
 import { publishNotification } from "../../infrastructure/rabbit/rabbit";
 import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToElasticSearchUseCase";
+import { CountArtWorkUseCase } from "../../application/usecase/art/CountArtWorkUseCase";
 
 export class ArtController implements IArtController {
   constructor(
@@ -21,6 +22,7 @@ export class ArtController implements IArtController {
     private readonly _getAllArtUseCase: GetAllArtUseCase,
     private readonly _getArtByNameUseCase: GetArtByNameUseCase,
     private readonly _artToElasticSearchUseCase: ArtToElasticSearchUseCase,
+    private readonly _countArtWorkUseCase: CountArtWorkUseCase
   ) {}
 
   //# ================================================================================================================
@@ -159,14 +161,16 @@ export class ArtController implements IArtController {
       const dto: CreateArtPostDTO = { ...validatedData, userId };
       const createdArt = await this._createArtUseCase.execute(dto);
 
-      const art = await this._artToElasticSearchUseCase.execute(createdArt)
+      const art = await this._artToElasticSearchUseCase.execute(createdArt);
 
-      await publishNotification("art.created", art)
+      await publishNotification("art.created", art);
 
-      console.log("haii", art)
+      console.log("haii", art);
 
       logger.info(
-        `Art created successfully by userId=${userId}, title=${JSON.stringify(createdArt)}`
+        `Art created successfully by userId=${userId}, title=${JSON.stringify(
+          createdArt
+        )}`
       );
 
       return res
@@ -206,6 +210,36 @@ export class ArtController implements IArtController {
       });
     } catch (error) {
       logger.error("Error in updateArt", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# COUNT ART
+  //# ================================================================================================================
+  //# GET /api/v1/art/count/:userId
+  //# Request params: userId
+  //# This controller help you to count the artwork of the user.
+  //# ================================================================================================================
+  countArtwork = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { userId } = req.params;
+
+      const artworksCount = await this._countArtWorkUseCase.execute(userId);
+      
+      logger.info(
+        `ArtController: User ${userId} has ${artworksCount} artworks`
+      );
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.ART_COUNTED,
+        artworksCount,
+      });
+    } catch (error) {
+      logger.error("Error in countArtwork", error);
       next(error);
     }
   };

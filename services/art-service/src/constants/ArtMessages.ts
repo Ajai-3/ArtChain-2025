@@ -6,4 +6,5 @@ export enum ART_MESSAGES {
   CREATE_SUCCESS = "Art item created successfully",
   UPDATE_SUCCESS = "Art item updated successfully",
   DELETE_SUCCESS = "Art item deleted successfully",
+  ART_COUNTED = "Art counted",
 }

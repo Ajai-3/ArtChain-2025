@@ -14,6 +14,7 @@ router.patch("/category/:id", categoryController.editCategory)
 router.get("/", artController.getAllArt);
 router.post("/", artController.createArt);
 router.get("/by-name/:artname", artController.getArtByArtName);
+router.get("/count/:userId", artController.countArtwork)
 
 
 
