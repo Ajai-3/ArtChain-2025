@@ -28,11 +28,13 @@ export const authUser = async (
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
     
+    console.log(decoded.id)
     if (decoded.role !== "user" && decoded.role !== "artist") {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 
     req.headers["x-user-id"] = decoded.id;
+
 
     (req as any).user = decoded;
     logger.info(`User auth middleware called ${req.path} - ${req.method}`)

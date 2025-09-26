@@ -21,11 +21,11 @@ export const optionalAuthUser = async (
     }
 
     const decoded = tokenService.verifyAccessToken(accessToken);
-
     if (!decoded || typeof decoded !== "object" || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
-
+    
+    console.log(decoded.id)
     if (
       decoded.role !== "user" &&
       decoded.role !== "artist" &&

@@ -25,6 +25,9 @@ export const authRoutesConfig = {
 
     { path: "/api/v1/art", methods: ["POST", "PATCH", "DELETE"] },
     { path: "/api/v1/art/comment", methods: ["POST", "PATCH", "DELETE"] },
+        
+    { path: "/api/v1/art/like", methods: ["POST"] },
+    { path: "/api/v1/art/disLike", methods: ["DELETE"] },
 
     { path: "/api/v1/upload", methods: ["POST", "PATCH"] },
     { path: "/api/v1/upload/art", methods: ["POST", "PATCH"] },
@@ -32,7 +35,11 @@ export const authRoutesConfig = {
 
 
     { path: "/api/v1/wallet", methods: ["POST", "GET", "PATCH"] },
-    { path: "/api/v1/wallet/stripe/create-checkout-session", methods: ["POST", "GET", "PATCH"] }
+    { path: "/api/v1/wallet/details", methods: ["GET"] },
+    { path: "/api/v1/wallet/stripe/create-checkout-session", methods: ["POST", "GET", "PATCH"] },
+
+    {path: "/api/v1/wallet/get-transactions", methods: ["GET"]},
+    {path: "/api/v1/wallet/create-transactions", methods: ["POST"]},
     
   ],
 
@@ -40,6 +47,7 @@ export const authRoutesConfig = {
     { path: "/api/v1/user/profile/:username", methods: ["GET"] },
 
     { path: "/api/v1/art", methods: ["GET"] },
+    { path: "/api/v1/art/use", methods: ["GET"] },
     { path: "/api/v1/art/comments", methods: ["GET"] },
     { path: "/api/v1/art/comment", methods: ["GET"] },
   ],
