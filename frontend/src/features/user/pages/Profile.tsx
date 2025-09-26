@@ -14,6 +14,7 @@ const Profile: React.FC = () => {
     profileUser,
     isLoading,
     isOwnProfile,
+    displayArtworkCount,
     displaySupportingCount,
     displaySupportersCount,
     isSupporting,
@@ -26,6 +27,7 @@ const Profile: React.FC = () => {
     <div className="w-full flex flex-col">
       <ProfileTopBar
         user={profileUser}
+        artWorkCount={displayArtworkCount}
         supportingCount={displaySupportingCount}
         supportersCount={displaySupportersCount}
         isOwnProfile={isOwnProfile}

@@ -224,6 +224,12 @@ export class UserAuthController implements IUserAuthController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
+      if (isNewUser) {
+        const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
+
+      await publishNotification("user.created", elasticUser);
+      }
+
       return res.status(isNewUser ? HttpStatus.CREATED : HttpStatus.OK).json({
         message: isNewUser
           ? AUTH_MESSAGES.REGISTRATION_SUCCESS

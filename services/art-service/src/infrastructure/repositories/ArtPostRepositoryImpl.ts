@@ -11,10 +11,19 @@ export class ArtPostRepositoryImpl
     super(ArtPostModel);
   }
 
+  async findById(postId: string): Promise<any> {
+    const art = await ArtPostModel.findById({ _id: postId })
+    return art
+  }
+
   async findByArtName(artName: string): Promise<any> {
     const art = await ArtPostModel.findOne({ artName }).lean();
     if (!art) throw new Error(`Art with name ${artName} not found`);
     return art as ArtPost;
+  }
+
+  async countByUser(userId: string): Promise<number> {
+    return ArtPostModel.countDocuments({ userId });
   }
 
   async getAllArt(page = 1, limit = 10): Promise<any[]> {

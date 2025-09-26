@@ -12,15 +12,20 @@ import { GetUserSupportingUseCase } from "../../../application/usecases/user/use
 import { GetUsersByIdsUserUseCase } from "../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase";
 import { UpdateProfileUserUseCase } from "../../../application/usecases/user/profile/UpdateProfileUserUseCase";
 import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+import { ArtService } from "../../http/ArtService";
 
 // Repositories
+const artService = new ArtService();
 const userRepo = new UserRepositoryImpl();
 const supporterRepo = new SupporterRepositoryImpl();
 
 // Use Cases
 const supportUserUseCase = new SupportUserUseCase(userRepo, supporterRepo);
 const unSupportUserUseCase = new UnSupportUserUseCase(userRepo, supporterRepo);
-const getUserWithIdUseCase = new GetUserWithIdUserUseCase(userRepo, supporterRepo);
+const getUserWithIdUseCase = new GetUserWithIdUserUseCase(
+  userRepo,
+  supporterRepo
+);
 const getUserSupportersUseCase = new GetUserSupportersUseCase(
   userRepo,
   supporterRepo
@@ -30,13 +35,14 @@ const getUserSupportingUseCase = new GetUserSupportingUseCase(
   supporterRepo
 );
 const getUserProfileUseCase = new GetUserProfileUseCase(
+  artService,
   userRepo,
   supporterRepo
 );
 const getUsersByIdsUserUseCase = new GetUsersByIdsUserUseCase(userRepo);
 
 const updateProfileUserUseCase = new UpdateProfileUserUseCase(userRepo);
-const addUserToElasticSearchUseCase = new AddUserToElasticSearchUseCase()
+const addUserToElasticSearchUseCase = new AddUserToElasticSearchUseCase();
 
 // Controller
 export const userController = new UserController(

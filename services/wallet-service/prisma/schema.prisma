@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Wallet {
+  id        String       @id @default(uuid())
+  userId    String       @unique
+  balance   Float        @default(0)
+  lockedAmount    Float        @default(0)
+  status    WalletStatus @default(active)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  transactions Transaction[]
+}
+
+model Transaction {
+  id          String           @id @default(uuid())
+  walletId    String
+  type        TransactionType  // credited or debited
+  category    TransactionCategory @default(OTHER) // Distinguish between top-ups, sales, etc.
+  amount      Float           // safer than Float for money
+  method      Method           // stripe or razorpay
+  status      TransactionStatus @default(pending)
+  externalId  String?           @unique  // stripeSessionId / razorpayOrderId
+  description String
+  meta        Json?            // flexible storage for raw payload (optional)
+  createdAt   DateTime         @default(now())
+  updatedAt DateTime @default(now())
+  wallet Wallet @relation(fields: [walletId], references: [id])
+}
+
+enum WalletStatus {
+  active      
+  locked   
+  suspended
+}
+
+enum TransactionType {
+  credited
+  debited
+}
+
+enum TransactionCategory {
+  TOP_UP       // User adding money
+  SALE         // Earnings from selling art
+  PURCHASE     // Spending on purchases
+  WITHDRAWAL   // Taking money out
+  COMMISSION   // Platform earnings
+  REFUND       // Money returned
+  OTHER        // Miscellaneous
+}
+
+enum Method {
+  stripe
+  razorpay
+}
+
+enum TransactionStatus {
+  pending
+  success
+  failed
+}
+
+
+

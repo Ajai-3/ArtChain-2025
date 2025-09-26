@@ -134,7 +134,7 @@ services:
       - .env
       - ./services/wallet-service/.env.docker
     ports:
-      - "4007:4007"
+      - "4003:4003"
     depends_on:
       postgres:
         condition: service_healthy

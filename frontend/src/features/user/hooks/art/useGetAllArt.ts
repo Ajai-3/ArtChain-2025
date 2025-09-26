@@ -34,6 +34,9 @@ export interface ArtPostResponseDTO {
 export interface ArtWithUser {
   art: ArtPostResponseDTO;
   user: ArtUser | null;
+  isLiked: boolean,
+  likeCount: number,
+  commentCount: number
 }
 
 export interface PaginatedResponse {

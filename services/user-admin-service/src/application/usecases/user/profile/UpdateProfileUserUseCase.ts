@@ -13,12 +13,21 @@ export class UpdateProfileUserUseCase {
   constructor(private readonly _userRepo: IUserRepository) {}
 
   async execute(dto:  UpdateUserProfileDTO): Promise<any> {
-    const { userId, ...updateData } = dto;
+    let { userId, username, ...updateData } = dto;
 
     const user = await this._userRepo.findById(userId);
 
     if (!user) {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
+    }
+
+
+    if (username && username !== user.username) {
+      const existingUser = await this._userRepo.findByUsername(username);
+      if (existingUser) {
+        throw new BadRequestError(ERROR_MESSAGES.DUPLICATE_USERNAME);
+      }
+      updateData.username = username
     }
 
     const updatedUser = await this._userRepo.update(userId, updateData);

@@ -3,6 +3,7 @@ import { artProxy } from "../proxy/art.proxy";
 import { authProxy } from "../proxy/auth.proxy";
 import { userProxy } from "../proxy/user.proxy";
 import { adminProxy } from "../proxy/admin.proxy";
+import { walletProxy } from "../proxy/wallet.proxy";
 import { uploadProxy } from "../proxy/upload.proxy";
 import { notificationsProxy } from "../proxy/notifications.proxy";
 import { elasticSearchProxy } from "../proxy/elastic-search.proxy";
@@ -13,6 +14,9 @@ const router = Router();
 router.use("/api/v1/user", userProxy);
 router.use("/api/v1/auth", authProxy);
 router.use("/api/v1/admin", adminProxy);
+
+// wallet-service
+router.use("/api/v1/wallet", walletProxy)
 
 // art-service
 router.use("/api/v1/art", artProxy);

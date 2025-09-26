@@ -2,6 +2,7 @@ import express from "express";
 import { artController } from "../../infrastructure/container/artContainer";
 import { commentController } from "../../infrastructure/container/commentContainer";
 import { categoryController } from "../../infrastructure/container/categoryContainer";
+import { likeController } from "../../infrastructure/container/likeContainer";
 
 const router = express.Router();
 
@@ -14,6 +15,8 @@ router.patch("/category/:id", categoryController.editCategory)
 router.get("/", artController.getAllArt);
 router.post("/", artController.createArt);
 router.get("/by-name/:artname", artController.getArtByArtName);
+router.get("/count/:userId", artController.countArtwork)
+router.get("/user", artController.getArtWithUser)
 
 
 
@@ -22,5 +25,10 @@ router.post("/comment", commentController.createComment);
 router.get("/comments/:postId", commentController.getComments);
 router.patch("/comment", commentController.editComment)
 router.delete("/comment", commentController.deleteComment)
+
+// Like
+router.post("/like", likeController.likePost)
+router.delete("/disLike", likeController.unlikePost)
+router.get("/likes", likeController.getLikeCount)
 
 export default router;

@@ -11,6 +11,7 @@ export class UserRepositoryImpl
   implements IUserRepository
 {
   protected model = prisma.user;
+  
   async findById(id: string): Promise<SafeUser | null> {
     const user = await this.model.findUnique({ where: { id } });
     return user ? this.toSafeUser(user) : null;

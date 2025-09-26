@@ -6,8 +6,9 @@ const secrets = await getArtChainSecrets();
 
 
 export const config = {
-  port: process.env.PORT || '3001',
+  port: process.env.PORT || '4001',
   frontend_URL: process.env.FRONTEND_URL,
+  art_service_URL: process.env.ART_SERVICE_URL || "",
   rabbitmq_URL: process.env.RABBITMQ_URL || '',
   isProduction: process.env.NODE_ENV === 'production',
   jwt: {

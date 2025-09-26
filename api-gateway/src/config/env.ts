@@ -11,6 +11,7 @@ export const config = {
   frontend_url: process.env.FRONTEND_URL,
   services: {
     main: process.env.MAIN_SERVICE_URL,
+    wallet: process.env.WALLET_SERVICE_URL,
     art: process.env.ART_SERVICE_URL,
     notifications: process.env.NOTIFICATION_URL,
     upload: process.env.UPLOAD_SERVICE_URL,

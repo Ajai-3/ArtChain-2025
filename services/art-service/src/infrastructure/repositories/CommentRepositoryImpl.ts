@@ -11,6 +11,10 @@ export class CommentRepositoryImpl
     super(CommentModel);
   }
 
+  async countByPostId(postId: string): Promise<number> {
+    return await CommentModel.countDocuments({ postId });
+  }
+
   async getByPostId(postId: string, page = 1, limit = 10): Promise<Comment[]> {
     return CommentModel.find({ postId })
       .sort({ createdAt: -1 }) 

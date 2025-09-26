@@ -4,7 +4,6 @@ import { useGetArtByName } from "../hooks/art/useGetArtByName";
 import CommentInputSection from "../components/art/CommentInputSection";
 import CommentList from "../components/art/CommentList";
 import {
-  Gem,
   Star,
   MoreVertical,
   ZoomIn,
@@ -15,9 +14,14 @@ import {
   ImageDown,
   User,
 } from "lucide-react";
+import { useLikePost } from "../hooks/art/useLikePost";
+import { useUnlikePost } from "../hooks/art/useUnlikePost";
+import { LikeButton } from "../components/art/LikeButton";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
+  const likePost = useLikePost();
+  const unlikePost = useUnlikePost();
   const { data, isLoading, isError, error } = useGetArtByName(artname!);
   const [zoomed, setZoomed] = useState(false);
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
@@ -26,11 +30,21 @@ const ArtPage: React.FC = () => {
   const art = data?.data?.art;
   const actualUser = data?.data?.user;
   const price = data?.data.price;
+  const commentCount = data?.data.commentCount;
+  const isLiked = data?.data?.isLiked;
 
   if (isLoading) return <div className="text-center mt-10">Loading art...</div>;
   if (isError)
     return <div className="text-center mt-10">Error: {error?.message}</div>;
   if (!art) return <div className="text-center mt-10">Art not found</div>;
+
+  const handleLike = () => {
+    if (isLiked) {
+      unlikePost.mutate({ postId: art.id, artname: art.artName });
+    } else {
+      likePost.mutate({ postId: art.id, artname: art.artName });
+    }
+  };
 
   const handleImageClick = () => {
     setZoomed(true);
@@ -92,13 +106,19 @@ const ArtPage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2 cursor-pointer hover:text-green-400">
               <MessageSquare size={22} />
-              <span className="hidden sm:inline">Comments</span>
+              <span className="hidden sm:inline">{commentCount} Comments</span>
             </div>
           </div>
 
           {/* Right side actions */}
           <div className="flex flex-wrap items-center gap-3">
-            <Gem className="cursor-pointer hover:text-pink-700" size={22} />
+            <LikeButton
+              // @ts-ignore
+              isLiked={isLiked}
+              likeCount={data?.data.likeCount || 0}
+              onClick={handleLike}
+            />
+
             {art.isForSale && (
               <div className="bg-main-color/20 hover:bg-main-color/40 py-[.2rem] text-main-color px-3 rounded-full cursor-pointer text-sm sm:text-base">
                 Buy {price?.artcoins} AC

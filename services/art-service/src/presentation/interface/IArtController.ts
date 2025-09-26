@@ -6,5 +6,6 @@ export interface IArtController {
   getArtById(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   createArt(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   updateArt(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  countArtwork(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   deleteArt(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

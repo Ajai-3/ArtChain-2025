@@ -8,7 +8,8 @@ export const useCreateArtistRequestMutation = () => {
     mutationFn: (data: ArtistRequestPayload) =>
       apiClient.post("/api/v1/user/artist-request", data),
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Something went wrong!");
+      console.log(error)
+      toast.error(error?.message || "Something went wrong!");
     },
   });
 };

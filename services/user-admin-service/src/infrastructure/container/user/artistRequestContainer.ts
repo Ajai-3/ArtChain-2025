@@ -5,15 +5,21 @@ import { ArtistRequestController } from '../../../presentation/controllers/user/
 
 import { CreateArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CreateArtistRequestUseCase';
 import { CheckUserArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase';
+import { ArtService } from '../../http/ArtService';
+import { SupporterRepositoryImpl } from '../../repositories/user/SupporterRepositoryIml';
 
 // Repositories
+const artService = new ArtService()
 const userRepo = new UserRepositoryImpl();
+const supporterRepo = new SupporterRepositoryImpl()
 const artistRequestRepo = new ArtistRequestRepositoryImpl();
 
 // Use Case
 const createArtistRequestUseCase = new CreateArtistRequestUseCase(
   userRepo,
-  artistRequestRepo
+  artistRequestRepo,
+  supporterRepo,
+  artService
 );
 const checkUserArtistRequestUseCase = new CheckUserArtistRequestUseCase(
   userRepo,
