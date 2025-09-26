@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import type { ArtWithUser } from "../../hooks/art/useGetAllArt";
-import { View, User, Star, MessageSquare, Gem } from "lucide-react";
+import { View, User, Star, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useLikePost } from "../../hooks/art/useLikePost";
+import { useUnlikePost } from "../../hooks/art/useUnlikePost";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+import { ArtCardLikeButton } from "./ArtCardLikeButton";
 
 interface ArtCardProps {
   item: ArtWithUser;
@@ -9,8 +14,12 @@ interface ArtCardProps {
 }
 
 const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
+  const user = useSelector((state: RootState) => state.user)
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const navigate = useNavigate();
+
+  const likePost = useLikePost();
+  const unlikePost = useUnlikePost();
 
   const handleArtClick = () => {
     navigate(`/${item?.user?.username}/art/${item.art.artName}`);
@@ -18,6 +27,27 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
 
   const handleProfileClick = () => {
     navigate(`/${item?.user?.username}`);
+  };
+
+  const handleLikeClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    if (!user.user || !user.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    if (item.isLiked) {
+      unlikePost.mutate({ 
+        postId: item.art.id, 
+        artname: item.art.artName 
+      });
+    } else {
+      likePost.mutate({ 
+        postId: item.art.id, 
+        artname: item.art.artName 
+      });
+    }
   };
 
   return (
@@ -47,7 +77,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
 
           {/* Bottom-left: profile + title */}
           <div
-            className="flex items-center gap-2 absolute bottom-3 left-3"
+            className="flex items-center gap-2 absolute bottom-3 left-3 cursor-pointer"
             onClick={(e) => { e.stopPropagation(); handleProfileClick(); }}
           >
             {item.user?.profileImage ? (
@@ -72,18 +102,19 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
           </div>
 
           {/* Bottom-right: vertical icons */}
-          <div className="flex flex-col gap-2 absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="flex flex-col gap-2 absolute bottom-3 right-3">
+            <ArtCardLikeButton
+              isLiked={item.isLiked}
+              likedCount={item.likeCount}
+              onClick={handleLikeClick}
+              size={20}
+            />
             <button
               onClick={(e) => e.stopPropagation()}
-              className="bg-white/10 p-2 rounded-full hover:bg-black/70 text-white"
-            >
-              <Gem size={20} />
-            </button>
-            <button
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white/10 p-2 rounded-full hover:bg-black/70 text-white"
+              className="flex items-center gap-1 bg-white/10 p-2 rounded-full hover:bg-black/70 text-white"
             >
               <MessageSquare size={20} />
+              <span className="text-sm min-w-[20px] text-right">{item.commentCount}</span>
             </button>
             <button
               onClick={(e) => e.stopPropagation()}
@@ -105,6 +136,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
             src={item.art.imageUrl}
             alt={item.art.title}
             className="max-h-full max-w-full object-contain"
+            onClick={(e) => e.stopPropagation()}
           />
         </div>
       )}

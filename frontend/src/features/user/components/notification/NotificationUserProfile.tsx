@@ -18,10 +18,15 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
   onSelectUser,
 }) => {
   const handleClick = () => {
-    if (onSelectUser && n.data?.supporterName) {
-      onSelectUser(n.data.supporterName);
+    if (onSelectUser) {
+      const username = n.data?.supporterName || n.data?.likerName;
+      if (username) onSelectUser(username);
     }
   };
+
+  // Determine which user info to display
+  const userName = n.data?.supporterName || n.data?.likerName || "Unknown";
+  const userProfile = n.data?.supporterProfile || n.data?.likerProfile || "/avatar-icon.png";
 
   return (
     <div
@@ -31,29 +36,33 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
       className="flex items-center p-2 cursor-pointer hover:bg-zinc-200 dark:hover:bg-zinc-900 transition"
     >
       <div className="pr-2">
-        {n.data.profileimge ? (
+        {userProfile ? (
           <img
-            src={n.data?.supporterProfile || "/avatar-icon.png"}
-            alt={n.data?.supporterName || "avatar"}
+            src={userProfile}
+            alt={userName}
             className="w-10 h-10 rounded-full object-cover mr-3"
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
-            {n.data.supporterName?.charAt(0).toUpperCase() || (
-              <User className="w-6 h-6" />
-            )}
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-zinc-600 to-zinc-800 flex items-center justify-center text-white">
+            {userName.charAt(0).toUpperCase() || <User className="w-6 h-6" />}
           </div>
         )}
       </div>
 
-      {/* Notification text */}
       <div className="flex-1">
         {n.type === "support" ? (
           <p
             className="dark:text-white text-black text-sm truncate w-64"
-            title={n.data.supporterName + " started supporting you."}
+            title={`${userName} started supporting you.`}
           >
-            <strong>{n.data.supporterName}</strong> started supporting you.
+            <strong>{userName}</strong> started supporting you.
+          </p>
+        ) : n.type === "like" ? (
+          <p
+            className="dark:text-white text-black text-sm truncate w-64"
+            title={`${userName} liked your post.`}
+          >
+            <strong>{userName}</strong> liked your post.
           </p>
         ) : (
           <p className="text-white">You have a new notification.</p>
@@ -63,8 +72,7 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
         </span>
       </div>
 
-      {/* Unread dot */}
-      {/* {!n.read && <span className="text-red-500 ml-2">●</span>} */}
+      {!n.read && <span className="text-red-500 ml-2">●</span>}
     </div>
   );
 };

@@ -51,6 +51,9 @@ export interface ArtWithUserResponse {
   data: {
     user: User;
   art: Art;
+  isLiked: boolean;
+  likeCount: number;
+  commentCount: number;
   price: Price;
   }
 }
