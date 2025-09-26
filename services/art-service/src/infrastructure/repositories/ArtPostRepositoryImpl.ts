@@ -11,6 +11,11 @@ export class ArtPostRepositoryImpl
     super(ArtPostModel);
   }
 
+  async findById(postId: string): Promise<any> {
+    const art = await ArtPostModel.findById({ _id: postId })
+    return art
+  }
+
   async findByArtName(artName: string): Promise<any> {
     const art = await ArtPostModel.findOne({ artName }).lean();
     if (!art) throw new Error(`Art with name ${artName} not found`);

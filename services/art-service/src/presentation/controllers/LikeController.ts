@@ -32,13 +32,15 @@ export class LikeController implements ILikeController {
       const userId = req.headers["x-user-id"] as string;
       const { postId } = req.body;
 
+      console.log(userId)
+
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)
           .json({ message: LIKE_MESSAGES.MISSING_USER_ID });
       }
 
-      await this._likePostUseCase.execute(postId, userId);
+      const savedLike = await this._likePostUseCase.execute(postId, userId);
 
       logger.info(`User ${userId} liked post ${postId}`);
       return res.status(HttpStatus.CREATED).json({ message: LIKE_MESSAGES.LIKE_SUCCESS });

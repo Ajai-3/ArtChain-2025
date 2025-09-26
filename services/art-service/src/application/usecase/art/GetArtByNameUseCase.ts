@@ -30,6 +30,7 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
     const commentCount = await this._commentRepo.countByPostId(artFull._id);
 
      const isLiked = !!(currentUserId && (await this._likeRepo.findLike(artFull._id, currentUserId)));
+     console.log(isLiked)
 
     return {
       ...toArtWithUserResponse(artFull, userRes.data),

@@ -14,6 +14,7 @@ import { GetArtByNameUseCase } from "../../application/usecase/art/GetArtByNameU
 import { publishNotification } from "../../infrastructure/rabbit/rabbit";
 import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToElasticSearchUseCase";
 import { CountArtWorkUseCase } from "../../application/usecase/art/CountArtWorkUseCase";
+import { GetAllArtWithUserNameUseCase } from "../../application/usecase/art/GetAllArtWithUserNameUseCase";
 
 export class ArtController implements IArtController {
   constructor(
@@ -22,7 +23,8 @@ export class ArtController implements IArtController {
     private readonly _getAllArtUseCase: GetAllArtUseCase,
     private readonly _getArtByNameUseCase: GetArtByNameUseCase,
     private readonly _artToElasticSearchUseCase: ArtToElasticSearchUseCase,
-    private readonly _countArtWorkUseCase: CountArtWorkUseCase
+    private readonly _countArtWorkUseCase: CountArtWorkUseCase,
+    private readonly _getAllArtWithUserName: GetAllArtWithUserNameUseCase
   ) {}
 
   //# ================================================================================================================
@@ -68,6 +70,7 @@ export class ArtController implements IArtController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
+      const currentUserId = req.headers["x-user-id"] as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
@@ -75,7 +78,11 @@ export class ArtController implements IArtController {
         `Fetching all art with pagination: page=${page}, limit=${limit}`
       );
 
-      const result = await this._getAllArtUseCase.execute(page, limit);
+      const result = await this._getAllArtUseCase.execute(
+        page,
+        limit,
+        currentUserId
+      );
       return res.status(HttpStatus.OK).json({
         message: ART_MESSAGES.FETCH_ALL_SUCCESS,
         page,
@@ -87,6 +94,45 @@ export class ArtController implements IArtController {
       next(error);
     }
   };
+
+  //# ================================================================================================================
+  //# GET ART OF USER
+  //# ================================================================================================================
+  //# GET /api/v1/art/user/:username
+  //# Path params: username
+  //# This controller fetches all art items with pagination support.
+  //# ================================================================================================================
+getArtWithUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<Response | void> => {
+  try {
+    const userId  = req.params.userId as string
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 15;
+    const currentUserId = req.headers["x-user-id"] as string;
+
+    logger.info(`Fetching art for user ID: ${userId}, page=${page}, limit=${limit}`);
+
+    const arts = await this._getAllArtUseCase.execute(
+      page,
+      limit,
+      userId,
+      currentUserId
+    );
+
+    return res.status(HttpStatus.OK).json({
+      message: ART_MESSAGES.FETCH_ALL_SUCCESS,
+      page,
+      limit,
+      data: arts,
+    });
+  } catch (error) {
+    logger.error("Error in getArtWithUser", error);
+    next(error);
+  }
+};
 
   //# ================================================================================================================
   //# GET ART BY ID
@@ -230,7 +276,7 @@ export class ArtController implements IArtController {
       const { userId } = req.params;
 
       const artworksCount = await this._countArtWorkUseCase.execute(userId);
-      
+
       logger.info(
         `ArtController: User ${userId} has ${artworksCount} artworks`
       );

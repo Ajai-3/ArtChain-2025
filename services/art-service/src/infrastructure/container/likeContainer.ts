@@ -1,16 +1,19 @@
+import { UserService } from './../service/UserService';
 import { GetLikeCountUseCase } from "../../application/usecase/like/GetLikeCountUseCase";
 import { LikePostUseCase } from "../../application/usecase/like/LikePostUseCase";
 import { UnlikePostUseCase } from "../../application/usecase/like/UnlikePostUseCase";
 import { LikeController } from "../../presentation/controllers/LikeController";
+import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
 import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
 
 // Repositories
-const liekRepo = new LikeRepositoryImpl();
+const likeRepo = new LikeRepositoryImpl();
+const artRepo = new ArtPostRepositoryImpl();
 
 // Use cases
-const likePostUseCase = new LikePostUseCase(liekRepo);
-const unlikePostUseCase = new UnlikePostUseCase(liekRepo);
-const getLikeCountUseCase = new GetLikeCountUseCase(liekRepo);
+const likePostUseCase = new LikePostUseCase(artRepo, likeRepo);
+const unlikePostUseCase = new UnlikePostUseCase(likeRepo);
+const getLikeCountUseCase = new GetLikeCountUseCase(likeRepo);
 
 // Controller
 export const likeController = new LikeController(
