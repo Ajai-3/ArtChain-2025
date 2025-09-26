@@ -15,14 +15,17 @@ import { AddUserToElasticSearchUseCase } from "../../../application/usecases/use
 import { ArtService } from "../../http/ArtService";
 
 // Repositories
-const artService = new ArtService()
+const artService = new ArtService();
 const userRepo = new UserRepositoryImpl();
 const supporterRepo = new SupporterRepositoryImpl();
 
 // Use Cases
 const supportUserUseCase = new SupportUserUseCase(userRepo, supporterRepo);
 const unSupportUserUseCase = new UnSupportUserUseCase(userRepo, supporterRepo);
-const getUserWithIdUseCase = new GetUserWithIdUserUseCase(userRepo, supporterRepo);
+const getUserWithIdUseCase = new GetUserWithIdUserUseCase(
+  userRepo,
+  supporterRepo
+);
 const getUserSupportersUseCase = new GetUserSupportersUseCase(
   userRepo,
   supporterRepo
@@ -39,7 +42,7 @@ const getUserProfileUseCase = new GetUserProfileUseCase(
 const getUsersByIdsUserUseCase = new GetUsersByIdsUserUseCase(userRepo);
 
 const updateProfileUserUseCase = new UpdateProfileUserUseCase(userRepo);
-const addUserToElasticSearchUseCase = new AddUserToElasticSearchUseCase()
+const addUserToElasticSearchUseCase = new AddUserToElasticSearchUseCase();
 
 // Controller
 export const userController = new UserController(
