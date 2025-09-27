@@ -22,10 +22,10 @@ const categoryRepo = new CategoryRepositoryImpl();
 // Use Cases
 const getArtByIdUseCase = new GetArtByIdUseCase(artRepo);
 const countArtWorkUseCase = new CountArtWorkUseCase(artRepo);
-const getAllArtUseCase = new GetAllArtUseCase(artRepo, likeRepo, commentRepo);
-const getArtByNameUseCase = new GetArtByNameUseCase(artRepo, likeRepo, commentRepo);
 const artToElasticSearchUseCase = new ArtToElasticSearchUseCase();
 const createArtUseCase = new CreateArtPostUseCase(artRepo, categoryRepo);
+const getArtByNameUseCase = new GetArtByNameUseCase(artRepo, likeRepo, commentRepo);
+const getAllArtUseCase = new GetAllArtUseCase(artRepo, likeRepo, commentRepo, categoryRepo);
 const getAllArtWithUserNameUseCase = new GetAllArtWithUserNameUseCase(artRepo, likeRepo, commentRepo)
 
 // Controller

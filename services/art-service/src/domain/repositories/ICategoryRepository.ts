@@ -9,4 +9,5 @@ export interface ICategoryRepository extends IBaseRepository<Category> {
     search?: string,
     status?: string, 
     countFilter?: number): Promise<{data: Category[], total: number}>
+    getCategoriesByIds(ids: string[]): Promise<Category[]> 
 }

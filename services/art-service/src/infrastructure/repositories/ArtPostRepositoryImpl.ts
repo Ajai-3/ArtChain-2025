@@ -12,8 +12,8 @@ export class ArtPostRepositoryImpl
   }
 
   async findById(postId: string): Promise<any> {
-    const art = await ArtPostModel.findById({ _id: postId })
-    return art
+    const art = await ArtPostModel.findById({ _id: postId });
+    return art;
   }
 
   async findByArtName(artName: string): Promise<any> {
@@ -41,6 +41,18 @@ export class ArtPostRepositoryImpl
       .limit(limit)
       .lean();
     return arts as ArtPost[];
+  }
+
+  async getAllByCategory(
+    categoryId: string,
+    page = 1,
+    limit = 10
+  ): Promise<any[]> {
+    return await ArtPostModel.find({ artType: categoryId })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
   }
 
   async update(id: string, post: Partial<ArtPost>): Promise<ArtPost> {

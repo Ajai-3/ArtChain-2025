@@ -5,7 +5,7 @@ import { ART_MESSAGES } from "../../constants/ArtMessages";
 import { IArtController } from "../interface/IArtController";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { createArtPostSchema } from "../validators/artPost.schema";
-import { CreateArtPostDTO } from "../../domain/dto/art/CreateArtPostDTO";
+import { CreateArtPostDTO } from "../../application/interface/dto/art/CreateArtPostDTO";
 import { CreateArtPostUseCase } from "../../application/usecase/art/CreateArtPostUseCase";
 import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCase";
 import { UserService } from "../../infrastructure/service/UserService";
@@ -64,36 +64,31 @@ export class ArtController implements IArtController {
   //# Query params: page (number), limit (number)
   //# This controller fetches all art items with pagination support.
   //# ================================================================================================================
-  getAllArt = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const currentUserId = req.headers["x-user-id"] as string;
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
+getAllArt = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const currentUserId = req.headers["x-user-id"] as string;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const categoryId = req.query.categoryId as string | undefined;
 
-      logger.info(
-        `Fetching all art with pagination: page=${page}, limit=${limit}`
-      );
+    const result = await this._getAllArtUseCase.execute(
+      page,
+      limit,
+      currentUserId,
+      categoryId
+    );
 
-      const result = await this._getAllArtUseCase.execute(
-        page,
-        limit,
-        currentUserId
-      );
-      return res.status(HttpStatus.OK).json({
-        message: ART_MESSAGES.FETCH_ALL_SUCCESS,
-        page,
-        limit,
-        data: result,
-      });
-    } catch (error) {
-      logger.error("Error in getAllArt", error);
-      next(error);
-    }
-  };
+    return res.status(200).json({
+      message: "Arts fetched successfully",
+      page,
+      limit,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 
   //# ================================================================================================================
   //# GET ART OF USER

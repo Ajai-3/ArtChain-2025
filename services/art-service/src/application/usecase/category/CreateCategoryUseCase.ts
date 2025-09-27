@@ -2,7 +2,7 @@ import { CATEGORY_MESSAGES } from "./../../../constants/categoryMessages";
 import { ConflictError } from "art-chain-shared";
 import { Category } from "../../../domain/entities/Category";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { ICreateCategoryUseCase } from "../../../domain/usecase/category/ICreateCategoryUseCase";
+import { ICreateCategoryUseCase } from "../../interface/usecase/category/ICreateCategoryUseCase";
 
 export class CreateCategoryUseCase implements ICreateCategoryUseCase {
   constructor(private readonly _categoryRepo: ICategoryRepository) {}

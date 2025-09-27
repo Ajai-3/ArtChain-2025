@@ -5,7 +5,7 @@ import {
   BadRequestError,
   NotFoundError,
 } from "art-chain-shared";
-import { ILikeUseCase } from "../../../domain/usecase/like/ILikeUseCase";
+import { ILikeUseCase } from "../../interface/usecase/like/ILikeUseCase";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ART_MESSAGES } from "../../../constants/ArtMessages";

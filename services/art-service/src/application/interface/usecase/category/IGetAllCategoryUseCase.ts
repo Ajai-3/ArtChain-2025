@@ -1,5 +1,4 @@
-import { Category } from "../../entities/Category";
-
+import { Category } from "../../../../domain/entities/Category";
 export interface IGetAllCategoryUseCase {
   execute(
     page: number,

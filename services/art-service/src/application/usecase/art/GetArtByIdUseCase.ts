@@ -1,6 +1,6 @@
 import { ArtPost } from "../../../domain/entities/ArtPost";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IGetArtByIdUseCase } from "../../../domain/usecase/art/IGetArtByIdUseCase";
+import { IGetArtByIdUseCase } from "../../interface/usecase/art/IGetArtByIdUseCase";
 
 
 export class GetArtByIdUseCase implements IGetArtByIdUseCase {

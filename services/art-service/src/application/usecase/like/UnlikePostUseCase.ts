@@ -1,5 +1,5 @@
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { IUnlikePostUseCase } from "../../../domain/usecase/like/IUnlikePostUseCase";
+import { IUnlikePostUseCase } from "../../interface/usecase/like/IUnlikePostUseCase";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
 import { BadRequestError } from "art-chain-shared";
 
