@@ -13,7 +13,6 @@ type NavbarProps = {
 };
 
 const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist }) => {
-  const coin = 120;
 
   const user = useSelector((state: RootState) => state.user.user);
   const isAuthenticated = useSelector(
@@ -30,7 +29,7 @@ const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist }) => {
       {user && isAuthenticated ? <SearchBar /> : null}
 
       <div className="flex items-center gap-2 sm:gap-6">
-        {user && isAuthenticated ? <ArtCoin coin={coin} /> : null}
+        {user && isAuthenticated ? <ArtCoin /> : null}
         <ThemeToggle />
         <UserInfo user={user} isAuthenticated={isAuthenticated} onBecomeArtist={onBecomeArtist} />
       </div>
