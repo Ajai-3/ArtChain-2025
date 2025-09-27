@@ -12,7 +12,7 @@ export class LikeRepositoryImpl
     super(LikeModel);
   }
 
-   async findLike(postId: string, userId: string): Promise<Like | null> {
+  async findLike(postId: string, userId: string): Promise<Like | null> {
     return await LikeModel.findOne({ postId, userId });
   }
 
@@ -20,7 +20,31 @@ export class LikeRepositoryImpl
     return await LikeModel.countDocuments({ postId });
   }
 
-   async deleteLike(postId: string, userId: string): Promise<void> {
+  async deleteLike(postId: string, userId: string): Promise<void> {
     await LikeModel.deleteOne({ postId, userId });
+  }
+
+  async getAllLikesByUser(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<Like[]> {
+    return await LikeModel.find({ userId })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+  }
+
+  async getAllLikesByPost(
+    postId: string,
+    page: number,
+    limit: number
+  ): Promise<Like[]> {
+    return await LikeModel.find({ postId })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
   }
 }
