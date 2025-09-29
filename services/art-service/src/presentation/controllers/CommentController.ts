@@ -5,7 +5,7 @@ import { validateWithZod } from "../../utils/validateWithZod";
 import { COMMENT_MESSAGES } from "../../constants/CommentMessages";
 import { ICommentController } from "../interface/ICommentController";
 import { createCommentSchema } from "../validators/createCommentSchema";
-import { CreateCommentDTO } from "./../../domain/dto/comment/CreateCommentDTO";
+import { CreateCommentDTO } from "../../application/interface/dto/comment/CreateCommentDTO";
 import { CreateCommentUseCase } from "../../application/usecase/comment/CreateCommentUseCase";
 import { GetCommentsUseCase } from "../../application/usecase/comment/GetCommentsUseCase";
 

@@ -4,7 +4,7 @@ import { CreateCategoryUseCase } from "../../application/usecase/category/Create
 import { ICategoryController } from "../interface/ICategoryController";
 import { HttpStatus } from "art-chain-shared";
 import { CATEGORY_MESSAGES } from "../../constants/categoryMessages";
-import { EditCategoryDTO } from "../../domain/dto/category/EditCategoryDTO";
+import { EditCategoryDTO } from "../../application/interface/dto/category/EditCategoryDTO";
 import { EditCategoryUseCase } from "../../application/usecase/category/EditCategoryUseCase";
 import { GetAllCategoryUseCase } from "../../application/usecase/category/GetAllCategoryUseCase";
 import { validateWithZod } from "../../utils/validateWithZod";

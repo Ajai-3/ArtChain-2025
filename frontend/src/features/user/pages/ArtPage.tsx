@@ -77,12 +77,11 @@ const ArtPage: React.FC = () => {
         {/* Art image */}
         <div className="relative w-full flex justify-center items-center">
           {/* Left Arrow */}
-          <div className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 p-2 rounded-full cursor-pointer z-10 hover:bg-black/50">
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-900 dark:text-zinc-400 z-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-full">
             <ChevronLeft size={50} />
           </div>
 
-          {/* Right Arrow */}
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 p-2 rounded-full cursor-pointer z-10 hover:bg-black/50">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-900 dark:text-zinc-400 z-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-full">
             <ChevronRight size={50} />
           </div>
 
@@ -183,7 +182,7 @@ const ArtPage: React.FC = () => {
                 key={tag}
                 className="bg-main-color/20 hover:bg-main-color/40 text-main-color px-3 py-1 rounded-full cursor-pointer text-sm"
               >
-                #{tag}
+                {tag}
               </span>
             ))}
           </div>
@@ -198,7 +197,7 @@ const ArtPage: React.FC = () => {
         {/* Comments section */}
         <div className="w-full mt-6 sm:px-20">
           <h2 className="text-lg font-semibold mb-2">Comments</h2>
-          <CommentInputSection postId={art.id} />
+          <CommentInputSection postId={art.id} artname={art.artName} />
           <CommentList postId={art.id} />
         </div>
       </div>

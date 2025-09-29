@@ -2,8 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
 import { ILikeController } from "../interface/ILikeController";
-import { Like } from "../../domain/entities/Like";
-import { ILikeRepository } from "../../domain/repositories/ILikeRepository";
 import { LikePostUseCase } from "../../application/usecase/like/LikePostUseCase";
 import { UnlikePostUseCase } from "../../application/usecase/like/UnlikePostUseCase";
 import { GetLikeCountUseCase } from "../../application/usecase/like/GetLikeCountUseCase";

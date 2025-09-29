@@ -1,7 +1,7 @@
 export class GetCategoryUseCase {}
 import { Category } from "../../../domain/entities/Category";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { IGetAllCategoryUseCase } from "../../../domain/usecase/category/IGetAllCategoryUseCase";
+import { IGetAllCategoryUseCase } from "../../interface/usecase/category/IGetAllCategoryUseCase";
 
 export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {
   constructor(private readonly _categoryRepo: ICategoryRepository) {}

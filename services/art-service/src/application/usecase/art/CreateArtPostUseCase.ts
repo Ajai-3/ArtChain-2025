@@ -1,16 +1,19 @@
 import { ArtPost } from "../../../domain/entities/ArtPost";
-import { CreateArtPostDTO } from "../../../domain/dto/art/CreateArtPostDTO";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { ICreateArtPostUseCase } from "../../../domain/usecase/art/ICreateArtPostUseCase";
-import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
+import { CreateArtPostDTO } from "../../interface/dto/art/CreateArtPostDTO";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
+import { ICreateArtPostUseCase } from "../../interface/usecase/art/ICreateArtPostUseCase";
 
 export class CreateArtPostUseCase implements ICreateArtPostUseCase {
-  constructor(private readonly _artRepo: IArtPostRepository, private readonly _categoryRepo: ICategoryRepository) {}
+  constructor(
+    private readonly _artRepo: IArtPostRepository,
+    private readonly _categoryRepo: ICategoryRepository
+  ) {}
 
   async execute(dto: CreateArtPostDTO): Promise<any> {
-    const category = await this._categoryRepo.getById(dto.artType); 
+    const category = await this._categoryRepo.getById(dto.artType);
     if (!category) {
       throw new NotFoundError(CATEGORY_MESSAGES.NOT_FOUND);
     }
@@ -18,7 +21,6 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
       throw new BadRequestError(CATEGORY_MESSAGES.INVALID_CATEGORY);
     }
 
-    console.log(category)
     const baseName = dto.title.replace(/\s+/g, "-");
 
     const count = (await this._artRepo.count()) + 1;
@@ -52,6 +54,9 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
     );
 
     const created = await this._artRepo.create(art);
+    await this._categoryRepo.update((category as any)._id, {
+      count: category.count + 1,
+    });
     return created;
   }
 }

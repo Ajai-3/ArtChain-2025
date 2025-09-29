@@ -1,6 +1,6 @@
-import { UpdateArtPostDTO } from "../../../domain/dto/art/UpdateArtPostDTO";
+import { UpdateArtPostDTO } from "../../interface/dto/art/UpdateArtPostDTO";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IUpdateArtPostUseCase } from "../../../domain/usecase/art/IUpdateArtPostUseCase";
+import { IUpdateArtPostUseCase } from "../../interface/usecase/art/IUpdateArtPostUseCase";
 
 
 

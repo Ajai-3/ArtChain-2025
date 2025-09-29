@@ -1,8 +1,8 @@
 import { ConflictError } from "art-chain-shared";
-import { EditCategoryDTO } from "../../../domain/dto/category/EditCategoryDTO";
+import { EditCategoryDTO } from "../../interface/dto/category/EditCategoryDTO";
 import { Category } from "../../../domain/entities/Category";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { IEditCategoryUseCase } from "../../../domain/usecase/category/IEditCategoryUseCase";
+import { IEditCategoryUseCase } from "../../interface/usecase/category/IEditCategoryUseCase";
 import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
 
 export class EditCategoryUseCase implements IEditCategoryUseCase {

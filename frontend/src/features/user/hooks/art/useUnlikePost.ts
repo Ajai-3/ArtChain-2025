@@ -7,6 +7,10 @@ interface LikeVariables {
   artname: string;
 }
 
+interface OnMutateContext {
+  prevArt?: { data: { isLiked: boolean; likeCount: number } };
+}
+
 export const useUnlikePost = () => {
   const queryClient = useQueryClient();
 
@@ -17,26 +21,28 @@ export const useUnlikePost = () => {
       });
       return data;
     },
+
     onMutate: ({ postId, artname }: LikeVariables) => {
-      // Single art update
-      const previousArtData = queryClient.getQueryData(["art", artname]);
-      if (previousArtData) {
+      const prevArt = queryClient.getQueryData<{ data: { isLiked: boolean; likeCount: number } }>(["art", artname]);
+
+      if (prevArt) {
         queryClient.setQueryData(["art", artname], {
-          ...previousArtData,
+          ...prevArt,
           data: {
-            ...previousArtData.data,
+            ...prevArt.data,
             isLiked: false,
-            likeCount: previousArtData.data.likeCount - 1,
+            likeCount: prevArt.data.likeCount - 1,
           },
         });
       }
 
-      // Infinite allArt update
-      const previousAllArt = queryClient.getQueryData<any>(["allArt"]);
-      if (previousAllArt) {
+      // Update all "allArt" queries
+      queryClient.getQueriesData<any>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
+        if (!prevAllArt) return;
+
         const newAllArt = {
-          ...previousAllArt,
-          pages: previousAllArt.pages.map((page: any) => ({
+          ...prevAllArt,
+          pages: prevAllArt.pages.map((page: any) => ({
             ...page,
             data: page.data.map((art: ArtWithUser) =>
               art.art.id === postId
@@ -45,18 +51,11 @@ export const useUnlikePost = () => {
             ),
           })),
         };
-        queryClient.setQueryData(["allArt"], newAllArt);
-      }
 
-      return { previousArtData, previousAllArt };
-    },
-    onError: (_, __, context) => {
-      if (context?.previousArtData) {
-        queryClient.setQueryData(["art"], context.previousArtData);
-      }
-      if (context?.previousAllArt) {
-        queryClient.setQueryData(["allArt"], context.previousAllArt);
-      }
+        queryClient.setQueryData(key, newAllArt);
+      });
+
+      return { prevArt } as OnMutateContext;
     },
   });
 };

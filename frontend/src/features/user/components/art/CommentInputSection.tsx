@@ -9,9 +9,10 @@ import type { RootState } from "../../../../redux/store";
 
 interface Props {
   postId: string;
+  artname: string;
 }
 
-const CommentInputSection: React.FC<Props> = ({ postId }) => {
+const CommentInputSection: React.FC<Props> = ({ postId, artname }) => {
   const user = useSelector((state: RootState) => state.user.user);
   const [comment, setComment] = useState("");
   const mutation = usePostComment();
@@ -19,7 +20,7 @@ const CommentInputSection: React.FC<Props> = ({ postId }) => {
   const handleSend = () => {
     const trimmed = comment.trim();
     if (trimmed.length === 0 || trimmed.length > 500) return;
-    mutation.mutate({ postId, content: trimmed });
+    mutation.mutate({ postId, artname, content: trimmed });
     setComment("");
   };
 
@@ -47,7 +48,9 @@ const CommentInputSection: React.FC<Props> = ({ postId }) => {
             />
           ) : (
             <div className="w-9 h-9 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
-              {user?.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
+              {user?.name?.charAt(0).toUpperCase() || (
+                <User className="w-4 h-4" />
+              )}
             </div>
           )}
         </div>
@@ -59,7 +62,7 @@ const CommentInputSection: React.FC<Props> = ({ postId }) => {
           onKeyDown={handleKeyDown}
           placeholder="Write a comment..."
           variant="search"
-          className="py-5 pl-14 pr-10" 
+          className="py-5 pl-14 pr-10"
         />
 
         {comment.trim().length > 0 && (

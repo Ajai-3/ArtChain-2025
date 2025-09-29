@@ -13,8 +13,6 @@ export class GetCommentsUseCase {
 
     const users = await UserService.getUsersByIds(userIds);
 
-    console.log(users);
-
     const enrichedComments = comments.map((comment) => {
       const user = users.find(
         (u) => u?.id?.toString() === comment.userId?.toString()
