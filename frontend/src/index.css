@@ -137,6 +137,9 @@ textarea:-webkit-autofill:focus {
   scrollbar-color: var(--scroll-thumb) var(--scroll-track);
 }
 
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Light Theme */
 :root {
   --scroll-track: #e5e7eb;        
