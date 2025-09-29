@@ -46,20 +46,18 @@ export interface PaginatedResponse {
   data: ArtWithUser[];
 }
 
-
-export const useGetAllArt = () => {
+export const useGetAllArt = (categoryId?: string) => {
   return useInfiniteQuery<PaginatedResponse, Error>({
-    queryKey: ["allArt"],
+    queryKey: ["allArt", categoryId],
     queryFn: async ({ pageParam = 1 }) => {
       const res = await apiClient.get("/api/v1/art", {
-        params: { page: pageParam, limit: 15 },
+        params: { page: pageParam, limit: 15, categoryId },
       });
       return res.data as PaginatedResponse;
     },
     getNextPageParam: (lastPage) =>
       lastPage.data.length < 10 ? undefined : lastPage.page + 1,
     initialPageParam: 1,
-    refetchOnMount: "always",
     refetchOnWindowFocus: false,
   });
 };
