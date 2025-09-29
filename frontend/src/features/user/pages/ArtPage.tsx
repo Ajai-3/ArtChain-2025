@@ -198,7 +198,7 @@ const ArtPage: React.FC = () => {
         {/* Comments section */}
         <div className="w-full mt-6 sm:px-20">
           <h2 className="text-lg font-semibold mb-2">Comments</h2>
-          <CommentInputSection postId={art.id} />
+          <CommentInputSection postId={art.id} artname={art.artName} />
           <CommentList postId={art.id} />
         </div>
       </div>
