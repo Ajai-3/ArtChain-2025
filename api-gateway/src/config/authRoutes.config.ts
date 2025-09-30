@@ -39,9 +39,16 @@ export const authRoutesConfig = {
       path: "/api/v1/wallet/stripe/create-checkout-session",
       methods: ["POST", "GET", "PATCH"],
     },
-
     { path: "/api/v1/wallet/get-transactions", methods: ["GET"] },
     { path: "/api/v1/wallet/create-transactions", methods: ["POST"] },
+
+    { path: "/api/v1/art/like", methods: ["POST"] },
+    { path: "/api/v1/art/unlike", methods: ["DELETE"] },
+    { path: "/api/v1/art/likes/:postId", methods: ["GET"] },
+
+    { path: "/api/v1/art/favorite", methods: ["POST"] },
+    { path: "/api/v1/art/unfavorite", methods: ["DELETE"] },
+    { path: "/api/v1/art/favorites/:postId", methods: ["GET"] },
   ],
 
   user_optional: [
