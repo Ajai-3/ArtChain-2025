@@ -20,7 +20,6 @@ export const LikeButton = ({
 
   return (
     <div className="flex items-center gap-2 cursor-pointer">
-      {likeCount}{" "}
       <Gem
         size={22}
         onClick={handleClick}

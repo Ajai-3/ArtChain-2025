@@ -35,7 +35,9 @@ export interface ArtWithUser {
   art: ArtPostResponseDTO;
   user: ArtUser | null;
   isLiked: boolean,
+  isFavorited: boolean,
   likeCount: number,
+  favoriteCount: number;
   commentCount: number
 }
 

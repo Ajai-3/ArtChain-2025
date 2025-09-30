@@ -2,41 +2,40 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ArtWithUser } from "./useGetAllArt";
 
-interface LikeVariables {
+interface FavoriteVariables {
   postId: string;
   artname: string;
 }
 
 interface OnMutateContext {
-  prevArt?: { data: { isLiked: boolean; likeCount: number } };
+  prevArt?: { data: { isFavorited: boolean; favoriteCount: number } };
 }
 
-export const useUnlikePost = () => {
+export const useUnfavoritePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ postId }: LikeVariables) => {
-      const { data } = await apiClient.delete("/api/v1/art/unlike", {
+    mutationFn: async ({ postId }: FavoriteVariables) => {
+      const { data } = await apiClient.delete("/api/v1/art/unfavorite", {
         data: { postId },
       });
       return data;
     },
 
-    onMutate: ({ postId, artname }: LikeVariables) => {
-      const prevArt = queryClient.getQueryData<{ data: { isLiked: boolean; likeCount: number } }>(["art", artname]);
+    onMutate: ({ postId, artname }: FavoriteVariables) => {
+      const prevArt = queryClient.getQueryData<{ data: { isFavorited: boolean; favoriteCount: number } }>(["art", artname]);
 
       if (prevArt) {
         queryClient.setQueryData(["art", artname], {
           ...prevArt,
           data: {
             ...prevArt.data,
-            isLiked: false,
-            likeCount: prevArt.data.likeCount - 1,
+            isFavorited: false,
+            favoriteCount: Math.max(0, (prevArt.data.favoriteCount || 1) - 1),
           },
         });
       }
 
-      // Update all "allArt" queries
       queryClient.getQueriesData<any>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
         if (!prevAllArt) return;
 
@@ -46,7 +45,7 @@ export const useUnlikePost = () => {
             ...page,
             data: page.data.map((art: ArtWithUser) =>
               art.art.id === postId
-                ? { ...art, isLiked: false, likeCount: art.likeCount - 1 }
+                ? { ...art, isFavorited: false, favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1) }
                 : art
             ),
           })),
