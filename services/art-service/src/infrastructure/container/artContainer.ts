@@ -12,21 +12,23 @@ import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToEl
 import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
 import { CommentRepositoryImpl } from "../repositories/CommentRepositoryImpl";
 import { GetAllArtWithUserNameUseCase } from "../../application/usecase/art/GetAllArtWithUserNameUseCase";
+import { FavoriteRepositoryImpl } from "../repositories/FavoriteRepositoryImpl";
 
 // Repositories
 const likeRepo = new LikeRepositoryImpl()
 const artRepo = new ArtPostRepositoryImpl();
 const commentRepo = new CommentRepositoryImpl();
 const categoryRepo = new CategoryRepositoryImpl();
+const favoriteRepo = new FavoriteRepositoryImpl()
 
 // Use Cases
 const getArtByIdUseCase = new GetArtByIdUseCase(artRepo);
 const countArtWorkUseCase = new CountArtWorkUseCase(artRepo);
 const artToElasticSearchUseCase = new ArtToElasticSearchUseCase();
 const createArtUseCase = new CreateArtPostUseCase(artRepo, categoryRepo);
-const getArtByNameUseCase = new GetArtByNameUseCase(artRepo, likeRepo, commentRepo);
-const getAllArtUseCase = new GetAllArtUseCase(artRepo, likeRepo, commentRepo, categoryRepo);
-const getAllArtWithUserNameUseCase = new GetAllArtWithUserNameUseCase(artRepo, likeRepo, commentRepo)
+const getArtByNameUseCase = new GetArtByNameUseCase(artRepo, likeRepo, commentRepo, favoriteRepo);
+const getAllArtUseCase = new GetAllArtUseCase(artRepo, likeRepo, commentRepo, categoryRepo, favoriteRepo);
+const getAllArtWithUserNameUseCase = new GetAllArtWithUserNameUseCase(artRepo, likeRepo, commentRepo, favoriteRepo)
 
 // Controller
 export const artController = new ArtController(

@@ -1,30 +1,29 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
-import { ILikeController } from "../interface/ILikeController";
-import { LikePostUseCase } from "../../application/usecase/like/LikePostUseCase";
-import { UnlikePostUseCase } from "../../application/usecase/like/UnlikePostUseCase";
-import { GetLikeCountUseCase } from "../../application/usecase/like/GetLikeCountUseCase";
-import { LIKE_MESSAGES } from "../../constants/LikeMessages";
-import { GetLikedUsersUseCase } from "../../application/usecase/like/GetLikedUsersUseCase";
+import { IFavoriteController } from "../interface/IFavoriteController";
+import { AddFavoriteUseCase } from "../../application/usecase/favorite/AddFavoriteUseCase";
+import { RemoveFavoriteUseCase } from "../../application/usecase/favorite/RemoveFavoriteUseCase";
+import { GetFavoriteCountUseCase } from "../../application/usecase/favorite/GetFavoriteCountUseCase";
+import { FAVORITE_MESSAGES } from "../../constants/FavoriteMessages";
+import { GetFavoritedUsersUseCase } from "../../application/usecase/favorite/GetFavoritedUsersUseCase";
 
-
-export class LikeController implements ILikeController {
+export class FavoriteController implements IFavoriteController {
   constructor(
-    private readonly _likePostUseCase: LikePostUseCase,
-    private readonly _unlikePostUseCase: UnlikePostUseCase,
-    private readonly _getLikeCountUseCase: GetLikeCountUseCase,
-    private readonly _getLikedUsersUseCase: GetLikedUsersUseCase
+    private readonly _addFavoriteUseCase: AddFavoriteUseCase,
+    private readonly _removeFavoriteUseCase: RemoveFavoriteUseCase,
+    private readonly _getFavoriteCountUseCase: GetFavoriteCountUseCase,
+    private readonly _getFavoritedUsersUseCase: GetFavoritedUsersUseCase
   ) {}
 
   //# ================================================================================================================
-  //# LIKE A POST
+  //# ADD TO FAVORITES
   //# ================================================================================================================
-  //# POST /api/v1/art/likes
+  //# POST /api/v1/art/favorites
   //# Body: { postId }
-  //# This endpoint allows a user to like a post.
+  //# This endpoint allows a user to add a post to their favorites.
   //# ================================================================================================================
-  likePost = async (
+  addFavorite = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -33,31 +32,31 @@ export class LikeController implements ILikeController {
       const userId = req.headers["x-user-id"] as string;
       const { postId } = req.body;
 
-      console.log(userId)
-
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: LIKE_MESSAGES.MISSING_USER_ID });
+          .json({ message: FAVORITE_MESSAGES.MISSING_USER_ID });
       }
 
-      const savedLike = await this._likePostUseCase.execute(postId, userId);
+      await this._addFavoriteUseCase.execute(postId, userId);
 
-      logger.info(`User ${userId} liked post ${postId}`);
-      return res.status(HttpStatus.CREATED).json({ message: LIKE_MESSAGES.LIKE_SUCCESS });
+      logger.info(`User ${userId} added post ${postId} to favorites`);
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: FAVORITE_MESSAGES.ADD_SUCCESS });
     } catch (error: any) {
       next(error);
     }
   };
 
   //# ================================================================================================================
-  //# UNLIKE A POST
+  //# REMOVE FROM FAVORITES
   //# ================================================================================================================
-  //# DELETE /api/v1/art/dislike
+  //# DELETE /api/v1/art/favorites
   //# Body: { postId }
-  //# This endpoint allows a user to remove their like from a post.
+  //# This endpoint allows a user to remove a post from their favorites.
   //# ================================================================================================================
-  unlikePost = async (
+  removeFavorite = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -69,66 +68,67 @@ export class LikeController implements ILikeController {
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: LIKE_MESSAGES.MISSING_USER_ID });
+          .json({ message: FAVORITE_MESSAGES.MISSING_USER_ID });
       }
 
-      await this._unlikePostUseCase.execute(postId, userId);
+      await this._removeFavoriteUseCase.execute(postId, userId);
 
       return res
         .status(HttpStatus.OK)
-        .json({ message: LIKE_MESSAGES.UNLIKE_SUCCESS });
+        .json({ message: FAVORITE_MESSAGES.REMOVE_SUCCESS });
     } catch (error) {
       next(error);
     }
   };
 
   //# ================================================================================================================
-  //# GET TOTAL LIKES FOR A POST
+  //# GET FAVORITE COUNT
   //# ================================================================================================================
-  //# GET /api/v1/art/like-count/:postId
-  //# This endpoint returns the total number of likes for a given post.
+  //# GET /api/v1/art/favorite-count/:postId
+  //# This endpoint returns the total number of users who have favorited a given post.
   //# ================================================================================================================
-  getLikeCount = async (
+  getFavoriteCount = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
-     try {
+    try {
       const { postId } = req.params;
-      const count = await this._getLikeCountUseCase.execute(postId);
+      const count = await this._getFavoriteCountUseCase.execute(postId);
 
       return res
         .status(HttpStatus.OK)
-        .json({ message: LIKE_MESSAGES.FETCH_SUCCESS, likes: count });
+        .json({ message: FAVORITE_MESSAGES.FETCH_SUCCESS, favorites: count });
     } catch (error) {
       next(error);
     }
   };
 
   //# ================================================================================================================
-  //# GET LIKED USERS
+  //# GET USERS WHO FAVORITED
   //# ================================================================================================================
-  //# GET /api/v1/art/likes/:postId
-  //# This endpoint returns the users who liked the post with pagination
+  //# GET /api/v1/art/favorites/:postId
+  //# This endpoint returns a list of users who have favorited the post.
+  //# Pagination can be implemented if needed.
   //# ================================================================================================================
-  getLikedUsers = async (
+  getFavoritedUsers = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
-     try {
+    try {
       const { postId } = req.params;
       const currentUserId = req.headers["x-user-id"] as string;
 
-       const page = Number(req.query.page) || 1;
+      const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
-    const { users, likeCount } = await this._getLikedUsersUseCase.execute(postId, page, limit);
+    const { users, favoriteCount } = await this._getFavoritedUsersUseCase.execute(postId, page, limit);
 
     return res.status(HttpStatus.OK).json({
-      message: LIKE_MESSAGES.LIKED_USERS_FETCHED_SUCCESS,
+      message: FAVORITE_MESSAGES.FAVORITED_USERS_FETCHED_SUCCESS,
       users,
-      likeCount,
+      favoriteCount,
       page,
       limit,
     });

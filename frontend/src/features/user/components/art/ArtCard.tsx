@@ -7,6 +7,9 @@ import { useUnlikePost } from "../../hooks/art/useUnlikePost";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { ArtCardLikeButton } from "./ArtCardLikeButton";
+import { useFavoritePost } from "../../hooks/art/useFavoritePost";
+import { useUnfavoritePost } from "../../hooks/art/useUnfavoritePost";
+import { ArtCardFavoriteButton } from "./ArtCardFavoriteButton";
 
 interface ArtCardProps {
   item: ArtWithUser;
@@ -20,6 +23,8 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
 
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
+   const favoritePost = useFavoritePost();
+  const unfavoritePost = useUnfavoritePost();
 
   const handleArtClick = () => {
     navigate(`/${item?.user?.username}/art/${item.art.artName}`);
@@ -47,6 +52,19 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
         postId: item.art.id, 
         artname: item.art.artName 
       });
+    }
+  };
+
+   const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user.user || !user.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    if (item.isFavorited) {
+      unfavoritePost.mutate({ postId: item.art.id, artname: item.art.artName });
+    } else {
+      favoritePost.mutate({ postId: item.art.id, artname: item.art.artName });
     }
   };
 
@@ -116,12 +134,12 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
               <MessageSquare size={20} />
               <span className="text-sm min-w-[20px] text-right">{item.commentCount}</span>
             </button>
-            <button
-              onClick={(e) => e.stopPropagation()}
-              className="bg-white/10 p-2 rounded-full hover:bg-black/70 text-white"
-            >
-              <Star size={20} />
-            </button>
+             <ArtCardFavoriteButton
+              isFavorited={item.isFavorited}
+              favoriteCount={item.favoriteCount}
+              onClick={handleFavoriteClick}
+              size={20}
+            />
           </div>
         </div>
       </div>

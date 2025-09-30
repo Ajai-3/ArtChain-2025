@@ -5,13 +5,15 @@ import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper"
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
+import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 
 export class GetAllArtUseCase implements IGetAllArtUseCase {
   constructor(
     private readonly _artRepo: IArtPostRepository,
     private readonly _likeRepo: ILikeRepository,
     private readonly _commentRepo: ICommentRepository,
-    private readonly _categoryRepo: ICategoryRepository
+    private readonly _categoryRepo: ICategoryRepository,
+    private readonly _favoriteRepo: IFavoriteRepository
   ) {}
 
   async execute(
@@ -39,14 +41,12 @@ export class GetAllArtUseCase implements IGetAllArtUseCase {
     const userIds = Array.from(userIdsSet);
     const categoryIds = Array.from(categoryIdsSet);
 
-    // fetch users and categories
     const users = await UserService.getUsersByIds(userIds);
     const categories = await this._categoryRepo.getCategoriesByIds(categoryIds);
 
     const userMap = new Map(users.map((u: any) => [u.id, u]));
     const categoryMap = new Map(categories.map((c: any) => [c.id, c]));
 
-    // map arts with user and category
     return await Promise.all(
       arts.map(async (art: any) => {
         const userData = userMap.get(art.userId) || null;
@@ -54,17 +54,23 @@ export class GetAllArtUseCase implements IGetAllArtUseCase {
 
         const likeCount = await this._likeRepo.likeCountByPostId(art._id);
         const commentCount = await this._commentRepo.countByPostId(art._id);
+        const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(art._id)
         const isLiked = !!(
           currentUserId &&
           (await this._likeRepo.findLike(art._id, currentUserId))
         );
+        const isFavorited = !!(
+          currentUserId &&
+          (await this._favoriteRepo.findFavorite(art._id, currentUserId)))
 
         return {
           ...toArtWithUserResponse(art, userData),
           category: categoryData,
-          likeCount,
-          commentCount,
           isLiked,
+          likeCount,
+          isFavorited,
+          commentCount,
+          favoriteCount,
         };
       })
     );

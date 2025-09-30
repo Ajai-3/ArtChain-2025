@@ -3,7 +3,7 @@ import apiClient from "../../../../api/axios";
 
 // ------------------ Types ------------------
 export interface Price {
-  type: string;       
+  type: string;
   artcoins?: number;
   fiat?: number;
 }
@@ -50,12 +50,14 @@ export interface ArtWithUserResponse {
   message: string;
   data: {
     user: User;
-  art: Art;
-  isLiked: boolean;
-  likeCount: number;
-  commentCount: number;
-  price: Price;
-  }
+    art: Art;
+    isLiked: boolean;
+    isFavorited: boolean;
+    likeCount: number;
+    favoriteCount: number;
+    commentCount: number;
+    price: Price;
+  };
 }
 
 // ------------------ Hook ------------------

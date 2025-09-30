@@ -17,14 +17,24 @@ import {
 import { useLikePost } from "../hooks/art/useLikePost";
 import { useUnlikePost } from "../hooks/art/useUnlikePost";
 import { LikeButton } from "../components/art/LikeButton";
+import { useFavoritePost } from "../hooks/art/useFavoritePost";
+import { useUnfavoritePost } from "../hooks/art/useUnfavoritePost";
+import FavoriteUsersModal from "../components/art/FavoriteUsersModal";
+import LikeUsersModal from "../components/art/LikeUsersModal";
+import { formatNumber } from "../../../libs/formatNumber";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
+  const favoritePost = useFavoritePost();
+  const unfavoritePost = useUnfavoritePost();
+
   const { data, isLoading, isError, error } = useGetArtByName(artname!);
   const [zoomed, setZoomed] = useState(false);
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
   const navigate = useNavigate();
 
   const art = data?.data?.art;
@@ -32,11 +42,23 @@ const ArtPage: React.FC = () => {
   const price = data?.data.price;
   const commentCount = data?.data.commentCount;
   const isLiked = data?.data?.isLiked;
+  const isFavorited = data?.data?.isFavorited;
+  const favoriteCount = data?.data?.favoriteCount;
 
   if (isLoading) return <div className="text-center mt-10">Loading art...</div>;
   if (isError)
     return <div className="text-center mt-10">Error: {error?.message}</div>;
   if (!art) return <div className="text-center mt-10">Art not found</div>;
+
+  const handleFavorite = () => {
+    if (!actualUser?.id) return;
+
+    if (isFavorited) {
+      unfavoritePost.mutate({ postId: art.id, artname: art.artName });
+    } else {
+      favoritePost.mutate({ postId: art.id, artname: art.artName });
+    }
+  };
 
   const handleLike = () => {
     if (isLiked) {
@@ -97,25 +119,72 @@ const ArtPage: React.FC = () => {
         {/* Action buttons */}
         {/* Action buttons - below the image */}
         <div className="flex flex-wrap justify-between sm:justify-between items-center w-full mt-4 gap-3 sm:gap-6 sm:px-20">
-          {/* Left side actions */}
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2 cursor-pointer hover:text-yellow-400">
-              <Star size={22} />
-              <span className="hidden sm:inline">Add to favorites</span>
+            <div className="flex items-center gap-1">
+              <span
+                className="cursor-pointer block sm:hidden"
+                onClick={() => setShowFavorites(true)}
+              >
+                {formatNumber(favoriteCount || 0)}
+              </span>
+              <Star
+                size={22}
+                className={`transition-transform duration-300 cursor-pointer 
+            ${
+              isFavorited ? "text-yellow-500 fill-yellow-500" : "text-white/60"
+            }`}
+                onClick={handleFavorite}
+              />
+
+              <span
+                className="hidden sm:inline cursor-pointer hover:text-yellow-400"
+                onClick={() => setShowFavorites(true)}
+              >
+                {formatNumber(favoriteCount || 0)} Favorites
+              </span>
             </div>
-            <div className="flex items-center gap-2 cursor-pointer hover:text-green-400">
+
+            <FavoriteUsersModal
+              postId={art.id}
+              isOpen={showFavorites}
+              onClose={() => setShowFavorites(false)}
+            />
+
+            <div className="flex items-center gap-1 cursor-pointer hover:text-green-400">
+              <span className="block sm:hidden">{formatNumber(commentCount || 0)}</span>
               <MessageSquare size={22} />
-              <span className="hidden sm:inline">{commentCount} Comments</span>
+              <span className="hidden sm:inline">{formatNumber(commentCount || 0)} Comments</span>
             </div>
           </div>
 
           {/* Right side actions */}
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-1">
+            <span
+              className="cursor-pointer block sm:hidden"
+              onClick={() => setShowLikes(true)}
+            >
+              {formatNumber(data?.data.likeCount || 0)}
+            </span>
             <LikeButton
               // @ts-ignore
               isLiked={isLiked}
               likeCount={data?.data.likeCount || 0}
               onClick={handleLike}
+            />
+
+            <div className="flex items-center gap-2 cursor-pointer hover:text-pink-500">
+              <span
+                className="hidden sm:inline"
+                onClick={() => setShowLikes(true)}
+              >
+                {formatNumber(data?.data.likeCount || 0)} Likes
+              </span>
+            </div>
+
+            <LikeUsersModal
+              postId={art.id}
+              isOpen={showLikes}
+              onClose={() => setShowLikes(false)}
             />
 
             {art.isForSale && (

@@ -55,13 +55,17 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
             )}
           </button>
 
-          <Button
-            variant="main"
-            className="hidden sm:flex"
-            onClick={onBecomeArtist}
-          >
-            Become an Artist
-          </Button>
+          {user.isVerified === false && user.role === "user" ? (
+            <Button
+              variant="main"
+              className="hidden sm:flex"
+              onClick={onBecomeArtist}
+            >
+              Become an Artist
+            </Button>
+          ) : (
+            <></>
+          )}
         </>
       ) : (
         <>
