@@ -1,3 +1,4 @@
+import { GetLikedUsersUseCase } from './../../application/usecase/like/GetLikedUsersUseCase';
 import { UserService } from './../service/UserService';
 import { GetLikeCountUseCase } from "../../application/usecase/like/GetLikeCountUseCase";
 import { LikePostUseCase } from "../../application/usecase/like/LikePostUseCase";
@@ -14,10 +15,12 @@ const artRepo = new ArtPostRepositoryImpl();
 const likePostUseCase = new LikePostUseCase(artRepo, likeRepo);
 const unlikePostUseCase = new UnlikePostUseCase(likeRepo);
 const getLikeCountUseCase = new GetLikeCountUseCase(likeRepo);
+const getLikedUsersUseCase = new GetLikedUsersUseCase(likeRepo)
 
 // Controller
 export const likeController = new LikeController(
   likePostUseCase,
   unlikePostUseCase,
-  getLikeCountUseCase
+  getLikeCountUseCase,
+  getLikedUsersUseCase
 );
