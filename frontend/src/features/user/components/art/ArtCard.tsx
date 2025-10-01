@@ -120,7 +120,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
           </div>
 
           {/* Bottom-right: vertical icons */}
-          <div className="flex flex-col gap-2 absolute bottom-3 right-3">
+          <div className="flex flex-col gap-4 absolute bottom-3 right-3">
             <ArtCardLikeButton
               isLiked={item.isLiked}
               likedCount={item.likeCount}
@@ -129,10 +129,10 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
             />
             <button
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 bg-white/10 p-2 rounded-full hover:bg-black/70 text-white"
+              className="flex items-center gap-1 text-white"
             >
-              <MessageSquare size={20} />
               <span className="text-sm min-w-[20px] text-right">{item.commentCount}</span>
+              <MessageSquare size={20} />
             </button>
              <ArtCardFavoriteButton
               isFavorited={item.isFavorited}

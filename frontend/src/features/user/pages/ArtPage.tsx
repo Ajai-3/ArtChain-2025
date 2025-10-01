@@ -22,6 +22,7 @@ import { useUnfavoritePost } from "../hooks/art/useUnfavoritePost";
 import FavoriteUsersModal from "../components/art/FavoriteUsersModal";
 import LikeUsersModal from "../components/art/LikeUsersModal";
 import { formatNumber } from "../../../libs/formatNumber";
+import ArtPageSkeleton from "../components/skeletons/ArtPageSkeleton";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
@@ -45,7 +46,7 @@ const ArtPage: React.FC = () => {
   const isFavorited = data?.data?.isFavorited;
   const favoriteCount = data?.data?.favoriteCount;
 
-  if (isLoading) return <div className="text-center mt-10">Loading art...</div>;
+  if (isLoading) return <div className="text-center mt-10"><ArtPageSkeleton /></div>;
   if (isError)
     return <div className="text-center mt-10">Error: {error?.message}</div>;
   if (!art) return <div className="text-center mt-10">Art not found</div>;

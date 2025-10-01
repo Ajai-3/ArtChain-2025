@@ -27,15 +27,15 @@ export const ArtCardLikeButton: React.FC<ArtCardLikeButtonProps> = ({
   return (
     <button
       onClick={handleClick}
-      className="flex items-center gap-1 bg-white/10 p-2 rounded-full hover:bg-black/70 text-white transition-all duration-200"
+      className="flex items-center gap-1 transition-all duration-200"
     >
+      <span className="text-sm min-w-[20px] text-right">{likedCount}</span>
       <Gem
         size={size}
         className={`transition-transform duration-300 ${
           isLiked ? "text-pink-500 fill-pink-500" : "text-white"
         } ${animate ? "scale-125" : "scale-100"}`}
       />
-      <span className="text-sm min-w-[20px] text-right">{likedCount}</span>
     </button>
   );
 };
