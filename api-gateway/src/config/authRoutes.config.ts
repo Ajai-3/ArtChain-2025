@@ -56,7 +56,7 @@ export const authRoutesConfig = {
 
     { path: "/api/v1/art", methods: ["GET"] },
     { path: "/api/v1/art/by-name/:artname", methods: ["GET"] },
-    { path: "/api/v1/art/use", methods: ["GET"] },
+    { path: "/api/v1/art/user/:userId", methods: ["GET"] },
     { path: "/api/v1/art/comments", methods: ["GET"] },
     { path: "/api/v1/art/comment", methods: ["GET"] },
     { path: "/api/v1/art/comment", methods: ["GET"] },
