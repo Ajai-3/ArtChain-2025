@@ -37,6 +37,7 @@ export class ArtPostRepositoryImpl
 
   async getAllByUser(userId: string, page = 1, limit = 10): Promise<ArtPost[]> {
     const arts = await ArtPostModel.find({ userId })
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
@@ -53,6 +54,39 @@ export class ArtPostRepositoryImpl
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
+  }
+
+  async findAllWithFilters(
+    query: any,
+    page = 1,
+    limit = 10,
+    sort: any = { createdAt: -1 }
+  ): Promise<ArtPost[]> {
+    const skip = (page - 1) * limit;
+    const arts = await ArtPostModel.find(query)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .lean();
+    return arts;
+  }
+
+  async findAllByUser(
+    userId: string,
+    page = 1,
+    limit = 10
+  ): Promise<ArtPost[]> {
+    const skip = (page - 1) * limit;
+    const arts = await ArtPostModel.find({
+      userId,
+      isForSale: true,
+      status: "active",
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+    return arts;
   }
 
   async update(id: string, post: Partial<ArtPost>): Promise<ArtPost> {

@@ -1,4 +1,4 @@
-export const toArtWithUserResponse = (art: any, userData: any) => {
+export const toArtWithUserResponse = (art: any, userData?: any) => {
   return {
     user: {
       id: userData?.id,
