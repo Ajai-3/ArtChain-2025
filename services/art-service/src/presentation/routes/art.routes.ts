@@ -37,6 +37,7 @@ router.post("/favorite", favoriteController.addFavorite);
 router.delete("/unfavorite", favoriteController.removeFavorite);
 router.get("/favorites/:postId", favoriteController.getFavoritedUsers);
 router.get("/favorites-count/:postId", favoriteController.getFavoriteCount);
+router.get("/favorites/user/:userId", favoriteController.getUserFavoritedArts);
 
 router.get("/shop", shopController.getAllShopItems)
 router.get("/shop/:userId", shopController.getShopItemsByUser)
