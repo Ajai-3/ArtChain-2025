@@ -20,6 +20,8 @@ export const optionalAuthUser = async (
       return next();
     }
 
+    console.log(accessToken)
+
     const decoded = tokenService.verifyAccessToken(accessToken);
     if (!decoded || typeof decoded !== "object" || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);

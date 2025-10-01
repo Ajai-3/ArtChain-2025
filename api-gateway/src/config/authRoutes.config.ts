@@ -54,6 +54,8 @@ export const authRoutesConfig = {
   user_optional: [
     { path: "/api/v1/user/profile/:username", methods: ["GET"] },
 
+    { path: "/api/v1/art/favorites/user/:userId", methods: ["GET"] },
+
     { path: "/api/v1/art", methods: ["GET"] },
     { path: "/api/v1/art/by-name/:artname", methods: ["GET"] },
     { path: "/api/v1/art/user/:userId", methods: ["GET"] },
