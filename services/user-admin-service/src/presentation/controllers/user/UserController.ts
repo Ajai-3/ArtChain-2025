@@ -1,11 +1,11 @@
-import { UpdateUserProfileDTO } from "./../../../domain/dtos/user/profile/UpdateUserProfileDTO";
+import { UpdateUserProfileDTO } from "./../../../application/interface/dtos/user/profile/UpdateUserProfileDTO";
 import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
 
 import { IUserController } from "../../interfaces/user/IUserController";
 import { USER_MESSAGES } from "../../../constants/userMessages";
 
-import { SupportUnSupportRequestDto } from "../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto";
+import { SupportUnSupportRequestDto } from "../../../application/interface/dtos/user/user-intraction/SupportUnSupportRequestDto";
 
 import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
 import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
@@ -20,7 +20,7 @@ import { UpdateProfileUserUseCase } from "../../../application/usecases/user/pro
 import { validateWithZod } from "../../../utils/zodValidator";
 import { updateProfileSchema } from "../../../application/validations/user/updateProfileSchema";
 import { GetUserProfileUseCase } from "../../../application/usecases/user/profile/GetProfileUserUseCase";
-import { GetUserProfileRequestDto } from "../../../domain/dtos/user/profile/GetUserProfileRequestDto";
+import { GetUserProfileRequestDto } from "../../../application/interface/dtos/user/profile/GetUserProfileRequestDto";
 import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
 
 export class UserController implements IUserController {

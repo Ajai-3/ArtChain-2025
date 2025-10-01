@@ -1,7 +1,7 @@
 import { ConflictError, ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { ChangeEmailDto } from "../../../../domain/dtos/user/security/ChangeEmailDto";
+import { ChangeEmailDto } from "../../../interface/dtos/user/security/ChangeEmailDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { IChangeEmailUserUseCase } from "../../../../domain/usecases/user/security/IChangeEmailUserUseCase";
+import { IChangeEmailUserUseCase } from "../../../interface/usecases/user/security/IChangeEmailUserUseCase";
 import { USER_MESSAGES } from "../../../../constants/userMessages";
 import { tokenService } from "../../../../presentation/service/token.service";
 

@@ -6,7 +6,7 @@ import { USER_MESSAGES } from '../../../constants/userMessages';
 
 import { IArtistRequestController } from '../../interfaces/user/IArtistRequestController';
 
-import { CreateArtistRequestDto } from '../../../domain/dtos/user/artist-request/CreateArtistRequestDto';
+import { CreateArtistRequestDto } from '../../../application/interface/dtos/user/artist-request/CreateArtistRequestDto';
 
 import { validateWithZod } from '../../../utils/zodValidator';
 

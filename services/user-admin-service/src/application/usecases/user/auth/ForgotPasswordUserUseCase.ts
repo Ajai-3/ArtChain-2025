@@ -2,8 +2,8 @@ import { BadRequestError } from 'art-chain-shared';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { ForgotPasswordResultDto } from '../../../../domain/dtos/user/auth/ForgotPasswordResultDto';
-import { IForgotPasswordUserUseCase } from '../../../../domain/usecases/user/auth/IForgotPasswordUserUseCase';
+import { ForgotPasswordResultDto } from '../../../interface/dtos/user/auth/ForgotPasswordResultDto';
+import { IForgotPasswordUserUseCase } from '../../../interface/usecases/user/auth/IForgotPasswordUserUseCase';
 
 export class ForgotPasswordUserUseCase implements IForgotPasswordUserUseCase {
   constructor(private _userRepo: IUserRepository) {}

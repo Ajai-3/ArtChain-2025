@@ -11,11 +11,11 @@ import { IUserAuthController } from "../../interfaces/user/IUserAuthController";
 
 import { AUTH_MESSAGES } from "../../../constants/authMessages";
 
-import { LoginRequestDto } from "../../../domain/dtos/user/auth/LoginRequestDto";
-import { RegisterRequestDto } from "../../../domain/dtos/user/auth/RegisterRequestDto";
-import { GoogleAuthRequestDto } from "../../../domain/dtos/user/auth/GoogleAuthRequestDto";
-import { ResetPasswordRequestDto } from "../../../domain/dtos/user/auth/ResetPasswordRequestDto";
-import { StartRegisterRequestDto } from "../../../domain/dtos/user/auth/StartRegisterRequestDto";
+import { LoginRequestDto } from "../../../application/interface/dtos/user/auth/LoginRequestDto";
+import { RegisterRequestDto } from "../../../application/interface/dtos/user/auth/RegisterRequestDto";
+import { GoogleAuthRequestDto } from "../../../application/interface/dtos/user/auth/GoogleAuthRequestDto";
+import { ResetPasswordRequestDto } from "../../../application/interface/dtos/user/auth/ResetPasswordRequestDto";
+import { StartRegisterRequestDto } from "../../../application/interface/dtos/user/auth/StartRegisterRequestDto";
 
 import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
 import { googleAuthSchema } from "../../../application/validations/user/GoogleAuthSchema";

@@ -2,8 +2,8 @@ import { JwtPayload } from 'jsonwebtoken';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { RefreshTokenResultDto } from './../../../../domain/dtos/user/auth/RefreshTokenResultDto';
-import { IRefreshTokenUseCase } from '../../../../domain/usecases/user/auth/IRefreshTokenUseCase';
+import { RefreshTokenResultDto } from './../../../interface/dtos/user/auth/RefreshTokenResultDto';
+import { IRefreshTokenUseCase } from '../../../interface/usecases/user/auth/IRefreshTokenUseCase';
 import {
   BadRequestError,
   ERROR_MESSAGES,

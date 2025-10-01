@@ -2,10 +2,10 @@ import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { BadRequestError, ForbiddenError } from 'art-chain-shared';
 import admin from '../../../../infrastructure/config/firebase-admin';
 import { tokenService } from '../../../../presentation/service/token.service';
-import { AuthResultDto } from '../../../../domain/dtos/user/auth/AuthResultDto';
+import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { GoogleAuthRequestDto } from '../../../../domain/dtos/user/auth/GoogleAuthRequestDto';
-import { IGoogleAuthUserUseCase } from '../../../../domain/usecases/user/auth/IGoogleAuthUserUseCase';
+import { GoogleAuthRequestDto } from '../../../interface/dtos/user/auth/GoogleAuthRequestDto';
+import { IGoogleAuthUserUseCase } from '../../../interface/usecases/user/auth/IGoogleAuthUserUseCase';
 
 export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
   constructor(private _userRepo: IUserRepository) {}

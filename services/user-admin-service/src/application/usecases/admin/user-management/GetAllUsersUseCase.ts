@@ -1,6 +1,6 @@
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { GetAllUsersQueryDTO } from "../../../../domain/dtos/admin/GetAllUsersQueryDTO";
-import { IGetAllUsersUseCase } from "../../../../domain/usecases/admin/user-management/IGetAllUsersUseCase";
+import { GetAllUsersQueryDTO } from "../../../interface/dtos/admin/GetAllUsersQueryDTO";
+import { IGetAllUsersUseCase } from "../../../interface/usecases/admin/user-management/IGetAllUsersUseCase";
 import { IUserSearchRepository } from "../../../../domain/repositories/user/IUserSearchRepository";
 
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {

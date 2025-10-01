@@ -3,7 +3,7 @@ import { NotFoundError } from 'art-chain-shared';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
-import { ICheckUserArtistRequestUseCase } from '../../../../domain/usecases/user/artist-request/ICheckUserArtistRequestUseCase';
+import { ICheckUserArtistRequestUseCase } from '../../../interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase';
 
 
 export class CheckUserArtistRequestUseCase implements ICheckUserArtistRequestUseCase {

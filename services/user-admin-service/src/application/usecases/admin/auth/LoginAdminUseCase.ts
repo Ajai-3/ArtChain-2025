@@ -1,14 +1,14 @@
 import bcrypt from "bcrypt";
 import { tokenService } from "../../../../presentation/service/token.service";
-import { AuthResultDto } from "../../../../domain/dtos/user/auth/AuthResultDto";
-import { LoginRequestDto } from "../../../../domain/dtos/user/auth/LoginRequestDto";
+import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
+import { LoginRequestDto } from "../../../interface/dtos/user/auth/LoginRequestDto";
 import {
   ERROR_MESSAGES,
   ForbiddenError,
   UnauthorizedError,
 } from "art-chain-shared";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ILoginAdminUseCase } from "../../../../domain/usecases/admin/auth/ILoginAdminUseCase";
+import { ILoginAdminUseCase } from "../../../interface/usecases/admin/auth/ILoginAdminUseCase";
 
 export class LoginAdminUseCase implements ILoginAdminUseCase {
   constructor(private _userRepo: IUserRepository) {}

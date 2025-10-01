@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { tokenService } from "../../service/token.service";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { AUTH_MESSAGES } from "../../../constants/authMessages";
-import { LoginRequestDto } from "../../../domain/dtos/user/auth/LoginRequestDto";
+import { LoginRequestDto } from "../../../application/interface/dtos/user/auth/LoginRequestDto";
 import { IAdminAuthController } from "../../interfaces/admin/IAdminAuthController";
 import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
 import { LoginAdminUseCase } from "../../../application/usecases/admin/auth/LoginAdminUseCase";

@@ -3,8 +3,8 @@ import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
-import { IUnSupportUserUseCase } from '../../../../domain/usecases/user/user-intraction/IUnSupportUserUseCase';
-import { SupportUnSupportRequestDto } from '../../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto';
+import { IUnSupportUserUseCase } from '../../../interface/usecases/user/user-intraction/IUnSupportUserUseCase';
+import { SupportUnSupportRequestDto } from '../../../interface/dtos/user/user-intraction/SupportUnSupportRequestDto';
 
 export class UnSupportUserUseCase implements IUnSupportUserUseCase {
   constructor(
