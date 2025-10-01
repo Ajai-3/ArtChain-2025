@@ -27,13 +27,19 @@ apiClient.interceptors.request.use((config) => {
 
   let token: string | null = null;
 
+  
   if (state?.admin?.accessToken) {
     token = state.admin.accessToken;
   } else {
     token = state?.user?.accessToken ?? null;
   }
 
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  } else {
+    delete config.headers.Authorization;
+  };
 
   return config;
 });

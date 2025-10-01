@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { useGetShopItemsByUser } from "../../hooks/shop/useGetShopItemsByUser";
 import { Star, User, IndianRupee, Coins } from "lucide-react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const SkeletonCard = () => (
   <div className="rounded-sm flex flex-col bg-zinc-800 animate-pulse h-72">
@@ -29,8 +29,9 @@ const ShopUser: React.FC = () => {
   const targetUserId = profileUser.id;
   const containerRef = useRef<HTMLDivElement>(null);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useGetShopItemsByUser(targetUserId);
+  const navigate = useNavigate()
 
-  const allArts = data?.pages.flatMap((page: any) => page.data) || [];
+  const allArts = data?.pages?.flatMap((page: any) => page.data) || [];
 
   // Infinite scroll
   useEffect(() => {
@@ -60,10 +61,11 @@ const ShopUser: React.FC = () => {
       )}
 
       {!isLoading &&
-        allArts.map((item) => (
+        allArts.map((item: any) => (
           <div
             key={item.id}
             className="rounded-sm flex flex-col bg-zinc-900 hover:shadow-xl hover:scale-105 transition-transform duration-300 h-72"
+            onClick={() => navigate(`/${profileUser.username}/art/${item.artName}`)}
           >
             <img
               src={item.previewUrl}

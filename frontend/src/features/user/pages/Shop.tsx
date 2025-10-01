@@ -4,6 +4,7 @@ import { Input } from "../../../components/ui/input";
 import { useGetAllShopItems } from "../hooks/shop/useGetAllShopItems";
 import { useGetCategories } from "../hooks/art/useGetCategories";
 import { Star, User, IndianRupee, Coins } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Skeleton Loader
 const SkeletonCard = () => (
@@ -33,11 +34,6 @@ type FilterType = {
   maxPrice?: number;
 };
 
-interface Category {
-  _id: string;
-  name: string;
-  count: number;
-}
 
 interface ShopItem {
   id: string;
@@ -47,6 +43,7 @@ interface ShopItem {
   priceType: "artcoin" | "fiat";
   artcoins?: number;
   fiatPrice?: number;
+  artName: string;
   user?: {
     profileImage?: string;
     username: string;
@@ -56,6 +53,7 @@ interface ShopItem {
 const Shop: React.FC = () => {
   const [filters, setFilters] = useState<FilterType>({});
   const [draftFilters, setDraftFilters] = useState<FilterType>({});
+  const navigate = useNavigate()
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetAllShopItems(filters);
@@ -102,7 +100,7 @@ const Shop: React.FC = () => {
   // Select / Deselect all categories
   const toggleAllCategories = () => {
     if (!categories) return;
-    const allCategoryIds = categories.map((c: Category) => c._id);
+    const allCategoryIds = categories.map((c: any) => c._id);
     setDraftFilters((prev: FilterType) => ({
       ...prev,
       category:
@@ -267,6 +265,7 @@ const Shop: React.FC = () => {
             <div
               key={item.id}
               className="rounded-sm flex flex-col bg-zinc-900 hover:shadow-xl hover:scale-105 transition-transform duration-300 h-72"
+              onClick={() => navigate(`/${item.user?.username}/art/${item?.artName}`)}
             >
               <img
                 src={item.previewUrl}

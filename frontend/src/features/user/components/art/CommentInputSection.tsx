@@ -6,6 +6,7 @@ import { SendHorizonal, User } from "lucide-react";
 import CustomLoader from "../../../../components/CustomLoader";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
+import toast from "react-hot-toast";
 
 interface Props {
   postId: string;
@@ -18,6 +19,10 @@ const CommentInputSection: React.FC<Props> = ({ postId, artname }) => {
   const mutation = usePostComment();
 
   const handleSend = () => {
+    if (!user) {
+      toast.error("Login to create   comment")
+      return
+    }
     const trimmed = comment.trim();
     if (trimmed.length === 0 || trimmed.length > 500) return;
     mutation.mutate({ postId, artname, content: trimmed });
