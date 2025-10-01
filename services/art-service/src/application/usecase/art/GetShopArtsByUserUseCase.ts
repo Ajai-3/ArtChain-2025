@@ -16,12 +16,14 @@ export class GetShopArtsByUserUseCase {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
+    const user = userRes.data
+
     const arts = await this._artRepo.findAllByUser(userId, page, limit);
 
     const artsWithFavorites = await Promise.all(
       arts.map(async (art: any) => {
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(art._id.toString());
-        return { ...art, favoriteCount };
+        return { ...art, favoriteCount, user };
       })
     );
 
