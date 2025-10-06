@@ -3,10 +3,10 @@ import {
   ERROR_MESSAGES,
   NotFoundError,
 } from "art-chain-shared";
-import { VerifyEmailTokenRequestDto } from "../../../../domain/dtos/user/security/VerifyEmailTokenRequestDto";
+import { VerifyEmailTokenRequestDto } from "../../../interface/dtos/user/security/VerifyEmailTokenRequestDto";
 import { SafeUser } from "../../../../domain/repositories/IBaseRepository";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { IVerifyEmailTokenUserUseCase } from "../../../../domain/usecases/user/security/IVerifyEmailTokenUserUseCase";
+import { IVerifyEmailTokenUserUseCase } from "../../../interface/usecases/user/security/IVerifyEmailTokenUserUseCase";
 import { tokenService } from "../../../../presentation/service/token.service";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 

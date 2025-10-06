@@ -3,9 +3,9 @@ import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
-import { ISupportUserUseCase } from '../../../../domain/usecases/user/user-intraction/ISupportUserUseCase';
-import { SupportUnSupportRequestDto } from '../../../../domain/dtos/user/user-intraction/SupportUnSupportRequestDto';
-import { SupportResultDto } from '../../../../domain/dtos/user/user-intraction/SupportResultDto';
+import { ISupportUserUseCase } from '../../../interface/usecases/user/user-intraction/ISupportUserUseCase';
+import { SupportUnSupportRequestDto } from '../../../interface/dtos/user/user-intraction/SupportUnSupportRequestDto';
+import { SupportResultDto } from '../../../interface/dtos/user/user-intraction/SupportResultDto';
 
 export class SupportUserUseCase implements ISupportUserUseCase {
   constructor(

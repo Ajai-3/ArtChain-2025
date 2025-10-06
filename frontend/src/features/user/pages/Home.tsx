@@ -3,6 +3,7 @@ import { useGetAllArt } from "../hooks/art/useGetAllArt";
 import { useGetCategories, type Category } from "../hooks/art/useGetCategories";
 import ArtCard from "../components/art/ArtCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import ArtCardSkeleton from "../components/skeletons/ArtCardSkeleton";
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -83,7 +84,7 @@ const Home: React.FC = () => {
     }
   }, [categoryScrollPos]);
 
-  if (status === "pending") return <div>Loading...</div>;
+  if (status === "pending") return <div><ArtCardSkeleton /></div>;
   if (status === "error")
     return <div>Error: {(error as Error)?.message || "Something went wrong"}</div>;
 

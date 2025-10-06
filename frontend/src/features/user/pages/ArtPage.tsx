@@ -22,37 +22,51 @@ import { useUnfavoritePost } from "../hooks/art/useUnfavoritePost";
 import FavoriteUsersModal from "../components/art/FavoriteUsersModal";
 import LikeUsersModal from "../components/art/LikeUsersModal";
 import { formatNumber } from "../../../libs/formatNumber";
+import ArtPageSkeleton from "../components/skeletons/ArtPageSkeleton";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../redux/store";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.user);
+
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
   const favoritePost = useFavoritePost();
   const unfavoritePost = useUnfavoritePost();
 
   const { data, isLoading, isError, error } = useGetArtByName(artname!);
+
   const [zoomed, setZoomed] = useState(false);
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
-  const navigate = useNavigate();
 
-  const art = data?.data?.art;
-  const actualUser = data?.data?.user;
-  const price = data?.data.price;
-  const commentCount = data?.data.commentCount;
-  const isLiked = data?.data?.isLiked;
-  const isFavorited = data?.data?.isFavorited;
-  const favoriteCount = data?.data?.favoriteCount;
-
-  if (isLoading) return <div className="text-center mt-10">Loading art...</div>;
+  if (isLoading)
+    return (
+      <div className="text-center mt-10">
+        <ArtPageSkeleton />
+      </div>
+    );
   if (isError)
     return <div className="text-center mt-10">Error: {error?.message}</div>;
-  if (!art) return <div className="text-center mt-10">Art not found</div>;
+  if (!data?.data?.art)
+    return <div className="text-center mt-10">Art not found</div>;
+
+  const art = data.data.art;
+  const actualUser = data.data.user;
+  const price = data.data.price;
+  const commentCount = data.data.commentCount;
+  const isLiked = data.data.isLiked;
+  const isFavorited = data.data.isFavorited;
+  const favoriteCount = data.data.favoriteCount;
 
   const handleFavorite = () => {
-    if (!actualUser?.id) return;
-
+    if (!user.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     if (isFavorited) {
       unfavoritePost.mutate({ postId: art.id, artname: art.artName });
     } else {
@@ -61,11 +75,31 @@ const ArtPage: React.FC = () => {
   };
 
   const handleLike = () => {
+    if (!user.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
     if (isLiked) {
       unlikePost.mutate({ postId: art.id, artname: art.artName });
     } else {
       likePost.mutate({ postId: art.id, artname: art.artName });
     }
+  };
+
+  const handleShowFavorites = () => {
+    if (!user.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    setShowFavorites(true);
+  };
+
+  const handleShowLikes = () => {
+    if (!user.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    setShowLikes(true);
   };
 
   const handleImageClick = () => {
@@ -98,16 +132,12 @@ const ArtPage: React.FC = () => {
       <div className="w-full md:w-3/4 flex flex-col items-center relative">
         {/* Art image */}
         <div className="relative w-full flex justify-center items-center">
-          {/* Left Arrow */}
           <div className="absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-900 dark:text-zinc-400 z-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-full">
             <ChevronLeft size={50} />
           </div>
-
           <div className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-900 dark:text-zinc-400 z-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-full">
             <ChevronRight size={50} />
           </div>
-
-          {/* Image */}
           <img
             src={art.imageUrl || "/placeholder.png"}
             alt={art.title}
@@ -117,75 +147,76 @@ const ArtPage: React.FC = () => {
         </div>
 
         {/* Action buttons */}
-        {/* Action buttons - below the image */}
         <div className="flex flex-wrap justify-between sm:justify-between items-center w-full mt-4 gap-3 sm:gap-6 sm:px-20">
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1">
               <span
                 className="cursor-pointer block sm:hidden"
-                onClick={() => setShowFavorites(true)}
+                onClick={handleShowFavorites}
               >
                 {formatNumber(favoriteCount || 0)}
               </span>
               <Star
                 size={22}
-                className={`transition-transform duration-300 cursor-pointer 
-            ${
-              isFavorited ? "text-yellow-500 fill-yellow-500" : "text-white/60"
-            }`}
+                className={`transition-transform duration-300 cursor-pointer ${
+                  isFavorited
+                    ? "text-yellow-500 fill-yellow-500"
+                    : "text-white/60"
+                }`}
                 onClick={handleFavorite}
               />
-
               <span
                 className="hidden sm:inline cursor-pointer hover:text-yellow-400"
-                onClick={() => setShowFavorites(true)}
+                onClick={handleShowFavorites}
               >
                 {formatNumber(favoriteCount || 0)} Favorites
               </span>
             </div>
 
-            <FavoriteUsersModal
-              postId={art.id}
-              isOpen={showFavorites}
-              onClose={() => setShowFavorites(false)}
-            />
+            {user.isAuthenticated && (
+              <FavoriteUsersModal
+                postId={art.id}
+                isOpen={showFavorites}
+                onClose={() => setShowFavorites(false)}
+              />
+            )}
 
             <div className="flex items-center gap-1 cursor-pointer hover:text-green-400">
-              <span className="block sm:hidden">{formatNumber(commentCount || 0)}</span>
+              <span className="block sm:hidden">
+                {formatNumber(commentCount || 0)}
+              </span>
               <MessageSquare size={22} />
-              <span className="hidden sm:inline">{formatNumber(commentCount || 0)} Comments</span>
+              <span className="hidden sm:inline">
+                {formatNumber(commentCount || 0)} Comments
+              </span>
             </div>
           </div>
 
-          {/* Right side actions */}
           <div className="flex flex-wrap items-center gap-1">
             <span
               className="cursor-pointer block sm:hidden"
-              onClick={() => setShowLikes(true)}
+              onClick={handleShowLikes}
             >
               {formatNumber(data?.data.likeCount || 0)}
             </span>
             <LikeButton
-              // @ts-ignore
               isLiked={isLiked}
               likeCount={data?.data.likeCount || 0}
               onClick={handleLike}
             />
-
             <div className="flex items-center gap-2 cursor-pointer hover:text-pink-500">
-              <span
-                className="hidden sm:inline"
-                onClick={() => setShowLikes(true)}
-              >
+              <span className="hidden sm:inline" onClick={handleShowLikes}>
                 {formatNumber(data?.data.likeCount || 0)} Likes
               </span>
             </div>
 
-            <LikeUsersModal
-              postId={art.id}
-              isOpen={showLikes}
-              onClose={() => setShowLikes(false)}
-            />
+            {user.isAuthenticated && (
+              <LikeUsersModal
+                postId={art.id}
+                isOpen={showLikes}
+                onClose={() => setShowLikes(false)}
+              />
+            )}
 
             {art.isForSale && (
               <div className="bg-main-color/20 hover:bg-main-color/40 py-[.2rem] text-main-color px-3 rounded-full cursor-pointer text-sm sm:text-base">

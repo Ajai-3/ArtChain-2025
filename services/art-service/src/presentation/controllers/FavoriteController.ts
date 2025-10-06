@@ -7,13 +7,15 @@ import { RemoveFavoriteUseCase } from "../../application/usecase/favorite/Remove
 import { GetFavoriteCountUseCase } from "../../application/usecase/favorite/GetFavoriteCountUseCase";
 import { FAVORITE_MESSAGES } from "../../constants/FavoriteMessages";
 import { GetFavoritedUsersUseCase } from "../../application/usecase/favorite/GetFavoritedUsersUseCase";
+import { GetUserFavoritedArtsUseCase } from "../../application/usecase/favorite/GetUserFavoritedArtsUseCase";
 
 export class FavoriteController implements IFavoriteController {
   constructor(
     private readonly _addFavoriteUseCase: AddFavoriteUseCase,
     private readonly _removeFavoriteUseCase: RemoveFavoriteUseCase,
     private readonly _getFavoriteCountUseCase: GetFavoriteCountUseCase,
-    private readonly _getFavoritedUsersUseCase: GetFavoritedUsersUseCase
+    private readonly _getFavoritedUsersUseCase: GetFavoritedUsersUseCase,
+    private readonly _getUserFavoritedArtsUseCase: GetUserFavoritedArtsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -121,18 +123,48 @@ export class FavoriteController implements IFavoriteController {
       const currentUserId = req.headers["x-user-id"] as string;
 
       const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+      const limit = Number(req.query.limit) || 10;
 
-    const { users, favoriteCount } = await this._getFavoritedUsersUseCase.execute(postId, page, limit);
+      const { users, favoriteCount } =
+        await this._getFavoritedUsersUseCase.execute(postId, page, limit);
 
-    return res.status(HttpStatus.OK).json({
-      message: FAVORITE_MESSAGES.FAVORITED_USERS_FETCHED_SUCCESS,
-      users,
-      favoriteCount,
-      page,
-      limit,
-    });
+      return res.status(HttpStatus.OK).json({
+        message: FAVORITE_MESSAGES.FAVORITED_USERS_FETCHED_SUCCESS,
+        users,
+        favoriteCount,
+        page,
+        limit,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
 
+  //# ================================================================================================================
+  //# GET USER FAVORITED ARTS
+  //# ================================================================================================================
+  //# GET /api/v1/art/favorites/user/:userId
+  //# This endpoint returns a list of arts wh
+  //# Pagination can be implemented if needed.
+  //# ================================================================================================================
+  getUserFavoritedArts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const userId = req.params.userId;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 15;
+      const currentUserId = req.headers["x-user-id"] as string;
+
+      const arts = await this._getUserFavoritedArtsUseCase.execute(userId, currentUserId, page, limit)
+
+      return res.status(HttpStatus.OK).json({
+        data: arts,
+        page,
+        limit,
+      });
     } catch (error) {
       next(error);
     }

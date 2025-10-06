@@ -2,11 +2,11 @@
 import bcrypt from 'bcrypt';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
-import { AuthResultDto } from '../../../../domain/dtos/user/auth/AuthResultDto';
-import { LoginRequestDto } from '../../../../domain/dtos/user/auth/LoginRequestDto';
+import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
+import { LoginRequestDto } from '../../../interface/dtos/user/auth/LoginRequestDto';
 import { ForbiddenError, NotFoundError, UnauthorizedError } from 'art-chain-shared';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { ILoginUserUseCase } from '../../../../domain/usecases/user/auth/ILoginUserUseCase';
+import { ILoginUserUseCase } from '../../../interface/usecases/user/auth/ILoginUserUseCase';
 
 export class LoginUserUseCase implements ILoginUserUseCase {
   constructor(private _userRepo: IUserRepository) {}

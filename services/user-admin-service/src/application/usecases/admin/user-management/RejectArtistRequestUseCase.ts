@@ -3,9 +3,9 @@ import {
   ERROR_MESSAGES,
   NotFoundError,
 } from "art-chain-shared";
-import { ArtistAproveRejectRequestDto } from "../../../../domain/dtos/admin/user-management/ArtistAproveRejectRequestDto";
+import { ArtistAproveRejectRequestDto } from "../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
 import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IRejectArtistRequestUseCase } from "../../../../domain/usecases/admin/user-management/IRejectArtistRequestUseCase";
+import { IRejectArtistRequestUseCase } from "../../../interface/usecases/admin/user-management/IRejectArtistRequestUseCase";
 import { ARTIST_MESSAGES } from "../../../../constants/artistMessages";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 

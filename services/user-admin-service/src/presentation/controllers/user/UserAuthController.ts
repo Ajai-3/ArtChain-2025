@@ -1,48 +1,46 @@
-import { Request, Response, NextFunction } from "express";
 import { HttpStatus } from "art-chain-shared";
 import { logger } from "../../../utils/logger";
+import { Request, Response, NextFunction } from "express";
 
 import { tokenService } from "../../service/token.service";
 import { config } from "../../../infrastructure/config/env";
 import { validateWithZod } from "../../../utils/zodValidator";
+import { AUTH_MESSAGES } from "../../../constants/authMessages";
+import { IUserAuthController } from "../../interfaces/user/IUserAuthController";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 
-import { IUserAuthController } from "../../interfaces/user/IUserAuthController";
-
-import { AUTH_MESSAGES } from "../../../constants/authMessages";
-
-import { LoginRequestDto } from "../../../domain/dtos/user/auth/LoginRequestDto";
-import { RegisterRequestDto } from "../../../domain/dtos/user/auth/RegisterRequestDto";
-import { GoogleAuthRequestDto } from "../../../domain/dtos/user/auth/GoogleAuthRequestDto";
-import { ResetPasswordRequestDto } from "../../../domain/dtos/user/auth/ResetPasswordRequestDto";
-import { StartRegisterRequestDto } from "../../../domain/dtos/user/auth/StartRegisterRequestDto";
+import { LoginRequestDto } from "../../../application/interface/dtos/user/auth/LoginRequestDto";
+import { RegisterRequestDto } from "../../../application/interface/dtos/user/auth/RegisterRequestDto";
+import { GoogleAuthRequestDto } from "../../../application/interface/dtos/user/auth/GoogleAuthRequestDto";
+import { ResetPasswordRequestDto } from "../../../application/interface/dtos/user/auth/ResetPasswordRequestDto";
+import { StartRegisterRequestDto } from "../../../application/interface/dtos/user/auth/StartRegisterRequestDto";
 
 import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
 import { googleAuthSchema } from "../../../application/validations/user/GoogleAuthSchema";
 import { registerUserSchema } from "../../../application/validations/user/RegisterUserSchema";
 import { startRegisterSchema } from "../../../application/validations/user/StartRegisterSchema";
 import { passwordTokenSchema } from "../../../application/validations/user/PasswordTokenSchema";
-
-import { LoginUserUseCase } from "./../../../application/usecases/user/auth/LoginUserUseCase";
 import { forgotPasswordSchema } from "../../../application/validations/user/forgotPasswordSchema";
-import { RegisterUserUseCase } from "./../../../application/usecases/user/auth/RegisterUserUseCase";
-import { GoogleAuthUserUseCase } from "./../../../application/usecases/user/auth/GoogleAuthUserUseCase";
-import { RefreshTokenUserUseCase } from "./../../../application/usecases/user/auth/RefreshTokenUserUseCase";
-import { ResetPasswordUserUseCase } from "./../../../application/usecases/user/auth/ResetPasswordUserUseCase";
-import { StartRegisterUserUseCase } from "./../../../application/usecases/user/auth/StartRegisterUserUseCase";
-import { ForgotPasswordUserUseCase } from "./../../../application/usecases/user/auth/ForgotPasswordUserUseCase";
-import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+
+import { ILoginUserUseCase } from "../../../application/interface/usecases/user/auth/ILoginUserUseCase";
+import { IRefreshTokenUseCase } from "../../../application/interface/usecases/user/auth/IRefreshTokenUseCase";
+import { IRegisterUserUseCase } from "./../../../application/interface/usecases/user/auth/IRegisterUserUseCase";
+import { IGoogleAuthUserUseCase } from "../../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase";
+import { IResetPasswordUserUseCase } from "../../../application/interface/usecases/user/auth/IResetPasswordUserUseCase";
+import { IStartRegisterUserUseCase } from "../../../application/interface/usecases/user/auth/IStartRegisterUserUseCase";
+import { IForgotPasswordUserUseCase } from "../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase";
+import { IAddUserToElasticSearchUseCase } from "../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase";
 
 export class UserAuthController implements IUserAuthController {
   constructor(
-    private readonly _startRegisterUserUseCase: StartRegisterUserUseCase,
-    private readonly _registerUserUseCase: RegisterUserUseCase,
-    private readonly _loginUserUseCase: LoginUserUseCase,
-    private readonly _googleAuthUserUseCase: GoogleAuthUserUseCase,
-    private readonly _forgotPasswordUserUseCase: ForgotPasswordUserUseCase,
-    private readonly _resetPasswordUserUseCase: ResetPasswordUserUseCase,
-    private readonly _refreshTokenUserUseCase: RefreshTokenUserUseCase,
-    private readonly _addUserToElasticUserUseCase: AddUserToElasticSearchUseCase
+    private readonly _startRegisterUserUseCase: IStartRegisterUserUseCase,
+    private readonly _registerUserUseCase: IRegisterUserUseCase,
+    private readonly _loginUserUseCase: ILoginUserUseCase,
+    private readonly _googleAuthUserUseCase: IGoogleAuthUserUseCase,
+    private readonly _forgotPasswordUserUseCase: IForgotPasswordUserUseCase,
+    private readonly _resetPasswordUserUseCase: IResetPasswordUserUseCase,
+    private readonly _refreshTokenUserUseCase: IRefreshTokenUseCase,
+    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
   ) {}
 
   //# ================================================================================================================
@@ -143,6 +141,8 @@ export class UserAuthController implements IUserAuthController {
 
       await publishNotification("user.created", elasticUser);
 
+      logger.info(`${user.username} account created successfully.`);
+
       return res.status(HttpStatus.CREATED).json({
         message: AUTH_MESSAGES.REGISTRATION_SUCCESS,
         user,
@@ -225,10 +225,18 @@ export class UserAuthController implements IUserAuthController {
       });
 
       if (isNewUser) {
-        const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
+        const elasticUser = await this._addUserToElasticUserUseCase.execute(
+          user
+        );
 
-      await publishNotification("user.created", elasticUser);
+        await publishNotification("user.created", elasticUser);
       }
+
+      logger.info(
+        `${user.username} has ${
+          isNewUser ? "just registered (new user)" : "logged in (existing user)"
+        }`
+      );
 
       return res.status(isNewUser ? HttpStatus.CREATED : HttpStatus.OK).json({
         message: isNewUser
@@ -271,6 +279,8 @@ export class UserAuthController implements IUserAuthController {
         },
       });
 
+      logger.info(`Password reset requested for email: ${identifier}`);
+
       return res
         .status(HttpStatus.OK)
         .json({ message: AUTH_MESSAGES.RESET_EMAIL_SENT, email: user.email });
@@ -296,10 +306,12 @@ export class UserAuthController implements IUserAuthController {
 
       const { token, password } = result;
 
-      console.log(result);
-
       const dto: ResetPasswordRequestDto = { token, password };
       await this._resetPasswordUserUseCase.execute(dto);
+
+      logger.info(
+        `Password reset attempt with token: ${JSON.stringify(token)} for user.`
+      );
 
       return res
         .status(HttpStatus.OK)
@@ -329,6 +341,12 @@ export class UserAuthController implements IUserAuthController {
         refreshToken
       );
 
+      logger.info(
+        `Access token refresh requested. Refresh token present: ${JSON.stringify(
+          refreshToken
+        )}`
+      );
+
       return res
         .status(HttpStatus.OK)
         .json({ message: AUTH_MESSAGES.TOKEN_REFRESH_SUCCESS, accessToken });
@@ -352,8 +370,6 @@ export class UserAuthController implements IUserAuthController {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
-      console.log(refreshToken);
-
       if (!refreshToken) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
@@ -361,7 +377,7 @@ export class UserAuthController implements IUserAuthController {
       }
 
       const payload = tokenService.verifyRefreshToken(refreshToken);
-      console.log(payload);
+
       if (typeof payload !== "object" || payload === null) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
@@ -373,6 +389,12 @@ export class UserAuthController implements IUserAuthController {
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
       });
+
+      logger.info(
+        `Logout attempt for user: ${
+          payload?.username || "unknown"
+        }. Refresh token present: ${!!refreshToken}`
+      );
 
       return res
         .status(HttpStatus.OK)

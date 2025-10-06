@@ -1,6 +1,6 @@
-import { ArtistAproveRejectRequestDto } from "./../../../../domain/dtos/admin/user-management/ArtistAproveRejectRequestDto";
+import { ArtistAproveRejectRequestDto } from "../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
 import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IApproveArtistRequestUseCase } from "../../../../domain/usecases/admin/user-management/IApproveArtistRequestUseCase";
+import { IApproveArtistRequestUseCase } from "../../../interface/usecases/admin/user-management/IApproveArtistRequestUseCase";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import {
   BadRequestError,

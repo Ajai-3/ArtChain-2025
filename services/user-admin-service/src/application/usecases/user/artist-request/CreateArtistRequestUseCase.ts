@@ -1,8 +1,8 @@
 import { ArtistRequest } from '@prisma/client';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { CreateArtistRequestDto } from '../../../../domain/dtos/user/artist-request/CreateArtistRequestDto';
+import { CreateArtistRequestDto } from '../../../interface/dtos/user/artist-request/CreateArtistRequestDto';
 import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
-import { ICreateArtistRequestUseCase } from '../../../../domain/usecases/user/artist-request/ICreateArtistRequestUseCase';
+import { ICreateArtistRequestUseCase } from '../../../interface/usecases/user/artist-request/ICreateArtistRequestUseCase';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';

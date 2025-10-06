@@ -1,74 +1,54 @@
-// components/profile/GalleryTab.tsx
 import React from "react";
+import { useOutletContext } from "react-router-dom";
 import { useGetUserArt } from "../../hooks/profile/gallery/useGetUserArt";
-import { useParams } from "react-router-dom";
-import { useProfileData } from "../../hooks/profile/useProfileData";
+import ArtCard from "../art/ArtCard";
+import ArtCardSkeleton from "../skeletons/ArtCardSkeleton";
 
 interface GalleryTabProps {
-  username?: string; 
+  profileUser: { id: string; username: string };
 }
 
-const GalleryTab: React.FC<GalleryTabProps> = ({ username }) => {
-  const { username: urlUsername } = useParams(); 
-  const { profileUser, isLoading: profileLoading } = useProfileData(urlUsername || username);
+const GalleryTab: React.FC = () => {
+  const { profileUser } = useOutletContext<GalleryTabProps>();
+  const targetUserId = profileUser.id;
 
-  // Get the target user ID from the profile data
-  const targetUserId = profileUser?.id || "";
-
-  // Use the hook with the user ID
-  const { 
-    data, 
-    fetchNextPage, 
-    hasNextPage, 
-    isFetchingNextPage, 
-    isLoading, 
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
     isError,
-    error 
+    error,
   } = useGetUserArt(targetUserId);
 
-  // Show loading states
-  if (profileLoading) return <div className="text-center py-4">Loading profile...</div>;
-  if (isLoading) return <div className="text-center py-4">Loading gallery...</div>;
-  if (isError) return <div className="text-center py-4">Error loading gallery: {error?.message}</div>;
-  
-  // Check if data exists and has artwork
-  if (!data || !data.pages || data.pages.length === 0 || data.pages[0].data.length === 0) {
+  if (isLoading)
+    return <div className="text-center py-4"><ArtCardSkeleton /></div>;
+  if (isError)
+    return <div className="text-center py-4">Error: {error?.message}</div>;
+  if (!data || data.pages[0].data.length === 0)
     return <div className="text-center py-4">No artwork found</div>;
-  }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data.pages.map((page, pageIndex) =>
-          page.data.map((artWithUser) => (
-            <div key={artWithUser.art.id} className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-              <img
-                src={artWithUser.art.imageUrl}
-                alt={artWithUser.art.title}
-                className="w-full h-64 object-cover cursor-pointer"
-                onClick={() => window.open(`/${artWithUser.user?.username}/art/${artWithUser.art.artName}`, '_blank')}
+    <div>
+      <div className="flex flex-wrap gap-2">
+        {data?.pages.map((page) =>
+          page.data.map((artItem) => (
+            <div key={artItem.art.id} className="">
+              <ArtCard
+                item={artItem}
               />
-              <div className="p-3">
-                <h3 className="text-sm font-bold truncate">{artWithUser.art.title}</h3>
-                <p className="text-xs text-gray-500 truncate">
-                  {artWithUser.art.description || "No description"}
-                </p>
-                <div className="flex justify-between items-center mt-2 text-xs text-gray-400">
-                  <span>Likes: {artWithUser.likeCount}</span>
-                  <span>Comments: {artWithUser.commentCount}</span>
-                </div>
-              </div>
             </div>
           ))
         )}
       </div>
 
       {hasNextPage && (
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-4">
           <button
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
-            className="mt-4 px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-400"
+            className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:bg-gray-400"
           >
             {isFetchingNextPage ? "Loading..." : "Load More"}
           </button>

@@ -4,6 +4,7 @@ import { commentController } from "../../infrastructure/container/commentContain
 import { categoryController } from "../../infrastructure/container/categoryContainer";
 import { likeController } from "../../infrastructure/container/likeContainer";
 import { favoriteController } from "../../infrastructure/container/favoriteContainer";
+import { shopController } from "../../infrastructure/container/ShopContainer";
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.patch("/category/:id", categoryController.editCategory);
 // Art
 router.get("/", artController.getAllArt);
 router.post("/", artController.createArt);
-router.get("/user", artController.getArtWithUser);
+router.get("/user/:userId", artController.getArtWithUser);
 router.get("/count/:userId", artController.countArtwork);
 router.get("/by-name/:artname", artController.getArtByArtName);
 
@@ -36,6 +37,10 @@ router.post("/favorite", favoriteController.addFavorite);
 router.delete("/unfavorite", favoriteController.removeFavorite);
 router.get("/favorites/:postId", favoriteController.getFavoritedUsers);
 router.get("/favorites-count/:postId", favoriteController.getFavoriteCount);
+router.get("/favorites/user/:userId", favoriteController.getUserFavoritedArts);
+
+router.get("/shop", shopController.getAllShopItems)
+router.get("/shop/:userId", shopController.getShopItemsByUser)
 
 
 export default router;

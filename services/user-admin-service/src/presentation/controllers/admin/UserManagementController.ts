@@ -8,8 +8,8 @@ import { BanOrUnbanUserUseCase } from "../../../application/usecases/admin/user-
 import { logger } from "../../../utils/logger";
 import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
 import { GetAllArtistRequestsUseCase } from "../../../application/usecases/admin/user-management/GetAllArtistRequests";
-import { GetAllUsersQueryDTO } from "../../../domain/dtos/admin/GetAllUsersQueryDTO";
-import { ArtistAproveRejectRequestDto } from "../../../domain/dtos/admin/user-management/ArtistAproveRejectRequestDto";
+import { GetAllUsersQueryDTO } from "../../../application/interface/dtos/admin/GetAllUsersQueryDTO";
+import { ArtistAproveRejectRequestDto } from "../../../application/interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
 import { ApproveArtistRequestUseCase } from "../../../application/usecases/admin/user-management/ApproveArtistRequestUseCase";
 import { RejectArtistRequestUseCase } from "../../../application/usecases/admin/user-management/RejectArtistRequestUseCase";
 

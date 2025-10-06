@@ -8,8 +8,8 @@ import {
   UnauthorizedError,
 } from "art-chain-shared";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { RefreshTokenResultDto } from "../../../../domain/dtos/user/auth/RefreshTokenResultDto";
-import { IRefreshTokenUseCase } from "../../../../domain/usecases/user/auth/IRefreshTokenUseCase";
+import { RefreshTokenResultDto } from "../../../interface/dtos/user/auth/RefreshTokenResultDto";
+import { IRefreshTokenUseCase } from "../../../interface/usecases/user/auth/IRefreshTokenUseCase";
 
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
   constructor(private _userRepo: IUserRepository) {}

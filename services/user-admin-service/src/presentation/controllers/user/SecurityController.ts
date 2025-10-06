@@ -3,7 +3,7 @@ import { ISecurityController } from "../../interfaces/user/ISecurityController";
 import { logger } from "../../../utils/logger";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
-import { ChangePasswordRequestDto } from "../../../domain/dtos/user/security/ChangePasswordRequestDto";
+import { ChangePasswordRequestDto } from "../../../application/interface/dtos/user/security/ChangePasswordRequestDto";
 import { ChangePasswordUserUseCase } from "../../../application/usecases/user/security/ChangePasswordUserUseCase";
 import { HttpStatus } from "art-chain-shared";
 import { ChangeEmailUserUseCase } from "../../../application/usecases/user/security/ChangeEmailUserUseCase";

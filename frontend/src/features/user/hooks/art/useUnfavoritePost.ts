@@ -23,7 +23,9 @@ export const useUnfavoritePost = () => {
     },
 
     onMutate: ({ postId, artname }: FavoriteVariables) => {
-      const prevArt = queryClient.getQueryData<{ data: { isFavorited: boolean; favoriteCount: number } }>(["art", artname]);
+      const prevArt = queryClient.getQueryData<{
+        data: { isFavorited: boolean; favoriteCount: number };
+      }>(["art", artname]);
 
       if (prevArt) {
         queryClient.setQueryData(["art", artname], {
@@ -36,23 +38,75 @@ export const useUnfavoritePost = () => {
         });
       }
 
-      queryClient.getQueriesData<any>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
-        if (!prevAllArt) return;
+      queryClient
+        .getQueriesData<any>({ queryKey: ["allArt"] })
+        .forEach(([key, prevAllArt]) => {
+          if (!prevAllArt) return;
 
-        const newAllArt = {
-          ...prevAllArt,
-          pages: prevAllArt.pages.map((page: any) => ({
-            ...page,
-            data: page.data.map((art: ArtWithUser) =>
-              art.art.id === postId
-                ? { ...art, isFavorited: false, favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1) }
-                : art
-            ),
-          })),
-        };
+          const newAllArt = {
+            ...prevAllArt,
+            pages: prevAllArt.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((art: ArtWithUser) =>
+                art.art.id === postId
+                  ? {
+                      ...art,
+                      isFavorited: false,
+                      favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
+                    }
+                  : art
+              ),
+            })),
+          };
 
-        queryClient.setQueryData(key, newAllArt);
-      });
+          queryClient.setQueryData(key, newAllArt);
+        });
+
+      queryClient
+        .getQueriesData<any>({ queryKey: ["userGallery"] })
+        .forEach(([key, prevUserArt]) => {
+          if (!prevUserArt) return;
+          const newUserArt = {
+            ...prevUserArt,
+            pages: prevUserArt.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((art: ArtWithUser) =>
+                art.art.id === postId
+                  ? {
+                      ...art,
+                      isFavorited: false,
+                      favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
+                    }
+                  : art
+              ),
+            })),
+          };
+          queryClient.setQueryData(key, newUserArt);
+        });
+
+      queryClient
+        .getQueriesData<any>({ queryKey: ["userFavorites"] })
+        .forEach(([key, prevData]) => {
+          if (!prevData) return;
+
+          const newData = {
+            ...prevData,
+            pages: prevData.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((art: ArtWithUser) =>
+                art.art.id === postId
+                  ? {
+                      ...art,
+                      isFavorited: false,
+                      favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
+                    }
+                  : art
+              ),
+            })),
+          };
+
+          queryClient.setQueryData(key, newData);
+        });
 
       return { prevArt } as OnMutateContext;
     },

@@ -10,7 +10,6 @@ interface LikeVariables {
 interface OnMutateContext {
   prevArt?: { data: { isLiked: boolean; likeCount: number } };
 }
-
 export const useUnlikePost = () => {
   const queryClient = useQueryClient();
 
@@ -23,8 +22,10 @@ export const useUnlikePost = () => {
     },
 
     onMutate: ({ postId, artname }: LikeVariables) => {
-      const prevArt = queryClient.getQueryData<{ data: { isLiked: boolean; likeCount: number } }>(["art", artname]);
-
+      // Update single art
+      const prevArt = queryClient.getQueryData<{
+        data: { isLiked: boolean; likeCount: number };
+      }>(["art", artname]);
       if (prevArt) {
         queryClient.setQueryData(["art", artname], {
           ...prevArt,
@@ -37,23 +38,42 @@ export const useUnlikePost = () => {
       }
 
       // Update all "allArt" queries
-      queryClient.getQueriesData<any>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
-        if (!prevAllArt) return;
+      queryClient
+        .getQueriesData<any>({ queryKey: ["allArt"] })
+        .forEach(([key, prevAllArt]) => {
+          if (!prevAllArt) return;
+          const newAllArt = {
+            ...prevAllArt,
+            pages: prevAllArt.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((art: ArtWithUser) =>
+                art.art.id === postId
+                  ? { ...art, isLiked: false, likeCount: art.likeCount - 1 }
+                  : art
+              ),
+            })),
+          };
+          queryClient.setQueryData(key, newAllArt);
+        });
 
-        const newAllArt = {
-          ...prevAllArt,
-          pages: prevAllArt.pages.map((page: any) => ({
-            ...page,
-            data: page.data.map((art: ArtWithUser) =>
-              art.art.id === postId
-                ? { ...art, isLiked: false, likeCount: art.likeCount - 1 }
-                : art
-            ),
-          })),
-        };
-
-        queryClient.setQueryData(key, newAllArt);
-      });
+      // Update userGallery queries
+      queryClient
+        .getQueriesData<any>({ queryKey: ["userGallery"] })
+        .forEach(([key, prevUserArt]) => {
+          if (!prevUserArt) return;
+          const newUserArt = {
+            ...prevUserArt,
+            pages: prevUserArt.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((art: ArtWithUser) =>
+                art.art.id === postId
+                  ? { ...art, isLiked: false, likeCount: art.likeCount - 1 }
+                  : art
+              ),
+            })),
+          };
+          queryClient.setQueryData(key, newUserArt);
+        });
 
       return { prevArt } as OnMutateContext;
     },

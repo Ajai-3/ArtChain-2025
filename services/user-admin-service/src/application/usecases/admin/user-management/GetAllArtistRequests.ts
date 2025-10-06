@@ -1,6 +1,6 @@
-import { GetAllUsersQueryDTO } from "../../../../domain/dtos/admin/GetAllUsersQueryDTO";
+import { GetAllUsersQueryDTO } from "../../../interface/dtos/admin/GetAllUsersQueryDTO";
 import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IGetAllArtistRequestsUseCase } from "../../../../domain/usecases/admin/user-management/IGetAllArtistRequestsUseCase";
+import { IGetAllArtistRequestsUseCase } from "../../../interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase";
 
 export class GetAllArtistRequestsUseCase
   implements IGetAllArtistRequestsUseCase

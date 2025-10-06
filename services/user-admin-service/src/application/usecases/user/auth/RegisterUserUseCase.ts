@@ -2,10 +2,10 @@ import bcrypt from 'bcrypt';
 import { ConflictError } from 'art-chain-shared';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
-import { AuthResultDto } from '../../../../domain/dtos/user/auth/AuthResultDto';
+import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { RegisterRequestDto } from '../../../../domain/dtos/user/auth/RegisterRequestDto';
-import { IRegisterUserUseCase } from '../../../../domain/usecases/user/auth/IRegisterUserUseCase';
+import { RegisterRequestDto } from '../../../interface/dtos/user/auth/RegisterRequestDto';
+import { IRegisterUserUseCase } from '../../../interface/usecases/user/auth/IRegisterUserUseCase';
 
 export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(private _userRepo: IUserRepository) {}

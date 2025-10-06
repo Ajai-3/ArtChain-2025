@@ -6,7 +6,7 @@ import {
 
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 
-import { UpdateUserProfileDTO } from "../../../../domain/dtos/user/profile/UpdateUserProfileDTO";
+import { UpdateUserProfileDTO } from "../../../interface/dtos/user/profile/UpdateUserProfileDTO";
 import { USER_MESSAGES } from "../../../../constants/userMessages";
 
 export class UpdateProfileUserUseCase {

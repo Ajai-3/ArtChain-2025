@@ -52,6 +52,23 @@ export const useLikePost = () => {
         queryClient.setQueryData(key, newAllArt);
       });
 
+      queryClient.getQueriesData<any>({ queryKey: ["userGallery"] }).forEach(([key, prevUserArt]) => {
+        if (!prevUserArt) return;
+        const newUserArt = {
+          ...prevUserArt,
+          pages: prevUserArt.pages.map((page: any) => ({
+            ...page,
+            data: page.data.map((art: ArtWithUser) =>
+              art.art.id === postId
+                ? { ...art, isLiked: true, likeCount: art.likeCount + 1 }
+                : art
+            ),
+          })),
+        };
+        queryClient.setQueryData(key, newUserArt);
+      });
+
+
       return { prevArt } as OnMutateContext;
     },
   });

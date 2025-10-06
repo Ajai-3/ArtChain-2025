@@ -1,5 +1,5 @@
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { IGetUsersByIdsUserUseCase } from "../../../../domain/usecases/user/user-intraction/IGetUsersByIdsUserUseCase";
+import { IGetUsersByIdsUserUseCase } from "../../../interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase";
 import { ArtUser } from "../../../../types/ArtUser";
 
 

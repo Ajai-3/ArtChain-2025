@@ -1,8 +1,9 @@
+import { logger } from '../../../../utils/logger';
 import { IndexedUser } from '../../../../types/IndexedUser';
 import { SafeUser } from '../../../../domain/repositories/IBaseRepository';
-import { logger } from '../../../../utils/logger';
+import { IAddUserToElasticSearchUseCase } from '../../../interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 
-export class AddUserToElasticSearchUseCase {
+export class AddUserToElasticSearchUseCase implements IAddUserToElasticSearchUseCase {
   async execute(user: SafeUser): Promise<IndexedUser> {
     const elasticUser: IndexedUser = {
       id: user.id,

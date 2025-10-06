@@ -16,4 +16,15 @@ export interface IArtPostRepository extends IBaseRepository<ArtPost> {
     page: number,
     limit: number
   ): Promise<any[]>;
+  findAllWithFilters(
+    query: any,
+    page: number,
+    limit: number,
+    sort: any
+  ): Promise<ArtPost[]>;
+  findAllByUser(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<ArtPost[]>;
 }

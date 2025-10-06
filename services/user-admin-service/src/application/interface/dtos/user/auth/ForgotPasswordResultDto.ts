@@ -1,4 +1,4 @@
-import { SafeUser } from '../../../repositories/IBaseRepository';
+import { SafeUser } from "../../../../../domain/repositories/IBaseRepository";
 
 export interface ForgotPasswordResultDto {
   user: SafeUser;
