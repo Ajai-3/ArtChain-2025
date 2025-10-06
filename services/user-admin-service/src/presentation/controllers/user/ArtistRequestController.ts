@@ -1,24 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
-import { HttpStatus } from 'art-chain-shared';
+import { logger } from "../../../utils/logger";
+import { HttpStatus } from "art-chain-shared";
+import { Request, Response, NextFunction } from "express";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { USER_MESSAGES } from "../../../constants/userMessages";
+import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
 
-import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
-import { USER_MESSAGES } from '../../../constants/userMessages';
-
-import { IArtistRequestController } from '../../interfaces/user/IArtistRequestController';
-
-import { CreateArtistRequestDto } from '../../../application/interface/dtos/user/artist-request/CreateArtistRequestDto';
-
-import { validateWithZod } from '../../../utils/zodValidator';
-
-import { createArtistRequestSchema } from '../../../application/validations/user/createArtistRequestSchema';
-
-import { CreateArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CreateArtistRequestUseCase';
-import { CheckUserArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase';
+import { IArtistRequestController } from "../../interfaces/user/IArtistRequestController";
+import { createArtistRequestSchema } from "../../../application/validations/user/createArtistRequestSchema";
+import { CreateArtistRequestDto } from "../../../application/interface/dtos/user/artist-request/CreateArtistRequestDto";
+import { ICreateArtistRequestUseCase } from "../../../application/interface/usecases/user/artist-request/ICreateArtistRequestUseCase";
+import { ICheckUserArtistRequestUseCase } from "../../../application/interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase";
 
 export class ArtistRequestController implements IArtistRequestController {
   constructor(
-    private readonly _createArtistRequestUseCase: CreateArtistRequestUseCase,
-    private readonly _checkUserArtistRequestUseCase: CheckUserArtistRequestUseCase
+    private readonly _createArtistRequestUseCase: ICreateArtistRequestUseCase,
+    private readonly _checkUserArtistRequestUseCase: ICheckUserArtistRequestUseCase
   ) {}
 
   //# ================================================================================================================
@@ -36,7 +32,7 @@ export class ArtistRequestController implements IArtistRequestController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)
@@ -49,6 +45,8 @@ export class ArtistRequestController implements IArtistRequestController {
       const dto: CreateArtistRequestDto = { userId, bio, phone, country };
 
       const request = await this._createArtistRequestUseCase.execute(dto);
+
+      logger.info(`Artist request submitted successfully for user: ${userId}`);
 
       return res.status(HttpStatus.OK).json({
         message: ARTIST_MESSAGES.REQUEST_SUBMITTED_SUCCESS,
@@ -74,7 +72,7 @@ export class ArtistRequestController implements IArtistRequestController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)
@@ -83,6 +81,10 @@ export class ArtistRequestController implements IArtistRequestController {
 
       const { alreadySubmitted, latestRequest } =
         await this._checkUserArtistRequestUseCase.execute(userId);
+
+      logger.info(
+        `Artist request status fetched successfully for user: ${userId}`
+      );
 
       return res.status(HttpStatus.OK).json({
         message: ARTIST_MESSAGES.REQUEST_FETCH_SUCCESS,
