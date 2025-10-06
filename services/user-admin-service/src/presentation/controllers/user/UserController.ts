@@ -134,7 +134,7 @@ export class UserController implements IUserController {
       await publishNotification("user.update", elasticUser);
 
       logger.info(`User profile updated ${JSON.stringify(user)}`);
-      console.log(user);
+
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_UPDATE_SUCCESS,
         user,
@@ -204,6 +204,8 @@ export class UserController implements IUserController {
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._unSupportUserUseCase.execute(dto);
+
+      logger.info(`${currentUserId} un-supported ${userId} at ${new Date().toLocaleString()}`)
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.UNSUPPORT_SUCCESS,

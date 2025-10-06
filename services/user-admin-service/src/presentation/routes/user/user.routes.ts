@@ -1,8 +1,8 @@
 import express from "express";
 
 import { userController } from "../../../infrastructure/container/user/userContainer";
-import { artistRequestController } from "../../../infrastructure/container/user/artistRequestContainer";
 import { securityController } from "../../../infrastructure/container/user/securityContainer";
+import { artistRequestController } from "../../../infrastructure/container/user/artistRequestContainer";
 
 const router = express.Router();
 
@@ -20,16 +20,13 @@ router.get(
   artistRequestController.hasUserSubmittedRequest
 );
 
-// Change password
-router.post("/change-password", securityController.changePassword);
-// Change Email
 router.post("/change-email", securityController.changeEmail);
-router.post("/verify-email-token", securityController.emailVerifyToken);
-// Deactivate Account
 router.post("/deactivate", securityController.deactivateAccount);
+router.post("/change-password", securityController.changePassword);
+router.post("/verify-email-token", securityController.emailVerifyToken);
 
-router.get("/:id/supporters", userController.getSupporters);
 router.get("/:id/supporting", userController.getSupporing);
+router.get("/:id/supporters", userController.getSupporters);
 
 router.post("/batch", userController.getAllUserWithIds);
 
