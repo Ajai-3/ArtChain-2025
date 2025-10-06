@@ -70,7 +70,7 @@ const ShopUser: React.FC = () => {
             <img
               src={item.previewUrl}
               alt={item.title}
-              className="w-full h-48 object-cover rounded-t-sm mb-1"
+              className="w-full h-44 object-cover rounded-t-sm mb-1"
             />
             <div className="px-2 pb-2 flex-1 flex flex-col justify-between">
               <div className="flex justify-between items-center mb-1">
