@@ -1,22 +1,29 @@
-import { Request, Response, NextFunction } from "express";
-import { ISecurityController } from "../../interfaces/user/ISecurityController";
-import { logger } from "../../../utils/logger";
-import { validateWithZod } from "../../../utils/zodValidator";
-import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
-import { ChangePasswordRequestDto } from "../../../application/interface/dtos/user/security/ChangePasswordRequestDto";
-import { ChangePasswordUserUseCase } from "../../../application/usecases/user/security/ChangePasswordUserUseCase";
 import { HttpStatus } from "art-chain-shared";
-import { ChangeEmailUserUseCase } from "../../../application/usecases/user/security/ChangeEmailUserUseCase";
+import { logger } from "../../../utils/logger";
+import { Request, Response, NextFunction } from "express";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { ISecurityController } from "../../interfaces/user/ISecurityController";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
-import { VerifyEmailTokenUserUseCase } from "../../../application/usecases/user/security/VerifyEmailTokenUserUseCase";
+import { ChangePasswordRequestDto } from "../../../application/interface/dtos/user/security/ChangePasswordRequestDto";
+import { IChangeEmailUserUseCase } from "../../../application/interface/usecases/user/security/IChangeEmailUserUseCase";
+import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
+import { IChangePasswordUserUseCase } from "../../../application/interface/usecases/user/security/IChangePasswordUserUseCase";
+import { IVerifyEmailTokenUserUseCase } from "../../../application/interface/usecases/user/security/IVerifyEmailTokenUserUseCase";
 
 export class SecurityController implements ISecurityController {
   constructor(
-    private readonly _changePasswordUserUseCase: ChangePasswordUserUseCase,
-    private readonly _changeEmailUserUseCase: ChangeEmailUserUseCase,
-    private readonly _verifyEmailTokenUserUseCase: VerifyEmailTokenUserUseCase
+    private readonly _changePasswordUserUseCase: IChangePasswordUserUseCase,
+    private readonly _changeEmailUserUseCase: IChangeEmailUserUseCase,
+    private readonly _verifyEmailTokenUserUseCase: IVerifyEmailTokenUserUseCase
   ) {}
 
+  //# ================================================================================================================
+  //# CHANGE PASSWORD
+  //# ================================================================================================================
+  //# POST /api/v1/user/change-password
+  //# Request body: { currentPassword: string, newPassword: string }
+  //# This controller changes the password for the authenticated user.
+  //# ================================================================================================================
   changePassword = async (
     req: Request,
     res: Response,
@@ -49,6 +56,13 @@ export class SecurityController implements ISecurityController {
     }
   };
 
+  //# ================================================================================================================
+  //# CHANGE EMAIL
+  //# ================================================================================================================
+  //# POST /api/v1/user/change-email
+  //# Request body: { newEmail: string }
+  //# This controller initiates an email change for the authenticated user and sends verification token.
+  //# ================================================================================================================
   changeEmail = async (
     req: Request,
     res: Response,
@@ -84,13 +98,26 @@ export class SecurityController implements ISecurityController {
     }
   };
 
-  emailVerifyToken = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  //# ================================================================================================================
+  //# VERIFY EMAIL TOKEN
+  //# ================================================================================================================
+  //# POST /api/v1/user/verify-email-token
+  //# Request body: { token: string }
+  //# This controller verifies the email token and updates the user's email if valid.
+  //# ================================================================================================================
+  emailVerifyToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const userId = req.headers["x-user-id"] as string;
       const { token } = req.body;
 
       if (!token) {
-        res.status(HttpStatus.BAD_REQUEST).json({ message: "Token is required" });
+        res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: "Token is required" });
         return;
       }
 
@@ -112,6 +139,13 @@ export class SecurityController implements ISecurityController {
     }
   };
 
+  //# ================================================================================================================
+  //# DEACTIVATE ACCOUNT
+  //# ================================================================================================================
+  //# POST /api/v1/user/deactivate
+  //# Request headers: { x-user-id: string }
+  //# This controller deactivates the authenticated user's account.
+  //# ================================================================================================================
   deactivateAccount = async (
     req: Request,
     res: Response,
