@@ -1,20 +1,25 @@
-import { ArtistRequest } from '@prisma/client';
-import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { CreateArtistRequestDto } from '../../../interface/dtos/user/artist-request/CreateArtistRequestDto';
-import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
-import { ICreateArtistRequestUseCase } from '../../../interface/usecases/user/artist-request/ICreateArtistRequestUseCase';
-import { BadRequestError, NotFoundError } from 'art-chain-shared';
-import { USER_MESSAGES } from '../../../../constants/userMessages';
-import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
-import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
-import { ArtService } from '../../../../infrastructure/http/ArtService';
+import { inject, injectable } from "inversify";
+import { ArtistRequest } from "@prisma/client";
+import { TYPES } from "../../../../infrastructure/inversify/types";
+import { IArtService } from "../../../../domain/http/IArtService";
+import { BadRequestError, NotFoundError } from "art-chain-shared";
+import { USER_MESSAGES } from "../../../../constants/userMessages";
+import { ARTIST_MESSAGES } from "../../../../constants/artistMessages";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
+import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
+import { CreateArtistRequestDto } from "../../../interface/dtos/user/artist-request/CreateArtistRequestDto";
+import { ICreateArtistRequestUseCase } from "../../../interface/usecases/user/artist-request/ICreateArtistRequestUseCase";
 
+@injectable()
 export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
   constructor(
-    private readonly _userRepo: IUserRepository,
-    private readonly _artistRequestRepo: IArtistRequestRepository,
-    private readonly _supporterRepo: ISupporterRepository,
-    private readonly _artService: ArtService
+    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository,
+    @inject(TYPES.IArtistRequestRepository)
+    private _artistRequestRepo: IArtistRequestRepository,
+    @inject(TYPES.ISupporterRepository)
+    private _supporterRepo: ISupporterRepository,
+    @inject(TYPES.IArtService) private _artService: IArtService
   ) {}
 
   async execute(data: CreateArtistRequestDto): Promise<ArtistRequest> {
@@ -31,7 +36,7 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
     }
 
     const existingRequests = await this._artistRequestRepo.getByUser(userId);
-    const hasPending = existingRequests.some(req => req.status === 'pending');
+    const hasPending = existingRequests.some((req) => req.status === "pending");
     if (hasPending) {
       throw new BadRequestError(ARTIST_MESSAGES.REQUEST_ALREADY_EXISTS);
     }
@@ -76,11 +81,10 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
 
     const newRequest = await this._artistRequestRepo.createArtistRequest({
       userId,
-      status: 'pending',
-      rejectionReason: '',
+      status: "pending",
+      rejectionReason: "",
     });
 
-    // Update optional user details if provided
     const updateData: Partial<{ bio: string; phone: string; country: string }> =
       {};
     if (bio) updateData.bio = bio;

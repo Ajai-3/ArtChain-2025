@@ -3,8 +3,9 @@ import { USER_MESSAGES } from "../../../../constants/userMessages";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { GetUserProfileRequestDto } from "../../../interface/dtos/user/profile/GetUserProfileRequestDto";
+import { IGetUserWithIdUserUseCase } from "../../../interface/usecases/user/profile/IGetUserWithIdUserUseCase";
 
-export class GetUserWithIdUserUseCase {
+export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
   constructor(private readonly _userRepo: IUserRepository, private readonly _supporterRepo: ISupporterRepository) {}
 
   async execute(data: GetUserProfileRequestDto): Promise<any> {

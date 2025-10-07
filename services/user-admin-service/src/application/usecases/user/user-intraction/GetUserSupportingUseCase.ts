@@ -2,8 +2,9 @@ import { SafeUser } from "../../../../domain/repositories/IBaseRepository";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { UserPreview } from "../../../../types/UserPreview";
+import { IGetUserSupportingUseCase } from "../../../interface/usecases/user/user-intraction/IGetUserSupportingUseCase";
 
-export class GetUserSupportingUseCase {
+export class GetUserSupportingUseCase implements IGetUserSupportingUseCase {
   constructor(
     private readonly _userRepo: IUserRepository,
     private readonly _supporterRepo: ISupporterRepository

@@ -5,8 +5,10 @@ import { IUserRepository } from "../../../../domain/repositories/user/IUserRepos
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { GetUserProfileRequestDto } from "../../../interface/dtos/user/profile/GetUserProfileRequestDto";
 import { ArtService } from "../../../../infrastructure/http/ArtService";
+import { GetUserProfileResultDto } from "../../../interface/dtos/user/profile/GetUserProfileResultDto";
+import { IGetUserProfileUseCase } from "../../../interface/usecases/user/profile/IGetUserProfileUseCase";
 
-export class GetUserProfileUseCase {
+export class GetUserProfileUseCase implements IGetUserProfileUseCase {
   constructor(
     private readonly _artService: ArtService,
     private readonly _userRepo: IUserRepository,
