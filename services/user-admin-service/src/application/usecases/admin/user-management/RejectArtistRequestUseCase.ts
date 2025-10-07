@@ -2,12 +2,12 @@ import {
   BadRequestError,
   ERROR_MESSAGES,
   NotFoundError,
-} from "art-chain-shared";
-import { ArtistAproveRejectRequestDto } from "../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IRejectArtistRequestUseCase } from "../../../interface/usecases/admin/user-management/IRejectArtistRequestUseCase";
-import { ARTIST_MESSAGES } from "../../../../constants/artistMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+} from 'art-chain-shared';
+import { ArtistAproveRejectRequestDto } from '../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { IRejectArtistRequestUseCase } from '../../../interface/usecases/admin/user-management/IRejectArtistRequestUseCase';
+import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 
 export class RejectArtistRequestUseCase implements IRejectArtistRequestUseCase {
   constructor(

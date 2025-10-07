@@ -1,18 +1,18 @@
-import { GetUserProfileUseCase } from "./../../../application/usecases/user/profile/GetProfileUserUseCase";
-import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl";
+import { GetUserProfileUseCase } from './../../../application/usecases/user/profile/GetProfileUserUseCase';
+import { UserRepositoryImpl } from '../../repositories/user/UserRepositoryImpl';
 
-import { UserController } from "../../../presentation/controllers/user/UserController";
+import { UserController } from '../../../presentation/controllers/user/UserController';
 
-import { SupporterRepositoryImpl } from "../../repositories/user/SupporterRepositoryIml";
-import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
-import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/profile/GetUserWithIdUserUseCase";
-import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
-import { GetUserSupportingUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportingUseCase";
-import { GetUsersByIdsUserUseCase } from "../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase";
-import { UpdateProfileUserUseCase } from "../../../application/usecases/user/profile/UpdateProfileUserUseCase";
-import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
-import { ArtService } from "../../http/ArtService";
+import { SupporterRepositoryImpl } from '../../repositories/user/SupporterRepositoryIml';
+import { SupportUserUseCase } from '../../../application/usecases/user/user-intraction/SupportUserUseCase';
+import { UnSupportUserUseCase } from '../../../application/usecases/user/user-intraction/UnSupportUserUseCase';
+import { GetUserWithIdUserUseCase } from '../../../application/usecases/user/profile/GetUserWithIdUserUseCase';
+import { GetUserSupportersUseCase } from '../../../application/usecases/user/user-intraction/GetUserSupportersUseCase';
+import { GetUserSupportingUseCase } from '../../../application/usecases/user/user-intraction/GetUserSupportingUseCase';
+import { GetUsersByIdsUserUseCase } from '../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase';
+import { UpdateProfileUserUseCase } from '../../../application/usecases/user/profile/UpdateProfileUserUseCase';
+import { AddUserToElasticSearchUseCase } from '../../../application/usecases/user/search/AddUserToElasticSearchUseCase';
+import { ArtService } from '../../http/ArtService';
 
 // Repositories
 const artService = new ArtService();

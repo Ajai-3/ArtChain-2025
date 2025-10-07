@@ -1,3 +1,5 @@
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { BadRequestError, ForbiddenError } from 'art-chain-shared';
 import admin from '../../../../infrastructure/config/firebase-admin';
@@ -7,8 +9,11 @@ import { IUserRepository } from '../../../../domain/repositories/user/IUserRepos
 import { GoogleAuthRequestDto } from '../../../interface/dtos/user/auth/GoogleAuthRequestDto';
 import { IGoogleAuthUserUseCase } from '../../../interface/usecases/user/auth/IGoogleAuthUserUseCase';
 
+@injectable()
 export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
-  constructor(private _userRepo: IUserRepository) {}
+  constructor(
+    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+  ) {}
 
   async execute(data: GoogleAuthRequestDto): Promise<AuthResultDto> {
     const { token, email, name } = data;

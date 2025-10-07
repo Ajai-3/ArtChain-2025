@@ -1,12 +1,17 @@
+import { injectable, inject } from 'inversify';
 import { BadRequestError } from 'art-chain-shared';
+import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ForgotPasswordResultDto } from '../../../interface/dtos/user/auth/ForgotPasswordResultDto';
 import { IForgotPasswordUserUseCase } from '../../../interface/usecases/user/auth/IForgotPasswordUserUseCase';
 
+@injectable()
 export class ForgotPasswordUserUseCase implements IForgotPasswordUserUseCase {
-  constructor(private _userRepo: IUserRepository) {}
+  constructor(
+    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+  ) {}
 
   async execute(identifier: string): Promise<ForgotPasswordResultDto> {
     const normalizedInput = identifier.toLocaleLowerCase();

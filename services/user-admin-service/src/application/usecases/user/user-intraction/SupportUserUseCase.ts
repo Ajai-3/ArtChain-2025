@@ -1,16 +1,20 @@
+import { inject, injectable } from 'inversify';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { TYPES } from '../../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { SupportResultDto } from '../../../interface/dtos/user/user-intraction/SupportResultDto';
 import { ISupportUserUseCase } from '../../../interface/usecases/user/user-intraction/ISupportUserUseCase';
 import { SupportUnSupportRequestDto } from '../../../interface/dtos/user/user-intraction/SupportUnSupportRequestDto';
-import { SupportResultDto } from '../../../interface/dtos/user/user-intraction/SupportResultDto';
 
+@injectable()
 export class SupportUserUseCase implements ISupportUserUseCase {
   constructor(
-    private readonly _userRepo: IUserRepository,
-    private readonly _supporterRepo: ISupporterRepository
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.ISupporterRepository)
+    readonly _supporterRepo: ISupporterRepository
   ) {}
 
   async execute(data: SupportUnSupportRequestDto): Promise<SupportResultDto> {

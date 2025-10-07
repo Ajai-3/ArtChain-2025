@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { injectable } from 'inversify';
 import { SafeUser } from '../../domain/repositories/IBaseRepository';
 @injectable()
 export abstract class BaseRepositoryImpl {

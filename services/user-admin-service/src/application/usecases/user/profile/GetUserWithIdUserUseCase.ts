@@ -1,12 +1,19 @@
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { USER_MESSAGES } from "../../../../constants/userMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { GetUserProfileRequestDto } from "../../../interface/dtos/user/profile/GetUserProfileRequestDto";
-import { IGetUserWithIdUserUseCase } from "../../../interface/usecases/user/profile/IGetUserWithIdUserUseCase";
+import { inject, injectable } from 'inversify';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { GetUserProfileRequestDto } from '../../../interface/dtos/user/profile/GetUserProfileRequestDto';
+import { IGetUserWithIdUserUseCase } from '../../../interface/usecases/user/profile/IGetUserWithIdUserUseCase';
 
+@injectable()
 export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
-  constructor(private readonly _userRepo: IUserRepository, private readonly _supporterRepo: ISupporterRepository) {}
+  constructor(
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.ISupporterRepository)
+    private readonly _supporterRepo: ISupporterRepository
+  ) {}
 
   async execute(data: GetUserProfileRequestDto): Promise<any> {
     const { userId, currentUserId } = data;
@@ -20,11 +27,15 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
       throw new NotFoundError(USER_MESSAGES.USER_NOT_FOUND);
     }
 
-    const { supportersCount, supportingCount } = await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
+    const { supportersCount, supportingCount } =
+      await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
 
     let isSupporting = false;
     if (currentUserId) {
-      isSupporting = await this._supporterRepo.isSupporting(currentUserId, userId);
+      isSupporting = await this._supporterRepo.isSupporting(
+        currentUserId,
+        userId
+      );
     }
 
     const user = {
@@ -38,7 +49,7 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
       plan: fullUser.plan,
       supportersCount,
       supportingCount,
-      isSupporting
+      isSupporting,
     };
 
     return user;

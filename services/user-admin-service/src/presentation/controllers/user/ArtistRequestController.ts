@@ -1,17 +1,17 @@
-import { HttpStatus } from "art-chain-shared";
-import { injectable, inject } from "inversify";
-import { logger } from "../../../utils/logger";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { Request, Response, NextFunction } from "express";
-import { validateWithZod } from "../../../utils/zodValidator";
-import { USER_MESSAGES } from "../../../constants/userMessages";
-import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
+import { HttpStatus } from 'art-chain-shared';
+import { injectable, inject } from 'inversify';
+import { logger } from '../../../utils/logger';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { Request, Response, NextFunction } from 'express';
+import { validateWithZod } from '../../../utils/zodValidator';
+import { USER_MESSAGES } from '../../../constants/userMessages';
+import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
 
-import { IArtistRequestController } from "../../interfaces/user/IArtistRequestController";
-import { createArtistRequestSchema } from "../../../application/validations/user/createArtistRequestSchema";
-import { CreateArtistRequestDto } from "../../../application/interface/dtos/user/artist-request/CreateArtistRequestDto";
-import { ICreateArtistRequestUseCase } from "../../../application/interface/usecases/user/artist-request/ICreateArtistRequestUseCase";
-import { ICheckUserArtistRequestUseCase } from "../../../application/interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase";
+import { IArtistRequestController } from '../../interfaces/user/IArtistRequestController';
+import { createArtistRequestSchema } from '../../../application/validations/user/createArtistRequestSchema';
+import { CreateArtistRequestDto } from '../../../application/interface/dtos/user/artist-request/CreateArtistRequestDto';
+import { ICreateArtistRequestUseCase } from '../../../application/interface/usecases/user/artist-request/ICreateArtistRequestUseCase';
+import { ICheckUserArtistRequestUseCase } from '../../../application/interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase';
 
 @injectable()
 export class ArtistRequestController implements IArtistRequestController {
@@ -37,7 +37,7 @@ export class ArtistRequestController implements IArtistRequestController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)
@@ -77,7 +77,7 @@ export class ArtistRequestController implements IArtistRequestController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       if (!userId) {
         return res
           .status(HttpStatus.BAD_REQUEST)

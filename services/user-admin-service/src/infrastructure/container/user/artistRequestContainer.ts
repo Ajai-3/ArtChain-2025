@@ -1,10 +1,10 @@
-  import { ArtService } from "../../http/ArtService";
-  import { UserRepositoryImpl } from "../../repositories/user/UserRepositoryImpl";
-  import { SupporterRepositoryImpl } from "../../repositories/user/SupporterRepositoryIml";
-  import { ArtistRequestRepositoryImpl } from "../../repositories/user/ArtistRequestRepositoryImpl";
-  import { ArtistRequestController } from "../../../presentation/controllers/user/ArtistRequestController";
-  import { CreateArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CreateArtistRequestUseCase";
-  import { CheckUserArtistRequestUseCase } from "../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase";
+  import { ArtService } from '../../http/ArtService';
+  import { UserRepositoryImpl } from '../../repositories/user/UserRepositoryImpl';
+  import { SupporterRepositoryImpl } from '../../repositories/user/SupporterRepositoryIml';
+  import { ArtistRequestRepositoryImpl } from '../../repositories/user/ArtistRequestRepositoryImpl';
+  import { ArtistRequestController } from '../../../presentation/controllers/user/ArtistRequestController';
+  import { CreateArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CreateArtistRequestUseCase';
+  import { CheckUserArtistRequestUseCase } from '../../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase';
 
   // Repositories
   const artService = new ArtService();

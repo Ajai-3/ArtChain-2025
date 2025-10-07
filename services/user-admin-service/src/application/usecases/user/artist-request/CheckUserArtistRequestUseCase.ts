@@ -1,11 +1,11 @@
-import { injectable, inject } from "inversify";
-import { ArtistRequest } from "@prisma/client";
-import { NotFoundError } from "art-chain-shared";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { USER_MESSAGES } from "../../../../constants/userMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { ICheckUserArtistRequestUseCase } from "../../../interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase";
+import { injectable, inject } from 'inversify';
+import { ArtistRequest } from '@prisma/client';
+import { NotFoundError } from 'art-chain-shared';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { ICheckUserArtistRequestUseCase } from '../../../interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase';
 
 @injectable()
 export class CheckUserArtistRequestUseCase

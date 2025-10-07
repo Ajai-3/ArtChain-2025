@@ -1,11 +1,11 @@
-import { Role } from "@prisma/client";
-import { injectable } from "inversify";
-import { prisma } from "../../db/prisma";
-import { ArtUser } from "../../../types/ArtUser";
-import { User } from "../../../domain/entities/User";
-import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
-import { SafeUser } from "../../../domain/repositories/IBaseRepository";
-import { IUserRepository } from "../../../domain/repositories/user/IUserRepository";
+import { Role } from '@prisma/client';
+import { injectable } from 'inversify';
+import { prisma } from '../../db/prisma';
+import { ArtUser } from '../../../types/ArtUser';
+import { User } from '../../../domain/entities/User';
+import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
+import { SafeUser } from '../../../domain/repositories/IBaseRepository';
+import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
 
 @injectable()
 export class UserRepositoryImpl
@@ -58,13 +58,13 @@ export class UserRepositoryImpl
       role: { in: [Role.user, Role.artist] },
     };
 
-    if (role && role !== "all") {
-      if (role === "user") where.role = Role.user;
-      else if (role === "artist") where.role = Role.artist;
+    if (role && role !== 'all') {
+      if (role === 'user') where.role = Role.user;
+      else if (role === 'artist') where.role = Role.artist;
     }
 
-    if (status && status !== "all") where.status = status;
-    if (plan && plan !== "all") where.plan = plan;
+    if (status && status !== 'all') where.status = status;
+    if (plan && plan !== 'all') where.plan = plan;
 
     const skip = (page - 1) * limit;
 
@@ -89,13 +89,13 @@ export class UserRepositoryImpl
       role: { in: [Role.user, Role.artist] },
     };
 
-    if (filters?.role && filters.role !== "all") {
-      if (filters.role === "user") where.role = Role.user;
-      else if (filters.role === "artist") where.role = Role.artist;
+    if (filters?.role && filters.role !== 'all') {
+      if (filters.role === 'user') where.role = Role.user;
+      else if (filters.role === 'artist') where.role = Role.artist;
     }
 
-    if (filters?.status && filters.status !== "all") where.status = filters.status;
-    if (filters?.plan && filters.plan !== "all") where.plan = filters.plan;
+    if (filters?.status && filters.status !== 'all') where.status = filters.status;
+    if (filters?.plan && filters.plan !== 'all') where.plan = filters.plan;
 
     const skip = (page - 1) * limit;
 

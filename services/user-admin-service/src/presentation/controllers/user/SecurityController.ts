@@ -1,16 +1,16 @@
-import { HttpStatus } from "art-chain-shared";
-import { injectable, inject } from "inversify";
-import { logger } from "../../../utils/logger";
-import { Request, Response, NextFunction } from "express";
-import { validateWithZod } from "../../../utils/zodValidator";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { ISecurityController } from "../../interfaces/user/ISecurityController";
-import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
-import { ChangePasswordRequestDto } from "../../../application/interface/dtos/user/security/ChangePasswordRequestDto";
-import { IChangeEmailUserUseCase } from "../../../application/interface/usecases/user/security/IChangeEmailUserUseCase";
-import { currentPasswordNewPasswordSchema } from "../../../application/validations/user/CurrentPasswordNewPasswordSchema";
-import { IChangePasswordUserUseCase } from "../../../application/interface/usecases/user/security/IChangePasswordUserUseCase";
-import { IVerifyEmailTokenUserUseCase } from "../../../application/interface/usecases/user/security/IVerifyEmailTokenUserUseCase";
+import { HttpStatus } from 'art-chain-shared';
+import { injectable, inject } from 'inversify';
+import { logger } from '../../../utils/logger';
+import { Request, Response, NextFunction } from 'express';
+import { validateWithZod } from '../../../utils/zodValidator';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { ISecurityController } from '../../interfaces/user/ISecurityController';
+import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
+import { ChangePasswordRequestDto } from '../../../application/interface/dtos/user/security/ChangePasswordRequestDto';
+import { IChangeEmailUserUseCase } from '../../../application/interface/usecases/user/security/IChangeEmailUserUseCase';
+import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
+import { IChangePasswordUserUseCase } from '../../../application/interface/usecases/user/security/IChangePasswordUserUseCase';
+import { IVerifyEmailTokenUserUseCase } from '../../../application/interface/usecases/user/security/IVerifyEmailTokenUserUseCase';
 
 @injectable()
 export class SecurityController implements ISecurityController {
@@ -36,7 +36,7 @@ export class SecurityController implements ISecurityController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       logger.info(`Changing password for user: ${userId}`);
 
       const result = validateWithZod(
@@ -56,7 +56,7 @@ export class SecurityController implements ISecurityController {
       logger.info(`${userId} user password changed`);
       res
         .status(HttpStatus.OK)
-        .json({ message: "Password changed successfully" });
+        .json({ message: 'Password changed successfully' });
     } catch (err) {
       next(err);
     }
@@ -75,7 +75,7 @@ export class SecurityController implements ISecurityController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { newEmail } = req.body;
       logger.info(`Changing email for user: ${userId} to ${newEmail}`);
 
@@ -86,8 +86,8 @@ export class SecurityController implements ISecurityController {
 
       logger.debug(`token ${token}`);
 
-      await publishNotification("email.email_change_verification", {
-        type: "EMAIL_CHANGE_VERIFICATION",
+      await publishNotification('email.email_change_verification', {
+        type: 'EMAIL_CHANGE_VERIFICATION',
         email: user.email,
         payload: {
           name: user.name,
@@ -97,7 +97,7 @@ export class SecurityController implements ISecurityController {
 
       res.status(HttpStatus.OK).json({
         data: token,
-        message: "Change email token sended successfully",
+        message: 'Change email token sended successfully',
       });
     } catch (err) {
       next(err);
@@ -117,13 +117,13 @@ export class SecurityController implements ISecurityController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { token } = req.body;
 
       if (!token) {
         res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Token is required" });
+          .json({ message: 'Token is required' });
         return;
       }
 
@@ -138,7 +138,7 @@ export class SecurityController implements ISecurityController {
 
       res.status(HttpStatus.OK).json({
         data: user,
-        message: "Email Updated successfully",
+        message: 'Email Updated successfully',
       });
     } catch (err) {
       next(err);
@@ -158,13 +158,13 @@ export class SecurityController implements ISecurityController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       logger.info(`Deactivating account for user: ${userId}`);
 
       // TODO: call service/repo here
       res
         .status(HttpStatus.OK)
-        .json({ message: "Account deactivated successfully" });
+        .json({ message: 'Account deactivated successfully' });
     } catch (err) {
       next(err);
     }

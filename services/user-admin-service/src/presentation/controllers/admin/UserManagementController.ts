@@ -1,16 +1,16 @@
-import { HttpStatus } from "art-chain-shared";
-import { Request, Response, NextFunction } from "express";
-import { USER_MESSAGES } from "../../../constants/userMessages";
-import { IUserManageMentController } from "./../../interfaces/admin/IUserManagementController";
-import { GetAllUsersUseCase } from "../../../application/usecases/admin/user-management/GetAllUsersUseCase";
-import { BanOrUnbanUserUseCase } from "../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase";
-import { logger } from "../../../utils/logger";
-import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
-import { GetAllArtistRequestsUseCase } from "../../../application/usecases/admin/user-management/GetAllArtistRequests";
-import { GetAllUsersQueryDTO } from "../../../application/interface/dtos/admin/GetAllUsersQueryDto";
-import { ArtistAproveRejectRequestDto } from "../../../application/interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
-import { ApproveArtistRequestUseCase } from "../../../application/usecases/admin/user-management/ApproveArtistRequestUseCase";
-import { RejectArtistRequestUseCase } from "../../../application/usecases/admin/user-management/RejectArtistRequestUseCase";
+import { HttpStatus } from 'art-chain-shared';
+import { Request, Response, NextFunction } from 'express';
+import { USER_MESSAGES } from '../../../constants/userMessages';
+import { IUserManageMentController } from './../../interfaces/admin/IUserManagementController';
+import { GetAllUsersUseCase } from '../../../application/usecases/admin/user-management/GetAllUsersUseCase';
+import { BanOrUnbanUserUseCase } from '../../../application/usecases/admin/user-management/BanOrUnbanUserUseCase';
+import { logger } from '../../../utils/logger';
+import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
+import { GetAllArtistRequestsUseCase } from '../../../application/usecases/admin/user-management/GetAllArtistRequests';
+import { GetAllUsersQueryDTO } from '../../../application/interface/dtos/admin/GetAllUsersQueryDto';
+import { ArtistAproveRejectRequestDto } from '../../../application/interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
+import { ApproveArtistRequestUseCase } from '../../../application/usecases/admin/user-management/ApproveArtistRequestUseCase';
+import { RejectArtistRequestUseCase } from '../../../application/usecases/admin/user-management/RejectArtistRequestUseCase';
 
 export class UserManageMentController implements IUserManageMentController {
   constructor(
@@ -74,12 +74,12 @@ export class UserManageMentController implements IUserManageMentController {
       const { userId } = req.params;
 
       if (!userId) {
-        return res.status(400).json({ message: "Missing userId" });
+        return res.status(400).json({ message: 'Missing userId' });
       }
 
       const user = await this._banOrUnbanUserUseCase.execute(userId);
 
-      const action = user.status === "banned" ? "banned" : "unbanned";
+      const action = user.status === 'banned' ? 'banned' : 'unbanned';
 
       return res
         .status(200)
@@ -108,7 +108,7 @@ export class UserManageMentController implements IUserManageMentController {
       const dto: GetAllUsersQueryDTO = { page, limit };
       const result = await this._getAllArtistRequestsUseCase.execute(dto);
 
-      logger.info(`Artist request fetched.`);
+      logger.info('Artist request fetched.');
       return res
         .status(HttpStatus.OK)
         .json({ message: ARTIST_MESSAGES.ARTISRT_REQUEST_FETCHED, result });
@@ -144,7 +144,7 @@ export class UserManageMentController implements IUserManageMentController {
       if (!id) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Artist request id is required" });
+          .json({ message: 'Artist request id is required' });
       }
 
       const dto: ArtistAproveRejectRequestDto = { id };
@@ -178,13 +178,13 @@ export class UserManageMentController implements IUserManageMentController {
       if (!id) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Artist request id is required" });
+          .json({ message: 'Artist request id is required' });
       }
 
       if (!reason) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Rejection reason is required" });
+          .json({ message: 'Rejection reason is required' });
       }
 
       const dto: ArtistAproveRejectRequestDto = { id, reason };

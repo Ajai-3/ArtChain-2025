@@ -1,18 +1,21 @@
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { USER_MESSAGES } from "../../../../constants/userMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { GetUserProfileRequestDto } from "../../../interface/dtos/user/profile/GetUserProfileRequestDto";
-import { ArtService } from "../../../../infrastructure/http/ArtService";
-import { GetUserProfileResultDto } from "../../../interface/dtos/user/profile/GetUserProfileResultDto";
-import { IGetUserProfileUseCase } from "../../../interface/usecases/user/profile/IGetUserProfileUseCase";
+import { inject, injectable } from 'inversify';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
+import { ArtService } from '../../../../infrastructure/http/ArtService';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { GetUserProfileResultDto } from '../../../interface/dtos/user/profile/GetUserProfileResultDto';
+import { GetUserProfileRequestDto } from '../../../interface/dtos/user/profile/GetUserProfileRequestDto';
+import { IGetUserProfileUseCase } from '../../../interface/usecases/user/profile/IGetUserProfileUseCase';
 
+@injectable()
 export class GetUserProfileUseCase implements IGetUserProfileUseCase {
   constructor(
-    private readonly _artService: ArtService,
-    private readonly _userRepo: IUserRepository,
-    private readonly _supporterRepo: ISupporterRepository
+    @inject(TYPES.IArtService) private readonly _artService: ArtService,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.ISupporterRepository) private readonly _supporterRepo: ISupporterRepository
   ) {}
 
   async execute(

@@ -1,7 +1,7 @@
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { GetAllUsersQueryDto } from "../../../interface/dtos/admin/GetAllUsersQueryDto";
-import { IGetAllUsersUseCase } from "../../../interface/usecases/admin/user-management/IGetAllUsersUseCase";
-import { IUserSearchRepository } from "../../../../domain/repositories/user/IUserSearchRepository";
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQueryDto';
+import { IGetAllUsersUseCase } from '../../../interface/usecases/admin/user-management/IGetAllUsersUseCase';
+import { IUserSearchRepository } from '../../../../domain/repositories/user/IUserSearchRepository';
 
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
   constructor(

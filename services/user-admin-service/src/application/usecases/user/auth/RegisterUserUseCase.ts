@@ -1,5 +1,7 @@
 import bcrypt from 'bcrypt';
+import { inject, injectable } from 'inversify';
 import { ConflictError } from 'art-chain-shared';
+import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
@@ -7,8 +9,9 @@ import { IUserRepository } from '../../../../domain/repositories/user/IUserRepos
 import { RegisterRequestDto } from '../../../interface/dtos/user/auth/RegisterRequestDto';
 import { IRegisterUserUseCase } from '../../../interface/usecases/user/auth/IRegisterUserUseCase';
 
+@injectable()
 export class RegisterUserUseCase implements IRegisterUserUseCase {
-  constructor(private _userRepo: IUserRepository) {}
+  constructor(@inject(TYPES.IUserRepository) private _userRepo: IUserRepository) {}
 
   async execute(data: RegisterRequestDto): Promise<AuthResultDto> {
     const { name, username, email, password } = data;

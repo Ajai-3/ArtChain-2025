@@ -1,15 +1,15 @@
-import { inject, injectable } from "inversify";
-import { ArtistRequest } from "@prisma/client";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { IArtService } from "../../../../domain/http/IArtService";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { USER_MESSAGES } from "../../../../constants/userMessages";
-import { ARTIST_MESSAGES } from "../../../../constants/artistMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { CreateArtistRequestDto } from "../../../interface/dtos/user/artist-request/CreateArtistRequestDto";
-import { ICreateArtistRequestUseCase } from "../../../interface/usecases/user/artist-request/ICreateArtistRequestUseCase";
+import { inject, injectable } from 'inversify';
+import { ArtistRequest } from '@prisma/client';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { IArtService } from '../../../../domain/http/IArtService';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
+import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { CreateArtistRequestDto } from '../../../interface/dtos/user/artist-request/CreateArtistRequestDto';
+import { ICreateArtistRequestUseCase } from '../../../interface/usecases/user/artist-request/ICreateArtistRequestUseCase';
 
 @injectable()
 export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
@@ -36,7 +36,7 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
     }
 
     const existingRequests = await this._artistRequestRepo.getByUser(userId);
-    const hasPending = existingRequests.some((req) => req.status === "pending");
+    const hasPending = existingRequests.some((req) => req.status === 'pending');
     if (hasPending) {
       throw new BadRequestError(ARTIST_MESSAGES.REQUEST_ALREADY_EXISTS);
     }
@@ -45,7 +45,7 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
       (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
     if (accountAgeInDays < 10) {
       throw new BadRequestError(
-        "User account must be at least 10 days old to create an artist request."
+        'User account must be at least 10 days old to create an artist request.'
       );
     }
 
@@ -63,26 +63,26 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
 
     if (supportersCount < 20) {
       throw new BadRequestError(
-        "User must have at least 20 supporters to create an artist request."
+        'User must have at least 20 supporters to create an artist request.'
       );
     }
     if (supportingCount < 20) {
       throw new BadRequestError(
-        "User must be supporting at least 20 others to create an artist request."
+        'User must be supporting at least 20 others to create an artist request.'
       );
     }
 
     const artworkCount = await this._artService.getUserArtCount(userId);
     if (artworkCount < 10) {
       throw new BadRequestError(
-        "User must have at least 10 artworks to create an artist request."
+        'User must have at least 10 artworks to create an artist request.'
       );
     }
 
     const newRequest = await this._artistRequestRepo.createArtistRequest({
       userId,
-      status: "pending",
-      rejectionReason: "",
+      status: 'pending',
+      rejectionReason: '',
     });
 
     const updateData: Partial<{ bio: string; phone: string; country: string }> =
