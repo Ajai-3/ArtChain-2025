@@ -1,15 +1,18 @@
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { GetAllUsersQueryDTO } from "../../../interface/dtos/admin/GetAllUsersQueryDTO";
+import { GetAllUsersQueryDto } from "../../../interface/dtos/admin/GetAllUsersQueryDto";
 import { IGetAllUsersUseCase } from "../../../interface/usecases/admin/user-management/IGetAllUsersUseCase";
 import { IUserSearchRepository } from "../../../../domain/repositories/user/IUserSearchRepository";
 
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
-  constructor(private _userRepo: IUserRepository, private readonly _searchRepo: IUserSearchRepository) {}
+  constructor(
+    private _userRepo: IUserRepository,
+    private readonly _searchRepo: IUserSearchRepository
+  ) {}
 
-  async execute(query: GetAllUsersQueryDTO): Promise<any> {
+  async execute(query: GetAllUsersQueryDto): Promise<any> {
     const { page = 1, limit = 10, search, role, status, plan } = query;
 
-   let userIds: string[] | undefined;
+    let userIds: string[] | undefined;
     if (search) {
       userIds = await this._searchRepo.searchUserIds(search);
     }
