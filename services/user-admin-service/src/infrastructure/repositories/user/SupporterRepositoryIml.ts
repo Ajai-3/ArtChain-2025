@@ -1,8 +1,10 @@
+import { injectable } from "inversify";
 import { prisma } from "../../db/prisma";
 import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
 import { ISupporterRepository } from "../../../domain/repositories/user/ISupporterRepository";
 import { UserPreview } from "../../../types/UserPreview";
 
+@injectable()
 export class SupporterRepositoryImpl
   extends BaseRepositoryImpl
   implements ISupporterRepository

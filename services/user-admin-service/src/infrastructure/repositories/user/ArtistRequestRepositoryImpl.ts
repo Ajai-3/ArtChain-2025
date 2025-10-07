@@ -1,8 +1,10 @@
-import { IArtistRequestRepository } from "../../../domain/repositories/user/IArtistRequestRepository";
+import { injectable } from "inversify";
+import { prisma } from "../../db/prisma";
 import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
 import { ArtistRequest } from "../../../domain/entities/ArtistRequest";
-import { prisma } from "../../db/prisma";
+import { IArtistRequestRepository } from "../../../domain/repositories/user/IArtistRequestRepository";
 
+@injectable()
 export class ArtistRequestRepositoryImpl
   extends BaseRepositoryImpl
   implements IArtistRequestRepository
