@@ -1,8 +1,11 @@
 import axios from "axios";
-import { BadRequestError } from "art-chain-shared";
+import { injectable } from "inversify";
 import { config } from "../config/env";
+import { BadRequestError } from "art-chain-shared";
+import { IArtService } from "../../domain/http/IArtService";
 
-export class ArtService {
+@injectable()
+export class ArtService implements IArtService {
   private baseUrl: string;
 
   constructor() {
