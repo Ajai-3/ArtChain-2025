@@ -1,39 +1,51 @@
-import { UpdateUserProfileDTO } from "./../../../application/interface/dtos/user/profile/UpdateUserProfileDTO";
 import { HttpStatus } from "art-chain-shared";
+import { injectable, inject } from "inversify";
+import { logger } from "../../../utils/logger";
 import { Request, Response, NextFunction } from "express";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { TYPES } from "../../../infrastructure/inversify/types";
 
-import { IUserController } from "../../interfaces/user/IUserController";
 import { USER_MESSAGES } from "../../../constants/userMessages";
+import { IUserController } from "../../interfaces/user/IUserController";
 
 import { SupportUnSupportRequestDto } from "../../../application/interface/dtos/user/user-intraction/SupportUnSupportRequestDto";
 
-import { SupportUserUseCase } from "../../../application/usecases/user/user-intraction/SupportUserUseCase";
-import { UnSupportUserUseCase } from "../../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-import { GetCurrentUserUseCase } from "../../../application/usecases/user/user-intraction/GetCurrentUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../../application/usecases/user/profile/GetUserWithIdUserUseCase";
-import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
-import { logger } from "../../../utils/logger";
-import { GetUserSupportersUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
-import { GetUserSupportingUseCase } from "../../../application/usecases/user/user-intraction/GetUserSupportingUseCase";
-import { GetUsersByIdsUserUseCase } from "../../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase";
-import { UpdateProfileUserUseCase } from "../../../application/usecases/user/profile/UpdateProfileUserUseCase";
-import { validateWithZod } from "../../../utils/zodValidator";
-import { updateProfileSchema } from "../../../application/validations/user/updateProfileSchema";
-import { GetUserProfileUseCase } from "../../../application/usecases/user/profile/GetProfileUserUseCase";
-import { GetUserProfileRequestDto } from "../../../application/interface/dtos/user/profile/GetUserProfileRequestDto";
-import { AddUserToElasticSearchUseCase } from "../../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+import { UpdateUserProfileDto } from "../../../application/interface/dtos/user/profile/UpdateUserProfileDto";
 
+import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
+
+import { updateProfileSchema } from "../../../application/validations/user/updateProfileSchema";
+import { GetUserProfileRequestDto } from "../../../application/interface/dtos/user/profile/GetUserProfileRequestDto";
+import { IAddUserToElasticSearchUseCase } from "../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase";
+import { IGetUsersByIdsUserUseCase } from "../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase";
+import { IUnSupportUserUseCase } from "../../../application/interface/usecases/user/user-intraction/IUnSupportUserUseCase";
+import { IGetUserProfileUseCase } from "../../../application/interface/usecases/user/profile/IGetUserProfileUseCase";
+import { IGetUserWithIdUserUseCase } from "../../../application/interface/usecases/user/profile/IGetUserWithIdUserUseCase";
+import { IUpdateProfileUserUseCase } from "../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase";
+import { IGetUserSupportersUseCase } from "../../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase";
+import { IGetUserSupportingUseCase } from "../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase";
+
+@injectable()
 export class UserController implements IUserController {
   constructor(
-    private readonly _getUserProfileUseCase: GetUserProfileUseCase,
-    private readonly _getUserWithIdUseCase: GetUserWithIdUserUseCase,
-    private readonly _supportUserUseCase: SupportUserUseCase,
-    private readonly _unSupportUserUseCase: UnSupportUserUseCase,
-    private readonly _getSupportersUseCase: GetUserSupportersUseCase,
-    private readonly _getSupportingUseCase: GetUserSupportingUseCase,
-    private readonly _getUsersByIdsUserUseCase: GetUsersByIdsUserUseCase,
-    private readonly _updateProfileUserUseCase: UpdateProfileUserUseCase,
-    private readonly _addUserToElasticUserUseCase: AddUserToElasticSearchUseCase
+    @inject(TYPES.IGetUserProfileUseCase)
+    private readonly _getUserProfileUseCase: IGetUserProfileUseCase,
+    @inject(TYPES.IGetUserWithIdUseCase)
+    private readonly _getUserWithIdUseCase: IGetUserWithIdUserUseCase,
+    @inject(TYPES.ISupportUserUseCase)
+    private readonly _supportUserUseCase: IUnSupportUserUseCase,
+    @inject(TYPES.IUnSupportUserUseCase)
+    private readonly _unSupportUserUseCase: IUnSupportUserUseCase,
+    @inject(TYPES.IGetUserSupportersUseCase)
+    private readonly _getSupportersUseCase: IGetUserSupportersUseCase,
+    @inject(TYPES.IGetUserSupportingUseCase)
+    private readonly _getSupportingUseCase: IGetUserSupportingUseCase,
+    @inject(TYPES.IGetUsersByIdsUseCase)
+    private readonly _getUsersByIdsUserUseCase: IGetUsersByIdsUserUseCase,
+    @inject(TYPES.IUpdateProfileUserUseCase)
+    private readonly _updateProfileUserUseCase: IUpdateProfileUserUseCase,
+    @inject(TYPES.IAddUserToElasticSearchUseCase)
+    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
   ) {}
 
   //# ================================================================================================================
@@ -53,7 +65,7 @@ export class UserController implements IUserController {
       const { username } = req.params;
       const currentUserId = req.headers["x-user-id"] as string | undefined;
 
-      console.log(currentUserId)
+      console.log(currentUserId);
 
       const dto: GetUserProfileRequestDto = { username, currentUserId };
       const result = await this._getUserProfileUseCase.execute(dto);
@@ -125,7 +137,7 @@ export class UserController implements IUserController {
       console.log(req.body, userId);
       const validatedData = validateWithZod(updateProfileSchema, req.body);
 
-      const dto: UpdateUserProfileDTO = { ...validatedData, userId };
+      const dto: UpdateUserProfileDto = { ...validatedData, userId };
 
       const user = await this._updateProfileUserUseCase.execute(dto);
 
@@ -205,7 +217,9 @@ export class UserController implements IUserController {
 
       await this._unSupportUserUseCase.execute(dto);
 
-      logger.info(`${currentUserId} un-supported ${userId} at ${new Date().toLocaleString()}`)
+      logger.info(
+        `${currentUserId} un-supported ${userId} at ${new Date().toLocaleString()}`
+      );
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.UNSUPPORT_SUCCESS,

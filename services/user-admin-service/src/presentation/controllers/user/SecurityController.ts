@@ -1,7 +1,9 @@
 import { HttpStatus } from "art-chain-shared";
+import { injectable, inject } from "inversify";
 import { logger } from "../../../utils/logger";
 import { Request, Response, NextFunction } from "express";
 import { validateWithZod } from "../../../utils/zodValidator";
+import { TYPES } from "../../../infrastructure/inversify/types";
 import { ISecurityController } from "../../interfaces/user/ISecurityController";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 import { ChangePasswordRequestDto } from "../../../application/interface/dtos/user/security/ChangePasswordRequestDto";
@@ -10,10 +12,14 @@ import { currentPasswordNewPasswordSchema } from "../../../application/validatio
 import { IChangePasswordUserUseCase } from "../../../application/interface/usecases/user/security/IChangePasswordUserUseCase";
 import { IVerifyEmailTokenUserUseCase } from "../../../application/interface/usecases/user/security/IVerifyEmailTokenUserUseCase";
 
+@injectable()
 export class SecurityController implements ISecurityController {
   constructor(
+    @inject(TYPES.IChangePasswordUserUseCase)
     private readonly _changePasswordUserUseCase: IChangePasswordUserUseCase,
+    @inject(TYPES.IChangeEmailUserUseCase)
     private readonly _changeEmailUserUseCase: IChangeEmailUserUseCase,
+    @inject(TYPES.IVerifyEmailTokenUserUseCase)
     private readonly _verifyEmailTokenUserUseCase: IVerifyEmailTokenUserUseCase
   ) {}
 

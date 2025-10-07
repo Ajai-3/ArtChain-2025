@@ -1,6 +1,8 @@
 import { HttpStatus } from "art-chain-shared";
 import { logger } from "../../../utils/logger";
+import { injectable, inject } from "inversify";
 import { Request, Response, NextFunction } from "express";
+import { TYPES } from "../../../infrastructure/inversify/types";
 
 import { tokenService } from "../../service/token.service";
 import { config } from "../../../infrastructure/config/env";
@@ -31,15 +33,25 @@ import { IStartRegisterUserUseCase } from "../../../application/interface/usecas
 import { IForgotPasswordUserUseCase } from "../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase";
 import { IAddUserToElasticSearchUseCase } from "../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase";
 
+
+@injectable()
 export class UserAuthController implements IUserAuthController {
   constructor(
+    @inject(TYPES.IStartRegisterUserUseCase)
     private readonly _startRegisterUserUseCase: IStartRegisterUserUseCase,
+    @inject(TYPES.IRegisterUserUseCase)
     private readonly _registerUserUseCase: IRegisterUserUseCase,
+    @inject(TYPES.ILoginUserUseCase)
     private readonly _loginUserUseCase: ILoginUserUseCase,
+    @inject(TYPES.IGoogleAuthUserUseCase)
     private readonly _googleAuthUserUseCase: IGoogleAuthUserUseCase,
+    @inject(TYPES.IForgotPasswordUserUseCase)
     private readonly _forgotPasswordUserUseCase: IForgotPasswordUserUseCase,
+    @inject(TYPES.IResetPasswordUserUseCase)
     private readonly _resetPasswordUserUseCase: IResetPasswordUserUseCase,
+    @inject(TYPES.IRefreshTokenUseCase)
     private readonly _refreshTokenUserUseCase: IRefreshTokenUseCase,
+    @inject(TYPES.IAddUserToElasticSearchUseCase)
     private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
   ) {}
 

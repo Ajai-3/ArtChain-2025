@@ -1,5 +1,7 @@
-import { logger } from "../../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
+import { injectable, inject } from "inversify";
+import { logger } from "../../../utils/logger";
+import { TYPES } from "../../../infrastructure/inversify/types";
 import { Request, Response, NextFunction } from "express";
 import { validateWithZod } from "../../../utils/zodValidator";
 import { USER_MESSAGES } from "../../../constants/userMessages";
@@ -11,10 +13,13 @@ import { CreateArtistRequestDto } from "../../../application/interface/dtos/user
 import { ICreateArtistRequestUseCase } from "../../../application/interface/usecases/user/artist-request/ICreateArtistRequestUseCase";
 import { ICheckUserArtistRequestUseCase } from "../../../application/interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase";
 
+@injectable()
 export class ArtistRequestController implements IArtistRequestController {
   constructor(
-    private readonly _createArtistRequestUseCase: ICreateArtistRequestUseCase,
-    private readonly _checkUserArtistRequestUseCase: ICheckUserArtistRequestUseCase
+    @inject(TYPES.ICreateArtistRequestUseCase)
+    private _createArtistRequestUseCase: ICreateArtistRequestUseCase,
+    @inject(TYPES.ICheckUserArtistRequestUseCase)
+    private _checkUserArtistRequestUseCase: ICheckUserArtistRequestUseCase
   ) {}
 
   //# ================================================================================================================

@@ -1,10 +1,17 @@
 import express from "express";
 
-import { userController } from "../../../infrastructure/container/user/userContainer";
-import { securityController } from "../../../infrastructure/container/user/securityContainer";
-import { artistRequestController } from "../../../infrastructure/container/user/artistRequestContainer";
+import { TYPES } from "../../../infrastructure/inversify/types";
+import { container } from "../../../infrastructure/inversify/inversify.config";
+
+import { IUserController } from "../../interfaces/user/IUserController";
+import { ISecurityController } from "../../interfaces/user/ISecurityController";
+import { IArtistRequestController } from "./../../interfaces/user/IArtistRequestController";
 
 const router = express.Router();
+
+const userController = container.get<IUserController>(TYPES.IUserController);
+const securityController = container.get<ISecurityController>(TYPES.ISecurityController);
+const artistRequestController = container.get<IArtistRequestController>(TYPES.IArtistRequestController);
 
 router.get("/profile/:username", userController.getProfile);
 router.get("/profile-id/:userId", userController.getUserProfileWithId);
@@ -12,7 +19,7 @@ router.patch("/profile", userController.updateProfile);
 
 router.post("/support/:userId", userController.supportUser);
 router.delete("/un-support/:userId", userController.unSupportUser);
-router.delete("/remove/:supporterId", userController.removeSupporter)
+router.delete("/remove/:supporterId", userController.removeSupporter);
 
 router.post("/artist-request", artistRequestController.createArtistRequest);
 router.get(
