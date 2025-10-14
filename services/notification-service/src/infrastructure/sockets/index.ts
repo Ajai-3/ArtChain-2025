@@ -1,9 +1,11 @@
 import { Server } from "socket.io";
 import { logger } from "../utils/logger";
+import { TYPES } from "../inversify/types";
 import { socketStore } from "./socketStore";
-import { authSocket } from "../../presentation/middlewares/authSocket";
 import { initSocketHandler } from "./socketHandler";
-import { getUnreadCountUseCase } from "../container/notificationContainer";
+import { container } from "../inversify/inversify.config";
+import { authSocket } from "../../presentation/middlewares/authSocket";
+import { IGetUnreadCountUseCase } from "../../domain/usecases/IGetUnreadCountUseCase";
 
 export const initSockets = (io: Server) => {
   initSocketHandler(io);
@@ -14,6 +16,9 @@ export const initSockets = (io: Server) => {
     const userId = (socket as any).userId;
     socketStore.add(userId, socket.id);
 
+       const getUnreadCountUseCase = container.get<IGetUnreadCountUseCase>(
+      TYPES.IGetUnreadCountUseCase
+    );
 
     try {
       const unreadCount = await getUnreadCountUseCase.execute(userId);
