@@ -1,10 +1,10 @@
 import Router from "express";
+import { s3Proxy } from "../proxy/s3.proxy";
 import { artProxy } from "../proxy/art.proxy";
 import { authProxy } from "../proxy/auth.proxy";
 import { userProxy } from "../proxy/user.proxy";
 import { adminProxy } from "../proxy/admin.proxy";
 import { walletProxy } from "../proxy/wallet.proxy";
-import { s3Proxy } from "../proxy/S3.proxy";
 import { notificationsProxy } from "../proxy/notifications.proxy";
 import { elasticSearchProxy } from "../proxy/elastic-search.proxy";
 
