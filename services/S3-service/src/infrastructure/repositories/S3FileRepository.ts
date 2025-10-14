@@ -1,9 +1,9 @@
 import { logger } from "../utils/logger";
-import { IFileRepository } from "../../domain/repositories/IFileRepository";
-import { generateFileName } from "../utils/generateFileName";
 import { FileCategory } from "../../types/FileCategory";
-import { getBucketConfig, s3Client } from "../config/s3";
 import { UploadResult } from "../../types/UploadResult";
+import { getBucketConfig, s3Client } from "../config/s3";
+import { generateFileName } from "../utils/generateFileName";
+import { IFileRepository } from "../../domain/repositories/IFileRepository";
 
 export class S3FileRepository implements IFileRepository {
   async upload(

@@ -5,4 +5,4 @@ export const FILE_CATEGORIES: Record<FileCategory, FileCategory> = {
   banner: "banner",
   background: "background",
   art: "art",
-};
+} as const;

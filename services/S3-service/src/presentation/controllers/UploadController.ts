@@ -1,110 +1,32 @@
-import { DeleteImageUseCase } from "./../../application/usecases/DeleteImageUseCase";
-import { Request, Response, NextFunction } from "express";
-import { UploadProfileImage } from "../../application/usecases/UploadProfileImage";
-import { UploadArtImage } from "../../application/usecases/UploadArtImage";
-import { UploadBannerImage } from "../../application/usecases/UploadBannerImage";
-import { IUploadController } from "../interface/IUploadController";
-import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
-import { logger } from "../../infrastructure/utils/logger";
-import { validateUpload } from "../validations/validateUpload";
 import { HttpStatus } from "art-chain-shared";
+import { inject, injectable } from "inversify";
+import { Request, Response, NextFunction } from "express";
+import { logger } from "../../infrastructure/utils/logger";
+import { TYPES } from "../../infrastructure/inversify/types";
+import { validateUpload } from "../validations/validateUpload";
 import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
-import { DeleteImageRequestDTO } from "../../domain/dto/DeleteImageRequestDTO";
-import { UploadImageUseCase } from "../../application/usecases/UploadImageUseCase";
+import { IUploadController } from "../interface/IUploadController";
+import { UploadFileDTO } from "../../application/interface/dto/UploadFileDTO";
+import { IUploadArtImage } from "../../application/interface/usecases/IUploadArtImage";
+import { DeleteImageRequestDTO } from "../../application/interface/dto/DeleteImageRequestDTO";
+import { IDeleteImageUseCase } from "../../application/interface/usecases/IDeleteImageUseCase";
+import { IUploadImageUseCase } from "../../application/interface/usecases/IUploadImageUseCase";
 
+@injectable()
 export class UploadController implements IUploadController {
   constructor(
-    private readonly _uploadProfileImage: UploadProfileImage,
-    private readonly _uploadBannerImage: UploadBannerImage,
-    private readonly _uploadArtImage: UploadArtImage,
-    private readonly _uploadImageUseCase: UploadImageUseCase,
-    private readonly _deleteImageUseCase: DeleteImageUseCase
+    @inject(TYPES.IUploadArtImage)
+    private readonly _uploadArtImage: IUploadArtImage,
+    @inject(TYPES.IUploadImageUseCase)
+    private readonly _uploadImageUseCase: IUploadImageUseCase,
+    @inject(TYPES.IDeleteImageUseCase)
+    private readonly _deleteImageUseCase: IDeleteImageUseCase
   ) {}
-
-  //# =============================================================================================================
-  //# UPLOAD PROFILE
-  //# =============================================================================================================
-  //# POST /api/v1/upload/profile //# Request headers: x-user-id
-  //# Request body: multipart/form-data { file }
-  //# Uploads a profile picture for the current user.
-  //# =============================================================================================================
-  uploadProfile = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const { userId, file, previousFileUrl } = validateUpload(req, "profile");
-
-      console.log(previousFileUrl);
-
-      const dto: UploadFileDTO = {
-        fileBuffer: file.buffer,
-        fileName: file.originalname,
-        mimeType: file.mimetype,
-        userId,
-        category: "profile",
-        previousFileUrl,
-      };
-
-      const result = await this._uploadProfileImage.execute(dto);
-
-      logger.info(
-        `Profile image uploaded successfully | userId=${userId} | file=${file.originalname}`
-      );
-
-      res
-        .status(HttpStatus.CREATED)
-        .json({ message: UPLOAD_MESSAGES.PROFILE_UPLOAD_SUCCESS, result });
-    } catch (error: any) {
-      logger.error(`Upload profile error | message=${error.message}`);
-      next(error);
-    }
-  };
-
-  //# =============================================================================================================
-  //# UPLOAD BANNER
-  //# =============================================================================================================
-  //# POST /api/v1/upload/banner
-  //# Request headers: x-user-id
-  //# Request body: multipart/form-data { file }
-  //# Uploads a banner image for the current user.
-  //# =============================================================================================================
-  uploadBanner = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const { userId, file } = validateUpload(req, "banner");
-
-      const dto: UploadFileDTO = {
-        fileBuffer: file.buffer,
-        fileName: file.originalname,
-        mimeType: file.mimetype,
-        category: "art",
-        userId,
-      };
-
-      const result = await this._uploadBannerImage.execute(dto);
-
-      logger.info(
-        `Banner image uploaded successfully | userId=${userId} | file=${file.originalname}`
-      );
-
-      res
-        .status(HttpStatus.CREATED)
-        .json({ message: UPLOAD_MESSAGES.BANNER_UPLOAD_SUCCESS, result });
-    } catch (error: any) {
-      logger.error(`Upload banner error | message=${error.message}`);
-      next(error);
-    }
-  };
 
   //# =============================================================================================================
   //# UPLOAD PROFILE RELATED IAMGES
   //# =============================================================================================================
-  //# POST /api/v1/upload/
+  //# POST /api/v1/upload
   //# Request headers: x-user-id
   //# Request body: multipart/form-data { file }
   //# This controller will help to upload the profile related images like profile, banner, background images
@@ -134,7 +56,6 @@ export class UploadController implements IUploadController {
 
       const { userId, file, previousFileUrl } = validateUpload(req, fileType);
 
-
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
         fileName: file.originalname,
@@ -159,6 +80,7 @@ export class UploadController implements IUploadController {
       next(error);
     }
   };
+
   //# =============================================================================================================
   //# UPLOAD ART
   //# =============================================================================================================

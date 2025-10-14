@@ -1,24 +1,29 @@
-import { S3FileRepository } from "../../infrastructure/repositories/S3FileRepository";
-import { UploadFileDTO } from "../../domain/dto/UploadFileDTO";
-import { UploadedFileDTO } from "../../domain/dto/UploadedFileDTO";
+import { inject, injectable } from "inversify";
 import { FILE_CATEGORIES } from "../../types/FileCategory";
-import { WatermarkService } from "../../presentation/service/WatermarkService";
+import { TYPES } from "../../infrastructure/inversify/types";
+import { UploadFileDTO } from "../interface/dto/UploadFileDTO";
+import { UploadedFileDTO } from "../interface/dto/UploadedFileDTO";
+import { IUploadArtImage } from "../interface/usecases/IUploadArtImage";
+import { IFileRepository } from "../../domain/repositories/IFileRepository";
 import { FileHashService } from "../../presentation/service/FileHashService";
-import { IUploadArtImage } from "../../domain/usecases/IUploadArtImage";
+import { WatermarkService } from "../../presentation/service/WatermarkService";
 
+@injectable()
 export class UploadArtImage implements IUploadArtImage {
-  constructor(private readonly _fileRepo: S3FileRepository) {}
+  constructor(
+    @inject(TYPES.IFileRepository) private readonly _fileRepo: IFileRepository
+  ) {}
 
   async execute(data: UploadFileDTO): Promise<UploadedFileDTO> {
     const { fileBuffer, fileName, mimeType, userId } = data;
 
     const hash = FileHashService.generateHash(fileBuffer);
 
-
     // const { previewBuffer, watermarkedBuffer } =
     //   await WatermarkService.processAndSave(fileBuffer, userId, fileName);
-const { previewBuffer, watermarkedBuffer } =
-  await WatermarkService.process(fileBuffer);
+    const { previewBuffer, watermarkedBuffer } = await WatermarkService.process(
+      fileBuffer
+    );
 
     const uploadResult = await this._fileRepo.upload(
       fileBuffer,
