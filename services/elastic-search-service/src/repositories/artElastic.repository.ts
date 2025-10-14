@@ -1,9 +1,12 @@
-import { elasticClient } from "../config/elasticClient";
+import { injectable } from "inversify";
 import { IndexedArt } from "../interface/indexArt";
+import { elasticClient } from "../config/elasticClient";
+import { IArtElasticRepository } from "../interface/IArtElasticRepository";
 
 const INDEX_NAME = "arts";
 
-export class ArtElasticRepository {
+@injectable()
+export class ArtElasticRepository implements IArtElasticRepository {
   async indexArt(art: IndexedArt): Promise<void> {
     await elasticClient.index({
       index: INDEX_NAME,
