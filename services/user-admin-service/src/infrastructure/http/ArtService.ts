@@ -1,8 +1,8 @@
-import axios from 'axios';
-import { injectable } from 'inversify';
-import { config } from '../config/env';
-import { BadRequestError } from 'art-chain-shared';
-import { IArtService } from '../../domain/http/IArtService';
+import axios from "axios";
+import { injectable } from "inversify";
+import { config } from "../config/env";
+import { BadRequestError } from "art-chain-shared";
+import { IArtService } from "../../application/interface/http/IArtService";
 
 @injectable()
 export class ArtService implements IArtService {
@@ -17,9 +17,10 @@ export class ArtService implements IArtService {
       const res = await axios.get(`${this.baseUrl}/api/v1/art/count/${userId}`);
       return res.data.artworksCount;
     } catch (err) {
-      throw new BadRequestError(
-        'Failed to fetch user\'s artwork count from Art service'
+      console.warn(
+        `Warning: Could not fetch artwork count for user ${userId}. Returning 0.`
       );
+      return 0;
     }
   }
 }
