@@ -165,12 +165,12 @@ services:
       - "4005:4005"
     networks:
       - backend
-  upload-service:
-    container_name: upload-service
-    build: ./services/upload-service
+  S3-service:
+    container_name: S3-service
+    build: ./services/S3-service
     env_file:
       - .env
-      - ./services/upload-service/.env
+      - ./services/S3-service/.env
     ports:
       - "4006:4006"
     networks:
