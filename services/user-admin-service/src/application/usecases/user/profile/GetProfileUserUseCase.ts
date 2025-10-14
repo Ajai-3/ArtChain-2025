@@ -3,17 +3,17 @@ import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
-import { ArtService } from '../../../../infrastructure/http/ArtService';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
 import { GetUserProfileResultDto } from '../../../interface/dtos/user/profile/GetUserProfileResultDto';
 import { GetUserProfileRequestDto } from '../../../interface/dtos/user/profile/GetUserProfileRequestDto';
 import { IGetUserProfileUseCase } from '../../../interface/usecases/user/profile/IGetUserProfileUseCase';
+import { IArtService } from '../../../interface/http/IArtService';
 
 @injectable()
 export class GetUserProfileUseCase implements IGetUserProfileUseCase {
   constructor(
-    @inject(TYPES.IArtService) private readonly _artService: ArtService,
+    @inject(TYPES.IArtService) private readonly _artService: IArtService,
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.ISupporterRepository) private readonly _supporterRepo: ISupporterRepository
   ) {}

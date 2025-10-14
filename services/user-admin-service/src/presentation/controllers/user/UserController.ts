@@ -1,29 +1,24 @@
-import { HttpStatus } from 'art-chain-shared';
-import { injectable, inject } from 'inversify';
-import { logger } from '../../../utils/logger';
-import { Request, Response, NextFunction } from 'express';
-import { validateWithZod } from '../../../utils/zodValidator';
-import { TYPES } from '../../../infrastructure/inversify/types';
-
-import { USER_MESSAGES } from '../../../constants/userMessages';
-import { IUserController } from '../../interfaces/user/IUserController';
-
-import { SupportUnSupportRequestDto } from '../../../application/interface/dtos/user/user-intraction/SupportUnSupportRequestDto';
-
-import { UpdateUserProfileDto } from '../../../application/interface/dtos/user/profile/UpdateUserProfileDto';
-
-import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
-
-import { updateProfileSchema } from '../../../application/validations/user/updateProfileSchema';
-import { GetUserProfileRequestDto } from '../../../application/interface/dtos/user/profile/GetUserProfileRequestDto';
-import { IAddUserToElasticSearchUseCase } from '../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
-import { IGetUsersByIdsUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
-import { IUnSupportUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IUnSupportUserUseCase';
-import { IGetUserProfileUseCase } from '../../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
-import { IGetUserWithIdUserUseCase } from '../../../application/interface/usecases/user/profile/IGetUserWithIdUserUseCase';
-import { IUpdateProfileUserUseCase } from '../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase';
-import { IGetUserSupportersUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase';
-import { IGetUserSupportingUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
+import { HttpStatus } from "art-chain-shared";
+import { injectable, inject } from "inversify";
+import { logger } from "../../../utils/logger";
+import { Request, Response, NextFunction } from "express";
+import { validateWithZod } from "../../../utils/zodValidator";
+import { TYPES } from "../../../infrastructure/inversify/types";
+import { USER_MESSAGES } from "../../../constants/userMessages";
+import { IUserController } from "../../interfaces/user/IUserController";
+import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
+import { updateProfileSchema } from "../../../application/validations/user/updateProfileSchema";
+import { UpdateUserProfileDto } from "../../../application/interface/dtos/user/profile/UpdateUserProfileDto";
+import { IGetUserProfileUseCase } from "../../../application/interface/usecases/user/profile/IGetUserProfileUseCase";
+import { GetUserProfileRequestDto } from "../../../application/interface/dtos/user/profile/GetUserProfileRequestDto";
+import { IUnSupportUserUseCase } from "../../../application/interface/usecases/user/user-intraction/IUnSupportUserUseCase";
+import { IUpdateProfileUserUseCase } from "../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase";
+import { IGetUserWithIdUserUseCase } from "../../../application/interface/usecases/user/profile/IGetUserWithIdUserUseCase";
+import { SupportUnSupportRequestDto } from "../../../application/interface/dtos/user/user-intraction/SupportUnSupportRequestDto";
+import { IGetUserSupportersUseCase } from "../../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase";
+import { IGetUsersByIdsUserUseCase } from "../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase";
+import { IGetUserSupportingUseCase } from "../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase";
+import { IAddUserToElasticSearchUseCase } from "../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase";
 
 @injectable()
 export class UserController implements IUserController {
@@ -63,7 +58,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const { username } = req.params;
-      const currentUserId = req.headers['x-user-id'] as string | undefined;
+      const currentUserId = req.headers["x-user-id"] as string | undefined;
 
       console.log(currentUserId);
 
@@ -77,7 +72,7 @@ export class UserController implements IUserController {
         data: result,
       });
     } catch (error) {
-      logger.error('Error in fetching user profile');
+      logger.error("Error in fetching user profile");
       next(error);
     }
   };
@@ -97,7 +92,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers['x-user-id'] as string;
+      const currentUserId = req.headers["x-user-id"] as string;
       const dto: GetUserProfileRequestDto = { userId, currentUserId };
 
       const user = await this._getUserWithIdUseCase.execute(dto);
@@ -109,7 +104,7 @@ export class UserController implements IUserController {
         data: user,
       });
     } catch (error) {
-      logger.error('Error infetching user with id');
+      logger.error("Error infetching user with id");
       next(error);
     }
   };
@@ -128,11 +123,11 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       if (!userId) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: 'User ID missing in request headers' });
+          .json({ message: "User ID missing in request headers" });
       }
       console.log(req.body, userId);
       const validatedData = validateWithZod(updateProfileSchema, req.body);
@@ -143,7 +138,7 @@ export class UserController implements IUserController {
 
       const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
 
-      await publishNotification('user.update', elasticUser);
+      await publishNotification("user.update", elasticUser);
 
       logger.info(`User profile updated ${JSON.stringify(user)}`);
 
@@ -152,7 +147,7 @@ export class UserController implements IUserController {
         user,
       });
     } catch (error) {
-      logger.error('Error in fetching user with id');
+      logger.error("Error in fetching user with id");
       next(error);
     }
   };
@@ -172,12 +167,12 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers['x-user-id'] as string;
+      const currentUserId = req.headers["x-user-id"] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       const result = await this._supportUserUseCase.execute(dto);
 
-      await publishNotification('user.supported', {
+      await publishNotification("user.supported", {
         supportedUserId: result.targetUser.id,
         supporterId: result.supporter.id,
         supporterName: result.supporter.username,
@@ -212,7 +207,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
-      const currentUserId = req.headers['x-user-id'] as string;
+      const currentUserId = req.headers["x-user-id"] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._unSupportUserUseCase.execute(dto);
@@ -242,7 +237,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<Response | any> => {
     try {
-      const userId = req.headers['x-user-id'] as string;
+      const userId = req.headers["x-user-id"] as string;
       const currentUserId = req.params.supporterId;
 
       console.log(userId, currentUserId);
@@ -272,7 +267,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.id;
-      const currentUserId = req.headers['x-user-id'] as string;
+      const currentUserId = req.headers["x-user-id"] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
@@ -311,7 +306,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.params.id;
-      const currentUserId = req.headers['x-user-id'] as string;
+      const currentUserId = req.headers["x-user-id"] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
@@ -336,6 +331,13 @@ export class UserController implements IUserController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET USERS WITH IDS
+  //# ================================================================================================================
+  //# POST /api/v1/user/batch
+  //# Request body: array of user ids
+  //# This controller helps to fetch a list of users with their ids
+  //# ================================================================================================================
   getAllUserWithIds = async (
     req: Request,
     res: Response,
@@ -347,15 +349,15 @@ export class UserController implements IUserController {
       if (!ids || !Array.isArray(ids) || !ids.length) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'ids array is required' });
+          .json({ message: "ids array is required" });
       }
 
       const users = await this._getUsersByIdsUserUseCase.execute(ids);
 
-      logger.info('user with id fetched correctly');
+      logger.info("user with id fetched correctly");
       return res
         .status(HttpStatus.OK)
-        .json({ message: 'User fetch correcly', data: users });
+        .json({ message: "User fetch correcly", data: users });
     } catch (error) {
       next(error);
     }

@@ -1,4 +1,6 @@
 import bcrypt from 'bcrypt';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
 import { LoginRequestDto } from '../../../interface/dtos/user/auth/LoginRequestDto';
@@ -10,8 +12,9 @@ import {
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ILoginAdminUseCase } from '../../../interface/usecases/admin/auth/ILoginAdminUseCase';
 
+@injectable()
 export class LoginAdminUseCase implements ILoginAdminUseCase {
-  constructor(private _userRepo: IUserRepository) {}
+  constructor(@inject(TYPES.IUserRepository) private _userRepo: IUserRepository) {}
 
   async execute(data: LoginRequestDto): Promise<AuthResultDto> {
     const { identifier, password } = data;

@@ -1,12 +1,11 @@
 import { HttpStatus } from 'art-chain-shared';
 import { injectable, inject } from 'inversify';
 import { logger } from '../../../utils/logger';
-import { TYPES } from '../../../infrastructure/inversify/types';
 import { Request, Response, NextFunction } from 'express';
 import { validateWithZod } from '../../../utils/zodValidator';
 import { USER_MESSAGES } from '../../../constants/userMessages';
+import { TYPES } from '../../../infrastructure/inversify/types';
 import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
-
 import { IArtistRequestController } from '../../interfaces/user/IArtistRequestController';
 import { createArtistRequestSchema } from '../../../application/validations/user/createArtistRequestSchema';
 import { CreateArtistRequestDto } from '../../../application/interface/dtos/user/artist-request/CreateArtistRequestDto';
