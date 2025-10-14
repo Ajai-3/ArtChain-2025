@@ -1,8 +1,10 @@
 import { prisma } from "../db/prisma";
+import { injectable } from "inversify";
 import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { Transaction, TransactionCategory, TransactionMethod, TransactionStatus, TransactionType } from "../../domain/entities/Transaction";
 import { ITransactionRepository } from "../../domain/repository/ITransactionRepository";
+import { Transaction, TransactionCategory, TransactionMethod, TransactionStatus, TransactionType } from "../../domain/entities/Transaction";
 
+@injectable()
 export class TransactionRepositoryImpl
   extends BaseRepositoryImpl<Transaction>
   implements ITransactionRepository
