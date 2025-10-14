@@ -1,6 +1,10 @@
 import Stripe from "stripe";
-import { IHandleStripeWebhookUseCase } from "../../domain/usecase/IHandleStripeWebhookUseCase";
+import { logger } from "../../utils/logger";
+import { inject, injectable } from "inversify";
 import { config } from "../../infrastructure/config/env";
+import { TYPES } from "../../infrastructure/inversify/types";
+import { WALLET_MESSAGES } from "../../constants/WalletMessages";
+import { BadRequestError, ConflictError } from "art-chain-shared";
 import { IWalletRepository } from "../../domain/repository/IWalletRepository";
 import { ITransactionRepository } from "../../domain/repository/ITransactionRepository";
 import {
@@ -9,21 +13,23 @@ import {
   TransactionStatus,
   TransactionType,
 } from "../../domain/entities/Transaction";
-import { BadRequestError, ConflictError } from "art-chain-shared";
-import { WALLET_MESSAGES } from "../../constants/WalletMessages";
-import { logger } from "../../utils/logger";
+import { IHandleStripeWebhookUseCase } from "../interface/usecase/IHandleStripeWebhookUseCase";
 
+@injectable()
 export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
   private readonly ART_COIN_RATE = 0.1;
 
   constructor(
-    private readonly _stripe: Stripe,
+    @inject(TYPES.StripeClient) private readonly _stripe: Stripe,
+    @inject(TYPES.IWalletRepository)
     private readonly _walletRepo: IWalletRepository,
+    @inject(TYPES.ITransactionRepository)
     private readonly _transactionRepo: ITransactionRepository
   ) {}
 
   async execute(payload: Buffer, signature: string): Promise<void> {
-    if (!signature) throw new BadRequestError(WALLET_MESSAGES.STRIPE_SGNATURE_MISSING);
+    if (!signature)
+      throw new BadRequestError(WALLET_MESSAGES.STRIPE_SGNATURE_MISSING);
 
     let event: Stripe.Event;
     try {
@@ -60,7 +66,7 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
       logger.info(
         `Transaction already exists for session: ${externalId}, skipping`
       );
-      throw new ConflictError(WALLET_MESSAGES.TRANSACTION_ALREADY_EXIST)
+      throw new ConflictError(WALLET_MESSAGES.TRANSACTION_ALREADY_EXIST);
     }
 
     const amountInINR = (session.amount_total ?? 0) / 100;

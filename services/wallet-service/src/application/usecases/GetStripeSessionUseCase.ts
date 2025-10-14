@@ -1,10 +1,12 @@
 import Stripe from "stripe";
-import { config } from "../../infrastructure/config/env";
-import { IGetStripeSessionUseCase } from "../../domain/usecase/IGetStripeSessionUseCase";
-import { StripeSessionDTO } from "../../domain/dto/StripeSessionDTO";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../infrastructure/inversify/types";
+import { StripeSessionDTO } from "../interface/dto/StripeSessionDTO";
+import { IGetStripeSessionUseCase } from "../interface/usecase/IGetStripeSessionUseCase";
 
+@injectable()
 export class GetStripeSessionUseCase implements IGetStripeSessionUseCase {
-  constructor(private readonly _stripe: Stripe) {}
+  constructor(@inject(TYPES.StripeClient) private readonly _stripe: Stripe) {}
 
   async execute(sessionId: string): Promise<StripeSessionDTO> {
     if (!sessionId) throw new Error("Missing session ID");

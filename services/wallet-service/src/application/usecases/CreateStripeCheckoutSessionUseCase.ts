@@ -1,11 +1,14 @@
 import Stripe from "stripe";
+import { inject, injectable } from "inversify";
 import { config } from "../../infrastructure/config/env";
-import { ICreateStripeCheckoutSessionUseCase } from "../../domain/usecase/ICreateStripeCheckoutSessionUseCase";
+import { TYPES } from "../../infrastructure/inversify/types";
+import { ICreateStripeCheckoutSessionUseCase } from "../interface/usecase/ICreateStripeCheckoutSessionUseCase";
 
+@injectable()
 export class CreateStripeCheckoutSessionUseCase
   implements ICreateStripeCheckoutSessionUseCase
 {
-  constructor(private readonly _stripe: Stripe) {}
+  constructor(@inject(TYPES.StripeClient) private readonly _stripe: Stripe) {}
 
   async execute(
     userId: string,
