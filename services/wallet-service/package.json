@@ -25,6 +25,8 @@
     "dotenv": "^17.2.2",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
+    "inversify": "^7.10.2",
+    "reflect-metadata": "^0.2.2",
     "stripe": "^18.5.0",
     "winston": "^3.17.0",
     "winston-loki": "^6.1.3"
