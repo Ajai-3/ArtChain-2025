@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { Container } from 'inversify';
 import { TYPES } from './types';
+import { Container } from 'inversify';
 
 // Repositories & Services
 import { IArtService } from '../../application/interface/http/IArtService';
