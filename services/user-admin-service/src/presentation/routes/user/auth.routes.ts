@@ -1,19 +1,24 @@
-import express from 'express';
-
-import { userAuthController } from './../../../infrastructure/container/user/userAuthContainer';
+import express from "express";
+import { TYPES } from "../../../infrastructure/inversify/types";
+import { container } from "../../../infrastructure/inversify/inversify.config";
+import { IUserAuthController } from "../../interfaces/user/IUserAuthController";
 
 const router = express.Router();
 
-router.post('/start-register', userAuthController.startRegister);
-router.post('/register', userAuthController.registerUser);
+const userAuthController = container.get<IUserAuthController>(
+  TYPES.IUserAuthController
+);
 
-router.post('/login', userAuthController.loginUser);
-router.post('/google-auth', userAuthController.googleAuthUser);
+router.post("/start-register", userAuthController.startRegister);
+router.post("/register", userAuthController.registerUser);
 
-router.post('/forgot-password', userAuthController.forgotPassword);
-router.patch('/reset-password', userAuthController.resetPassword);
+router.post("/login", userAuthController.loginUser);
+router.post("/google-auth", userAuthController.googleAuthUser);
 
-router.get('/refresh-token', userAuthController.refreshToken);
-router.post('/logout', userAuthController.logoutUser);
+router.post("/forgot-password", userAuthController.forgotPassword);
+router.patch("/reset-password", userAuthController.resetPassword);
+
+router.get("/refresh-token", userAuthController.refreshToken);
+router.post("/logout", userAuthController.logoutUser);
 
 export default router;
