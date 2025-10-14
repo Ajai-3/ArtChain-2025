@@ -4,7 +4,7 @@ import { authProxy } from "../proxy/auth.proxy";
 import { userProxy } from "../proxy/user.proxy";
 import { adminProxy } from "../proxy/admin.proxy";
 import { walletProxy } from "../proxy/wallet.proxy";
-import { uploadProxy } from "../proxy/upload.proxy";
+import { s3Proxy } from "../proxy/S3.proxy";
 import { notificationsProxy } from "../proxy/notifications.proxy";
 import { elasticSearchProxy } from "../proxy/elastic-search.proxy";
 
@@ -25,7 +25,7 @@ router.use("/api/v1/art", artProxy);
 router.use("/api/v1/notifications", notificationsProxy);
 
 // upload-service
-router.use("/api/v1/upload", uploadProxy);
+router.use("/api/v1/upload", s3Proxy);
 
 // elastic-search-service
 router.use("/api/v1/elastic", elasticSearchProxy)

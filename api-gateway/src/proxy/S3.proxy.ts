@@ -1,10 +1,10 @@
 import { config } from "../config/env";
 import { createProxyMiddleware } from "http-proxy-middleware";
 
-console.log("Upload service target:", config.services.upload)
+console.log("Upload service target:", config.services.S3)
 
-export const uploadProxy = createProxyMiddleware({
-  target: `${config.services.upload}/api/v1/upload`,
+export const s3Proxy = createProxyMiddleware({
+  target: `${config.services.S3}/api/v1/upload`,
   changeOrigin: true,
   pathRewrite: { 
     "^/api/v1/upload": ""

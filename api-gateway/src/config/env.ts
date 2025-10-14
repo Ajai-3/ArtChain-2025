@@ -14,7 +14,7 @@ export const config = {
     wallet: process.env.WALLET_SERVICE_URL,
     art: process.env.ART_SERVICE_URL,
     notifications: process.env.NOTIFICATION_URL,
-    upload: process.env.UPLOAD_SERVICE_URL,
+    S3: process.env.S3_SERVICE_URL,
     elastic: process.env.ELASTIC_SEARCH_SERVICE_URL,
   },
   jwt: {
