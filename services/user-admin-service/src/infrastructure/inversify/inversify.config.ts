@@ -1,104 +1,104 @@
-import "reflect-metadata";
-import { Container } from "inversify";
-import { TYPES } from "./types";
+import 'reflect-metadata';
+import { Container } from 'inversify';
+import { TYPES } from './types';
 
 // Repositories & Services
-import { IArtService } from "../../application/interface/http/IArtService";
-import { IUserRepository } from "../../domain/repositories/user/IUserRepository";
-import { ISupporterRepository } from "../../domain/repositories/user/ISupporterRepository";
-import { IUserSearchRepository } from "../../domain/repositories/user/IUserSearchRepository";
-import { IArtistRequestRepository } from "../../domain/repositories/user/IArtistRequestRepository";
+import { IArtService } from '../../application/interface/http/IArtService';
+import { IUserRepository } from '../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../domain/repositories/user/ISupporterRepository';
+import { IUserSearchRepository } from '../../domain/repositories/user/IUserSearchRepository';
+import { IArtistRequestRepository } from '../../domain/repositories/user/IArtistRequestRepository';
 
-import { ArtService } from "../http/ArtService";
-import { UserRepositoryImpl } from "../repositories/user/UserRepositoryImpl";
-import { SupporterRepositoryImpl } from "../repositories/user/SupporterRepositoryIml";
-import { ArtistRequestRepositoryImpl } from "../repositories/user/ArtistRequestRepositoryImpl";
-import { ElasticUserSearchRepositoryImpl } from "../repositories/user/ElasticUserSearchRepositoryImpl";
+import { ArtService } from '../http/ArtService';
+import { UserRepositoryImpl } from '../repositories/user/UserRepositoryImpl';
+import { SupporterRepositoryImpl } from '../repositories/user/SupporterRepositoryIml';
+import { ArtistRequestRepositoryImpl } from '../repositories/user/ArtistRequestRepositoryImpl';
+import { ElasticUserSearchRepositoryImpl } from '../repositories/user/ElasticUserSearchRepositoryImpl';
 
 // Use cases - Artist Request
-import { CreateArtistRequestUseCase } from "../../application/usecases/user/artist-request/CreateArtistRequestUseCase";
-import { CheckUserArtistRequestUseCase } from "../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase";
-import { ICreateArtistRequestUseCase } from "../../application/interface/usecases/user/artist-request/ICreateArtistRequestUseCase";
-import { ICheckUserArtistRequestUseCase } from "../../application/interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase";
+import { CreateArtistRequestUseCase } from '../../application/usecases/user/artist-request/CreateArtistRequestUseCase';
+import { CheckUserArtistRequestUseCase } from '../../application/usecases/user/artist-request/CheckUserArtistRequestUseCase';
+import { ICreateArtistRequestUseCase } from '../../application/interface/usecases/user/artist-request/ICreateArtistRequestUseCase';
+import { ICheckUserArtistRequestUseCase } from '../../application/interface/usecases/user/artist-request/ICheckUserArtistRequestUseCase';
 
 // Use cases - Security
-import { ChangeEmailUserUseCase } from "../../application/usecases/user/security/ChangeEmailUserUseCase";
-import { ChangePasswordUserUseCase } from "../../application/usecases/user/security/ChangePasswordUserUseCase";
-import { VerifyEmailTokenUserUseCase } from "../../application/usecases/user/security/VerifyEmailTokenUserUseCase";
-import { IChangeEmailUserUseCase } from "../../application/interface/usecases/user/security/IChangeEmailUserUseCase";
-import { IChangePasswordUserUseCase } from "../../application/interface/usecases/user/security/IChangePasswordUserUseCase";
-import { IVerifyEmailTokenUserUseCase } from "../../application/interface/usecases/user/security/IVerifyEmailTokenUserUseCase";
+import { ChangeEmailUserUseCase } from '../../application/usecases/user/security/ChangeEmailUserUseCase';
+import { ChangePasswordUserUseCase } from '../../application/usecases/user/security/ChangePasswordUserUseCase';
+import { VerifyEmailTokenUserUseCase } from '../../application/usecases/user/security/VerifyEmailTokenUserUseCase';
+import { IChangeEmailUserUseCase } from '../../application/interface/usecases/user/security/IChangeEmailUserUseCase';
+import { IChangePasswordUserUseCase } from '../../application/interface/usecases/user/security/IChangePasswordUserUseCase';
+import { IVerifyEmailTokenUserUseCase } from '../../application/interface/usecases/user/security/IVerifyEmailTokenUserUseCase';
 
 // Use cases - Auth
-import { ILoginUserUseCase } from "../../application/interface/usecases/user/auth/ILoginUserUseCase";
-import { IRefreshTokenUseCase } from "../../application/interface/usecases/user/auth/IRefreshTokenUseCase";
-import { IRegisterUserUseCase } from "../../application/interface/usecases/user/auth/IRegisterUserUseCase";
-import { IGoogleAuthUserUseCase } from "../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase";
-import { IResetPasswordUserUseCase } from "../../application/interface/usecases/user/auth/IResetPasswordUserUseCase";
-import { IStartRegisterUserUseCase } from "../../application/interface/usecases/user/auth/IStartRegisterUserUseCase";
-import { IForgotPasswordUserUseCase } from "../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase";
-import { IAddUserToElasticSearchUseCase } from "../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase";
+import { ILoginUserUseCase } from '../../application/interface/usecases/user/auth/ILoginUserUseCase';
+import { IRefreshTokenUseCase } from '../../application/interface/usecases/user/auth/IRefreshTokenUseCase';
+import { IRegisterUserUseCase } from '../../application/interface/usecases/user/auth/IRegisterUserUseCase';
+import { IGoogleAuthUserUseCase } from '../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase';
+import { IResetPasswordUserUseCase } from '../../application/interface/usecases/user/auth/IResetPasswordUserUseCase';
+import { IStartRegisterUserUseCase } from '../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
+import { IForgotPasswordUserUseCase } from '../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
+import { IAddUserToElasticSearchUseCase } from '../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 
-import { LoginUserUseCase } from "../../application/usecases/user/auth/LoginUserUseCase";
-import { RegisterUserUseCase } from "../../application/usecases/user/auth/RegisterUserUseCase";
-import { GoogleAuthUserUseCase } from "../../application/usecases/user/auth/GoogleAuthUserUseCase";
-import { RefreshTokenUserUseCase } from "../../application/usecases/user/auth/RefreshTokenUserUseCase";
-import { ResetPasswordUserUseCase } from "../../application/usecases/user/auth/ResetPasswordUserUseCase";
-import { StartRegisterUserUseCase } from "../../application/usecases/user/auth/StartRegisterUserUseCase";
-import { ForgotPasswordUserUseCase } from "../../application/usecases/user/auth/ForgotPasswordUserUseCase";
-import { AddUserToElasticSearchUseCase } from "../../application/usecases/user/search/AddUserToElasticSearchUseCase";
+import { LoginUserUseCase } from '../../application/usecases/user/auth/LoginUserUseCase';
+import { RegisterUserUseCase } from '../../application/usecases/user/auth/RegisterUserUseCase';
+import { GoogleAuthUserUseCase } from '../../application/usecases/user/auth/GoogleAuthUserUseCase';
+import { RefreshTokenUserUseCase } from '../../application/usecases/user/auth/RefreshTokenUserUseCase';
+import { ResetPasswordUserUseCase } from '../../application/usecases/user/auth/ResetPasswordUserUseCase';
+import { StartRegisterUserUseCase } from '../../application/usecases/user/auth/StartRegisterUserUseCase';
+import { ForgotPasswordUserUseCase } from '../../application/usecases/user/auth/ForgotPasswordUserUseCase';
+import { AddUserToElasticSearchUseCase } from '../../application/usecases/user/search/AddUserToElasticSearchUseCase';
 
 // Use cases - User Profile & Interaction
-import { IGetUserProfileUseCase } from "../../application/interface/usecases/user/profile/IGetUserProfileUseCase";
-import { ISupportUserUseCase } from "../../application/interface/usecases/user/user-intraction/ISupportUserUseCase";
-import { IUpdateProfileUserUseCase } from "../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase";
-import { IUnSupportUserUseCase } from "../../application/interface/usecases/user/user-intraction/IUnSupportUserUseCase";
-import { IGetUserWithIdUserUseCase } from "../../application/interface/usecases/user/profile/IGetUserWithIdUserUseCase";
-import { IGetUsersByIdsUserUseCase } from "../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase";
-import { IGetUserSupportersUseCase } from "../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase";
-import { IGetUserSupportingUseCase } from "../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase";
+import { IGetUserProfileUseCase } from '../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
+import { ISupportUserUseCase } from '../../application/interface/usecases/user/user-intraction/ISupportUserUseCase';
+import { IUpdateProfileUserUseCase } from '../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase';
+import { IUnSupportUserUseCase } from '../../application/interface/usecases/user/user-intraction/IUnSupportUserUseCase';
+import { IGetUserWithIdUserUseCase } from '../../application/interface/usecases/user/profile/IGetUserWithIdUserUseCase';
+import { IGetUsersByIdsUserUseCase } from '../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
+import { IGetUserSupportersUseCase } from '../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase';
+import { IGetUserSupportingUseCase } from '../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
 
-import { GetUserProfileUseCase } from "../../application/usecases/user/profile/GetProfileUserUseCase";
-import { SupportUserUseCase } from "../../application/usecases/user/user-intraction/SupportUserUseCase";
-import { UnSupportUserUseCase } from "../../application/usecases/user/user-intraction/UnSupportUserUseCase";
-import { GetUserWithIdUserUseCase } from "../../application/usecases/user/profile/GetUserWithIdUserUseCase";
-import { UpdateProfileUserUseCase } from "../../application/usecases/user/profile/UpdateProfileUserUseCase";
-import { GetUsersByIdsUserUseCase } from "../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase";
-import { GetUserSupportersUseCase } from "../../application/usecases/user/user-intraction/GetUserSupportersUseCase";
-import { GetUserSupportingUseCase } from "../../application/usecases/user/user-intraction/GetUserSupportingUseCase";
+import { GetUserProfileUseCase } from '../../application/usecases/user/profile/GetProfileUserUseCase';
+import { SupportUserUseCase } from '../../application/usecases/user/user-intraction/SupportUserUseCase';
+import { UnSupportUserUseCase } from '../../application/usecases/user/user-intraction/UnSupportUserUseCase';
+import { GetUserWithIdUserUseCase } from '../../application/usecases/user/profile/GetUserWithIdUserUseCase';
+import { UpdateProfileUserUseCase } from '../../application/usecases/user/profile/UpdateProfileUserUseCase';
+import { GetUsersByIdsUserUseCase } from '../../application/usecases/user/user-intraction/GetUsersByIdsUserUseCase';
+import { GetUserSupportersUseCase } from '../../application/usecases/user/user-intraction/GetUserSupportersUseCase';
+import { GetUserSupportingUseCase } from '../../application/usecases/user/user-intraction/GetUserSupportingUseCase';
 
 // Admin Use Cases
-import { ILoginAdminUseCase } from "../../application/interface/usecases/admin/auth/ILoginAdminUseCase";
-import { IGetAllUsersUseCase } from "../../application/interface/usecases/admin/user-management/IGetAllUsersUseCase";
-import { IBanOrUnbanUserUseCase } from "../../application/interface/usecases/admin/user-management/IBanOrUnbanUserUseCase";
-import { IRejectArtistRequestUseCase } from "../../application/interface/usecases/admin/user-management/IRejectArtistRequestUseCase";
-import { IGetAllArtistRequestsUseCase } from "../../application/interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase";
-import { IApproveArtistRequestUseCase } from "../../application/interface/usecases/admin/user-management/IApproveArtistRequestUseCase";
+import { ILoginAdminUseCase } from '../../application/interface/usecases/admin/auth/ILoginAdminUseCase';
+import { IGetAllUsersUseCase } from '../../application/interface/usecases/admin/user-management/IGetAllUsersUseCase';
+import { IBanOrUnbanUserUseCase } from '../../application/interface/usecases/admin/user-management/IBanOrUnbanUserUseCase';
+import { IRejectArtistRequestUseCase } from '../../application/interface/usecases/admin/user-management/IRejectArtistRequestUseCase';
+import { IGetAllArtistRequestsUseCase } from '../../application/interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase';
+import { IApproveArtistRequestUseCase } from '../../application/interface/usecases/admin/user-management/IApproveArtistRequestUseCase';
 
-import { LoginAdminUseCase } from "../../application/usecases/admin/auth/LoginAdminUseCase";
-import { GetAllUsersUseCase } from "../../application/usecases/admin/user-management/GetAllUsersUseCase";
-import { BanOrUnbanUserUseCase } from "../../application/usecases/admin/user-management/BanOrUnbanUserUseCase";
-import { GetAllArtistRequestsUseCase } from "../../application/usecases/admin/user-management/GetAllArtistRequests";
-import { RejectArtistRequestUseCase } from "../../application/usecases/admin/user-management/RejectArtistRequestUseCase";
-import { ApproveArtistRequestUseCase } from "./../../application/usecases/admin/user-management/ApproveArtistRequestUseCase";
+import { LoginAdminUseCase } from '../../application/usecases/admin/auth/LoginAdminUseCase';
+import { GetAllUsersUseCase } from '../../application/usecases/admin/user-management/GetAllUsersUseCase';
+import { BanOrUnbanUserUseCase } from '../../application/usecases/admin/user-management/BanOrUnbanUserUseCase';
+import { GetAllArtistRequestsUseCase } from '../../application/usecases/admin/user-management/GetAllArtistRequests';
+import { RejectArtistRequestUseCase } from '../../application/usecases/admin/user-management/RejectArtistRequestUseCase';
+import { ApproveArtistRequestUseCase } from './../../application/usecases/admin/user-management/ApproveArtistRequestUseCase';
 
 // Controllers
-import { IUserController } from "../../presentation/interfaces/user/IUserController";
-import { ISecurityController } from "../../presentation/interfaces/user/ISecurityController";
-import { IUserAuthController } from "../../presentation/interfaces/user/IUserAuthController";
-import { IArtistRequestController } from "../../presentation/interfaces/user/IArtistRequestController";
+import { IUserController } from '../../presentation/interfaces/user/IUserController';
+import { ISecurityController } from '../../presentation/interfaces/user/ISecurityController';
+import { IUserAuthController } from '../../presentation/interfaces/user/IUserAuthController';
+import { IArtistRequestController } from '../../presentation/interfaces/user/IArtistRequestController';
 
-import { UserController } from "../../presentation/controllers/user/UserController";
-import { SecurityController } from "../../presentation/controllers/user/SecurityController";
-import { UserAuthController } from "../../presentation/controllers/user/UserAuthController";
-import { ArtistRequestController } from "../../presentation/controllers/user/ArtistRequestController";
+import { UserController } from '../../presentation/controllers/user/UserController';
+import { SecurityController } from '../../presentation/controllers/user/SecurityController';
+import { UserAuthController } from '../../presentation/controllers/user/UserAuthController';
+import { ArtistRequestController } from '../../presentation/controllers/user/ArtistRequestController';
 
 // Admin controller
-import { IAdminAuthController } from "../../presentation/interfaces/admin/IAdminAuthController";
-import { IUserManageMentController } from "../../presentation/interfaces/admin/IUserManagementController";
+import { IAdminAuthController } from '../../presentation/interfaces/admin/IAdminAuthController';
+import { IUserManageMentController } from '../../presentation/interfaces/admin/IUserManagementController';
 
-import { AdminAuthController } from "../../presentation/controllers/admin/AdminAuthController";
-import { UserManageMentController } from "./../../presentation/controllers/admin/UserManagementController";
+import { AdminAuthController } from '../../presentation/controllers/admin/AdminAuthController';
+import { UserManageMentController } from './../../presentation/controllers/admin/UserManagementController';
 
 const container = new Container();
 

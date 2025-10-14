@@ -1,17 +1,17 @@
-import { JwtPayload } from "jsonwebtoken";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/token.service";
+import { JwtPayload } from 'jsonwebtoken';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { tokenService } from '../../../../presentation/service/token.service';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   ForbiddenError,
   UnauthorizedError,
-} from "art-chain-shared";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { RefreshTokenResultDto } from "../../../interface/dtos/user/auth/RefreshTokenResultDto";
-import { IRefreshTokenUseCase } from "../../../interface/usecases/user/auth/IRefreshTokenUseCase";
+} from 'art-chain-shared';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { RefreshTokenResultDto } from '../../../interface/dtos/user/auth/RefreshTokenResultDto';
+import { IRefreshTokenUseCase } from '../../../interface/usecases/user/auth/IRefreshTokenUseCase';
 
 @injectable()
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
@@ -32,7 +32,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
     }
 
-    if (!payload || typeof payload !== "object" || !("email" in payload)) {
+    if (!payload || typeof payload !== 'object' || !('email' in payload)) {
       throw new UnauthorizedError(ERROR_MESSAGES.UNAUTHORIZED);
     }
 
@@ -41,7 +41,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    if (admin.role !== "admin") {
+    if (admin.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
     }
 

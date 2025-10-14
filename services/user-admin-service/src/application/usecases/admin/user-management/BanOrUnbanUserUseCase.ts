@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { NotFoundError } from "art-chain-shared";
-import { USER_MESSAGES } from "../../../../constants/userMessages";
-import { TYPES } from "./../../../../infrastructure/inversify/types";
-import { SafeUser } from "../../../../domain/repositories/IBaseRepository";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { IBanOrUnbanUserUseCase } from "../../../interface/usecases/admin/user-management/IBanOrUnbanUserUseCase";
+import { inject, injectable } from 'inversify';
+import { NotFoundError } from 'art-chain-shared';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
+import { TYPES } from './../../../../infrastructure/inversify/types';
+import { SafeUser } from '../../../../domain/repositories/IBaseRepository';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { IBanOrUnbanUserUseCase } from '../../../interface/usecases/admin/user-management/IBanOrUnbanUserUseCase';
 
 @injectable()
 export class BanOrUnbanUserUseCase implements IBanOrUnbanUserUseCase {
@@ -14,9 +14,9 @@ export class BanOrUnbanUserUseCase implements IBanOrUnbanUserUseCase {
 
   async execute(userId: string): Promise<SafeUser> {
     const user = await this._userRepository.findById(userId);
-    if (!user) throw new Error("User not found");
+    if (!user) throw new Error('User not found');
 
-    const newStatus = user.status === "banned" ? "active" : "banned";
+    const newStatus = user.status === 'banned' ? 'active' : 'banned';
 
     const updatedUser = await this._userRepository.update(userId, {
       status: newStatus,

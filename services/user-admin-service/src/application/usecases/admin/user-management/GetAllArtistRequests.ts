@@ -1,8 +1,8 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { GetAllUsersQueryDto } from "../../../interface/dtos/admin/GetAllUsersQueryDto";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IGetAllArtistRequestsUseCase } from "../../../interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQueryDto';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { IGetAllArtistRequestsUseCase } from '../../../interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase';
 
 @injectable()
 export class GetAllArtistRequestsUseCase

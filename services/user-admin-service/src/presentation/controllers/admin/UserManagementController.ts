@@ -1,18 +1,18 @@
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { logger } from "../../../utils/logger";
-import { Request, Response, NextFunction } from "express";
-import { USER_MESSAGES } from "../../../constants/userMessages";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { ARTIST_MESSAGES } from "../../../constants/artistMessages";
-import { IUserManageMentController } from "./../../interfaces/admin/IUserManagementController";
-import { GetAllUsersQueryDto } from "../../../application/interface/dtos/admin/GetAllUsersQueryDto";
-import { IGetAllUsersUseCase } from "../../../application/interface/usecases/admin/user-management/IGetAllUsersUseCase";
-import { IBanOrUnbanUserUseCase } from "../../../application/interface/usecases/admin/user-management/IBanOrUnbanUserUseCase";
-import { ArtistAproveRejectRequestDto } from "../../../application/interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
-import { IRejectArtistRequestUseCase } from "../../../application/interface/usecases/admin/user-management/IRejectArtistRequestUseCase";
-import { IGetAllArtistRequestsUseCase } from "../../../application/interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase";
-import { IApproveArtistRequestUseCase } from "../../../application/interface/usecases/admin/user-management/IApproveArtistRequestUseCase";
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { logger } from '../../../utils/logger';
+import { Request, Response, NextFunction } from 'express';
+import { USER_MESSAGES } from '../../../constants/userMessages';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
+import { IUserManageMentController } from './../../interfaces/admin/IUserManagementController';
+import { GetAllUsersQueryDto } from '../../../application/interface/dtos/admin/GetAllUsersQueryDto';
+import { IGetAllUsersUseCase } from '../../../application/interface/usecases/admin/user-management/IGetAllUsersUseCase';
+import { IBanOrUnbanUserUseCase } from '../../../application/interface/usecases/admin/user-management/IBanOrUnbanUserUseCase';
+import { ArtistAproveRejectRequestDto } from '../../../application/interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
+import { IRejectArtistRequestUseCase } from '../../../application/interface/usecases/admin/user-management/IRejectArtistRequestUseCase';
+import { IGetAllArtistRequestsUseCase } from '../../../application/interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase';
+import { IApproveArtistRequestUseCase } from '../../../application/interface/usecases/admin/user-management/IApproveArtistRequestUseCase';
 
 @injectable()
 export class UserManageMentController implements IUserManageMentController {
@@ -82,12 +82,12 @@ export class UserManageMentController implements IUserManageMentController {
       const { userId } = req.params;
 
       if (!userId) {
-        return res.status(400).json({ message: "Missing userId" });
+        return res.status(400).json({ message: 'Missing userId' });
       }
 
       const user = await this._banOrUnbanUserUseCase.execute(userId);
 
-      const action = user.status === "banned" ? "banned" : "unbanned";
+      const action = user.status === 'banned' ? 'banned' : 'unbanned';
 
       return res
         .status(200)
@@ -116,7 +116,7 @@ export class UserManageMentController implements IUserManageMentController {
       const dto: GetAllUsersQueryDto = { page, limit };
       const result = await this._getAllArtistRequestsUseCase.execute(dto);
 
-      logger.info("Artist request fetched.");
+      logger.info('Artist request fetched.');
       return res
         .status(HttpStatus.OK)
         .json({ message: ARTIST_MESSAGES.ARTISRT_REQUEST_FETCHED, result });
@@ -144,7 +144,7 @@ export class UserManageMentController implements IUserManageMentController {
       if (!id) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Artist request id is required" });
+          .json({ message: 'Artist request id is required' });
       }
 
       const dto: ArtistAproveRejectRequestDto = { id };
@@ -179,13 +179,13 @@ export class UserManageMentController implements IUserManageMentController {
       if (!id) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Artist request id is required" });
+          .json({ message: 'Artist request id is required' });
       }
 
       if (!reason) {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Rejection reason is required" });
+          .json({ message: 'Rejection reason is required' });
       }
 
       const dto: ArtistAproveRejectRequestDto = { id, reason };

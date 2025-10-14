@@ -1,8 +1,8 @@
-import axios from "axios";
-import { injectable } from "inversify";
-import { config } from "../config/env";
-import { BadRequestError } from "art-chain-shared";
-import { IArtService } from "../../application/interface/http/IArtService";
+import axios from 'axios';
+import { injectable } from 'inversify';
+import { config } from '../config/env';
+import { BadRequestError } from 'art-chain-shared';
+import { IArtService } from '../../application/interface/http/IArtService';
 
 @injectable()
 export class ArtService implements IArtService {

@@ -1,18 +1,18 @@
-import { Role } from "@prisma/client";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { ARTIST_MESSAGES } from "../../../../constants/artistMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { ArtistAproveRejectRequestDto } from "../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
-import { IApproveArtistRequestUseCase } from "../../../interface/usecases/admin/user-management/IApproveArtistRequestUseCase";
+import { Role } from '@prisma/client';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { ArtistAproveRejectRequestDto } from '../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
+import { IApproveArtistRequestUseCase } from '../../../interface/usecases/admin/user-management/IApproveArtistRequestUseCase';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   NotFoundError,
-} from "art-chain-shared";
-import { IArtService } from "../../../interface/http/IArtService";
+} from 'art-chain-shared';
+import { IArtService } from '../../../interface/http/IArtService';
 
 @injectable()
 export class ApproveArtistRequestUseCase
@@ -49,7 +49,7 @@ export class ApproveArtistRequestUseCase
 
     if (accountAgeInDays < 10) {
       throw new BadRequestError(
-        "User account must be at least 10 days old to become an artist."
+        'User account must be at least 10 days old to become an artist.'
       );
     }
 
@@ -67,16 +67,16 @@ export class ApproveArtistRequestUseCase
       await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
 
     if (supportersCount < 20) {
-      throw new BadRequestError("User must have at least 20 supporters.");
+      throw new BadRequestError('User must have at least 20 supporters.');
     }
     if (supportingCount < 20) {
-      throw new BadRequestError("User must be supporting at least 20 others.");
+      throw new BadRequestError('User must be supporting at least 20 others.');
     }
 
     const artworkCount = await this._artService.getUserArtCount(userId);
     if (artworkCount < 10) {
       throw new BadRequestError(
-        "User must have at least 10 artworks to become an artist."
+        'User must have at least 10 artworks to become an artist.'
       );
     }
 
