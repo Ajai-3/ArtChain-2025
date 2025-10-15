@@ -26,7 +26,7 @@ export class AddFavoriteUseCase implements IAddFavoriteUseCase {
       throw new BadRequestError(FAVORITE_MESSAGES.MISSING_USER_ID);
     }
 
-    if (!!postId) {
+    if (!postId) {
       throw new BadRequestError(FAVORITE_MESSAGES.MISSING_POST_ID);
     }
 
