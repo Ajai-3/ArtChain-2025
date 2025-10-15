@@ -1,20 +1,25 @@
-import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
+import { inject, injectable } from "inversify";
 import { Like } from "../../../domain/entities/Like";
 import {
   ConflictError,
   BadRequestError,
   NotFoundError,
 } from "art-chain-shared";
-import { ILikePostUseCase } from "../../interface/usecase/like/ILikePostUseCase";
-import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ART_MESSAGES } from "../../../constants/ArtMessages";
+import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
+import { TYPES } from "../../../infrastructure/invectify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { publishNotification } from "../../../infrastructure/rabbit/rabbit";
+import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
+import { ILikePostUseCase } from "../../interface/usecase/like/ILikePostUseCase";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 
+@injectable()
 export class LikePostUseCase implements ILikePostUseCase {
   constructor(
+    @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
+    @inject(TYPES.ILikeRepository)
     private readonly _likeRepository: ILikeRepository
   ) {}
 
@@ -45,7 +50,7 @@ export class LikePostUseCase implements ILikePostUseCase {
       const userMap = new Map(users.map((u: any) => [u.id, u]));
 
       const likedUser = userMap.get(post.userId);
-      const likerUser = userMap.get(userId);     
+      const likerUser = userMap.get(userId);
 
       if (likedUser && likerUser) {
         await publishNotification("like", {
@@ -57,8 +62,6 @@ export class LikePostUseCase implements ILikePostUseCase {
         });
       }
     }
-
-   
 
     return savedLike;
   }

@@ -1,9 +1,10 @@
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-
-import { ILikeRepository } from "../../domain/repositories/ILikeRepository";
-import { Like } from "../../domain/entities/Like";
+import { injectable } from "inversify";
 import { LikeModel } from "../models/LikeModel";
+import { Like } from "../../domain/entities/Like";
+import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
+import { ILikeRepository } from "../../domain/repositories/ILikeRepository";
 
+@injectable()
 export class LikeRepositoryImpl
   extends BaseRepositoryImpl<Like>
   implements ILikeRepository

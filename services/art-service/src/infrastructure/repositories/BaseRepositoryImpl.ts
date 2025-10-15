@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
+import { injectable } from "inversify";
 import { IBaseRepository } from "../../domain/repositories/IBaseRepository";
 
+@injectable()
 export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
   private model: mongoose.Model<any>;
 

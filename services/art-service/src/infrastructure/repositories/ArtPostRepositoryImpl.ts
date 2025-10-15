@@ -1,8 +1,10 @@
-import { ArtPost } from "../../domain/entities/ArtPost";
-import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
+import { injectable } from "inversify";
 import { ArtPostModel } from "../models/ArtPostModel";
+import { ArtPost } from "../../domain/entities/ArtPost";
 import { BaseRepositoryImpl } from "../repositories/BaseRepositoryImpl";
+import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
 
+@injectable()
 export class ArtPostRepositoryImpl
   extends BaseRepositoryImpl<ArtPost>
   implements IArtPostRepository
