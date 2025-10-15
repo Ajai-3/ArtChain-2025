@@ -97,7 +97,7 @@ const FavoriteUsersModal: React.FC<FavoriteUsersModalProps> = ({
       />
 
       {/* modal */}
-      <div className="relative z-50 bg-white dark:bg-secondary-color border sm:dark:border-zinc-700 sm:rounded-3xl shadow-lg h-full sm:h-[500px] w-full sm:w-[470px] p-4 flex flex-col">
+      <div className="relative z-50 bg-white dark:bg-secondary-color border sm:dark:border-zinc-700 sm:rounded-3xl shadow-lg h-full sm:h-[500px] w-full sm:w-[470px] p-2 sm:p-4 flex flex-col">
         {/* close button */}
         <button
           className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-700 dark:hover:text-white"
