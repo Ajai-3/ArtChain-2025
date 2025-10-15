@@ -1,9 +1,9 @@
 import React from "react";
 import { useGetComments } from "../../hooks/art/useGetComments";
 import type { Comment } from "../../hooks/art/useGetComments";
-import { formatDistanceToNow } from "date-fns";
 import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatTimeAgo } from "../../../../libs/formatTimeAgo";
 
 interface Props {
   postId: string;
@@ -40,7 +40,9 @@ const CommentList: React.FC<Props> = ({ postId }) => {
                 />
               ) : (
                 <div className="w-9 h-9 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white font-semibold">
-                  {c.name?.charAt(0).toUpperCase() || <User className="w-4 h-4" />}
+                  {c.name?.charAt(0).toUpperCase() || (
+                    <User className="w-4 h-4" />
+                  )}
                 </div>
               )}
             </div>
@@ -56,7 +58,7 @@ const CommentList: React.FC<Props> = ({ postId }) => {
                   {c.name}
                 </span>
                 <span className="text-gray-500 text-xs">
-                  {formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}
+                  {formatTimeAgo(c.createdAt)}
                 </span>
               </div>
               {/* <span className="text-gray-400 text-sm mt-0.5 mb-1">@{c.userName}</span> */}
@@ -75,7 +77,9 @@ const CommentList: React.FC<Props> = ({ postId }) => {
           {isFetchingNextPage ? "Loading..." : "Load More"}
         </button>
       )}
-      {!hasNextPage && <p className="text-gray-400 text-center mt-2">No more comments</p>}
+      {!hasNextPage && (
+        <p className="text-gray-400 text-center mt-2">No more comments</p>
+      )}
     </div>
   );
 };

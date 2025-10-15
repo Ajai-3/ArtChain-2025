@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { X, ArrowDownRight } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import {
   useGetFavoritedUsers,
@@ -15,6 +14,7 @@ import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
 import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
 import CustomLoader from "../../../../components/CustomLoader";
 import { formatNumber } from "../../../../libs/formatNumber";
+import { formatTimeAgo } from "../../../../libs/formatTimeAgo";
 
 interface FavoriteUsersModalProps {
   postId: string;
@@ -163,9 +163,7 @@ const FavoriteUsersModal: React.FC<FavoriteUsersModalProps> = ({
                         {user.name || "Unknown User"}
                       </p>
                       <p className="text-zinc-400 dark:text-zinc-500 text-xs">
-                        {formatDistanceToNow(new Date(user.favoritedAt), {
-                          addSuffix: true,
-                        })}
+                        {formatTimeAgo(user.favoritedAt)}
                       </p>
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
