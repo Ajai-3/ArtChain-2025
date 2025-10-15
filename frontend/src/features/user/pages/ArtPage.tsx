@@ -127,7 +127,7 @@ const ArtPage: React.FC = () => {
     });
 
   return (
-    <div className="flex flex-col md:flex-row justify-center gap-6 p-4 min-h-screen">
+    <div className="flex flex-col md:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen">
       {/* Main content */}
       <div className="w-full md:w-3/4 flex flex-col items-center relative">
         {/* Art image */}
