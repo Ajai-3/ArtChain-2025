@@ -5,14 +5,14 @@ import {
   BadRequestError,
   NotFoundError,
 } from "art-chain-shared";
-import { ILikeUseCase } from "../../interface/usecase/like/ILikeUseCase";
+import { ILikePostUseCase } from "../../interface/usecase/like/ILikePostUseCase";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ART_MESSAGES } from "../../../constants/ArtMessages";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { publishNotification } from "../../../infrastructure/rabbit/rabbit";
 
-export class LikePostUseCase implements ILikeUseCase {
+export class LikePostUseCase implements ILikePostUseCase {
   constructor(
     private readonly _artRepo: IArtPostRepository,
     private readonly _likeRepository: ILikeRepository

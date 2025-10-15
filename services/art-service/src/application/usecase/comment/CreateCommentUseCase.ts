@@ -1,13 +1,24 @@
-import { CommentStatus } from './../../../domain/entities/Comment';
+import { inject, injectable } from "inversify";
+import { BadRequestError } from "art-chain-shared";
 import { Comment } from "../../../domain/entities/Comment";
-import { CreateCommentDTO } from '../../interface/dto/comment/CreateCommentDTO';
+import { TYPES } from "../../../infrastructure/invectify/types";
+import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
+import { CreateCommentDTO } from "../../interface/dto/comment/CreateCommentDTO";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { ICreateCommentUseCase } from '../../interface/usecase/comment/ICreateCommentUseCase';
+import { ICreateCommentUseCase } from "../../interface/usecase/comment/ICreateCommentUseCase";
 
+@injectable()
 export class CreateCommentUseCase implements ICreateCommentUseCase {
-  constructor(private readonly _commentRepo: ICommentRepository) {}
+  constructor(
+    @inject(TYPES.ICommentRepository)
+    private readonly _commentRepo: ICommentRepository
+  ) {}
 
   async execute(dto: CreateCommentDTO): Promise<Comment> {
+    if (!dto.userId) {
+      throw new BadRequestError(ERROR_MESSAGES.USER_ID_MISSING);
+    }
+
     const comment = new Comment(
       dto.postId,
       dto.userId,

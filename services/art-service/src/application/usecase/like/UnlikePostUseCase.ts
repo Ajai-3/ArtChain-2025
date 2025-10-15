@@ -1,10 +1,16 @@
+import { inject, injectable } from "inversify";
+import { BadRequestError } from "art-chain-shared";
+import { TYPES } from "../../../infrastructure/invectify/types";
+import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { IUnlikePostUseCase } from "../../interface/usecase/like/IUnlikePostUseCase";
-import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
-import { BadRequestError } from "art-chain-shared";
 
+@injectable()
 export class UnlikePostUseCase implements IUnlikePostUseCase {
-  constructor(private readonly _likeRepository: ILikeRepository) {}
+  constructor(
+    @inject(TYPES.ILikeRepository)
+    private readonly _likeRepository: ILikeRepository
+  ) {}
 
   async execute(postId: string, userId: string) {
     if (!postId || !userId) {
@@ -12,7 +18,7 @@ export class UnlikePostUseCase implements IUnlikePostUseCase {
     }
 
     const existingLike = await this._likeRepository.findLike(postId, userId);
-    console.log(existingLike)
+    console.log(existingLike);
     if (!existingLike) {
       throw new BadRequestError(LIKE_MESSAGES.CANNOT_UNLIKE_THE_POST);
     }

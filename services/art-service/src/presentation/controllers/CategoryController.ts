@@ -1,20 +1,26 @@
 import { logger } from "../../utils/logger";
-import { Request, Response, NextFunction } from "express";
-import { CreateCategoryUseCase } from "../../application/usecase/category/CreateCategoryUseCase";
-import { ICategoryController } from "../interface/ICategoryController";
 import { HttpStatus } from "art-chain-shared";
-import { CATEGORY_MESSAGES } from "../../constants/categoryMessages";
-import { EditCategoryDTO } from "../../application/interface/dto/category/EditCategoryDTO";
-import { EditCategoryUseCase } from "../../application/usecase/category/EditCategoryUseCase";
-import { GetAllCategoryUseCase } from "../../application/usecase/category/GetAllCategoryUseCase";
+import { inject, injectable } from "inversify";
+import { Request, Response, NextFunction } from "express";
+import { TYPES } from "../../infrastructure/invectify/types";
 import { validateWithZod } from "../../utils/validateWithZod";
+import { CATEGORY_MESSAGES } from "../../constants/categoryMessages";
 import { editCategorySchema } from "../validators/editCategorySchema";
+import { ICategoryController } from "../interface/ICategoryController";
+import { EditCategoryDTO } from "../../application/interface/dto/category/EditCategoryDTO";
+import { IGetAllCategoryUseCase } from "../../application/interface/usecase/category/IGetAllCategoryUseCase";
+import { IEditCategoryUseCase } from "../../application/interface/usecase/category/IEditCategoryUseCase";
+import { ICreateCategoryUseCase } from "../../application/interface/usecase/category/ICreateCategoryUseCase";
 
+@injectable()
 export class CategoryController implements ICategoryController {
   constructor(
-    private readonly _getAllCategoryUseCase: GetAllCategoryUseCase,
-    private readonly _createCategoryUseCase: CreateCategoryUseCase,
-    private readonly _editCategoryUseCase: EditCategoryUseCase
+    @inject(TYPES.IGetAllCategoryUseCase)
+    private readonly _getAllCategoryUseCase: IGetAllCategoryUseCase,
+    @inject(TYPES.ICreateCategoryUseCase)
+    private readonly _createCategoryUseCase: ICreateCategoryUseCase,
+    @inject(TYPES.IEditCategoryUseCase)
+    private readonly _editCategoryUseCase: IEditCategoryUseCase
   ) {}
 
   //# ================================================================================================================
@@ -24,36 +30,36 @@ export class CategoryController implements ICategoryController {
   //# Query params: page, limit, search, status filter, and count filter
   //# This controller Fetches categories with pagination and optional status filter.
   //# ================================================================================================================
-    getCategory = async (
-      req: Request,
-      res: Response,
-      next: NextFunction
-    ): Promise<Response | void> => {
-      try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
-        const search = req.query.search as string | undefined;
-        const status = req.query.status as string | undefined;
-        const countFilter = req.query.count
-          ? parseInt(req.query.count as string)
-          : undefined;
+  getCategory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
+      const status = req.query.status as string | undefined;
+      const countFilter = req.query.count
+        ? parseInt(req.query.count as string)
+        : undefined;
 
-        const  {data, total} = await this._getAllCategoryUseCase.execute(
-          page,
-          limit,
-          search,
-          status,
-          countFilter
-        );
+      const { data, total } = await this._getAllCategoryUseCase.execute(
+        page,
+        limit,
+        search,
+        status,
+        countFilter
+      );
 
-        return res
-          .status(HttpStatus.OK)
-          .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS,  data, total });
-      } catch (error) {
-        logger.error("Error in getting categories", error);
-        next(error);
-      }
-    };
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS, data, total });
+    } catch (error) {
+      logger.error("Error in getting categories", error);
+      next(error);
+    }
+  };
 
   //# ================================================================================================================
   //# CREATE CATEGORY
@@ -95,9 +101,9 @@ export class CategoryController implements ICategoryController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const id = req.params.id
+      const id = req.params.id;
 
-      const result = validateWithZod(editCategorySchema, req.body)
+      const result = validateWithZod(editCategorySchema, req.body);
 
       const dto: EditCategoryDTO = { ...result, id };
       const category = await this._editCategoryUseCase.execute(dto);

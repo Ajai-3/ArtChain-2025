@@ -1,12 +1,18 @@
+import { inject, injectable } from "inversify";
 import { ConflictError } from "art-chain-shared";
-import { EditCategoryDTO } from "../../interface/dto/category/EditCategoryDTO";
 import { Category } from "../../../domain/entities/Category";
+import { TYPES } from "../../../infrastructure/invectify/types";
+import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
+import { EditCategoryDTO } from "../../interface/dto/category/EditCategoryDTO";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
 import { IEditCategoryUseCase } from "../../interface/usecase/category/IEditCategoryUseCase";
-import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
 
+@injectable()
 export class EditCategoryUseCase implements IEditCategoryUseCase {
-  constructor(private readonly _categoryRepo: ICategoryRepository) {}
+  constructor(
+    @inject(TYPES.ICategoryRepository)
+    private readonly _categoryRepo: ICategoryRepository
+  ) {}
 
   async execute(data: EditCategoryDTO): Promise<Category> {
     const { id, name, count, status } = data;

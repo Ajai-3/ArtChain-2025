@@ -1,10 +1,15 @@
-export class GetCategoryUseCase {}
+import { inject, injectable } from "inversify";
 import { Category } from "../../../domain/entities/Category";
+import { TYPES } from "../../../infrastructure/invectify/types";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
 import { IGetAllCategoryUseCase } from "../../interface/usecase/category/IGetAllCategoryUseCase";
 
+@injectable()
 export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {
-  constructor(private readonly _categoryRepo: ICategoryRepository) {}
+  constructor(
+    @inject(TYPES.ICategoryRepository)
+    private readonly _categoryRepo: ICategoryRepository
+  ) {}
 
   async execute(
     page: number = 1,

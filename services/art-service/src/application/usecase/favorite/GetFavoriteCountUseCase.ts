@@ -1,14 +1,20 @@
+import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
+import { TYPES } from "../../../infrastructure/invectify/types";
+import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 import { IGetFavoriteCountUseCase } from "../../interface/usecase/favorite/IGetFavoriteCountUseCase";
-import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
 
+@injectable()
 export class GetFavoriteCountUseCase implements IGetFavoriteCountUseCase {
-  constructor(private readonly _favoriteRepository: IFavoriteRepository) {}
+  constructor(
+    @inject(TYPES.IFavoriteRepository)
+    private readonly _favoriteRepository: IFavoriteRepository
+  ) {}
 
   async execute(postId: string) {
     if (!postId) {
-      throw new BadRequestError("Post ID is required.");
+      throw new BadRequestError(FAVORITE_MESSAGES.MISSING_POST_ID);
     }
 
     const count = await this._favoriteRepository.favoriteCountByPostId(postId);

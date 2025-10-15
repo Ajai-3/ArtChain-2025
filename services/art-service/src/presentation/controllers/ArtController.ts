@@ -1,30 +1,40 @@
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
+import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
 import { ART_MESSAGES } from "../../constants/ArtMessages";
 import { IArtController } from "../interface/IArtController";
+import { TYPES } from "../../infrastructure/invectify/types";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { createArtPostSchema } from "../validators/artPost.schema";
-import { CreateArtPostDTO } from "../../application/interface/dto/art/CreateArtPostDTO";
-import { CreateArtPostUseCase } from "../../application/usecase/art/CreateArtPostUseCase";
-import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCase";
 import { UserService } from "../../infrastructure/service/UserService";
-import { GetAllArtUseCase } from "../../application/usecase/art/GetAllArtUseCase";
-import { GetArtByNameUseCase } from "../../application/usecase/art/GetArtByNameUseCase";
 import { publishNotification } from "../../infrastructure/rabbit/rabbit";
-import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToElasticSearchUseCase";
-import { CountArtWorkUseCase } from "../../application/usecase/art/CountArtWorkUseCase";
-import { GetAllArtWithUserIdUseCase } from "../../application/usecase/art/GetAllArtWithUserIdUseCase";
+import { CreateArtPostDTO } from "../../application/interface/dto/art/CreateArtPostDTO";
+import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
+import { IGetArtByIdUseCase } from "../../application/interface/usecase/art/IGetArtByIdUseCase";
+import { IGetArtByNameUseCase } from "../../application/interface/usecase/art/IGetArtByNameUseCase";
+import { ICountArtWorkUseCase } from "../../application/interface/usecase/art/ICountArtWorkUseCase";
+import { ICreateArtPostUseCase } from "../../application/interface/usecase/art/ICreateArtPostUseCase";
+import { IArtToElasticSearchUseCase } from "../../application/interface/usecase/art/IArtToElasticSearchUseCase";
+import { IGetAllArtWithUserIdUseCase } from "../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase";
 
+@injectable()
 export class ArtController implements IArtController {
   constructor(
-    private readonly _createArtUseCase: CreateArtPostUseCase,
-    private readonly _getArtByIdUseCase: GetArtByIdUseCase,
-    private readonly _getAllArtUseCase: GetAllArtUseCase,
-    private readonly _getArtByNameUseCase: GetArtByNameUseCase,
-    private readonly _artToElasticSearchUseCase: ArtToElasticSearchUseCase,
-    private readonly _countArtWorkUseCase: CountArtWorkUseCase,
-    private readonly _getAllArtWithUserIdUseCase: GetAllArtWithUserIdUseCase
+    @inject(TYPES.ICreateArtPostUseCase)
+    private readonly _createArtUseCase: ICreateArtPostUseCase,
+    @inject(TYPES.IGetArtByIdUseCase)
+    private readonly _getArtByIdUseCase: IGetArtByIdUseCase,
+    @inject(TYPES.IGetAllArtUseCase)
+    private readonly _getAllArtUseCase: IGetAllArtUseCase,
+    @inject(TYPES.IGetArtByNameUseCase)
+    private readonly _getArtByNameUseCase: IGetArtByNameUseCase,
+    @inject(TYPES.IArtToElasticSearchUseCase)
+    private readonly _artToElasticSearchUseCase: IArtToElasticSearchUseCase,
+    @inject(TYPES.ICountArtWorkUseCase)
+    private readonly _countArtWorkUseCase: ICountArtWorkUseCase,
+    @inject(TYPES.IGetAllArtWithUserIdUseCase)
+    private readonly _getAllArtWithUserIdUseCase: IGetAllArtWithUserIdUseCase
   ) {}
 
   //# ================================================================================================================
@@ -78,8 +88,8 @@ export class ArtController implements IArtController {
         categoryId
       );
 
-      return res.status(200).json({
-        message: "Arts fetched successfully",
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.ART_FETCH_SUCESSFULL,
         page,
         limit,
         data: result,
@@ -191,12 +201,6 @@ export class ArtController implements IArtController {
   ): Promise<Response | void> => {
     try {
       const userId = req.headers["x-user-id"] as string;
-      if (!userId) {
-        logger.error("Missing x-user-id header in createArt");
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Missing x-user-id header" });
-      }
 
       const validatedData = validateWithZod(createArtPostSchema, req.body);
 
@@ -206,8 +210,6 @@ export class ArtController implements IArtController {
       const art = await this._artToElasticSearchUseCase.execute(createdArt);
 
       await publishNotification("art.created", art);
-
-      console.log("haii", art);
 
       logger.info(
         `Art created successfully by userId=${userId}, title=${JSON.stringify(

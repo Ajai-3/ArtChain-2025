@@ -1,11 +1,16 @@
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../infrastructure/invectify/types";
 import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
+import { UserService } from "../../../infrastructure/service/UserService";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { UserService } from "../../../infrastructure/service/UserService";
 
+@injectable()
 export class GetAllShopArtsUseCase {
   constructor(
+    @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
+    @inject(TYPES.IFavoriteRepository)
     private readonly _favoriteRepo: IFavoriteRepository
   ) {}
 
@@ -23,8 +28,7 @@ export class GetAllShopArtsUseCase {
     const query: any = { isForSale: true, status: "active" };
 
     if (filters) {
-
-      console.log("categories", filters.category)
+      console.log("categories", filters.category);
     }
 
     // Multi-category filter
@@ -43,11 +47,17 @@ export class GetAllShopArtsUseCase {
 
     // Sorting
     const sort: any = {};
-    if (filters?.priceOrder) sort.artcoins = filters.priceOrder === "asc" ? 1 : -1;
+    if (filters?.priceOrder)
+      sort.artcoins = filters.priceOrder === "asc" ? 1 : -1;
     if (filters?.titleOrder) sort.title = filters.titleOrder === "asc" ? 1 : -1;
     if (!filters?.priceOrder && !filters?.titleOrder) sort.createdAt = -1;
 
-    const arts = await this._artRepo.findAllWithFilters(query, page, limit, sort);
+    const arts = await this._artRepo.findAllWithFilters(
+      query,
+      page,
+      limit,
+      sort
+    );
 
     if (!arts.length) return [];
 
@@ -59,7 +69,9 @@ export class GetAllShopArtsUseCase {
 
     const mapped = await Promise.all(
       arts.map(async (art: any) => {
-        const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(art._id);
+        const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
+          art._id
+        );
         const user = userRes.find((u: any) => u.id === art.userId);
 
         return {
@@ -88,4 +100,3 @@ export class GetAllShopArtsUseCase {
     return mapped;
   }
 }
-
