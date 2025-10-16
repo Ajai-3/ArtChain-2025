@@ -1,8 +1,10 @@
-import { IArtistRequestRepository } from "../../../domain/repositories/user/IArtistRequestRepository";
-import { BaseRepositoryImpl } from "../BaseRepositoryImpl";
-import { ArtistRequest } from "../../../domain/entities/ArtistRequest";
-import { prisma } from "../../db/prisma";
+import { injectable } from 'inversify';
+import { prisma } from '../../db/prisma';
+import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
+import { ArtistRequest } from '../../../domain/entities/ArtistRequest';
+import { IArtistRequestRepository } from '../../../domain/repositories/user/IArtistRequestRepository';
 
+@injectable()
 export class ArtistRequestRepositoryImpl
   extends BaseRepositoryImpl
   implements IArtistRequestRepository
@@ -23,7 +25,7 @@ export class ArtistRequestRepositoryImpl
   async approve(requestId: string): Promise<void> {
     await this.model.update({
       where: { id: requestId },
-      data: { status: "approved", reviewedAt: new Date() },
+      data: { status: 'approved', reviewedAt: new Date() },
     });
   }
 
@@ -32,7 +34,7 @@ export class ArtistRequestRepositoryImpl
     await this.model.update({
       where: { id: requestId },
       data: {
-        status: "rejected",
+        status: 'rejected',
         rejectionReason: reason,
         reviewedAt: new Date(),
       },
@@ -42,8 +44,8 @@ export class ArtistRequestRepositoryImpl
   // Get all pending requests
   async getPendingRequests(): Promise<ArtistRequest[]> {
     return this.model.findMany({
-      where: { status: "pending" },
-      orderBy: { createdAt: "desc" },
+      where: { status: 'pending' },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -51,7 +53,7 @@ export class ArtistRequestRepositoryImpl
   async getByUser(userId: string): Promise<ArtistRequest[]> {
     return this.model.findMany({
       where: { userId },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -63,8 +65,8 @@ export class ArtistRequestRepositoryImpl
     const requests = await this.model.findMany({
       skip,
       take: limit,
-      orderBy: { createdAt: "desc" },
-      where: { status: "pending" },
+      orderBy: { createdAt: 'desc' },
+      where: { status: 'pending' },
       include: {
         user: {
           select: {

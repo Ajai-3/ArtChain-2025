@@ -1,12 +1,28 @@
 import express from "express";
-import { artController } from "../../infrastructure/container/artContainer";
-import { commentController } from "../../infrastructure/container/commentContainer";
-import { categoryController } from "../../infrastructure/container/categoryContainer";
-import { likeController } from "../../infrastructure/container/likeContainer";
-import { favoriteController } from "../../infrastructure/container/favoriteContainer";
-import { shopController } from "../../infrastructure/container/ShopContainer";
+
+import { IArtController } from "../interface/IArtController";
+import { TYPES } from "../../infrastructure/invectify/types";
+import { ILikeController } from "../interface/ILikeController";
+import { IShopController } from "../interface/IShopController";
+import { ICommentController } from "../interface/ICommentController";
+import { IFavoriteController } from "../interface/IFavoriteController";
+import { ICategoryController } from "../interface/ICategoryController";
+import { container } from "../../infrastructure/invectify/inversify.config";
 
 const router = express.Router();
+
+const artController = container.get<IArtController>(TYPES.IArtController);
+const likeController = container.get<ILikeController>(TYPES.ILikeController);
+const shopController = container.get<IShopController>(TYPES.IShopController);
+const categoryController = container.get<ICategoryController>(
+  TYPES.ICategoryController
+);
+const commentController = container.get<ICommentController>(
+  TYPES.ICommentController
+);
+const favoriteController = container.get<IFavoriteController>(
+  TYPES.IFavoriteController
+);
 
 // Category
 router.get("/category", categoryController.getCategory);
@@ -39,8 +55,8 @@ router.get("/favorites/:postId", favoriteController.getFavoritedUsers);
 router.get("/favorites-count/:postId", favoriteController.getFavoriteCount);
 router.get("/favorites/user/:userId", favoriteController.getUserFavoritedArts);
 
-router.get("/shop", shopController.getAllShopItems)
-router.get("/shop/:userId", shopController.getShopItemsByUser)
-
+// Shop
+router.get("/shop", shopController.getAllShopItems);
+router.get("/shop/:userId", shopController.getShopItemsByUser);
 
 export default router;

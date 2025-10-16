@@ -1,16 +1,21 @@
-import bcrypt from "bcrypt";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ChangePasswordRequestDto } from "../../../interface/dtos/user/security/ChangePasswordRequestDto";
-import { IChangePasswordUserUseCase } from "../../../interface/usecases/user/security/IChangePasswordUserUseCase";
+import bcrypt from 'bcrypt';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ChangePasswordRequestDto } from '../../../interface/dtos/user/security/ChangePasswordRequestDto';
+import { IChangePasswordUserUseCase } from '../../../interface/usecases/user/security/IChangePasswordUserUseCase';
 import {
   BadRequestError,
   NotFoundError,
   UnauthorizedError,
-} from "art-chain-shared";
+} from 'art-chain-shared';
 
+@injectable()
 export class ChangePasswordUserUseCase implements IChangePasswordUserUseCase {
-  constructor(private _userRepo: IUserRepository) {}
+  constructor(
+    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+  ) {}
 
   async execute(data: ChangePasswordRequestDto): Promise<void> {
     const { userId, currentPassword, newPassword } = data;

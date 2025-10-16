@@ -1,11 +1,15 @@
-import { SafeUser } from "../../../../domain/repositories/IBaseRepository";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { UserPreview } from "../../../../types/UserPreview";
+import { inject, injectable } from 'inversify';
+import { UserPreview } from '../../../../types/UserPreview';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { IGetUserSupportingUseCase } from '../../../interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
 
-export class GetUserSupportingUseCase {
+@injectable()
+export class GetUserSupportingUseCase implements IGetUserSupportingUseCase {
   constructor(
-    private readonly _userRepo: IUserRepository,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.ISupporterRepository)
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 

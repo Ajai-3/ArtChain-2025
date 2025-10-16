@@ -1,8 +1,10 @@
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { IFavoriteRepository } from "../../domain/repositories/IFavoriteRepository";
-import { Favorite } from "../../domain/entities/Favorite";
+import { injectable } from "inversify";
 import { FavoriteModel } from "../models/FavoriteModel";
+import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
+import { Favorite } from "../../domain/entities/Favorite";
+import { IFavoriteRepository } from "../../domain/repositories/IFavoriteRepository";
 
+@injectable()
 export class FavoriteRepositoryImpl
   extends BaseRepositoryImpl<Favorite>
   implements IFavoriteRepository
@@ -23,7 +25,11 @@ export class FavoriteRepositoryImpl
     await FavoriteModel.deleteOne({ postId, userId });
   }
 
-  async getAllFavoritesByUser(userId: string, page: number, limit: number): Promise<Favorite[]> {
+  async getAllFavoritesByUser(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<Favorite[]> {
     return await FavoriteModel.find({ userId })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
@@ -31,7 +37,11 @@ export class FavoriteRepositoryImpl
       .lean();
   }
 
-  async getAllFavoritesByPost(postId: string, page: number, limit: number): Promise<Favorite[]> {
+  async getAllFavoritesByPost(
+    postId: string,
+    page: number,
+    limit: number
+  ): Promise<Favorite[]> {
     return await FavoriteModel.find({ postId })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)

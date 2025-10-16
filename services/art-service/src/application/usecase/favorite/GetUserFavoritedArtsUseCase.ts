@@ -1,17 +1,23 @@
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../infrastructure/invectify/types";
 import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
+import { BadRequestError, NotFoundError } from "art-chain-shared";
+import { UserService } from "../../../infrastructure/service/UserService";
+import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
+import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
+import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 
+@injectable()
 export class GetUserFavoritedArtsUseCase {
   constructor(
-    private readonly _likeRepo: ILikeRepository,
+    @inject(TYPES.ILikeRepository) private readonly _likeRepo: ILikeRepository,
+    @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
+    @inject(TYPES.ICommentRepository)
     private readonly _commentRepo: ICommentRepository,
+    @inject(TYPES.IFavoriteRepository)
     private readonly _favoriteRepo: IFavoriteRepository
   ) {}
 

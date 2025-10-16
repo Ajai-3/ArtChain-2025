@@ -1,4 +1,5 @@
 import express from 'express';
+import 'reflect-metadata';
 import { logger } from './utils/logger';
 import cookieParser from 'cookie-parser';
 import { createErrorHandler } from 'art-chain-shared';

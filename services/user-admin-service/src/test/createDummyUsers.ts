@@ -1,19 +1,19 @@
-import { prisma } from "./../infrastructure/db/prisma";
-import bcrypt from "bcrypt";
-import { publishNotification } from "../infrastructure/messaging/rabbitmq";
-import { NAMES } from "./dummyUserNames";
+import { prisma } from './../infrastructure/db/prisma';
+import bcrypt from 'bcrypt';
+import { publishNotification } from '../infrastructure/messaging/rabbitmq';
+import { NAMES } from './dummyUserNames';
 
-const PASSWORD = "1q2w3e4r@A";
+const PASSWORD = '1q2w3e4r@A';
 
 function generateUsername(name: string) {
-  const parts = name.toLowerCase().split(" ");
-  const base = parts.join("_");
+  const parts = name.toLowerCase().split(' ');
+  const base = parts.join('_');
   const randomNum = Math.floor(Math.random() * 1000); // ensure uniqueness
   return `${base}_${randomNum}`;
 }
 
 function generateEmail(name: string) {
-  const parts = name.toLowerCase().split(" ");
+  const parts = name.toLowerCase().split(' ');
   const first = parts[0];
   const last = parts[parts.length - 1];
   return `${first}${last}@gmail.com`;
@@ -44,16 +44,16 @@ export async function createDummyUsers() {
           username,
           email,
           password: hashedPassword,
-          phone: "",
-          role: "user",
-          plan: "free",
-          status: "active",
+          phone: '',
+          role: 'user',
+          plan: 'free',
+          status: 'active',
           isVerified: true,
-          profileImage: "",
-          bannerImage: "",
-          backgroundImage: "",
-          bio: "",
-          country: "",
+          profileImage: '',
+          bannerImage: '',
+          backgroundImage: '',
+          bio: '',
+          country: '',
         },
       });
 
@@ -62,23 +62,23 @@ export async function createDummyUsers() {
         username: user.username,
         name: user.name,
         email: user.email,
-        profileImage: user.profileImage || "",
-        bannerImage: user.bannerImage || "",
-        bio: user.bio || "",
+        profileImage: user.profileImage || '',
+        bannerImage: user.bannerImage || '',
+        bio: user.bio || '',
         role: user.role,
         status: user.status,
         createdAt: user.createdAt,
       };
 
-      await publishNotification("user.created", elasticUser);
+      await publishNotification('user.created', elasticUser);
       createdCount++;
       console.log(`Created user ${createdCount}: ${username}`);
     } catch (err) {
-      console.error("Error creating user:", err);
+      console.error('Error creating user:', err);
     }
   }
 
-  console.log("All 150 dummy users created successfully!");
+  console.log('All 150 dummy users created successfully!');
 }
 
 createDummyUsers()

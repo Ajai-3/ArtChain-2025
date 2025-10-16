@@ -1,20 +1,25 @@
+import { inject, injectable } from 'inversify';
 import { ArtistRequest } from '@prisma/client';
-import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { CreateArtistRequestDto } from '../../../interface/dtos/user/artist-request/CreateArtistRequestDto';
-import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
-import { ICreateArtistRequestUseCase } from '../../../interface/usecases/user/artist-request/ICreateArtistRequestUseCase';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { IArtService } from '../../../interface/http/IArtService';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
-import { ArtService } from '../../../../infrastructure/http/ArtService';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { CreateArtistRequestDto } from '../../../interface/dtos/user/artist-request/CreateArtistRequestDto';
+import { ICreateArtistRequestUseCase } from '../../../interface/usecases/user/artist-request/ICreateArtistRequestUseCase';
 
+@injectable()
 export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
   constructor(
-    private readonly _userRepo: IUserRepository,
-    private readonly _artistRequestRepo: IArtistRequestRepository,
-    private readonly _supporterRepo: ISupporterRepository,
-    private readonly _artService: ArtService
+    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository,
+    @inject(TYPES.IArtistRequestRepository)
+    private _artistRequestRepo: IArtistRequestRepository,
+    @inject(TYPES.ISupporterRepository)
+    private _supporterRepo: ISupporterRepository,
+    @inject(TYPES.IArtService) private _artService: IArtService
   ) {}
 
   async execute(data: CreateArtistRequestDto): Promise<ArtistRequest> {
@@ -31,7 +36,7 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
     }
 
     const existingRequests = await this._artistRequestRepo.getByUser(userId);
-    const hasPending = existingRequests.some(req => req.status === 'pending');
+    const hasPending = existingRequests.some((req) => req.status === 'pending');
     if (hasPending) {
       throw new BadRequestError(ARTIST_MESSAGES.REQUEST_ALREADY_EXISTS);
     }
@@ -40,7 +45,7 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
       (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
     if (accountAgeInDays < 10) {
       throw new BadRequestError(
-        "User account must be at least 10 days old to create an artist request."
+        'User account must be at least 10 days old to create an artist request.'
       );
     }
 
@@ -58,19 +63,19 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
 
     if (supportersCount < 20) {
       throw new BadRequestError(
-        "User must have at least 20 supporters to create an artist request."
+        'User must have at least 20 supporters to create an artist request.'
       );
     }
     if (supportingCount < 20) {
       throw new BadRequestError(
-        "User must be supporting at least 20 others to create an artist request."
+        'User must be supporting at least 20 others to create an artist request.'
       );
     }
 
     const artworkCount = await this._artService.getUserArtCount(userId);
     if (artworkCount < 10) {
       throw new BadRequestError(
-        "User must have at least 10 artworks to create an artist request."
+        'User must have at least 10 artworks to create an artist request.'
       );
     }
 
@@ -80,7 +85,6 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
       rejectionReason: '',
     });
 
-    // Update optional user details if provided
     const updateData: Partial<{ bio: string; phone: string; country: string }> =
       {};
     if (bio) updateData.bio = bio;

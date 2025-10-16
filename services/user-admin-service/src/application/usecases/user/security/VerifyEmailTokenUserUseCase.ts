@@ -1,19 +1,23 @@
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { tokenService } from '../../../../presentation/service/token.service';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { VerifyEmailTokenRequestDto } from '../../../interface/dtos/user/security/VerifyEmailTokenRequestDto';
+import { IVerifyEmailTokenUserUseCase } from '../../../interface/usecases/user/security/IVerifyEmailTokenUserUseCase';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   NotFoundError,
-} from "art-chain-shared";
-import { VerifyEmailTokenRequestDto } from "../../../interface/dtos/user/security/VerifyEmailTokenRequestDto";
-import { SafeUser } from "../../../../domain/repositories/IBaseRepository";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { IVerifyEmailTokenUserUseCase } from "../../../interface/usecases/user/security/IVerifyEmailTokenUserUseCase";
-import { tokenService } from "../../../../presentation/service/token.service";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+} from 'art-chain-shared';
 
+@injectable()
 export class VerifyEmailTokenUserUseCase
   implements IVerifyEmailTokenUserUseCase
 {
-  constructor(private readonly _userRepo: IUserRepository) {}
+  constructor(
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository
+  ) {}
 
   async execute(data: VerifyEmailTokenRequestDto): Promise<any> {
     const { userId, token } = data;

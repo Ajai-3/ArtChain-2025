@@ -1,17 +1,21 @@
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   NotFoundError,
-} from "art-chain-shared";
-import { ArtistAproveRejectRequestDto } from "../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IRejectArtistRequestUseCase } from "../../../interface/usecases/admin/user-management/IRejectArtistRequestUseCase";
-import { ARTIST_MESSAGES } from "../../../../constants/artistMessages";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+} from 'art-chain-shared';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { ArtistAproveRejectRequestDto } from '../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
+import { IRejectArtistRequestUseCase } from '../../../interface/usecases/admin/user-management/IRejectArtistRequestUseCase';
 
+@injectable()
 export class RejectArtistRequestUseCase implements IRejectArtistRequestUseCase {
   constructor(
-    private readonly _userRepo: IUserRepository,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.IArtistRequestRepository)
     private readonly _artistRepo: IArtistRequestRepository
   ) {}
 

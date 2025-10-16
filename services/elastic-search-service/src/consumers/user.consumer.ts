@@ -1,6 +1,6 @@
 import { getRabbitChannel } from "../lib/rabbitmq";
-import { ArtElasticService } from "../services/artElastic.service";
-import { UserElasticService } from "../services/userElastic.service";
+import { ArtElasticService } from "../services/ArtElastic.service";
+import { UserElasticService } from "../services/UserElastic.service";
 
 const userService = new UserElasticService();
 const artService = new ArtElasticService();

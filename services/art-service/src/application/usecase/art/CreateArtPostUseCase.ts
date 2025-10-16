@@ -1,18 +1,28 @@
+import { inject, injectable } from "inversify";
 import { ArtPost } from "../../../domain/entities/ArtPost";
+import { TYPES } from "../../../infrastructure/invectify/types";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
+import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
 import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
 import { CreateArtPostDTO } from "../../interface/dto/art/CreateArtPostDTO";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
 import { ICreateArtPostUseCase } from "../../interface/usecase/art/ICreateArtPostUseCase";
 
+@injectable()
 export class CreateArtPostUseCase implements ICreateArtPostUseCase {
   constructor(
+    @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
+    @inject(TYPES.ICategoryRepository)
     private readonly _categoryRepo: ICategoryRepository
   ) {}
 
   async execute(dto: CreateArtPostDTO): Promise<any> {
+    if (!dto.userId) {
+      throw new BadRequestError(ERROR_MESSAGES.USER_ID_MISSING);
+    }
+
     const category = await this._categoryRepo.getById(dto.artType);
     if (!category) {
       throw new NotFoundError(CATEGORY_MESSAGES.NOT_FOUND);

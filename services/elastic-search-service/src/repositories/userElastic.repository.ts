@@ -1,9 +1,12 @@
-import { elasticClient } from "../config/elasticClient";
+import { injectable } from "inversify";
 import { IndexedUser } from "../interface/indexUser";
+import { elasticClient } from "../config/elasticClient";
+import { IUserElasticRepository } from "../interface/IUserElasticRepository";
 
 const INDEX_NAME = "users";
 
-export class UserElasticRepository {
+@injectable()
+export class UserElasticRepository implements IUserElasticRepository {
   async indexUser(user: IndexedUser): Promise<void> {
     await elasticClient.index({
       index: INDEX_NAME,

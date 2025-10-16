@@ -1,6 +1,8 @@
 
 import bcrypt from 'bcrypt';
+import { inject, injectable } from 'inversify';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { TYPES } from '../../../../infrastructure/inversify/types';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
 import { LoginRequestDto } from '../../../interface/dtos/user/auth/LoginRequestDto';
@@ -8,8 +10,9 @@ import { ForbiddenError, NotFoundError, UnauthorizedError } from 'art-chain-shar
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ILoginUserUseCase } from '../../../interface/usecases/user/auth/ILoginUserUseCase';
 
+@injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
-  constructor(private _userRepo: IUserRepository) {}
+  constructor(@inject(TYPES.IUserRepository) private _userRepo: IUserRepository) {}
 
   async execute(data: LoginRequestDto): Promise<AuthResultDto> {
     const { identifier, password } = data;

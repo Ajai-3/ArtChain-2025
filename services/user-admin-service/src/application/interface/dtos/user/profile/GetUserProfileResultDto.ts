@@ -1,4 +1,4 @@
-interface GetUserProfileResultDto {
+export interface GetUserProfileResultDto {
   user: any;
   isCurrentUser: boolean;
   isSupporting?: boolean;

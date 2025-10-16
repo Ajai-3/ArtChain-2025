@@ -1,21 +1,29 @@
-import { Request, Response, NextFunction } from "express";
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
-import { IFavoriteController } from "../interface/IFavoriteController";
-import { AddFavoriteUseCase } from "../../application/usecase/favorite/AddFavoriteUseCase";
-import { RemoveFavoriteUseCase } from "../../application/usecase/favorite/RemoveFavoriteUseCase";
-import { GetFavoriteCountUseCase } from "../../application/usecase/favorite/GetFavoriteCountUseCase";
+import { inject, injectable } from "inversify";
+import { Request, Response, NextFunction } from "express";
+import { TYPES } from "../../infrastructure/invectify/types";
 import { FAVORITE_MESSAGES } from "../../constants/FavoriteMessages";
-import { GetFavoritedUsersUseCase } from "../../application/usecase/favorite/GetFavoritedUsersUseCase";
-import { GetUserFavoritedArtsUseCase } from "../../application/usecase/favorite/GetUserFavoritedArtsUseCase";
+import { IFavoriteController } from "../interface/IFavoriteController";
+import { IAddFavoriteUseCase } from "../../application/interface/usecase/favorite/IAddFavoriteUseCase";
+import { IRemoveFavoriteUseCase } from "../../application/interface/usecase/favorite/IRemoveFavoriteUseCase";
+import { IGetFavoriteCountUseCase } from "../../application/interface/usecase/favorite/IGetFavoriteCountUseCase";
+import { IGetFavoritedUsersUseCase } from "../../application/interface/usecase/favorite/IGetFavoritedUsersUseCase";
+import { IGetUserFavoritedArtsUseCase } from "../../application/interface/usecase/favorite/IGetUserFavoritedArtsUseCase";
 
+@injectable()
 export class FavoriteController implements IFavoriteController {
   constructor(
-    private readonly _addFavoriteUseCase: AddFavoriteUseCase,
-    private readonly _removeFavoriteUseCase: RemoveFavoriteUseCase,
-    private readonly _getFavoriteCountUseCase: GetFavoriteCountUseCase,
-    private readonly _getFavoritedUsersUseCase: GetFavoritedUsersUseCase,
-    private readonly _getUserFavoritedArtsUseCase: GetUserFavoritedArtsUseCase
+    @inject(TYPES.IAddFavoriteUseCase)
+    private readonly _addFavoriteUseCase: IAddFavoriteUseCase,
+    @inject(TYPES.IRemoveFavoriteUseCase)
+    private readonly _removeFavoriteUseCase: IRemoveFavoriteUseCase,
+    @inject(TYPES.IGetFavoriteCountUseCase)
+    private readonly _getFavoriteCountUseCase: IGetFavoriteCountUseCase,
+    @inject(TYPES.IGetFavoritedUsersUseCase)
+    private readonly _getFavoritedUsersUseCase: IGetFavoritedUsersUseCase,
+    @inject(TYPES.IGetUserFavoritedArtsUseCase)
+    private readonly _getUserFavoritedArtsUseCase: IGetUserFavoritedArtsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -34,15 +42,11 @@ export class FavoriteController implements IFavoriteController {
       const userId = req.headers["x-user-id"] as string;
       const { postId } = req.body;
 
-      if (!userId) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: FAVORITE_MESSAGES.MISSING_USER_ID });
-      }
-
       await this._addFavoriteUseCase.execute(postId, userId);
 
-      logger.info(`User ${userId} added post ${postId} to favorites`);
+      logger.info(
+        `✅ [AddFavorite] User ${userId} successfully added post ${postId} to favorites`
+      );
       return res
         .status(HttpStatus.CREATED)
         .json({ message: FAVORITE_MESSAGES.ADD_SUCCESS });
@@ -67,14 +71,11 @@ export class FavoriteController implements IFavoriteController {
       const userId = req.headers["x-user-id"] as string;
       const { postId } = req.body;
 
-      if (!userId) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: FAVORITE_MESSAGES.MISSING_USER_ID });
-      }
-
       await this._removeFavoriteUseCase.execute(postId, userId);
 
+      logger.info(
+        `✅ [RemoveFavorite] User ${userId} removed post ${postId} from favorites`
+      );
       return res
         .status(HttpStatus.OK)
         .json({ message: FAVORITE_MESSAGES.REMOVE_SUCCESS });
@@ -96,8 +97,12 @@ export class FavoriteController implements IFavoriteController {
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
+
       const count = await this._getFavoriteCountUseCase.execute(postId);
 
+      logger.info(
+        `✅ [GetFavoriteCount] postId=${postId} has ${count} favorites`
+      );
       return res
         .status(HttpStatus.OK)
         .json({ message: FAVORITE_MESSAGES.FETCH_SUCCESS, favorites: count });
@@ -127,6 +132,10 @@ export class FavoriteController implements IFavoriteController {
 
       const { users, favoriteCount } =
         await this._getFavoritedUsersUseCase.execute(postId, page, limit);
+
+      logger.info(
+        `✅ [GetFavoritedUsers] Found ${users.length} users for postId=${postId} (total=${favoriteCount})`
+      );
 
       return res.status(HttpStatus.OK).json({
         message: FAVORITE_MESSAGES.FAVORITED_USERS_FETCHED_SUCCESS,
@@ -158,7 +167,16 @@ export class FavoriteController implements IFavoriteController {
       const limit = Number(req.query.limit) || 15;
       const currentUserId = req.headers["x-user-id"] as string;
 
-      const arts = await this._getUserFavoritedArtsUseCase.execute(userId, currentUserId, page, limit)
+      const arts = await this._getUserFavoritedArtsUseCase.execute(
+        userId,
+        currentUserId,
+        page,
+        limit
+      );
+
+      logger.info(
+        `✅ [GetUserFavoritedArts] Fetched ${arts.length} favorited arts for userId=${userId}`
+      );
 
       return res.status(HttpStatus.OK).json({
         data: arts,

@@ -53,6 +53,6 @@ export const AUTH_MESSAGES = {
   USER_NOT_FOUND: 'User not found.',
 
 
-  INVALID_CHANGE_EMAIL_TOKEN: "Invalid change email token",
-  EMAIL_UPDATE_FAILED: "Email updation failed"
+  INVALID_CHANGE_EMAIL_TOKEN: 'Invalid change email token',
+  EMAIL_UPDATE_FAILED: 'Email updation failed'
 } as const;

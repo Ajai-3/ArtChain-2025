@@ -1,11 +1,11 @@
-import { IBaseRepository } from "../IBaseRepository";
-import { ArtistRequest } from "../../entities/ArtistRequest";
+import { IBaseRepository } from '../IBaseRepository';
+import { ArtistRequest } from '../../entities/ArtistRequest';
 
 export interface IArtistRequestRepository
   extends IBaseRepository<ArtistRequest> {
   findById(id: string): Promise<ArtistRequest | null>;
   createArtistRequest(
-    data: Omit<ArtistRequest, "id" | "createdAt" | "reviewedAt">
+    data: Omit<ArtistRequest, 'id' | 'createdAt' | 'reviewedAt'>
   ): Promise<ArtistRequest>;
 
   approve(requestId: string): Promise<void>;

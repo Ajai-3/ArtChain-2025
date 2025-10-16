@@ -1,6 +1,5 @@
-import { SupportUnSupportRequestDto } from "../../../dtos/user/user-intraction/SupportUnSupportRequestDto";
-import { SupportResultDto } from '../../../dtos/user/user-intraction/SupportResultDto';
+import { SupportUnSupportRequestDto } from '../../../dtos/user/user-intraction/SupportUnSupportRequestDto';
 
 export interface IUnSupportUserUseCase {
-  execute(data: SupportUnSupportRequestDto): Promise<void>;
+  execute(data: SupportUnSupportRequestDto): Promise<any>;
 }

@@ -1,13 +1,18 @@
-import { Request, Response, NextFunction } from "express";
-import { IShopController } from "../interface/IShopController";
-import { GetShopArtsByUserUseCase } from "../../application/usecase/art/GetShopArtsByUserUseCase";
-import { GetAllShopArtsUseCase } from "../../application/usecase/art/GetAllShopArtsUseCase";
 import { logger } from "../../utils/logger";
+import { inject, injectable } from "inversify";
+import { Request, Response, NextFunction } from "express";
+import { TYPES } from "../../infrastructure/invectify/types";
+import { IShopController } from "../interface/IShopController";
+import { IGetAllShopArtsUseCase } from "../../application/interface/usecase/art/IGetShopArtsByUserUseCase";
+import { IGetShopArtsByUserUseCase } from "../../application/interface/usecase/art/IGetAllShopArtsUseCase";
 
+@injectable()
 export class ShopController implements IShopController {
   constructor(
-    private readonly _getAllShopArtsUseCase: GetAllShopArtsUseCase,
-    private readonly _getShopArtsByUserUseCase: GetShopArtsByUserUseCase
+    @inject(TYPES.IGetAllShopArtsUseCase)
+    private readonly _getAllShopArtsUseCase: IGetAllShopArtsUseCase,
+    @inject(TYPES.IGetShopArtsByUserUseCase)
+    private readonly _getShopArtsByUserUseCase: IGetShopArtsByUserUseCase
   ) {}
 
   //# ================================================================================================================
@@ -52,7 +57,7 @@ export class ShopController implements IShopController {
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
       };
 
-      logger.info("Fetching all shop items", { page, limit, filters });
+      logger.info("🐛 Fetching all shop items", { page, limit, filters });
 
       const arts = await this._getAllShopArtsUseCase.execute(
         Number(page),
@@ -88,7 +93,7 @@ export class ShopController implements IShopController {
       const { userId } = req.params;
       const { page = 1, limit = 10 } = req.query;
 
-      logger.info("Fetching shop items by user", { userId, page, limit });
+      logger.info("🛍️ Fetching shop items by user", { userId, page, limit });
 
       const arts = await this._getShopArtsByUserUseCase.execute(
         userId,

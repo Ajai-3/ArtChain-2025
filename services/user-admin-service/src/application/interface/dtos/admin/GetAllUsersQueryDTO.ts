@@ -1,4 +1,4 @@
-export interface GetAllUsersQueryDTO {
+export interface GetAllUsersQueryDto {
   search?: string;
   page?: number;
   limit?: number;

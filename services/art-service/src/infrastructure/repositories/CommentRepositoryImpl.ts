@@ -1,8 +1,10 @@
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { Comment } from "../../domain/entities/Comment";
+import { injectable } from "inversify";
 import { CommentModel } from "../models/CommentModel";
+import { Comment } from "../../domain/entities/Comment";
+import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
 import { ICommentRepository } from "../../domain/repositories/ICommentRepository";
 
+@injectable()
 export class CommentRepositoryImpl
   extends BaseRepositoryImpl<Comment>
   implements ICommentRepository
@@ -17,7 +19,7 @@ export class CommentRepositoryImpl
 
   async getByPostId(postId: string, page = 1, limit = 10): Promise<Comment[]> {
     return CommentModel.find({ postId })
-      .sort({ createdAt: -1 }) 
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean<Comment[]>();

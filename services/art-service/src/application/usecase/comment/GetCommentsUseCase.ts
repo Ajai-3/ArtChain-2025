@@ -1,8 +1,14 @@
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../infrastructure/invectify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
+import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 
+@injectable()
 export class GetCommentsUseCase {
-  constructor(private readonly _commentRepo: ICommentRepository) {}
+  constructor(
+    @inject(TYPES.ICommentRepository)
+    private readonly _commentRepo: ICommentRepository
+  ) {}
 
   async execute(postId: string, page: number, limit: number) {
     const comments = await this._commentRepo.getByPostId(postId, page, limit);

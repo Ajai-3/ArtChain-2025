@@ -1,15 +1,25 @@
-import { TransactionMethod, TransactionCategory, TransactionType, TransactionStatus } from './../../domain/entities/Transaction';
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
+import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
+import { TYPES } from "../../infrastructure/inversify/types";
 import { TRANSACTION_MESSAGES } from "../../constants/TransactionMessages";
 import { ITransactionController } from "../interface/ITransactionController";
-import { GetTransactionsUseCase } from '../../application/usecases/transaction/GetTransactionsUseCase';
-import { GetTransactionsDto } from '../../domain/dto/transaction/GetTransactionsDto';
+import { GetTransactionsDto } from "../../application/interface/dto/transaction/GetTransactionsDto";
+import {
+  TransactionMethod,
+  TransactionCategory,
+  TransactionType,
+  TransactionStatus,
+} from "./../../domain/entities/Transaction";
+import { IGetTransactionsUseCase } from "../../application/interface/usecase/transaction/IGetTransactionsUseCase";
 
-
+@injectable()
 export class TransactionController implements ITransactionController {
-  constructor(private readonly _getTransactionsUseCase: GetTransactionsUseCase) {}
+  constructor(
+    @inject(TYPES.IGetTransactionsUseCase)
+    private readonly _getTransactionsUseCase: IGetTransactionsUseCase
+  ) {}
 
   //# ================================================================================================================
   //# GET TRANSACTIONS
@@ -29,26 +39,34 @@ export class TransactionController implements ITransactionController {
       const userId = req.headers["x-user-id"] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
-      const status = req.query.status as TransactionStatus
-      const method = req.query.method as TransactionMethod
-      const category =  req.query.category as TransactionCategory
-      const type = req.query.type as TransactionType
+      const status = req.query.status as TransactionStatus;
+      const method = req.query.method as TransactionMethod;
+      const category = req.query.category as TransactionCategory;
+      const type = req.query.type as TransactionType;
 
       logger.info(
         `[TransactionController] Fetching transactions for userId: ${userId} | page: ${page}`
       );
 
-
-      const dto: GetTransactionsDto = {userId, page, limit, method, category, status, type}
-      console.log(dto)
-      const transactionData = await this._getTransactionsUseCase.execute(dto)
+      const dto: GetTransactionsDto = {
+        userId,
+        page,
+        limit,
+        method,
+        category,
+        status,
+        type,
+      };
+      console.log(dto);
+      const transactionData = await this._getTransactionsUseCase.execute(dto);
 
       logger.info(
         `[TransactionController] Successfully fetched transactions for userId: ${userId}`
       );
-      return res
-        .status(HttpStatus.OK)
-        .json({ message: TRANSACTION_MESSAGES.FETCH_SUCCESS, ...transactionData });
+      return res.status(HttpStatus.OK).json({
+        message: TRANSACTION_MESSAGES.FETCH_SUCCESS,
+        ...transactionData,
+      });
     } catch (error) {
       logger.error(
         `[TransactionController] Error fetching transactions: ${error}`
@@ -56,7 +74,6 @@ export class TransactionController implements ITransactionController {
       next(error);
     }
   };
-
 
   //# ================================================================================================================
   //# CREATE TRANSACTION

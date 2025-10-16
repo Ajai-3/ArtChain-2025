@@ -1,16 +1,21 @@
 import { HttpStatus } from "art-chain-shared";
+import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
-import { config } from "../../infrastructure/config/env";
+import { TYPES } from "../../infrastructure/inversify/types";
 import { IStripeController } from "../interface/IStripeController";
-import { CreateStripeCheckoutSessionUseCase } from "../../application/usecases/CreateStripeCheckoutSessionUseCase";
-import { HandleStripeWebhookUseCase } from "../../application/usecases/HandleStripeWebhookUseCase";
-import { GetStripeSessionUseCase } from "../../application/usecases/GetStripeSessionUseCase";
+import { IGetStripeSessionUseCase } from "../../application/interface/usecase/IGetStripeSessionUseCase";
+import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/IHandleStripeWebhookUseCase";
+import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/ICreateStripeCheckoutSessionUseCase";
 
+@injectable()
 export class StripeController implements IStripeController {
   constructor(
-    private readonly _createCheckoutUseCase: CreateStripeCheckoutSessionUseCase,
-    private readonly _handleWebhookUseCase: HandleStripeWebhookUseCase,
-    private readonly _getSessionUseCase: GetStripeSessionUseCase
+    @inject(TYPES.ICreateStripeCheckoutSessionUseCase)
+    private readonly _createCheckoutUseCase: ICreateStripeCheckoutSessionUseCase,
+    @inject(TYPES.IHandleStripeWebhookUseCase)
+    private readonly _handleWebhookUseCase: IHandleStripeWebhookUseCase,
+    @inject(TYPES.IGetStripeSessionUseCase)
+    private readonly _getSessionUseCase: IGetStripeSessionUseCase
   ) {}
 
   //# ================================================================================================================
@@ -77,7 +82,7 @@ export class StripeController implements IStripeController {
   ): Promise<Response | void> => {
     try {
       const sessionData = await this._getSessionUseCase.execute(req.params.id);
-      console.log(sessionData)
+      console.log(sessionData);
       return res.json(sessionData);
     } catch (error) {
       next(error);

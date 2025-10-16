@@ -1,8 +1,10 @@
-import { Category } from "../../domain/entities/Category";
-import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
+import { injectable } from "inversify";
 import { CategorytModel } from "../models/CategoryModel";
+import { Category } from "../../domain/entities/Category";
 import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
+import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
 
+@injectable()
 export class CategoryRepositoryImpl
   extends BaseRepositoryImpl<Category>
   implements ICategoryRepository

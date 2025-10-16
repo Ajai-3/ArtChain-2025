@@ -1,18 +1,24 @@
-import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IGetArtByNameUseCase } from "../../interface/usecase/art/IGetArtByNameUseCase";
-import { UserService } from "../../../infrastructure/service/UserService";
+import { IArtPostRepository } from "./../../../domain/repositories/IArtPostRepository";
+import { inject, injectable } from "inversify";
 import { ART_MESSAGES } from "../../../constants/ArtMessages";
-import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
+import { TYPES } from "../../../infrastructure/invectify/types";
+import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
+import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
+import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
+import { IGetArtByNameUseCase } from "../../interface/usecase/art/IGetArtByNameUseCase";
 
+@injectable()
 export class GetArtByNameUseCase implements IGetArtByNameUseCase {
   constructor(
+    @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
-    private readonly _likeRepo: ILikeRepository,
+    @inject(TYPES.ILikeRepository) private readonly _likeRepo: ILikeRepository,
+    @inject(TYPES.ICommentRepository)
     private readonly _commentRepo: ICommentRepository,
+    @inject(TYPES.IFavoriteRepository)
     private readonly _favoriteRepo: IFavoriteRepository
   ) {}
 
@@ -31,16 +37,19 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
     }
 
     const likeCount = await this._likeRepo.likeCountByPostId(artFull._id);
-      const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(artFull._id);
+    const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
+      artFull._id
+    );
     const commentCount = await this._commentRepo.countByPostId(artFull._id);
 
     const isLiked = !!(
       currentUserId &&
       (await this._likeRepo.findLike(artFull._id, currentUserId))
     );
-     const isFavorited = !!(
-                    currentUserId && (await this._favoriteRepo.findFavorite(artFull._id, currentUserId))
-                );
+    const isFavorited = !!(
+      currentUserId &&
+      (await this._favoriteRepo.findFavorite(artFull._id, currentUserId))
+    );
 
     return {
       ...toArtWithUserResponse(artFull, userRes.data),

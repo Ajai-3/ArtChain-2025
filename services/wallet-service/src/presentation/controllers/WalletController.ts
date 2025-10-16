@@ -1,15 +1,18 @@
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
+import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
+import { TYPES } from "../../infrastructure/inversify/types";
 import { WALLET_MESSAGES } from "../../constants/WalletMessages";
 import { IWalletController } from "../interface/IWalletController";
-import { GetWalletUseCase } from "../../application/usecases/wallet/GetWalletUseCase";
+import { IGetWalletUseCase } from "../../application/interface/usecase/wallet/IGetWalletUseCase";
 
-
-
+@injectable()
 export class WalletController implements IWalletController {
-  constructor(private readonly _getWalletUseCase: GetWalletUseCase) {}
-
+  constructor(
+    @inject(TYPES.IGetWalletUseCase)
+    private readonly _getWalletUseCase: IGetWalletUseCase
+  ) {}
 
   //# ================================================================================================================
   //# GET WALLET
@@ -27,7 +30,7 @@ export class WalletController implements IWalletController {
       const userId = req.headers["x-user-id"] as string;
       logger.info(`[WalletController] Fetching wallet for userId: ${userId}`);
 
-      const walletData = await this._getWalletUseCase.execute(userId)
+      const walletData = await this._getWalletUseCase.execute(userId);
 
       if (!walletData) {
         return res.status(HttpStatus.NOT_FOUND).json({
@@ -40,7 +43,7 @@ export class WalletController implements IWalletController {
       );
       return res
         .status(HttpStatus.OK)
-        .json({ message: WALLET_MESSAGES.FETCH_SUCCESS, wallet: walletData, });
+        .json({ message: WALLET_MESSAGES.FETCH_SUCCESS, wallet: walletData });
     } catch (error) {
       logger.error(`[WalletController] Error in getting wallet: ${error}`);
       next(error);

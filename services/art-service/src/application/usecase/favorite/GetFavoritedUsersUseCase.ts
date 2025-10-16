@@ -1,14 +1,21 @@
+import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
+import { TYPES } from "../../../infrastructure/invectify/types";
+import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
+import { UserService } from "../../../infrastructure/service/UserService";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 import { IGetFavoritedUsersUseCase } from "../../interface/usecase/favorite/IGetFavoritedUsersUseCase";
-import { UserService } from "../../../infrastructure/service/UserService";
 
+@injectable()
 export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
-  constructor(private readonly _favoriteRepository: IFavoriteRepository) {}
+  constructor(
+    @inject(TYPES.IFavoriteRepository)
+    private readonly _favoriteRepository: IFavoriteRepository
+  ) {}
 
   async execute(postId: string, page: number = 1, limit: number = 10) {
     if (!postId) {
-      throw new BadRequestError("Post ID is required.");
+      throw new BadRequestError(FAVORITE_MESSAGES.MISSING_POST_ID);
     }
 
     const favorites = await this._favoriteRepository.getAllFavoritesByPost(
@@ -16,13 +23,12 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
       page,
       limit
     );
-      const userIds = favorites.map(fav => fav.userId);
+    const userIds = favorites.map((fav) => fav.userId);
 
     const users = await UserService.getUsersByIds(userIds);
 
-
-    const result = favorites.map(fav => {
-      const user = users.find(u => u.id === fav.userId);
+    const result = favorites.map((fav) => {
+      const user = users.find((u) => u.id === fav.userId);
       return {
         userId: fav.userId,
         name: user.name,
@@ -32,7 +38,9 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
       };
     });
 
-    const favoriteCount = await this._favoriteRepository.favoriteCountByPostId(postId)
+    const favoriteCount = await this._favoriteRepository.favoriteCountByPostId(
+      postId
+    );
 
     return { users: result, favoriteCount };
   }

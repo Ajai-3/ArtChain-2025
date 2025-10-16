@@ -1,8 +1,13 @@
 import express from 'express';
-
-import { userAuthController } from './../../../infrastructure/container/user/userAuthContainer';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { container } from '../../../infrastructure/inversify/inversify.config';
+import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
 
 const router = express.Router();
+
+const userAuthController = container.get<IUserAuthController>(
+  TYPES.IUserAuthController
+);
 
 router.post('/start-register', userAuthController.startRegister);
 router.post('/register', userAuthController.registerUser);

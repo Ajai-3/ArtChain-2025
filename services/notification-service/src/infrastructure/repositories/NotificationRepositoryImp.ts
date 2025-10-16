@@ -1,7 +1,10 @@
+import { injectable } from "inversify";
 import { Notification } from "../../domain/entities/Notification";
 import { NotificationModel } from "../db/models/NotificationModel";
+import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
 
-export class NotificationRepositoryImp {
+@injectable()
+export class NotificationRepositoryImp implements INotificationRepository {
   async save(notification: Notification): Promise<Notification> {
     const doc = await NotificationModel.create(notification);
     return new Notification(

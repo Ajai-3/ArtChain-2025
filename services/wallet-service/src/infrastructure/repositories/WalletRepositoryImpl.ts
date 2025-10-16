@@ -1,8 +1,10 @@
 import { prisma } from "../db/prisma";
+import { injectable } from "inversify";
 import { Wallet } from "../../domain/entities/Wallet";
 import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
 import { IWalletRepository } from "../../domain/repository/IWalletRepository.js";
 
+@injectable()
 export class WalletRepositoryImpl
   extends BaseRepositoryImpl<Wallet>
   implements IWalletRepository

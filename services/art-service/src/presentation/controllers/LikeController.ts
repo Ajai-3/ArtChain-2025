@@ -1,20 +1,26 @@
-import { Request, Response, NextFunction } from "express";
 import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
-import { ILikeController } from "../interface/ILikeController";
-import { LikePostUseCase } from "../../application/usecase/like/LikePostUseCase";
-import { UnlikePostUseCase } from "../../application/usecase/like/UnlikePostUseCase";
-import { GetLikeCountUseCase } from "../../application/usecase/like/GetLikeCountUseCase";
+import { inject, injectable } from "inversify";
+import { Request, Response, NextFunction } from "express";
 import { LIKE_MESSAGES } from "../../constants/LikeMessages";
-import { GetLikedUsersUseCase } from "../../application/usecase/like/GetLikedUsersUseCase";
+import { TYPES } from "../../infrastructure/invectify/types";
+import { ILikeController } from "../interface/ILikeController";
+import { ILikePostUseCase } from "../../application/interface/usecase/like/ILikePostUseCase";
+import { IUnlikePostUseCase } from "../../application/interface/usecase/like/IUnlikePostUseCase";
+import { IGetLikeCountUseCase } from "../../application/interface/usecase/like/IGetLikeCountUseCase";
+import { IGetLikedUsersUseCase } from "../../application/interface/usecase/like/IGetLikedUsersUseCase";
 
-
+@injectable()
 export class LikeController implements ILikeController {
   constructor(
-    private readonly _likePostUseCase: LikePostUseCase,
-    private readonly _unlikePostUseCase: UnlikePostUseCase,
-    private readonly _getLikeCountUseCase: GetLikeCountUseCase,
-    private readonly _getLikedUsersUseCase: GetLikedUsersUseCase
+    @inject(TYPES.ILikePostUseCase)
+    private readonly _likePostUseCase: ILikePostUseCase,
+    @inject(TYPES.IUnlikePostUseCase)
+    private readonly _unlikePostUseCase: IUnlikePostUseCase,
+    @inject(TYPES.IGetLikeCountUseCase)
+    private readonly _getLikeCountUseCase: IGetLikeCountUseCase,
+    @inject(TYPES.IGetLikedUsersUseCase)
+    private readonly _getLikedUsersUseCase: IGetLikedUsersUseCase
   ) {}
 
   //# ================================================================================================================
@@ -33,18 +39,12 @@ export class LikeController implements ILikeController {
       const userId = req.headers["x-user-id"] as string;
       const { postId } = req.body;
 
-      console.log(userId)
-
-      if (!userId) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: LIKE_MESSAGES.MISSING_USER_ID });
-      }
-
       const savedLike = await this._likePostUseCase.execute(postId, userId);
 
-      logger.info(`User ${userId} liked post ${postId}`);
-      return res.status(HttpStatus.CREATED).json({ message: LIKE_MESSAGES.LIKE_SUCCESS });
+      logger.info(`💓 User ${userId} successfully liked post ${postId}`);
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: LIKE_MESSAGES.LIKE_SUCCESS });
     } catch (error: any) {
       next(error);
     }
@@ -66,13 +66,9 @@ export class LikeController implements ILikeController {
       const userId = req.headers["x-user-id"] as string;
       const { postId } = req.body;
 
-      if (!userId) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: LIKE_MESSAGES.MISSING_USER_ID });
-      }
-
       await this._unlikePostUseCase.execute(postId, userId);
+
+      logger.info(`💔 User ${userId} successfully un-liked post ${postId}`);
 
       return res
         .status(HttpStatus.OK)
@@ -93,10 +89,11 @@ export class LikeController implements ILikeController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
-     try {
+    try {
       const { postId } = req.params;
       const count = await this._getLikeCountUseCase.execute(postId);
 
+      logger.info(`📊 postId=${postId} has ${count} total likes`);
       return res
         .status(HttpStatus.OK)
         .json({ message: LIKE_MESSAGES.FETCH_SUCCESS, likes: count });
@@ -116,23 +113,29 @@ export class LikeController implements ILikeController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
-     try {
+    try {
       const { postId } = req.params;
       const currentUserId = req.headers["x-user-id"] as string;
 
-       const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 10;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 10;
 
-    const { users, likeCount } = await this._getLikedUsersUseCase.execute(postId, page, limit);
+      const { users, likeCount } = await this._getLikedUsersUseCase.execute(
+        postId,
+        page,
+        limit
+      );
 
-    return res.status(HttpStatus.OK).json({
-      message: LIKE_MESSAGES.LIKED_USERS_FETCHED_SUCCESS,
-      users,
-      likeCount,
-      page,
-      limit,
-    });
-
+      logger.info(
+        `✅ Found ${users.length} liked users for postId=${postId} (total=${likeCount})`
+      );
+      return res.status(HttpStatus.OK).json({
+        message: LIKE_MESSAGES.LIKED_USERS_FETCHED_SUCCESS,
+        users,
+        likeCount,
+        page,
+        limit,
+      });
     } catch (error) {
       next(error);
     }

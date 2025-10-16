@@ -1,5 +1,5 @@
-import { GetAllUsersQueryDTO } from "../../../dtos/admin/GetAllUsersQueryDTO";
+import { GetAllUsersQueryDto } from '../../../dtos/admin/GetAllUsersQueryDto';
 
 export interface IGetAllUsersUseCase {
-  execute(query: GetAllUsersQueryDTO): Promise<any>;
+  execute(query: GetAllUsersQueryDto): Promise<any>;
 }

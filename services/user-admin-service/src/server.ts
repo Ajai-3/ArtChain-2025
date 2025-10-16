@@ -1,7 +1,7 @@
 import app from './app';
 import http from 'http';
 import { config } from './infrastructure/config/env';
-import { createDummyUsers } from "./test/createDummyUsers";
+import { createDummyUsers } from './test/createDummyUsers';
 const PORT = config.port;
 
 const server = http.createServer(app);

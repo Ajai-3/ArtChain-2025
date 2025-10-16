@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { X, ArrowDownRight } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import {
   useGetLikedUsers,
@@ -15,6 +14,7 @@ import { useSupportMutation } from "../../hooks/profile/useSupportMutation";
 import { useUnSupportMutation } from "../../hooks/profile/useUnSupportMutation";
 import CustomLoader from "../../../../components/CustomLoader";
 import { formatNumber } from "../../../../libs/formatNumber.ts";
+import { formatTimeAgo } from "../../../../libs/formatTimeAgo.ts";
 
 interface LikeUsersModalProps {
   postId: string;
@@ -97,7 +97,7 @@ const LikeUsersModal: React.FC<LikeUsersModalProps> = ({
       />
 
       {/* modal */}
-      <div className="relative z-50 bg-white dark:bg-secondary-color border sm:dark:border-zinc-700 sm:rounded-3xl shadow-lg h-full sm:h-[500px] w-full sm:w-[470px] p-4 flex flex-col">
+      <div className="relative z-50 bg-white dark:bg-secondary-color border sm:dark:border-zinc-700 sm:rounded-3xl shadow-lg h-full sm:h-[500px] w-full sm:w-[470px] p-2 sm:p-4 flex flex-col">
         {/* close button */}
         <button
           className="absolute top-3 right-3 text-zinc-500 hover:text-zinc-700 dark:hover:text-white"
@@ -166,9 +166,7 @@ const LikeUsersModal: React.FC<LikeUsersModalProps> = ({
                         {user.name || "Unknown User"}
                       </p>
                       <p className="text-zinc-400 dark:text-zinc-500 text-xs">
-                        {formatDistanceToNow(new Date(user.likedAt), {
-                          addSuffix: true,
-                        })}
+                        {formatTimeAgo(user.likedAt)}
                       </p>
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">

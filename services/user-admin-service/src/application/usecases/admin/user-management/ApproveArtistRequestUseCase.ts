@@ -1,25 +1,30 @@
-import { ArtistAproveRejectRequestDto } from "../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto";
-import { IArtistRequestRepository } from "../../../../domain/repositories/user/IArtistRequestRepository";
-import { IApproveArtistRequestUseCase } from "../../../interface/usecases/admin/user-management/IApproveArtistRequestUseCase";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { Role } from '@prisma/client';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
+import { ArtistAproveRejectRequestDto } from '../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
+import { IApproveArtistRequestUseCase } from '../../../interface/usecases/admin/user-management/IApproveArtistRequestUseCase';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   NotFoundError,
-} from "art-chain-shared";
-import { Role } from "@prisma/client";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { ArtService } from "../../../../infrastructure/http/ArtService";
-import { ARTIST_MESSAGES } from "../../../../constants/artistMessages";
+} from 'art-chain-shared';
+import { IArtService } from '../../../interface/http/IArtService';
 
+@injectable()
 export class ApproveArtistRequestUseCase
   implements IApproveArtistRequestUseCase
 {
   constructor(
-    private readonly _userRepo: IUserRepository,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.ISupporterRepository)
     private readonly _supporterRepo: ISupporterRepository,
+    @inject(TYPES.IArtistRequestRepository)
     private readonly _artistRepo: IArtistRequestRepository,
-    private readonly _artService: ArtService
+    @inject(TYPES.IArtService) private readonly _artService: IArtService
   ) {}
 
   async execute(dto: ArtistAproveRejectRequestDto): Promise<any> {
@@ -40,15 +45,13 @@ export class ApproveArtistRequestUseCase
     }
 
     const accountAgeInDays =
-      (Date.now() - new Date(user.createdAt).getTime()) /
-      (1000 * 60 * 60 * 24);
+      (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
 
     if (accountAgeInDays < 10) {
       throw new BadRequestError(
-        "User account must be at least 10 days old to become an artist."
+        'User account must be at least 10 days old to become an artist.'
       );
     }
-
 
     // const accountAgeInMonths =
     //   (Date.now() - new Date(user.createdAt).getTime()) /
@@ -64,16 +67,16 @@ export class ApproveArtistRequestUseCase
       await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
 
     if (supportersCount < 20) {
-      throw new BadRequestError("User must have at least 20 supporters.");
+      throw new BadRequestError('User must have at least 20 supporters.');
     }
     if (supportingCount < 20) {
-      throw new BadRequestError("User must be supporting at least 20 others.");
+      throw new BadRequestError('User must be supporting at least 20 others.');
     }
 
     const artworkCount = await this._artService.getUserArtCount(userId);
     if (artworkCount < 10) {
       throw new BadRequestError(
-        "User must have at least 10 artworks to become an artist."
+        'User must have at least 10 artworks to become an artist.'
       );
     }
 

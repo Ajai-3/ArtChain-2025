@@ -1,14 +1,17 @@
+import { injectable } from "inversify";
 import { logger } from "../../../utils/logger";
+import { IArtToElasticSearchUseCase } from "../../interface/usecase/art/IArtToElasticSearchUseCase";
 
-export class ArtToElasticSearchUseCase {
-async execute(art: any): Promise<any> {
+@injectable()
+export class ArtToElasticSearchUseCase implements IArtToElasticSearchUseCase {
+  async execute(art: any): Promise<any> {
     const elasticArt = {
       id: art._id,
       artname: art.artName,
       title: art.title,
       imageUrl: art.watermarkedUrl,
       hashtags: art.hashtags,
-      createdAt: art.createdAt
+      createdAt: art.createdAt,
     };
 
     logger.debug(elasticArt);

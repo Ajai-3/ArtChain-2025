@@ -1,4 +1,6 @@
 import { JwtPayload } from 'jsonwebtoken';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
@@ -11,8 +13,9 @@ import {
   UnauthorizedError,
 } from 'art-chain-shared';
 
+@injectable()
 export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
-  constructor(private _userRepo: IUserRepository) {}
+  constructor(@inject(TYPES.IUserRepository) private _userRepo: IUserRepository) {}
 
   async execute(refreshToken: string): Promise<RefreshTokenResultDto> {
     if (!refreshToken) {

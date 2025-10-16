@@ -1,45 +1,57 @@
-import { HttpStatus } from "art-chain-shared";
-import { logger } from "../../../utils/logger";
-import { Request, Response, NextFunction } from "express";
+import { HttpStatus } from 'art-chain-shared';
+import { logger } from '../../../utils/logger';
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../../infrastructure/inversify/types';
 
-import { tokenService } from "../../service/token.service";
-import { config } from "../../../infrastructure/config/env";
-import { validateWithZod } from "../../../utils/zodValidator";
-import { AUTH_MESSAGES } from "../../../constants/authMessages";
-import { IUserAuthController } from "../../interfaces/user/IUserAuthController";
-import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
+import { tokenService } from '../../service/token.service';
+import { config } from '../../../infrastructure/config/env';
+import { validateWithZod } from '../../../utils/zodValidator';
+import { AUTH_MESSAGES } from '../../../constants/authMessages';
+import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
+import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
 
-import { LoginRequestDto } from "../../../application/interface/dtos/user/auth/LoginRequestDto";
-import { RegisterRequestDto } from "../../../application/interface/dtos/user/auth/RegisterRequestDto";
-import { GoogleAuthRequestDto } from "../../../application/interface/dtos/user/auth/GoogleAuthRequestDto";
-import { ResetPasswordRequestDto } from "../../../application/interface/dtos/user/auth/ResetPasswordRequestDto";
-import { StartRegisterRequestDto } from "../../../application/interface/dtos/user/auth/StartRegisterRequestDto";
+import { LoginRequestDto } from '../../../application/interface/dtos/user/auth/LoginRequestDto';
+import { RegisterRequestDto } from '../../../application/interface/dtos/user/auth/RegisterRequestDto';
+import { GoogleAuthRequestDto } from '../../../application/interface/dtos/user/auth/GoogleAuthRequestDto';
+import { ResetPasswordRequestDto } from '../../../application/interface/dtos/user/auth/ResetPasswordRequestDto';
+import { StartRegisterRequestDto } from '../../../application/interface/dtos/user/auth/StartRegisterRequestDto';
 
-import { loginUserSchema } from "../../../application/validations/user/LoginSchema";
-import { googleAuthSchema } from "../../../application/validations/user/GoogleAuthSchema";
-import { registerUserSchema } from "../../../application/validations/user/RegisterUserSchema";
-import { startRegisterSchema } from "../../../application/validations/user/StartRegisterSchema";
-import { passwordTokenSchema } from "../../../application/validations/user/PasswordTokenSchema";
-import { forgotPasswordSchema } from "../../../application/validations/user/forgotPasswordSchema";
+import { loginUserSchema } from '../../../application/validations/user/LoginSchema';
+import { googleAuthSchema } from '../../../application/validations/user/GoogleAuthSchema';
+import { registerUserSchema } from '../../../application/validations/user/RegisterUserSchema';
+import { startRegisterSchema } from '../../../application/validations/user/StartRegisterSchema';
+import { passwordTokenSchema } from '../../../application/validations/user/PasswordTokenSchema';
+import { forgotPasswordSchema } from '../../../application/validations/user/forgotPasswordSchema';
 
-import { ILoginUserUseCase } from "../../../application/interface/usecases/user/auth/ILoginUserUseCase";
-import { IRefreshTokenUseCase } from "../../../application/interface/usecases/user/auth/IRefreshTokenUseCase";
-import { IRegisterUserUseCase } from "./../../../application/interface/usecases/user/auth/IRegisterUserUseCase";
-import { IGoogleAuthUserUseCase } from "../../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase";
-import { IResetPasswordUserUseCase } from "../../../application/interface/usecases/user/auth/IResetPasswordUserUseCase";
-import { IStartRegisterUserUseCase } from "../../../application/interface/usecases/user/auth/IStartRegisterUserUseCase";
-import { IForgotPasswordUserUseCase } from "../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase";
-import { IAddUserToElasticSearchUseCase } from "../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase";
+import { ILoginUserUseCase } from '../../../application/interface/usecases/user/auth/ILoginUserUseCase';
+import { IRefreshTokenUseCase } from '../../../application/interface/usecases/user/auth/IRefreshTokenUseCase';
+import { IRegisterUserUseCase } from './../../../application/interface/usecases/user/auth/IRegisterUserUseCase';
+import { IGoogleAuthUserUseCase } from '../../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase';
+import { IResetPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IResetPasswordUserUseCase';
+import { IStartRegisterUserUseCase } from '../../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
+import { IForgotPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
+import { IAddUserToElasticSearchUseCase } from '../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 
+
+@injectable()
 export class UserAuthController implements IUserAuthController {
   constructor(
+    @inject(TYPES.IStartRegisterUserUseCase)
     private readonly _startRegisterUserUseCase: IStartRegisterUserUseCase,
+    @inject(TYPES.IRegisterUserUseCase)
     private readonly _registerUserUseCase: IRegisterUserUseCase,
+    @inject(TYPES.ILoginUserUseCase)
     private readonly _loginUserUseCase: ILoginUserUseCase,
+    @inject(TYPES.IGoogleAuthUserUseCase)
     private readonly _googleAuthUserUseCase: IGoogleAuthUserUseCase,
+    @inject(TYPES.IForgotPasswordUserUseCase)
     private readonly _forgotPasswordUserUseCase: IForgotPasswordUserUseCase,
+    @inject(TYPES.IResetPasswordUserUseCase)
     private readonly _resetPasswordUserUseCase: IResetPasswordUserUseCase,
+    @inject(TYPES.IRefreshTokenUseCase)
     private readonly _refreshTokenUserUseCase: IRefreshTokenUseCase,
+    @inject(TYPES.IAddUserToElasticSearchUseCase)
     private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
   ) {}
 
@@ -66,8 +78,8 @@ export class UserAuthController implements IUserAuthController {
         dto
       );
 
-      await publishNotification("email.verification", {
-        type: "VERIFICATION",
+      await publishNotification('email.verification', {
+        type: 'VERIFICATION',
         email: payload.email,
         payload: {
           name: payload.name,
@@ -130,16 +142,16 @@ export class UserAuthController implements IUserAuthController {
       const { user, accessToken, refreshToken } =
         await this._registerUserUseCase.execute(dto);
 
-      res.cookie("userRefreshToken", refreshToken, {
+      res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
       const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
 
-      await publishNotification("user.created", elasticUser);
+      await publishNotification('user.created', elasticUser);
 
       logger.info(`${user.username} account created successfully.`);
 
@@ -175,10 +187,10 @@ export class UserAuthController implements IUserAuthController {
       const { user, accessToken, refreshToken } =
         await this._loginUserUseCase.execute(dto);
 
-      res.cookie("userRefreshToken", refreshToken, {
+      res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -217,10 +229,10 @@ export class UserAuthController implements IUserAuthController {
       const { user, isNewUser, accessToken, refreshToken } =
         await this._googleAuthUserUseCase.execute(dto);
 
-      res.cookie("userRefreshToken", refreshToken, {
+      res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -229,12 +241,12 @@ export class UserAuthController implements IUserAuthController {
           user
         );
 
-        await publishNotification("user.created", elasticUser);
+        await publishNotification('user.created', elasticUser);
       }
 
       logger.info(
         `${user.username} has ${
-          isNewUser ? "just registered (new user)" : "logged in (existing user)"
+          isNewUser ? 'just registered (new user)' : 'logged in (existing user)'
         }`
       );
 
@@ -269,8 +281,8 @@ export class UserAuthController implements IUserAuthController {
         identifier
       );
 
-      await publishNotification("email.password_reset", {
-        type: "PASSWORD_RESET",
+      await publishNotification('email.password_reset', {
+        type: 'PASSWORD_RESET',
         email: user.email,
         payload: {
           name: user.name,
@@ -378,21 +390,21 @@ export class UserAuthController implements IUserAuthController {
 
       const payload = tokenService.verifyRefreshToken(refreshToken);
 
-      if (typeof payload !== "object" || payload === null) {
+      if (typeof payload !== 'object' || payload === null) {
         return res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
       }
 
-      res.clearCookie("userRefreshToken", {
+      res.clearCookie('userRefreshToken', {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
       });
 
       logger.info(
         `Logout attempt for user: ${
-          payload?.username || "unknown"
+          payload?.username || 'unknown'
         }. Refresh token present: ${!!refreshToken}`
       );
 

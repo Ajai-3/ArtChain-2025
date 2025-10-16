@@ -1,12 +1,17 @@
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../infrastructure/invectify/types";
 import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { ArtPost } from "../../../domain/entities/ArtPost";
+import { UserService } from "../../../infrastructure/service/UserService";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { UserService } from "../../../infrastructure/service/UserService";
+import { IGetShopArtsByUserUseCase } from "../../interface/usecase/art/IGetAllShopArtsUseCase";
 
-export class GetShopArtsByUserUseCase {
+@injectable()
+export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
   constructor(
+    @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
+    @inject(TYPES.IFavoriteRepository)
     private readonly _favoriteRepo: IFavoriteRepository
   ) {}
 
@@ -16,13 +21,15 @@ export class GetShopArtsByUserUseCase {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    const user = userRes.data
+    const user = userRes.data;
 
     const arts = await this._artRepo.findAllByUser(userId, page, limit);
 
     const artsWithFavorites = await Promise.all(
       arts.map(async (art: any) => {
-        const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(art._id.toString());
+        const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
+          art._id.toString()
+        );
         return { ...art, favoriteCount, user };
       })
     );

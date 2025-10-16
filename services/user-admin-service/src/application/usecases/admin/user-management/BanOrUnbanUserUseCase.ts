@@ -1,11 +1,16 @@
+import { inject, injectable } from 'inversify';
 import { NotFoundError } from 'art-chain-shared';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
+import { TYPES } from './../../../../infrastructure/inversify/types';
 import { SafeUser } from '../../../../domain/repositories/IBaseRepository';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { IBanOrUnbanUserUseCase } from '../../../interface/usecases/admin/user-management/IBanOrUnbanUserUseCase';
 
+@injectable()
 export class BanOrUnbanUserUseCase implements IBanOrUnbanUserUseCase {
-  constructor(private _userRepository: IUserRepository) {}
+  constructor(
+    @inject(TYPES.IUserRepository) private _userRepository: IUserRepository
+  ) {}
 
   async execute(userId: string): Promise<SafeUser> {
     const user = await this._userRepository.findById(userId);
