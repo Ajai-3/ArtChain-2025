@@ -1,3 +1,4 @@
+import { injectable } from "inversify";
 import { logger } from "../utils/logger";
 import { FileCategory } from "../../types/FileCategory";
 import { UploadResult } from "../../types/UploadResult";
@@ -5,6 +6,7 @@ import { getBucketConfig, s3Client } from "../config/s3";
 import { generateFileName } from "../utils/generateFileName";
 import { IFileRepository } from "../../domain/repositories/IFileRepository";
 
+@injectable()
 export class S3FileRepository implements IFileRepository {
   async upload(
     file: Buffer,
