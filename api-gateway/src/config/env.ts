@@ -2,7 +2,7 @@ import 'dotenv-flow/config';
 import jwt from "jsonwebtoken";
 import { getArtChainSecrets } from "art-chain-shared";
 
-const secrets = await getArtChainSecrets();
+const secrets = await getArtChainSecrets("ArtChainCommonSecret");
 
 
 export const config = {
