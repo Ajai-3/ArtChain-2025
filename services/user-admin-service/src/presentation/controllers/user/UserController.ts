@@ -124,12 +124,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-      if (!userId) {
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: 'User ID missing in request headers' });
-      }
-      console.log(req.body, userId);
+
       const validatedData = validateWithZod(updateProfileSchema, req.body);
 
       const dto: UpdateUserProfileDto = { ...validatedData, userId };
