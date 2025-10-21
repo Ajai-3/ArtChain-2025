@@ -2,3 +2,4 @@
 .vscode
 
 .cloudformation
+infra/cloudformation/
