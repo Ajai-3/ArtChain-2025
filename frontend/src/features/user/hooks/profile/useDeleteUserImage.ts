@@ -18,7 +18,8 @@ export const useDeleteUserImage = () => {
 
   return useMutation<User, Error, DeleteImageInput>({
     mutationFn: async ({ type }) => {
-      const currentImageUrl = user?.[type];
+      const currentImageUrl = `${user?.[type]}`;
+      console.log(currentImageUrl)
       if (!currentImageUrl) throw new Error(`No ${type} to delete`);
 
       await apiClient.post("/api/v1/upload/delete", { fileUrl: currentImageUrl });
