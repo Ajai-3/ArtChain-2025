@@ -1,19 +1,21 @@
+import { v4 as uuidv4 } from "uuid";
+
 export const generateFileName = (
   userId: string,
   originalName: string,
   category: "profile" | "banner" | "art" | "background"
 ): string => {
-  const timestamp = Date.now();
-  const ext = originalName.split(".").pop();
+  const ext = originalName.split(".").pop() || "jpg";
+  const uniqueId = uuidv4();
 
   switch (category) {
     case "profile":
-      return `profile/${userId}_avatar.${timestamp}.${ext}`;
+      return `profile/${userId}/${userId}-${uniqueId}.${ext}`;
     case "banner":
-      return `banner/${userId}_cover.${timestamp}.${ext}`;
+      return `banner/${userId}/${userId}-${uniqueId}.${ext}`;
     case "background":
-      return `background/${userId}_background.${timestamp}.${ext}`  
+      return `background/${userId}/${userId}-${uniqueId}.${ext}`  
     case "art":
-      return `art/${userId}_${timestamp}_${originalName}`;
+      return `art/${userId}_${uniqueId}_${originalName}`;
   }
 };
