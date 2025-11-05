@@ -12,16 +12,28 @@ export class GetUserSupportingUseCase implements IGetUserSupportingUseCase {
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(userId: string, page = 1, limit = 10): Promise<UserPreview[]> {
+  async execute(
+    currentUserId: string,
+    userId: string,
+    page = 1,
+    limit = 10
+  ): Promise<UserPreview[]> {
     const supportings = await this._supporterRepo.getSupporting(
       userId,
       page,
       limit
     );
 
+    const currentUserSupportIds = await this._supporterRepo.getSupportingIds(
+      currentUserId
+    );
+
+    const currentUserSupportSet = new Set(currentUserSupportIds);
+
     return supportings.map((user) => ({
       ...user,
       profileImage: mapCdnUrl(user.profileImage) ?? null,
+      isSupporting: currentUserSupportSet.has(user.id),
     }));
   }
 }

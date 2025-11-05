@@ -261,6 +261,7 @@ export class UserController implements IUserController {
 
       logger.debug(`Get supporing user userId: ${userId}`);
       let supporters = await this._getSupportersUseCase.execute(
+        currentUserId,
         userId,
         page,
         limit
@@ -301,6 +302,7 @@ export class UserController implements IUserController {
       logger.debug(`Get supporing user userId: ${userId}`);
 
       let supporters = await this._getSupportingUseCase.execute(
+        currentUserId,
         userId,
         page,
         limit
@@ -332,7 +334,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<Response | any> => {
     try {
-      const { ids } = req.body;
+      const { ids, currentUserId } = req.body;
 
       if (!ids || !Array.isArray(ids) || !ids.length) {
         return res
@@ -340,9 +342,10 @@ export class UserController implements IUserController {
           .json({ message: 'ids array is required' });
       }
 
-      const users = await this._getUsersByIdsUserUseCase.execute(ids);
+      const users = await this._getUsersByIdsUserUseCase.execute(ids, currentUserId);
 
       logger.info('user with id fetched correctly');
+      console.log(users, "responce")
       return res
         .status(HttpStatus.OK)
         .json({ message: 'User fetch correcly', data: users });

@@ -22,4 +22,5 @@ export interface ISupporterRepository extends IBaseRepository {
     page?: number,
     limit?: number
   ): Promise<UserPreview[]>;
+  getSupportingIds(userId: string): Promise<string[]>;
 }

@@ -1,5 +1,5 @@
 import { UserPreview } from '../../../../../types/UserPreview';
 
 export interface IGetUserSupportingUseCase {
-  execute(userId: string, page?: number, limit?: number): Promise<UserPreview[]>;
+  execute(currentUserId: string, userId: string, page?: number, limit?: number): Promise<UserPreview[]>;
 }

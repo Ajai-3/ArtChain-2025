@@ -118,4 +118,13 @@ export class SupporterRepositoryImpl
 
     return supporting.map((s: any) => s.targetUser);
   }
+
+  async getSupportingIds(userId: string): Promise<string[]> {
+    const rows = await prisma.supporter.findMany({
+      where: { supporterId: userId },
+      select: { targetUserId: true },
+    });
+
+    return rows.map((r) => r.targetUserId);
+  }
 }

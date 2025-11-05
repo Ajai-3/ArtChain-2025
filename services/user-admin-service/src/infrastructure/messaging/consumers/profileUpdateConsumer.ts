@@ -51,7 +51,7 @@ export async function initProfileUpdateConsumer() {
         console.log("✅ User profile updated successfully");
       } catch (err) {
         console.error("❌ Failed to process profile update:", err);
-        ch.nack(msg, false, false); // DLQ will handle it
+        ch.nack(msg, false, false); 
       }
     },
     { noAck: false }

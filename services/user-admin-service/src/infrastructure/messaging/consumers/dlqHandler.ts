@@ -6,13 +6,15 @@ const DLQ_MAPPING = {
   "profile_update.dlq": "profile_update",
 };
 
+const MAX_RETRIES = 3;
+
 export async function initDLQHandler(): Promise<void> {
   let conn: Connection;
   let ch: Channel;
 
   try {
-    const conn: Connection = await amqp.connect(config.rabbitmq_URL) as any;
-    const ch: Channel = await conn.createChannel();
+    conn = await amqp.connect(config.rabbitmq_URL) as any;
+    ch = await conn.createChannel();
 
     for (const [dlq, originalQueue] of Object.entries(DLQ_MAPPING)) {
       await processDLQ(ch, dlq, originalQueue);
@@ -30,10 +32,7 @@ async function processDLQ(
   dlq: string,
   originalQueue: string
 ): Promise<void> {
-  // Ensure DLQ exists
   await ch.assertQueue(dlq, { durable: true });
-
-  console.log(`👂 Monitoring DLQ: ${dlq}`);
 
   ch.consume(
     dlq,
@@ -41,25 +40,20 @@ async function processDLQ(
       if (!msg) return;
 
       try {
-        const messageContent = msg.content.toString();
-        console.error(`🚨 DLQ Message received from ${dlq}:`, {
-          queue: originalQueue,
-          message: messageContent,
-          timestamp: new Date().toISOString(),
-        });
+        const messageContent = JSON.parse(msg.content.toString());
+        const retryCount = messageContent.retryCount || 0;
 
-        // Here you can:
-        // 1. Send to monitoring service
-        // 2. Notify administrators
-        // 3. Log to file
-        // 4. Attempt reprocessing if needed
+        if (retryCount < MAX_RETRIES) {
+          const newMessage = { ...messageContent, retryCount: retryCount + 1 };
+          ch.sendToQueue(originalQueue, Buffer.from(JSON.stringify(newMessage)));
+          console.log(`🔄 Retrying message to ${originalQueue}: retry ${retryCount + 1}`);
+        } else {
+          console.error("❌ Max retries reached, leaving message in DLQ:", messageContent);
+        }
 
-        // For now, we'll just ack and log
         ch.ack(msg);
-        console.log(`📝 DLQ message acknowledged from ${dlq}`);
       } catch (error) {
-        console.error(`❌ Error processing DLQ message from ${dlq}:`, error);
-        // Even if logging fails, we ack to prevent blocking
+        console.error("❌ Error processing DLQ message:", error);
         ch.ack(msg);
       }
     },
