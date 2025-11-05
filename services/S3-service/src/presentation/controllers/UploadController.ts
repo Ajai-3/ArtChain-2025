@@ -6,6 +6,7 @@ import { TYPES } from "../../infrastructure/inversify/types";
 import { validateUpload } from "../validations/validateUpload";
 import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
 import { IUploadController } from "../interface/IUploadController";
+import { mapFrontendType } from "../../infrastructure/utils/mapFrontendType";
 import { UploadFileDTO } from "../../application/interface/dto/UploadFileDTO";
 import { IUploadArtImage } from "../../application/interface/usecases/IUploadArtImage";
 import { DeleteImageRequestDTO } from "../../application/interface/dto/DeleteImageRequestDTO";
@@ -37,23 +38,7 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const frontendType =
-        (req.body.type as "profileImage" | "bannerImage" | "backgroundImage") ||
-        "profileImage";
-
-      const typeMapping: Record<
-        "profileImage" | "bannerImage" | "backgroundImage",
-        "profile" | "banner" | "background"
-      > = {
-        profileImage: "profile",
-        bannerImage: "banner",
-        backgroundImage: "background",
-      };
-
-      const fileType = typeMapping[frontendType];
-
-      console.log("filetype", fileType);
-
+      const fileType = mapFrontendType(req.body.type);
       const { userId, file, previousFileUrl } = validateUpload(req, fileType);
 
       const dto: UploadFileDTO = {
@@ -135,9 +120,11 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { fileUrl, category } = req.body;
+      const { fileUrl } = req.body;
+      const fileType = mapFrontendType(req.body.type);
+      const userId = req.headers["x-user-id"] as string;
 
-      const dto: DeleteImageRequestDTO = { fileUrl, category };
+      const dto: DeleteImageRequestDTO = { fileUrl, userId, category: fileType };
       await this._deleteImageUseCase.execute(dto);
 
       return res

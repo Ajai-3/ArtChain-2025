@@ -5,6 +5,7 @@ import { UploadResult } from "../../types/UploadResult";
 import { getBucketConfig, s3Client } from "../config/s3";
 import { generateFileName } from "../utils/generateFileName";
 import { IFileRepository } from "../../domain/repositories/IFileRepository";
+import { config } from "../config/env";
 
 @injectable()
 export class S3FileRepository implements IFileRepository {
@@ -92,12 +93,12 @@ export class S3FileRepository implements IFileRepository {
         })
         .promise();
 
-      const publicUrl = `${keyBase}`;
+      const publicUrl = `${config.aws.cdn_domain}/${keyBase}`;
       logger.info(
         `✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`
       );
 
-      return { publicUrl };
+      return { publicUrl, key: keyBase };
     } catch (err) {
       logger.error(`❌ Error uploading file ${keyBase}:`, err);
       throw err;
@@ -148,5 +149,5 @@ export class S3FileRepository implements IFileRepository {
 }
 
 function getCdnDomain(): string {
-  return process.env.AWS_CDN_DOMAIN || "https://your-cdn-domain.com";
+  return config.aws.cdn_domain || "https://your-cdn-domain.com";
 }
