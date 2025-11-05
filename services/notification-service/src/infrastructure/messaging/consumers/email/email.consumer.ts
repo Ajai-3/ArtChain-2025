@@ -9,6 +9,7 @@ const EMAIL_SUBJECTS = {
   PASSWORD_CHANGE: "Password Change Confirmation",
   EMAIL_CHANGE_VERIFICATION: "Change email verification"
 };
+
 type EmailType = keyof typeof EMAIL_SUBJECTS;
 
 export async function startEmailConsumer() {

@@ -32,5 +32,13 @@ export async function setupNotificationQueues(ch: Channel) {
   await ch.assertQueue("likes", { durable: true });
   await ch.bindQueue("likes", exchange, "like");
 
+  // Profile update queue
+  await ch.assertQueue("profile_update", {
+    durable: true,
+    deadLetterExchange: "",
+    deadLetterRoutingKey: "profile_update.dlq",
+  });
+  await ch.bindQueue("profile_update", exchange, "user.profile_update");
+
   console.log("✅ Notification queues + DLQ setup complete");
 }
