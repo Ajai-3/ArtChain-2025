@@ -175,7 +175,7 @@ const LikeUsersModal: React.FC<LikeUsersModalProps> = ({
                   </div>
 
                   {/* hide support button for self */}
-                  {!isCurrentUser && (
+                  {/* {!isCurrentUser && (
                     <div className="flex items-center gap-3">
                       <Button
                         variant={isSupporting ? "unSupport" : "support"}
@@ -213,7 +213,7 @@ const LikeUsersModal: React.FC<LikeUsersModalProps> = ({
                         )}
                       </Button>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </li>
             );

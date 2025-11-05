@@ -4,7 +4,7 @@ import apiClient from "../../../../api/axios";
 export interface LikedUser {
   userId: string;
   name: string;
-  username?: string;
+  username: string;
   profileImage?: string;
   likedAt: string;
 }

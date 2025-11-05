@@ -9,7 +9,7 @@ export type Art = {
   favoriteCount: number;
   commentCount: number;
   isLiked: boolean;
-  isFavorited: boolean; // always true
+  isFavorited: boolean;
 };
 
 export type PaginatedResponse = {

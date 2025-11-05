@@ -172,7 +172,7 @@ const FavoriteUsersModal: React.FC<FavoriteUsersModalProps> = ({
                   </div>
 
                   {/* ✅ Hide Support/UnSupport button if it's the current user */}
-                  {!isCurrentUser && (
+                  {/* {!isCurrentUser && (
                     <div className="flex items-center gap-3">
                       <Button
                         variant={isSupporting ? "unSupport" : "support"}
@@ -210,7 +210,7 @@ const FavoriteUsersModal: React.FC<FavoriteUsersModalProps> = ({
                         )}
                       </Button>
                     </div>
-                  )}
+                  )} */}
                 </div>
               </li>
             );
