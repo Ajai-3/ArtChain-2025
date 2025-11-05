@@ -17,7 +17,7 @@
   "dependencies": {
     "@elastic/elasticsearch": "^8.19.1",
     "amqplib": "^0.10.9",
-    "art-chain-shared": "^1.0.22",
+    "art-chain-shared": "^1.0.26",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "inversify": "^7.10.2",
