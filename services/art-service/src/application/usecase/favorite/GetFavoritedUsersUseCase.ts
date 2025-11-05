@@ -13,7 +13,7 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
     private readonly _favoriteRepository: IFavoriteRepository
   ) {}
 
-  async execute(postId: string, page: number = 1, limit: number = 10) {
+  async execute(currentUserId: string, postId: string, page: number = 1, limit: number = 10) {
     if (!postId) {
       throw new BadRequestError(FAVORITE_MESSAGES.MISSING_POST_ID);
     }
@@ -25,7 +25,7 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
     );
     const userIds = favorites.map((fav) => fav.userId);
 
-    const users = await UserService.getUsersByIds(userIds);
+    const users = await UserService.getUsersByIds(userIds, currentUserId);
 
     const result = favorites.map((fav) => {
       const user = users.find((u) => u.id === fav.userId);
@@ -34,6 +34,7 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
         name: user.name,
         username: user?.username,
         profileImage: user?.profileImage,
+        isSupporting: user.isSupporting,
         favoritedAt: fav.createdAt,
       };
     });

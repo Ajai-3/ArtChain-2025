@@ -121,6 +121,7 @@ export class LikeController implements ILikeController {
       const limit = Number(req.query.limit) || 10;
 
       const { users, likeCount } = await this._getLikedUsersUseCase.execute(
+        currentUserId, 
         postId,
         page,
         limit

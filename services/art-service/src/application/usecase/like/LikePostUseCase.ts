@@ -9,8 +9,8 @@ import { ART_MESSAGES } from "../../../constants/ArtMessages";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
 import { TYPES } from "../../../infrastructure/invectify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
-import { publishNotification } from "../../../infrastructure/rabbit/rabbit";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
+import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 import { ILikePostUseCase } from "../../interface/usecase/like/ILikePostUseCase";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 

@@ -8,7 +8,7 @@ import { TYPES } from "../../infrastructure/invectify/types";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { createArtPostSchema } from "../validators/artPost.schema";
 import { UserService } from "../../infrastructure/service/UserService";
-import { publishNotification } from "../../infrastructure/rabbit/rabbit";
+import { publishNotification } from "../../infrastructure/messaging/rabbitmq";
 import { CreateArtPostDTO } from "../../application/interface/dto/art/CreateArtPostDTO";
 import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
 import { IGetArtByIdUseCase } from "../../application/interface/usecase/art/IGetArtByIdUseCase";

@@ -131,7 +131,7 @@ export class FavoriteController implements IFavoriteController {
       const limit = Number(req.query.limit) || 10;
 
       const { users, favoriteCount } =
-        await this._getFavoritedUsersUseCase.execute(postId, page, limit);
+        await this._getFavoritedUsersUseCase.execute(currentUserId, postId, page, limit);
 
       logger.info(
         `✅ [GetFavoritedUsers] Found ${users.length} users for postId=${postId} (total=${favoriteCount})`
