@@ -1,18 +1,24 @@
-
-import bcrypt from 'bcrypt';
-import { inject, injectable } from 'inversify';
-import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { TYPES } from '../../../../infrastructure/inversify/types';
-import { tokenService } from '../../../../presentation/service/token.service';
-import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
-import { LoginRequestDto } from '../../../interface/dtos/user/auth/LoginRequestDto';
-import { ForbiddenError, NotFoundError, UnauthorizedError } from 'art-chain-shared';
-import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { ILoginUserUseCase } from '../../../interface/usecases/user/auth/ILoginUserUseCase';
+import bcrypt from "bcrypt";
+import { inject, injectable } from "inversify";
+import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
+import { AUTH_MESSAGES } from "../../../../constants/authMessages";
+import { TYPES } from "../../../../infrastructure/inversify/types";
+import { tokenService } from "../../../../presentation/service/token.service";
+import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
+import { LoginRequestDto } from "../../../interface/dtos/user/auth/LoginRequestDto";
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "art-chain-shared";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { ILoginUserUseCase } from "../../../interface/usecases/user/auth/ILoginUserUseCase";
 
 @injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
-  constructor(@inject(TYPES.IUserRepository) private _userRepo: IUserRepository) {}
+  constructor(
+    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+  ) {}
 
   async execute(data: LoginRequestDto): Promise<AuthResultDto> {
     const { identifier, password } = data;
@@ -25,11 +31,11 @@ export class LoginUserUseCase implements ILoginUserUseCase {
       throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== 'user' && rawUser.role !== 'artist') {
+    if (rawUser.role !== "user" && rawUser.role !== "artist") {
       throw new ForbiddenError(AUTH_MESSAGES.INVALID_USER_ROLE);
     }
 
-    if (rawUser.status !== 'active' && rawUser.status !== 'suspended') {
+    if (rawUser.status !== "active" && rawUser.status !== "suspended") {
       throw new ForbiddenError(AUTH_MESSAGES.YOUR_ACCOUNT_BANNED);
     }
 
@@ -52,9 +58,16 @@ export class LoginUserUseCase implements ILoginUserUseCase {
       role: user.role,
     };
 
+    const formattedUser = {
+      ...user,
+      profileImage: mapCdnUrl(user.profileImage) || "",
+      bannerImage: mapCdnUrl(user.bannerImage) || "",
+      backgroundImage: mapCdnUrl(user.backgroundImage) || "",
+    };
+
     const refreshToken = tokenService.generateRefreshToken(payload);
     const accessToken = tokenService.generateAccessToken(payload);
 
-    return { user, accessToken, refreshToken };
+    return { user: formattedUser, accessToken, refreshToken };
   }
 }

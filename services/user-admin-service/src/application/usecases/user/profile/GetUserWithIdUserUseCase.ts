@@ -1,4 +1,5 @@
 import { inject, injectable } from 'inversify';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
@@ -42,8 +43,8 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
       id: fullUser.id,
       name: fullUser.name,
       username: fullUser.username,
-      profileImage: fullUser.profileImage,
-      bannerImage: fullUser.bannerImage,
+      profileImage: mapCdnUrl(fullUser.profileImage),
+      bannerImage: mapCdnUrl(fullUser.bannerImage),
       status: fullUser.status,
       isVerified: fullUser.isVerified,
       plan: fullUser.plan,

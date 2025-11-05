@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ArtUser } from '../../../../types/ArtUser';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { IGetUsersByIdsUserUseCase } from '../../../interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
@@ -11,6 +12,11 @@ export class GetUsersByIdsUserUseCase implements IGetUsersByIdsUserUseCase {
   ) {}
 
   async execute(ids: string[]): Promise<ArtUser[]> {
-    return this._userRepo.findManyByIdsBatch(ids);
+     const users = await this._userRepo.findManyByIdsBatch(ids);
+
+    return users.map(user => ({
+      ...user,
+      profileImage: mapCdnUrl(user.profileImage) ?? null,
+    }));
   }
 }

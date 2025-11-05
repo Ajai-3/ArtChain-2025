@@ -18,7 +18,6 @@ import { SupportUnSupportRequestDto } from '../../../application/interface/dtos/
 import { IGetUserSupportersUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase';
 import { IGetUsersByIdsUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
 import { IGetUserSupportingUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
-import { IAddUserToElasticSearchUseCase } from '../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 
 @injectable()
 export class UserController implements IUserController {
@@ -39,8 +38,6 @@ export class UserController implements IUserController {
     private readonly _getUsersByIdsUserUseCase: IGetUsersByIdsUserUseCase,
     @inject(TYPES.IUpdateProfileUserUseCase)
     private readonly _updateProfileUserUseCase: IUpdateProfileUserUseCase,
-    @inject(TYPES.IAddUserToElasticSearchUseCase)
-    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
   ) {}
 
   //# ================================================================================================================
@@ -130,10 +127,6 @@ export class UserController implements IUserController {
       const dto: UpdateUserProfileDto = { ...validatedData, userId };
 
       const user = await this._updateProfileUserUseCase.execute(dto);
-
-      const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
-
-      await publishNotification('user.update', elasticUser);
 
       logger.info(`User profile updated ${JSON.stringify(user)}`);
 
