@@ -59,6 +59,25 @@ export const useSupportMutation = () => {
 
           queryClient.setQueryData(key, newData);
         });
+
+        // favoritedUsers
+        queryClient
+        .getQueriesData<any>({ queryKey: ["favoritedUsers"] })
+        .forEach(([key, prev]) => {
+          if (!prev) return;
+
+          const newData = {
+            ...prev,
+            pages: prev.pages.map((page: any) => ({
+              ...page,
+              users: page.users.map((u: any) =>
+                u.username === username ? { ...u, isSupporting: true } : u
+              ),
+            })),
+          };
+
+          queryClient.setQueryData(key, newData);
+        });
     },
 
     onError: (error) => {

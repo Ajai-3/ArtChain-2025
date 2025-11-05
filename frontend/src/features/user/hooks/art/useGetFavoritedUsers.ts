@@ -6,6 +6,7 @@ export interface FavoritedUser {
   name: string;
   username?: string;
   profileImage?: string;
+    isSupporting: boolean;
   favoritedAt: string;
 }
 

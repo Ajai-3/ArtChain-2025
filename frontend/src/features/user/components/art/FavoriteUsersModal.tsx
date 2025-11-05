@@ -172,16 +172,16 @@ const FavoriteUsersModal: React.FC<FavoriteUsersModalProps> = ({
                   </div>
 
                   {/* ✅ Hide Support/UnSupport button if it's the current user */}
-                  {/* {!isCurrentUser && (
+                  {!isCurrentUser && (
                     <div className="flex items-center gap-3">
                       <Button
-                        variant={isSupporting ? "unSupport" : "support"}
+                        variant={user.isSupporting ? "unSupport" : "support"}
                         size="support"
                         onClick={(e) =>
                           handleSupportClick(
                             e,
                             { id: user.userId, username: user.username || "" },
-                            isSupporting
+                            user.isSupporting
                           )
                         }
                         disabled={loadingUserId === user.userId}
@@ -194,7 +194,7 @@ const FavoriteUsersModal: React.FC<FavoriteUsersModalProps> = ({
                               : "visible"
                           }`}
                         >
-                          {isSupporting ? (
+                          {user.isSupporting ? (
                             <>
                               Supporting <ArrowDownRight size={14} />
                             </>
@@ -210,7 +210,7 @@ const FavoriteUsersModal: React.FC<FavoriteUsersModalProps> = ({
                         )}
                       </Button>
                     </div>
-                  )} */}
+                  )}
                 </div>
               </li>
             );

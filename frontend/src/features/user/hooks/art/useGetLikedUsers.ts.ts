@@ -6,6 +6,7 @@ export interface LikedUser {
   name: string;
   username: string;
   profileImage?: string;
+  isSupporting: boolean;
   likedAt: string;
 }
 
