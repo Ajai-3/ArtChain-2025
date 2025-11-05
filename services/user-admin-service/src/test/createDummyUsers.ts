@@ -48,7 +48,7 @@ export async function createDummyUsers() {
           role: 'user',
           plan: 'free',
           status: 'active',
-          isVerified: true,
+          isVerified: false,
           profileImage: '',
           bannerImage: '',
           backgroundImage: '',
