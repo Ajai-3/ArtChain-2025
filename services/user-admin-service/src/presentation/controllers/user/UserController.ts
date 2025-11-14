@@ -18,7 +18,6 @@ import { SupportUnSupportRequestDto } from '../../../application/interface/dtos/
 import { IGetUserSupportersUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase';
 import { IGetUsersByIdsUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
 import { IGetUserSupportingUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
-import { IAddUserToElasticSearchUseCase } from '../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 
 @injectable()
 export class UserController implements IUserController {
@@ -39,8 +38,6 @@ export class UserController implements IUserController {
     private readonly _getUsersByIdsUserUseCase: IGetUsersByIdsUserUseCase,
     @inject(TYPES.IUpdateProfileUserUseCase)
     private readonly _updateProfileUserUseCase: IUpdateProfileUserUseCase,
-    @inject(TYPES.IAddUserToElasticSearchUseCase)
-    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
   ) {}
 
   //# ================================================================================================================
@@ -124,21 +121,12 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-      if (!userId) {
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: 'User ID missing in request headers' });
-      }
-      console.log(req.body, userId);
+
       const validatedData = validateWithZod(updateProfileSchema, req.body);
 
       const dto: UpdateUserProfileDto = { ...validatedData, userId };
 
       const user = await this._updateProfileUserUseCase.execute(dto);
-
-      const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
-
-      await publishNotification('user.update', elasticUser);
 
       logger.info(`User profile updated ${JSON.stringify(user)}`);
 
@@ -273,6 +261,7 @@ export class UserController implements IUserController {
 
       logger.debug(`Get supporing user userId: ${userId}`);
       let supporters = await this._getSupportersUseCase.execute(
+        currentUserId,
         userId,
         page,
         limit
@@ -313,6 +302,7 @@ export class UserController implements IUserController {
       logger.debug(`Get supporing user userId: ${userId}`);
 
       let supporters = await this._getSupportingUseCase.execute(
+        currentUserId,
         userId,
         page,
         limit
@@ -344,7 +334,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<Response | any> => {
     try {
-      const { ids } = req.body;
+      const { ids, currentUserId } = req.body;
 
       if (!ids || !Array.isArray(ids) || !ids.length) {
         return res
@@ -352,9 +342,10 @@ export class UserController implements IUserController {
           .json({ message: 'ids array is required' });
       }
 
-      const users = await this._getUsersByIdsUserUseCase.execute(ids);
+      const users = await this._getUsersByIdsUserUseCase.execute(ids, currentUserId);
 
       logger.info('user with id fetched correctly');
+      console.log(users, "responce")
       return res
         .status(HttpStatus.OK)
         .json({ message: 'User fetch correcly', data: users });

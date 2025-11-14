@@ -1,14 +1,20 @@
+import { TYPES } from "../Inversify/types";
 import { getRabbitChannel } from "../lib/rabbitmq";
-import { ArtElasticService } from "../services/ArtElastic.service";
-import { UserElasticService } from "../services/UserElastic.service";
-
-const userService = new UserElasticService();
-const artService = new ArtElasticService();
+import { container } from "../Inversify/Inversify.config";
+import { IArtElasticService } from "../interface/IArtElasticService";
+import { IUserElasticService } from "../interface/IUserElasticService";
 
 export async function startUserConsumer() {
   const ch = await getRabbitChannel();
 
   await ch.assertQueue("search_indexing", { durable: true });
+
+  const userService = container.get<IUserElasticService>(
+    TYPES.IUserElasticService
+  );
+  const artService = container.get<IArtElasticService>(
+    TYPES.IArtElasticService
+  );
 
   ch.consume("search_indexing", async (msg) => {
     if (!msg) return;

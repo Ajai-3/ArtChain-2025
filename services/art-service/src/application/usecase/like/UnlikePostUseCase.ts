@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { IUnlikePostUseCase } from "../../interface/usecase/like/IUnlikePostUseCase";

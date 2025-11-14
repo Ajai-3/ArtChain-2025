@@ -5,6 +5,7 @@ import { UploadFileDTO } from "../interface/dto/UploadFileDTO";
 import { UploadedFileDTO } from "../interface/dto/UploadedFileDTO";
 import { IFileRepository } from "../../domain/repositories/IFileRepository";
 import { IUploadImageUseCase } from "../interface/usecases/IUploadImageUseCase";
+import { publishNotification } from "../../infrastructure/rabbitmq/rabbitmq";
 
 @injectable()
 export class UploadImageUseCase implements IUploadImageUseCase {
@@ -40,6 +41,15 @@ export class UploadImageUseCase implements IUploadImageUseCase {
       FILE_CATEGORIES[category as keyof typeof FILE_CATEGORIES],
       userId
     );
+
+    await publishNotification("user.profile_update", {
+      payload: {
+        userId: userId,
+        category,
+        key: uploadResult.key,
+      },
+    });
+
     return {
       url: uploadResult.publicUrl,
       userId,

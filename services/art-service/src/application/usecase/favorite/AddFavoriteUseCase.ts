@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { Favorite } from "../../../domain/entities/Favorite";
 import { ART_MESSAGES } from "../../../constants/ArtMessages";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
 import {
   BadRequestError,

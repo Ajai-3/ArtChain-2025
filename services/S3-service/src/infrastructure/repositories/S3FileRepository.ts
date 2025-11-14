@@ -1,10 +1,13 @@
+import { injectable } from "inversify";
 import { logger } from "../utils/logger";
 import { FileCategory } from "../../types/FileCategory";
 import { UploadResult } from "../../types/UploadResult";
 import { getBucketConfig, s3Client } from "../config/s3";
 import { generateFileName } from "../utils/generateFileName";
 import { IFileRepository } from "../../domain/repositories/IFileRepository";
+import { config } from "../config/env";
 
+@injectable()
 export class S3FileRepository implements IFileRepository {
   async upload(
     file: Buffer,
@@ -19,34 +22,41 @@ export class S3FileRepository implements IFileRepository {
     const keyBase = generateFileName(userId, originalName, category);
 
     try {
+      // ----- ART FILES -----
       if (category === "art") {
         if (!bucketConfig.privateBucket || !bucketConfig.publicBucket) {
           throw new Error("Art buckets not configured");
         }
 
-        await s3Client.upload({
-          Bucket: bucketConfig.privateBucket,
-          Key: `art/${userId}/original_${keyBase}`,
-          Body: file,
-          ContentType: mimeType,
-        }).promise();
+        await s3Client
+          .upload({
+            Bucket: bucketConfig.privateBucket,
+            Key: `art/${userId}/original_${keyBase}`,
+            Body: file,
+            ContentType: mimeType,
+          })
+          .promise();
 
         if (previewBuffer) {
-          await s3Client.upload({
-            Bucket: bucketConfig.publicBucket,
-            Key: `art/${userId}/preview_${keyBase}`,
-            Body: previewBuffer,
-            ContentType: mimeType,
-          }).promise();
+          await s3Client
+            .upload({
+              Bucket: bucketConfig.publicBucket,
+              Key: `art/${userId}/preview_${keyBase}`,
+              Body: previewBuffer,
+              ContentType: mimeType,
+            })
+            .promise();
         }
 
         if (watermarkedBuffer) {
-          await s3Client.upload({
-            Bucket: bucketConfig.publicBucket,
-            Key: `art/${userId}/watermarked_${keyBase}`,
-            Body: watermarkedBuffer,
-            ContentType: mimeType,
-          }).promise();
+          await s3Client
+            .upload({
+              Bucket: bucketConfig.publicBucket,
+              Key: `art/${userId}/watermarked_${keyBase}`,
+              Body: watermarkedBuffer,
+              ContentType: mimeType,
+            })
+            .promise();
         }
 
         const publicPreviewUrl = previewBuffer
@@ -70,19 +80,25 @@ export class S3FileRepository implements IFileRepository {
         return { privateSignedUrl, publicPreviewUrl, publicWatermarkedUrl };
       }
 
+      // ----- NORMAL FILES -----
       if (!bucketConfig.bucket) throw new Error("Bucket not configured");
 
-      await s3Client.upload({
-        Bucket: bucketConfig.bucket,
-        Key: keyBase,
-        Body: file,
-        ContentType: mimeType,
-      }).promise();
+      await s3Client
+        .upload({
+          Bucket: bucketConfig.bucket,
+          Key: keyBase,
+          Body: file,
+          ContentType: mimeType,
+          CacheControl: "no-cache, max-age=0, must-revalidate",
+        })
+        .promise();
 
-      const publicUrl = `${getCdnDomain()}/${keyBase}`;
-      logger.info(`✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`);
+      const publicUrl = `${config.aws.cdn_domain}/${keyBase}`;
+      logger.info(
+        `✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`
+      );
 
-      return { publicUrl };
+      return { publicUrl, key: keyBase };
     } catch (err) {
       logger.error(`❌ Error uploading file ${keyBase}:`, err);
       throw err;
@@ -91,19 +107,40 @@ export class S3FileRepository implements IFileRepository {
 
   async delete(fileUrl: string, category: FileCategory): Promise<void> {
     const bucketConfig = getBucketConfig(category);
-    const key = fileUrl.split(`${getCdnDomain()}/`)[1];
+    let key = fileUrl;
+
+    const cdnDomain = getCdnDomain();
+    console.log(cdnDomain);
+    if (fileUrl.startsWith(cdnDomain)) {
+      key = fileUrl.split(`${cdnDomain}/`)[1];
+    }
+
     if (!key) throw new Error("Invalid file URL");
 
     try {
       if (category === "art") {
-        await s3Client.deleteObject({ Bucket: bucketConfig.privateBucket!, Key: `art/${key}` }).promise();
-        await s3Client.deleteObject({ Bucket: bucketConfig.publicBucket!, Key: `art/${key}` }).promise();
+        await s3Client
+          .deleteObject({
+            Bucket: bucketConfig.privateBucket!,
+            Key: `art/${key}`,
+          })
+          .promise();
+        await s3Client
+          .deleteObject({
+            Bucket: bucketConfig.publicBucket!,
+            Key: `art/${key}`,
+          })
+          .promise();
         logger.info(`✅ Art file deleted | key=${key}`);
         return;
       }
 
-      await s3Client.deleteObject({ Bucket: bucketConfig.bucket!, Key: key }).promise();
-      logger.info(`✅ File deleted | bucket=${bucketConfig.bucket} | key=${key}`);
+      await s3Client
+        .deleteObject({ Bucket: bucketConfig.bucket!, Key: key })
+        .promise();
+      logger.info(
+        `✅ File deleted | bucket=${bucketConfig.bucket} | key=${key}`
+      );
     } catch (err) {
       logger.error(`❌ Error deleting file ${fileUrl}:`, err);
       throw err;
@@ -112,5 +149,5 @@ export class S3FileRepository implements IFileRepository {
 }
 
 function getCdnDomain(): string {
-  return process.env.AWS_CDN_DOMAIN || "https://your-cdn-domain.com";
+  return config.aws.cdn_domain || "https://your-cdn-domain.com";
 }

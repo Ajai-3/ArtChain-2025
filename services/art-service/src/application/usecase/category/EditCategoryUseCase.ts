@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { ConflictError } from "art-chain-shared";
 import { Category } from "../../../domain/entities/Category";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
 import { EditCategoryDTO } from "../../interface/dto/category/EditCategoryDTO";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";

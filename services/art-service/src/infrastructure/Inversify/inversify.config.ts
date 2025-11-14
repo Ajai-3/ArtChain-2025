@@ -9,11 +9,11 @@ import { ICommentRepository } from "../../domain/repositories/ICommentRepository
 import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
 import { IFavoriteRepository } from "../../domain/repositories/IFavoriteRepository";
 
-import { LikeRepositoryImpl } from "../../infrastructure/repositories/LikeRepositoryImpl";
-import { ArtPostRepositoryImpl } from "../../infrastructure/repositories/ArtPostRepositoryImpl";
-import { CommentRepositoryImpl } from "../../infrastructure/repositories/CommentRepositoryImpl";
-import { CategoryRepositoryImpl } from "../../infrastructure/repositories/CategoryRepositoryImpl";
-import { FavoriteRepositoryImpl } from "../../infrastructure/repositories/FavoriteRepositoryImpl";
+import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
+import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
+import { CommentRepositoryImpl } from "../repositories/CommentRepositoryImpl";
+import { CategoryRepositoryImpl } from "../repositories/CategoryRepositoryImpl";
+import { FavoriteRepositoryImpl } from "../repositories/FavoriteRepositoryImpl";
 
 // Use Cases - Art
 import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
@@ -95,50 +95,106 @@ const container = new Container();
 
 // Repositories
 container.bind<ILikeRepository>(TYPES.ILikeRepository).to(LikeRepositoryImpl);
-container.bind<IArtPostRepository>(TYPES.IArtPostRepository).to(ArtPostRepositoryImpl);
-container.bind<ICommentRepository>(TYPES.ICommentRepository).to(CommentRepositoryImpl);
-container.bind<ICategoryRepository>(TYPES.ICategoryRepository).to(CategoryRepositoryImpl);
-container.bind<IFavoriteRepository>(TYPES.IFavoriteRepository).to(FavoriteRepositoryImpl);
+container
+  .bind<IArtPostRepository>(TYPES.IArtPostRepository)
+  .to(ArtPostRepositoryImpl);
+container
+  .bind<ICommentRepository>(TYPES.ICommentRepository)
+  .to(CommentRepositoryImpl);
+container
+  .bind<ICategoryRepository>(TYPES.ICategoryRepository)
+  .to(CategoryRepositoryImpl);
+container
+  .bind<IFavoriteRepository>(TYPES.IFavoriteRepository)
+  .to(FavoriteRepositoryImpl);
 
 // Use Cases - Art
 container.bind<IGetAllArtUseCase>(TYPES.IGetAllArtUseCase).to(GetAllArtUseCase);
-container.bind<IGetArtByIdUseCase>(TYPES.IGetArtByIdUseCase).to(GetArtByIdUseCase);
-container.bind<ICountArtWorkUseCase>(TYPES.ICountArtWorkUseCase).to(CountArtWorkUseCase);
-container.bind<IGetArtByNameUseCase>(TYPES.IGetArtByNameUseCase).to(GetArtByNameUseCase);
-container.bind<ICreateArtPostUseCase>(TYPES.ICreateArtPostUseCase).to(CreateArtPostUseCase);
-container.bind<IGetAllShopArtsUseCase>(TYPES.IGetAllShopArtsUseCase).to(GetAllShopArtsUseCase);
-container.bind<IGetShopArtsByUserUseCase>(TYPES.IGetShopArtsByUserUseCase).to(GetShopArtsByUserUseCase);
-container.bind<IArtToElasticSearchUseCase>(TYPES.IArtToElasticSearchUseCase).to(ArtToElasticSearchUseCase);
-container.bind<IGetAllArtWithUserIdUseCase>(TYPES.IGetAllArtWithUserIdUseCase).to(GetAllArtWithUserIdUseCase);
+container
+  .bind<IGetArtByIdUseCase>(TYPES.IGetArtByIdUseCase)
+  .to(GetArtByIdUseCase);
+container
+  .bind<ICountArtWorkUseCase>(TYPES.ICountArtWorkUseCase)
+  .to(CountArtWorkUseCase);
+container
+  .bind<IGetArtByNameUseCase>(TYPES.IGetArtByNameUseCase)
+  .to(GetArtByNameUseCase);
+container
+  .bind<ICreateArtPostUseCase>(TYPES.ICreateArtPostUseCase)
+  .to(CreateArtPostUseCase);
+container
+  .bind<IGetAllShopArtsUseCase>(TYPES.IGetAllShopArtsUseCase)
+  .to(GetAllShopArtsUseCase);
+container
+  .bind<IGetShopArtsByUserUseCase>(TYPES.IGetShopArtsByUserUseCase)
+  .to(GetShopArtsByUserUseCase);
+container
+  .bind<IArtToElasticSearchUseCase>(TYPES.IArtToElasticSearchUseCase)
+  .to(ArtToElasticSearchUseCase);
+container
+  .bind<IGetAllArtWithUserIdUseCase>(TYPES.IGetAllArtWithUserIdUseCase)
+  .to(GetAllArtWithUserIdUseCase);
 
 // Use Cases - Category
-container.bind<IEditCategoryUseCase>(TYPES.IEditCategoryUseCase).to(EditCategoryUseCase);
-container.bind<ICreateCategoryUseCase>(TYPES.ICreateCategoryUseCase).to(CreateCategoryUseCase);
-container.bind<IGetAllCategoryUseCase>(TYPES.IGetAllCategoryUseCase).to(GetAllCategoryUseCase);
+container
+  .bind<IEditCategoryUseCase>(TYPES.IEditCategoryUseCase)
+  .to(EditCategoryUseCase);
+container
+  .bind<ICreateCategoryUseCase>(TYPES.ICreateCategoryUseCase)
+  .to(CreateCategoryUseCase);
+container
+  .bind<IGetAllCategoryUseCase>(TYPES.IGetAllCategoryUseCase)
+  .to(GetAllCategoryUseCase);
 
 // Use Cases - Comment
-container.bind<IGetCommentsUseCase>(TYPES.IGetCommentsUseCase).to(GetCommentsUseCase);
-container.bind<ICreateCommentUseCase>(TYPES.ICreateCommentUseCase).to(CreateCommentUseCase);
+container
+  .bind<IGetCommentsUseCase>(TYPES.IGetCommentsUseCase)
+  .to(GetCommentsUseCase);
+container
+  .bind<ICreateCommentUseCase>(TYPES.ICreateCommentUseCase)
+  .to(CreateCommentUseCase);
 
 // Use Cases - Favorite
-container.bind<IAddFavoriteUseCase>(TYPES.IAddFavoriteUseCase).to(AddFavoriteUseCase);
-container.bind<IRemoveFavoriteUseCase>(TYPES.IRemoveFavoriteUseCase).to(RemoveFavoriteUseCase);
-container.bind<IGetFavoriteCountUseCase>(TYPES.IGetFavoriteCountUseCase).to(GetFavoriteCountUseCase);
-container.bind<IGetFavoritedUsersUseCase>(TYPES.IGetFavoritedUsersUseCase).to(GetFavoritedUsersUseCase);
-container.bind<IGetUserFavoritedArtsUseCase>(TYPES.IGetUserFavoritedArtsUseCase).to(GetUserFavoritedArtsUseCase);
+container
+  .bind<IAddFavoriteUseCase>(TYPES.IAddFavoriteUseCase)
+  .to(AddFavoriteUseCase);
+container
+  .bind<IRemoveFavoriteUseCase>(TYPES.IRemoveFavoriteUseCase)
+  .to(RemoveFavoriteUseCase);
+container
+  .bind<IGetFavoriteCountUseCase>(TYPES.IGetFavoriteCountUseCase)
+  .to(GetFavoriteCountUseCase);
+container
+  .bind<IGetFavoritedUsersUseCase>(TYPES.IGetFavoritedUsersUseCase)
+  .to(GetFavoritedUsersUseCase);
+container
+  .bind<IGetUserFavoritedArtsUseCase>(TYPES.IGetUserFavoritedArtsUseCase)
+  .to(GetUserFavoritedArtsUseCase);
 
 // Use Cases - Like
 container.bind<ILikePostUseCase>(TYPES.ILikePostUseCase).to(LikePostUseCase);
-container.bind<IUnlikePostUseCase>(TYPES.IUnlikePostUseCase).to(UnlikePostUseCase);
-container.bind<IGetLikeCountUseCase>(TYPES.IGetLikeCountUseCase).to(GetLikeCountUseCase);
-container.bind<IGetLikedUsersUseCase>(TYPES.IGetLikedUsersUseCase).to(GetLikedUsersUseCase);
+container
+  .bind<IUnlikePostUseCase>(TYPES.IUnlikePostUseCase)
+  .to(UnlikePostUseCase);
+container
+  .bind<IGetLikeCountUseCase>(TYPES.IGetLikeCountUseCase)
+  .to(GetLikeCountUseCase);
+container
+  .bind<IGetLikedUsersUseCase>(TYPES.IGetLikedUsersUseCase)
+  .to(GetLikedUsersUseCase);
 
 // Controllers
 container.bind<IArtController>(TYPES.IArtController).to(ArtController);
 container.bind<IShopController>(TYPES.IShopController).to(ShopController);
 container.bind<ILikeController>(TYPES.ILikeController).to(LikeController);
-container.bind<ICommentController>(TYPES.ICommentController).to(CommentController);
-container.bind<IFavoriteController>(TYPES.IFavoriteController).to(FavoriteController);
-container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryController);
+container
+  .bind<ICommentController>(TYPES.ICommentController)
+  .to(CommentController);
+container
+  .bind<IFavoriteController>(TYPES.IFavoriteController)
+  .to(FavoriteController);
+container
+  .bind<ICategoryController>(TYPES.ICategoryController)
+  .to(CategoryController);
 
 export { container };

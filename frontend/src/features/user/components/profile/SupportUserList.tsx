@@ -23,22 +23,17 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
   onClose,
 }) => {
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user.user);
-  const currentUserId = user?.id;
+  const currentUserId = useSelector((s: RootState) => s.user.user?.id);
 
-  const supportersQuery = useGetSupporters(userId, type === "supporters");
-  const supportingQuery = useGetSupporting(userId, type === "supporting");
-  const query = type === "supporters" ? supportersQuery : supportingQuery;
+  const query =
+    type === "supporters"
+      ? useGetSupporters(userId, true)
+      : useGetSupporting(userId, true);
 
   const users = query.data?.pages.flatMap((p) => p.data) ?? [];
 
-  const currentUserSupportingQuery = useGetSupporting(currentUserId || "");
-  const currentUserSupportingIds =
-    currentUserSupportingQuery.data?.pages.flatMap((p) =>
-      p.data.map((u) => u.id)
-    ) || [];
-
   const isOwnProfile = userId === currentUserId;
+
   const usersWithoutCurrent = users.filter((u) => u.id !== currentUserId);
   const currentUserInList = users.find((u) => u.id === currentUserId);
 
@@ -60,58 +55,30 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
   );
 
   const removeSupporterMutation = useRemoveSupporter();
-
-  const handleRemoveSupporter = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    supporter: { id: string; username: string }
-  ) => {
-    e.stopPropagation();
-    removeSupporterMutation.mutate(
-      { supporterId: supporter.id, supporterUsername: supporter.username },
-      {
-        onSuccess: () => query.refetch(),
-      }
-    );
-  };
-
   const supportMutation = useSupportMutation();
   const unSupportMutation = useUnSupportMutation();
 
-  const handleSupportClick = (
-    targetUser: { id: string; username: string },
-    isSupporting: boolean
-  ) => {
-    if (loadingUserId) return;
-    setLoadingUserId(targetUser.id);
-    console.log("Clicked user:", targetUser);
-    const payload = { userId: targetUser.id, username: targetUser.username };
-    console.log("Clicked user payload:", payload);
-    if (isSupporting) {
-      unSupportMutation.mutate(payload, {
-        onSuccess: () => {
-          setLoadingUserId(null);
-          currentUserSupportingQuery.refetch();
-          query.refetch();
-        },
-        onError: () => setLoadingUserId(null),
-      });
-    } else {
-      supportMutation.mutate(payload, {
-        onSuccess: () => {
-          setLoadingUserId(null);
-          currentUserSupportingQuery.refetch();
-          query.refetch();
-        },
-        onError: () => setLoadingUserId(null),
-      });
-    }
-  };
-
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
+  const [removingUserId, setRemovingUserId] = useState<string | null>(null);
+
+  const handleSupportClick = (user: any) => {
+    if (loadingUserId) return;
+    setLoadingUserId(user.id);
+
+    const payload = { userId: user.id, username: user.username ?? "" };
+    const mutation = user.isSupporting ? unSupportMutation : supportMutation;
+
+    mutation.mutate(payload, {
+      onSuccess: () => {
+        setLoadingUserId(null);
+        query.refetch();
+      },
+      onError: () => setLoadingUserId(null),
+    });
+  };
 
   return (
     <ul className="space-y-2 h-full sm:max-h-80 overflow-y-auto">
-      {/* Logged-in user on top */}
       {!isOwnProfile && currentUserInList && (
         <li className="p-2 rounded flex items-center gap-2 mx-2 cursor-default">
           {currentUserInList.profileImage ? (
@@ -137,10 +104,8 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
         </li>
       )}
 
-      {/* Other users */}
       {usersWithoutCurrent.map((user, index) => {
         const isLast = index === usersWithoutCurrent.length - 1;
-        const isSupporting = currentUserSupportingIds.includes(user.id);
 
         return (
           <li
@@ -149,7 +114,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
             className="p-2 rounded flex items-center gap-6 mx-2 cursor-pointer"
             onClick={() => {
               onClose();
-              navigate(`/${user?.username}`);
+              navigate(`/${user.username}`);
             }}
           >
             {user.profileImage ? (
@@ -171,68 +136,49 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
               <p className="text-sm text-gray-400">@{user.username}</p>
             </div>
 
-            {/* Button logic */}
             {isOwnProfile && type === "supporters" ? (
               <button
-                className="ml-auto px-4 py-[.4rem] rounded-lg bg-red-600 text-white text-sm flex items-center justify-center relative"
-                onClick={(e) =>
-                  handleRemoveSupporter(e, {
-                    id: user.id,
-                    username: user.username,
-                  })
-                }
-                disabled={removeSupporterMutation.isPending}
+                className="ml-auto px-4 py-[.4rem] rounded-lg bg-red-600 text-white text-sm relative"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRemovingUserId(user.id);
+                  removeSupporterMutation.mutate(
+                    { supporterId: user.id, supporterUsername: user.username },
+                    {
+                      onSuccess: () => {
+                        setRemovingUserId(null);
+                        query.refetch();
+                      },
+                      onError: () => setRemovingUserId(null),
+                    }
+                  );
+                }}
+                disabled={removingUserId === user.id}
               >
-                {/* Keep text invisible to preserve width */}
-                <span
-                  className={`transition-opacity ${
-                    removeSupporterMutation.isPending ? "invisible" : "visible"
-                  }`}
-                >
-                  Remove
-                </span>
-
-                {removeSupporterMutation.isPending && (
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <CustomLoader />
-                  </span>
-                )}
+                {removingUserId === user.id ? <CustomLoader /> : "Remove"}
               </button>
-            ) : (isOwnProfile && type === "supporting") || !isOwnProfile ? (
+            ) : (
               <Button
-                variant={isSupporting ? "unSupport" : "support"}
+                variant={user.isSupporting ? "unSupport" : "support"}
                 size="support"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleSupportClick(
-                    { id: user.id, username: user.username },
-                    isSupporting
-                  );
+                  handleSupportClick(user);
                 }}
                 disabled={loadingUserId === user.id}
-                className="relative flex items-center justify-center ml-auto"
+                className="ml-auto relative"
               >
-                <span
-                  className={`flex items-center gap-1 transition-opacity ${
-                    loadingUserId === user.id ? "invisible" : "visible"
-                  }`}
-                >
-                  {isSupporting ? (
-                    <>
-                      Supporting <ArrowDownRight size={14} />
-                    </>
-                  ) : (
-                    "Support"
-                  )}
-                </span>
-
-                {loadingUserId === user.id && (
-                  <span className="absolute inset-0 flex items-center justify-center">
-                    <CustomLoader />
-                  </span>
+                {loadingUserId === user.id ? (
+                  <CustomLoader />
+                ) : user.isSupporting ? (
+                  <>
+                    Supporting <ArrowDownRight size={14} />
+                  </>
+                ) : (
+                  "Support"
                 )}
               </Button>
-            ) : null}
+            )}
           </li>
         );
       })}

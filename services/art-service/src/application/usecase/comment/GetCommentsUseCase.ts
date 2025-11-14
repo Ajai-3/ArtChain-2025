@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 

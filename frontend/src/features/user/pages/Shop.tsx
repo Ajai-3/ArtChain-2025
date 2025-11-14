@@ -115,7 +115,7 @@ const Shop: React.FC = () => {
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-zinc-800 text-white p-4 flex-shrink-0 overflow-y-auto">
+      <aside className="w-60 border-r border-zinc-800 text-white p-4 flex-shrink-0 overflow-y-auto">
         <h2 className="text-xl font-bold mb-6">Filters</h2>
 
         {/* Categories */}
@@ -264,7 +264,7 @@ const Shop: React.FC = () => {
           allArts.map((item: ShopItem) => (
             <div
               key={item.id}
-              className="rounded-sm flex flex-col bg-zinc-900 hover:shadow-xl hover:scale-105 transition-transform duration-300 h-72"
+              className="rounded-sm flex flex-col bg-zinc-900 hover:shadow-xl h-72"
               onClick={() => navigate(`/${item.user?.username}/art/${item?.artName}`)}
             >
               <img

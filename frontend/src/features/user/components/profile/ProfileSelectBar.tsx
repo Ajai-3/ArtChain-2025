@@ -1,8 +1,11 @@
 import { Gift } from "lucide-react";
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
+import type { ProfileSelectBarProps } from "../../../../types/users/profile/ProfileSelectBarProps";
 
-const ProfileSelectBar: React.FC = () => {
+
+
+const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile }) => {
   const { username } = useParams<{ username?: string }>();
   const basePath = `/${username}`;
 
@@ -51,9 +54,10 @@ const ProfileSelectBar: React.FC = () => {
           </button>
 
           {/* Request Commission Button */}
-          <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-600 active:scale-95 transition-transform">
+          {!isOwnProfile && user.role === "artist" ? <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-600 active:scale-95 transition-transform">
             Request Commission
-          </button>
+          </button> : ""}
+          
         </div>
       </div>
     </div>

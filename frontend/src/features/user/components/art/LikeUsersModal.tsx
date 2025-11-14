@@ -178,13 +178,13 @@ const LikeUsersModal: React.FC<LikeUsersModalProps> = ({
                   {!isCurrentUser && (
                     <div className="flex items-center gap-3">
                       <Button
-                        variant={isSupporting ? "unSupport" : "support"}
+                        variant={user.isSupporting ? "unSupport" : "support"}
                         size="support"
                         onClick={(e) =>
                           handleSupportClick(
                             e,
                             { id: user.userId, username: user.username || "" },
-                            isSupporting
+                            user.isSupporting
                           )
                         }
                         disabled={loadingUserId === user.userId}
@@ -197,7 +197,7 @@ const LikeUsersModal: React.FC<LikeUsersModalProps> = ({
                               : "visible"
                           }`}
                         >
-                          {isSupporting ? (
+                          {user.isSupporting ? (
                             <>
                               Supporting <ArrowDownRight size={14} />
                             </>

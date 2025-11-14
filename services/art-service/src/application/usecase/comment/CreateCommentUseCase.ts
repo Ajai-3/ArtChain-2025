@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
 import { Comment } from "../../../domain/entities/Comment";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
 import { CreateCommentDTO } from "../../interface/dto/comment/CreateCommentDTO";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";

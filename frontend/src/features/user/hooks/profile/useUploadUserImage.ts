@@ -1,10 +1,10 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useDispatch, useSelector } from "react-redux";
-import apiClient from "../../../../api/axios";
-import { updateProfile } from "../../../../redux/slices/userSlice";
-import type { User } from "../../../../types/users/user/user";
-import type { RootState } from "../../../../redux/store";
 import toast from "react-hot-toast";
+import apiClient from "../../../../api/axios";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+import type { User } from "../../../../types/users/user/user";
+import { updateProfile } from "../../../../redux/slices/userSlice";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type ImageType = "profileImage" | "bannerImage" | "backgroundImage";
 
@@ -27,48 +27,61 @@ export const useUploadUserImage = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.user);
 
-  return useMutation<User, Error, UploadImageInput>({
+  return useMutation<UploadResponse, Error, UploadImageInput>({
     mutationFn: async ({ file, type }) => {
-      const previousFileUrl = user?.[type];
-
       const formData = new FormData();
       formData.append("file", file);
-      if (previousFileUrl) {
-        formData.append("previousFileUrl", previousFileUrl);
-      }
+      if (user?.[type])
+        formData.append("previousFileUrl", user[type] as string);
       formData.append("type", type);
 
-      const uploadRes = await apiClient.post<UploadResponse>(
+      const { data } = await apiClient.post<UploadResponse>(
         "/api/v1/upload/",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
+      return data;
+    },
 
-      const uploadedUrl = uploadRes.data.data.url;
+    onSuccess: (data, variables) => {
+      const newUrl = data.data.url;
+      const field = variables.type;
 
-      const patchRes = await apiClient.patch<{ message: string; user: User }>(
-        "/api/v1/user/profile",
-        { [type]: uploadedUrl }
+      if (user) {
+        const updatedUser = { ...user, [field]: newUrl } as User;
+        dispatch(updateProfile({ user: updatedUser }));
+      }
+
+      queryClient.setQueryData(
+        ["userProfile", user?.username],
+        (oldData: any) => {
+          if (!oldData) return oldData;
+
+          return {
+            ...oldData,
+            data: {
+              ...oldData.data,
+              user: {
+                ...oldData.data.user,
+                [field]: newUrl,
+              },
+            },
+          };
+        }
       );
 
-      return patchRes.data.user;
-    },
-    onSuccess: (updatedUser: User, variables) => {
-      dispatch(updateProfile({ user: updatedUser }));
-      queryClient.invalidateQueries({
-        queryKey: ["userProfile", user?.username],
-      });
-      const typeLabel =
-        variables.type === "profileImage"
-          ? "Profile picture"
-          : variables.type === "bannerImage"
-          ? "Banner"
-          : "Background";
+      const labelMap: Record<ImageType, string> = {
+        profileImage: "Profile picture",
+        bannerImage: "Banner image",
+        backgroundImage: "Background image",
+      };
 
-      toast.success(`${typeLabel} updated successfully!`);
+      toast.success(`${labelMap[field]} updated successfully`);
     },
-    onError: (error: Error) => {
-      console.error("Image upload failed:", error);
+
+    onError: (error) => {
+      console.error("UPLOAD FAILED:", error);
+      toast.error("Image upload failed");
     },
   });
 };

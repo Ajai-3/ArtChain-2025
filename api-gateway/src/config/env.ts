@@ -2,7 +2,7 @@ import 'dotenv-flow/config';
 import jwt from "jsonwebtoken";
 import { getArtChainSecrets } from "art-chain-shared";
 
-const secrets = await getArtChainSecrets();
+const secrets = await getArtChainSecrets("ArtChainCommonSecret");
 
 
 export const config = {
@@ -16,6 +16,7 @@ export const config = {
     notifications: process.env.NOTIFICATION_URL,
     s3: process.env.S3_SERVICE_URL,
     elastic: process.env.ELASTIC_SEARCH_SERVICE_URL,
+    chat: process.env.CHAT_SERVICE_URL,
   },
   jwt: {
     accessSecret: secrets.jwtAccessSecret,

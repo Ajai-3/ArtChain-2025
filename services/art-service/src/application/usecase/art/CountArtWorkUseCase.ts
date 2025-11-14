@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { BadRequestError, ERROR_MESSAGES } from "art-chain-shared";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ICountArtWorkUseCase } from "../../interface/usecase/art/ICountArtWorkUseCase";

@@ -34,7 +34,7 @@ const Profile: React.FC = () => {
         isOwnProfile={isOwnProfile}
         isSupporting={isSupporting}
       />
-      <ProfileSelectBar />
+      <ProfileSelectBar isOwnProfile={isOwnProfile} user={profileUser} />
       <div className="flex-1 relative overflow-y-auto">
         <div
           className="absolute top-0 left-0 w-full h-full bg-center bg-no-repeat bg-cover"

@@ -1,9 +1,10 @@
-import { inject, injectable } from 'inversify';
-import { TYPES } from '../../../../infrastructure/inversify/types';
-import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQueryDto';
-import { IUserSearchRepository } from '../../../../domain/repositories/user/IUserSearchRepository';
-import { IGetAllUsersUseCase } from '../../../interface/usecases/admin/user-management/IGetAllUsersUseCase';
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../../infrastructure/inversify/types";
+import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { GetAllUsersQueryDto } from "../../../interface/dtos/admin/GetAllUsersQueryDto";
+import { IUserSearchRepository } from "../../../../domain/repositories/user/IUserSearchRepository";
+import { IGetAllUsersUseCase } from "../../../interface/usecases/admin/user-management/IGetAllUsersUseCase";
+import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
 
 @injectable()
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
@@ -22,13 +23,39 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
     }
 
     if (userIds && userIds.length > 0) {
-      return this._userRepo.findManyByIds(userIds, page, limit, {
+      const users = await this._userRepo.findManyByIds(userIds, page, limit, {
         role,
         status,
         plan,
       });
+
+      return {
+        ...users,
+        data: users.data.map((user: any) => ({
+          ...user,
+          profileImage: mapCdnUrl(user.profileImage) ?? null,
+          bannerImage: mapCdnUrl(user.bannerImage) ?? null,
+          backgroundImage: mapCdnUrl(user.backgroundImage) ?? null,
+        })),
+      };
     }
 
-    return this._userRepo.findAllUsers({ page, limit, role, status, plan });
+    const users = await this._userRepo.findAllUsers({
+      page,
+      limit,
+      role,
+      status,
+      plan,
+    });
+
+    return {
+      ...users,
+      data: users.data.map((user: any) => ({
+        ...user,
+        profileImage: mapCdnUrl(user.profileImage) ?? null,
+        bannerImage: mapCdnUrl(user.bannerImage) ?? null,
+        backgroundImage: mapCdnUrl(user.backgroundImage) ?? null,
+      })),
+    };
   }
 }

@@ -176,6 +176,17 @@ services:
     networks:
       - backend
 
+  chat-service:
+    container_name: chat-service
+    build: ./services/chat-service
+    env_file:
+      - .env
+      - ./services/chat-service/.env
+    ports:
+      - "4007:4007"
+    networks:
+      - backend
+
 networks:
   backend:
 

@@ -2,6 +2,7 @@ import app from './app';
 import http from 'http';
 import { config } from './infrastructure/config/env';
 import { createDummyUsers } from './test/createDummyUsers';
+import { startConsumers } from './infrastructure/messaging/consumers';
 const PORT = config.port;
 
 const server = http.createServer(app);
@@ -19,6 +20,7 @@ const server = http.createServer(app);
 //   }
 // }, DELAY_MS);
 
+await startConsumers()
 
 server.listen(PORT, () => {
     console.log(`User-Admin Service starts on port ${PORT}`);

@@ -11,22 +11,22 @@ interface SupportPayload {
 
 export const useSupportMutation = () => {
   const queryClient = useQueryClient();
-  const user = useSelector((state: RootState) => state.user.user)
+  const user = useSelector((state: RootState) => state.user.user);
 
   return useMutation<AxiosResponse<any>, Error, SupportPayload>({
     mutationFn: ({ userId }: { userId: string }) =>
       apiClient.post(`/api/v1/user/support/${userId}`),
-    onSuccess: (_, {username}) => {
+    onSuccess: (_, { username }) => {
       queryClient.setQueryData(["userProfile", username], (old: any) => {
         if (!old) return old;
         return {
-            ...old,
-            data: {
-                ...old.data,
-                isSupporting: true,
-                supportersCount: old.data.supportersCount + 1
-            }
-        }
+          ...old,
+          data: {
+            ...old.data,
+            isSupporting: true,
+            supportersCount: old.data.supportersCount + 1,
+          },
+        };
       });
 
       queryClient.setQueryData(["userProfile", user?.username], (old: any) => {
@@ -40,7 +40,46 @@ export const useSupportMutation = () => {
           },
         };
       });
+
+      // likedUsers
+      queryClient
+        .getQueriesData<any>({ queryKey: ["likedUsers"] })
+        .forEach(([key, prev]) => {
+          if (!prev) return;
+
+          const newData = {
+            ...prev,
+            pages: prev.pages.map((page: any) => ({
+              ...page,
+              users: page.users.map((u: any) =>
+                u.username === username ? { ...u, isSupporting: true } : u
+              ),
+            })),
+          };
+
+          queryClient.setQueryData(key, newData);
+        });
+
+        // favoritedUsers
+        queryClient
+        .getQueriesData<any>({ queryKey: ["favoritedUsers"] })
+        .forEach(([key, prev]) => {
+          if (!prev) return;
+
+          const newData = {
+            ...prev,
+            pages: prev.pages.map((page: any) => ({
+              ...page,
+              users: page.users.map((u: any) =>
+                u.username === username ? { ...u, isSupporting: true } : u
+              ),
+            })),
+          };
+
+          queryClient.setQueryData(key, newData);
+        });
     },
+
     onError: (error) => {
       console.error("Support failed:", error);
     },

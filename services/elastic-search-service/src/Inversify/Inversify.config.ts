@@ -19,7 +19,7 @@ import { IUserElasticController } from "../interface/IUserElasticController";
 import { IElasticSearchController } from "../interface/IElasticSearchController";
 
 import { ArtElasticController } from "../controller/ArtElastic.controller";
-import { UserElasticController } from "./../controller/UserElastic.controller";
+import { UserElasticController } from "../controller/UserElastic.controller";
 import { ElasticSearchController } from "../controller/ElasticSearch.controller";
 import { IUserElasticService } from "../interface/IUserElasticService";
 import { UserElasticService } from "../services/UserElastic.service";

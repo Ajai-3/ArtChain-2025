@@ -1,3 +1,3 @@
 export interface IGetFavoritedUsersUseCase {
-execute(postId: string, page: number, limit: number): Promise<any>;
+execute(currentUserId: string, postId: string, page: number, limit: number): Promise<any>;
 }

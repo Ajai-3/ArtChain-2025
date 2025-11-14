@@ -1,5 +1,6 @@
-import { TYPES } from "../invectify/types";
+import { TYPES } from "../Inversify/types";
 import { inject, injectable } from "inversify";
+import { mapCdnUrl } from "../utils/mapCdnUrl";
 import { IndexedUser } from "../interface/indexUser";
 import { IUserElasticService } from "../interface/IUserElasticService";
 import { IUserElasticRepository } from "../interface/IUserElasticRepository";
@@ -20,12 +21,16 @@ export class UserElasticService implements IUserElasticService {
   }
 
   async searchForUser(query: string): Promise<IndexedUser[]> {
-    return await this._repo.searchUsers(query);
+    const results = await this._repo.searchUsers(query);
+
+    return results.map((user) => ({
+      ...user,
+      profileImage: mapCdnUrl(user.profileImage),
+    }));
   }
 
   async adminSearch(query: string): Promise<string[]> {
     const results = await this._repo.searchUsers(query);
-    // admin needs fresh data, so only return IDs
     return results.map((user) => user.id);
   }
 }

@@ -1,13 +1,13 @@
 import express from "express";
 
 import { IArtController } from "../interface/IArtController";
-import { TYPES } from "../../infrastructure/invectify/types";
+import { TYPES } from "../../infrastructure/Inversify/types";
 import { ILikeController } from "../interface/ILikeController";
 import { IShopController } from "../interface/IShopController";
 import { ICommentController } from "../interface/ICommentController";
 import { IFavoriteController } from "../interface/IFavoriteController";
 import { ICategoryController } from "../interface/ICategoryController";
-import { container } from "../../infrastructure/invectify/inversify.config";
+import { container } from "../../infrastructure/Inversify/inversify.config";
 
 const router = express.Router();
 

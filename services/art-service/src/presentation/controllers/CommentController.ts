@@ -2,7 +2,7 @@ import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
 import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/invectify/types";
+import { TYPES } from "../../infrastructure/Inversify/types";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { COMMENT_MESSAGES } from "../../constants/CommentMessages";
 import { ICommentController } from "../interface/ICommentController";

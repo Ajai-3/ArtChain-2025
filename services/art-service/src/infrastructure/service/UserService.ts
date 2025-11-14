@@ -22,11 +22,12 @@ export class UserService {
     }
   }
 
-  static async getUsersByIds(userIds: string[]): Promise<any[]> {
+  static async getUsersByIds(userIds: string[], currentUserId?: string): Promise<any[]> {
     try {
       const response = await axios.post(
         `${config.services.user_service_url}/batch`,
-        { ids: userIds }
+        { ids: userIds, currentUserId },
+        
       );
       return response.data.data || [];
     } catch (error) {

@@ -35,11 +35,48 @@ export const useUnSupportMutation = () => {
           ...old,
           data: {
             ...old.data,
-            isSupporting: true,
+            isSupporting: false,
             supportingCount: old.data.supportingCount - 1,
           },
         };
       });
+
+      queryClient
+        .getQueriesData<any>({ queryKey: ["likedUsers"] })
+        .forEach(([key, prev]) => {
+          if (!prev) return;
+
+          const newData = {
+            ...prev,
+            pages: prev.pages.map((page: any) => ({
+              ...page,
+              users: page.users.map((u: any) =>
+                u.username === username ? { ...u, isSupporting: false } : u
+              ),
+            })),
+          };
+
+          queryClient.setQueryData(key, newData);
+        });
+
+         // favoritedUsers
+        queryClient
+        .getQueriesData<any>({ queryKey: ["favoritedUsers"] })
+        .forEach(([key, prev]) => {
+          if (!prev) return;
+
+          const newData = {
+            ...prev,
+            pages: prev.pages.map((page: any) => ({
+              ...page,
+              users: page.users.map((u: any) =>
+                u.username === username ? { ...u, isSupporting: false } : u
+              ),
+            })),
+          };
+
+          queryClient.setQueryData(key, newData);
+        });
     },
 
     

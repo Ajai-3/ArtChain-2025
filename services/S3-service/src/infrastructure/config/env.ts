@@ -3,6 +3,7 @@ dontenv.config();
 
 export const config = {
   port: process.env.PORT,
+  rabbitmq_URL: process.env.RABBITMQ_URL || "",
   aws: {
     region: process.env.AWS_REGION!,
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,

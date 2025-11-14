@@ -1,9 +1,8 @@
-import { TYPES } from "../invectify/types";
+import { TYPES } from "../Inversify/types";
 import { inject, injectable } from "inversify";
 import { IndexedArt } from "../interface/indexArt";
 import { IArtElasticService } from "../interface/IArtElasticService";
 import { IArtElasticRepository } from "../interface/IArtElasticRepository";
-
 
 @injectable()
 export class ArtElasticService implements IArtElasticService {
