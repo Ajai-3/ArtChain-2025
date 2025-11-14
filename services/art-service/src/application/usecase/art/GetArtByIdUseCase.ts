@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { ArtPost } from "../../../domain/entities/ArtPost";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { IGetArtByIdUseCase } from "../../interface/usecase/art/IGetArtByIdUseCase";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 

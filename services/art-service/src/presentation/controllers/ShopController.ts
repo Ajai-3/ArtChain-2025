@@ -1,7 +1,7 @@
 import { logger } from "../../utils/logger";
 import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/invectify/types";
+import { TYPES } from "../../infrastructure/Inversify/types";
 import { IShopController } from "../interface/IShopController";
 import { IGetAllShopArtsUseCase } from "../../application/interface/usecase/art/IGetShopArtsByUserUseCase";
 import { IGetShopArtsByUserUseCase } from "../../application/interface/usecase/art/IGetAllShopArtsUseCase";

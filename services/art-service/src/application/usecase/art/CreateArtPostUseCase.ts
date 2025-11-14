@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { ArtPost } from "../../../domain/entities/ArtPost";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
 import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";

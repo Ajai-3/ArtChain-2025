@@ -2,7 +2,7 @@ import { logger } from "../../utils/logger";
 import { HttpStatus } from "art-chain-shared";
 import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/invectify/types";
+import { TYPES } from "../../infrastructure/Inversify/types";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { CATEGORY_MESSAGES } from "../../constants/categoryMessages";
 import { editCategorySchema } from "../validators/editCategorySchema";

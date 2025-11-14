@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";

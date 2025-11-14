@@ -3,7 +3,7 @@ import { HttpStatus } from "art-chain-shared";
 import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
 import { LIKE_MESSAGES } from "../../constants/LikeMessages";
-import { TYPES } from "../../infrastructure/invectify/types";
+import { TYPES } from "../../infrastructure/Inversify/types";
 import { ILikeController } from "../interface/ILikeController";
 import { ILikePostUseCase } from "../../application/interface/usecase/like/ILikePostUseCase";
 import { IUnlikePostUseCase } from "../../application/interface/usecase/like/IUnlikePostUseCase";
@@ -121,7 +121,7 @@ export class LikeController implements ILikeController {
       const limit = Number(req.query.limit) || 10;
 
       const { users, likeCount } = await this._getLikedUsersUseCase.execute(
-        currentUserId, 
+        currentUserId,
         postId,
         page,
         limit

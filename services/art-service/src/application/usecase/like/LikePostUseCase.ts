@@ -7,7 +7,7 @@ import {
 } from "art-chain-shared";
 import { ART_MESSAGES } from "../../../constants/ArtMessages";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";

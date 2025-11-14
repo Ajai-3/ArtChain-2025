@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
@@ -12,7 +12,12 @@ export class GetLikedUsersUseCase implements IGetLikedUsersUseCase {
     @inject(TYPES.ILikeRepository) private readonly _likeRepo: ILikeRepository
   ) {}
 
-  async execute(currentUserId: string, postId: string, page: number = 1, limit: number = 10) {
+  async execute(
+    currentUserId: string,
+    postId: string,
+    page: number = 1,
+    limit: number = 10
+  ) {
     if (!postId) {
       throw new BadRequestError(LIKE_MESSAGES.MISSING_POST_ID);
     }

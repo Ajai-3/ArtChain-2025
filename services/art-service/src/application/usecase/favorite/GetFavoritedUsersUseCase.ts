@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
@@ -13,7 +13,12 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
     private readonly _favoriteRepository: IFavoriteRepository
   ) {}
 
-  async execute(currentUserId: string, postId: string, page: number = 1, limit: number = 10) {
+  async execute(
+    currentUserId: string,
+    postId: string,
+    page: number = 1,
+    limit: number = 10
+  ) {
     if (!postId) {
       throw new BadRequestError(FAVORITE_MESSAGES.MISSING_POST_ID);
     }

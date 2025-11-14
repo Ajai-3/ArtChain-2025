@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/invectify/types";
+import { TYPES } from "../../../infrastructure/Inversify/types";
 import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 import { IGetFavoriteCountUseCase } from "../../interface/usecase/favorite/IGetFavoriteCountUseCase";

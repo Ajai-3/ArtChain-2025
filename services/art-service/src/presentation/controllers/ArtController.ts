@@ -4,7 +4,7 @@ import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
 import { ART_MESSAGES } from "../../constants/ArtMessages";
 import { IArtController } from "../interface/IArtController";
-import { TYPES } from "../../infrastructure/invectify/types";
+import { TYPES } from "../../infrastructure/Inversify/types";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { createArtPostSchema } from "../validators/artPost.schema";
 import { UserService } from "../../infrastructure/service/UserService";
