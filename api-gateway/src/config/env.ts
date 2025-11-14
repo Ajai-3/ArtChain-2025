@@ -16,6 +16,7 @@ export const config = {
     notifications: process.env.NOTIFICATION_URL,
     s3: process.env.S3_SERVICE_URL,
     elastic: process.env.ELASTIC_SEARCH_SERVICE_URL,
+    chat: process.env.CHAT_SERVICE_URL,
   },
   jwt: {
     accessSecret: secrets.jwtAccessSecret,
