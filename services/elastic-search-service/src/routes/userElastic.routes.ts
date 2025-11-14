@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { TYPES } from "../invectify/types";
-import { container } from "../invectify/invectify.config";
+import { TYPES } from "../Inversify/types";
+import { container } from "../Inversify/Inversify.config";
 import { IUserElasticController } from "../interface/IUserElasticController";
 import { IElasticSearchController } from "../interface/IElasticSearchController";
 

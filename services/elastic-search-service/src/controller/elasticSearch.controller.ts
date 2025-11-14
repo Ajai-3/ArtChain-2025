@@ -1,5 +1,5 @@
 import { logger } from "../utils/logger";
-import { TYPES } from "../invectify/types";
+import { TYPES } from "../Inversify/types";
 import { HttpStatus } from "art-chain-shared";
 import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";

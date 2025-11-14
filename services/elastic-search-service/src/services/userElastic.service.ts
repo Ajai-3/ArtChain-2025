@@ -1,4 +1,4 @@
-import { TYPES } from "../invectify/types";
+import { TYPES } from "../Inversify/types";
 import { inject, injectable } from "inversify";
 import { mapCdnUrl } from "../utils/mapCdnUrl";
 import { IndexedUser } from "../interface/indexUser";
@@ -17,7 +17,7 @@ export class UserElasticService implements IUserElasticService {
   }
 
   async updateUser(user: IndexedUser) {
-   await this._repo.updateUser(user);
+    await this._repo.updateUser(user);
   }
 
   async searchForUser(query: string): Promise<IndexedUser[]> {
