@@ -19,7 +19,7 @@ export const config = {
       "5m") as jwt.SignOptions["expiresIn"],
     refreshExpire: (process.env.JWT_REFRESH_EXPIRES_IN ||
       "30d") as jwt.SignOptions["expiresIn"],
-    emailVerificationExpire: (process.env.JWT_EMAIL_VERIFICATION_EXPIRES_IN ||
+    emailVerificationExpire: (process.env.EMAIL_EXPIRES_IN ||
       "5m") as jwt.SignOptions["expiresIn"],
   },
   firebase: {
