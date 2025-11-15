@@ -13,9 +13,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "art-chain-shared": "^1.0.26",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
+    "inversify": "^7.10.4",
+    "ioredis": "^5.8.2",
     "mongoose": "^8.19.3",
+    "reflect-metadata": "^0.2.2",
     "winston": "^3.18.3",
     "winston-loki": "^6.1.3"
   },
