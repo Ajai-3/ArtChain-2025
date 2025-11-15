@@ -30,7 +30,7 @@ export const registerSocketEvents = (
   }
 
   socket.on("chatOnline", (users: string[]) => {
-    console.log("👥 Online users:", users);
+    console.log("👥 Online users in chat socket:", users);
   });
 
   socket.on("connect_error", (err) =>
