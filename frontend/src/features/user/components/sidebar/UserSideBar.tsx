@@ -26,9 +26,9 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
   const links = [
     { to: "/", icon: House, label: "Home", authRequired: false, showOn: "all" },
     {
-      to: "/messages",
+      to: "/chat",
       icon: MessageSquareText,
-      label: "Messages",
+      label: "chat",
       authRequired: true,
       showOn: "all",
     },
