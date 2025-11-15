@@ -21,6 +21,7 @@ export const useLogoutMutation = () => {
       toast.success("Logout successful");
     },
     onError: (error: ApiError) => {
+      console.log(error)
       toast.error("Logout failed");
     },
   });

@@ -57,7 +57,7 @@ const userSlice = createSlice({
       state.artWorkCount = 0;
       state.supportingCount = 0;
       state.supportersCount = 0;
-      disconnectSocket();
+      // disconnectSocket();
     },
   },
 });
