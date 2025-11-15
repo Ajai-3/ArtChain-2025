@@ -6,6 +6,7 @@ import { logger } from "../../infrastructure/utils/logger";
 export const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
   try {
     const token = socket.handshake.auth?.token;
+    console.log(token)
     if (!token) {
       logger.error("Socket.IO user token is missing");
       return next(new Error("Authentication error: Token missing"));
