@@ -9,7 +9,7 @@ import { store, persistor } from "./redux/store.ts";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import "./index.css";
-import { NotificationProvider } from "./components/socket/NotificationProvider.tsx";
+import { SocketProvider } from "./components/socket/SocketProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
@@ -17,14 +17,14 @@ createRoot(document.getElementById("root")!).render(
       <QueryProvider>
         <Provider store={store}>
           <PersistGate persistor={persistor}>
-            <NotificationProvider>
+            <SocketProvider>
               <ThemeProvider>
                 <App />
                 {import.meta.env.DEV && (
                   <ReactQueryDevtools initialIsOpen={false} />
                 )}
               </ThemeProvider>
-            </NotificationProvider>
+            </SocketProvider>
           </PersistGate>
         </Provider>
       </QueryProvider>
