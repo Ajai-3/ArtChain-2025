@@ -6,6 +6,7 @@ export interface IConversationDocument extends Omit<Conversation, "id"> {}
 const ConversationSchema = new Schema<IConversationDocument>({
   type: { type: String, enum: ["PRIVATE", "GROUP"] as ConversationType[], required: true },
   memberIds: { type: [String], required: true },
+  adminIds: { type: [String], default: [] },
   name: { type: String },
   locked: { type: Boolean, default: false },
 }, {

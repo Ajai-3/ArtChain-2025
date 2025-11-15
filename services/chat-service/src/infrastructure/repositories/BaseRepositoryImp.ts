@@ -12,9 +12,7 @@ export abstract class BaseRepositoryImp<T, D> implements IBaseRepository<T> {
 
   protected mapDbToDomain(dbObj: any): T {
     if (!dbObj) return null as any;
-
     const obj = dbObj.toObject ? dbObj.toObject({ versionKey: false }) : dbObj;
-
     return {
       ...obj,
       id: obj.id ?? obj._id?.toString(),
