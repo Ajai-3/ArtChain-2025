@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { Message } from "../domain/entities/Message";
 import { TYPES } from "../infrastructure/Inversify/types";
+import { IMessageService } from "./interface/IMessageService";
 import { redisCache, redisPub } from "./../infrastructure/config/redis";
 import { SendMessageDto } from "../applications/interface/dto/SendMessageDto";
 import { ListMessagesDto } from "../applications/interface/dto/ListMessagesDto";
@@ -11,7 +12,7 @@ import { IListMessagesUseCase } from "../applications/interface/usecase/IListMes
 import { IDeleteMessageUseCase } from "../applications/interface/usecase/IDeleteMessageUseCase";
 
 @injectable()
-export class MessageService {
+export class MessageService implements IMessageService {
   constructor(
     @inject(TYPES.ISendMessageUseCase)
     private readonly _sendMessageUseCase: ISendMessageUseCase,

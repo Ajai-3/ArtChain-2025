@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { BadRequestError } from "art-chain-shared";
 import { Message } from "../../domain/entities/Message";
 import { TYPES } from "../../infrastructure/Inversify/types";
 import { SendMessageDto } from "../interface/dto/SendMessageDto";
@@ -19,19 +20,47 @@ export class SendMessageUseCase implements ISendMessageUseCase {
   async execute(dto: SendMessageDto): Promise<Message> {
     let { senderId, receiverId, content, conversationId } = dto;
 
-    let conversation = await this._conversationRepo.findById(
-      dto.conversationId
-    );
+    if (!content || content.trim() === "") {
+      throw new BadRequestError("Message content cannot be empty");
+    }
 
-    if (!conversation) {
-      conversation = await this._conversationRepo.create({
-        type: ConversationType.PRIVATE,
-        memberIds: [senderId, receiverId],
-        locked: false,
-        adminIds: [],
-      });
+    if (!conversationId) {
+      if (!receiverId) {
+        throw new BadRequestError("receiverId is required for first message");
+      }
 
-      conversationId = conversation.id;
+      let existing = await this._conversationRepo.findPrivateConversation(
+        senderId,
+        receiverId
+      );
+
+      if (existing) {
+        conversationId = existing.id;
+      } else {
+        const conversation = await this._conversationRepo.create({
+          type: ConversationType.PRIVATE,
+          memberIds: [senderId, receiverId],
+          locked: false,
+          adminIds: [],
+        });
+        conversationId = conversation.id;
+      }
+    } else {
+      const conversation = await this._conversationRepo.findById(
+        conversationId
+      );
+      if (!conversation) {
+        throw new BadRequestError("Conversation not found");
+      }
+
+      if (
+        conversation.type === ConversationType.PRIVATE &&
+        !conversation.memberIds.includes(senderId)
+      ) {
+        throw new BadRequestError(
+          "You are not allowed to send message to this conversation"
+        );
+      }
     }
 
     const message = await this._messageRepo.create({

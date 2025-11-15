@@ -1,28 +1,17 @@
-import jwt from "jsonwebtoken";
-import { env } from "../config/env";
 import { redisSub } from "../config/redis";
 import { Server, Socket } from "socket.io";
 import { TYPES } from "../Inversify/types";
 import container from "../Inversify/Inversify.config";
 import { IMessageService } from "../../services/interface/IMessageService";
+import { authMiddleware } from "../../presentation/middleware/authMiddleware";
+import { SendMessageDto } from "../../applications/interface/dto/SendMessageDto";
 
-const messageService = container.get<IMessageService>(TYPES.IMessageService);
 
 export const chatSocket = (io: Server) => {
   const onlineUsers = new Map<string, string>();
+  const messageService = container.get<IMessageService>(TYPES.IMessageService);
 
-  io.use((socket, next) => {
-    const token = socket.handshake.auth.token;
-    if (!token) return next(new Error("Unauthorized"));
-
-    try {
-      const decoded = jwt.verify(token, env.jwt.accessSecret) as { id: string };
-      socket.data.userId = decoded.id;
-      next();
-    } catch {
-      next(new Error("Unauthorized"));
-    }
-  });
+  io.use(authMiddleware);
 
   io.on("connection", (socket: Socket) => {
     onlineUsers.set(socket.data.userId, socket.id);
@@ -34,13 +23,17 @@ export const chatSocket = (io: Server) => {
       socket.emit("chatHistory", messages);
     });
 
-    socket.on("sendMessage", async (message) => {
-      const msg = {
-        ...message,
-        senderId: socket.data.userId,
-        createdAt: new Date(),
+    socket.on("sendMessage", async (data: SendMessageDto) => {
+       const senderId = socket.data.userId;
+
+      const dto: SendMessageDto = {
+        content: data.content,
+        senderId,
+        conversationId: data.conversationId,
+        receiverId: data?.receiverId,
       };
-      await messageService.sendMessage(msg);
+
+      const msg = await messageService.sendMessage(dto);
       io.to(msg.conversationId).emit("newMessage", msg);
     });
 
