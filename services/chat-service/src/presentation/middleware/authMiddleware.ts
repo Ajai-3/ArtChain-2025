@@ -12,7 +12,7 @@ export const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
     }
 
     const decoded = jwt.verify(token, env.jwt.accessSecret) as { id: string };
-    (socket as any).userId = decoded.id;
+    socket.data.userId = decoded.id;
 
     logger.debug("Socket.IO user authenticated:", decoded.id);
     next();

@@ -15,7 +15,7 @@ export const chatSocket = (io: Server) => {
 
   io.on("connection", (socket: Socket) => {
     onlineUsers.set(socket.data.userId, socket.id);
-    io.emit("updateOnline", Array.from(onlineUsers.keys()));
+    io.emit("chatOnline", Array.from(onlineUsers.keys()));
 
     socket.on("joinConversation", async (conversationId: string) => {
       socket.join(conversationId);
