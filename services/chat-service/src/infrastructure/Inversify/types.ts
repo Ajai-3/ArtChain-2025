@@ -3,16 +3,17 @@ export const TYPES = {
   IMessageRepository: Symbol.for("IMessageRepository"),
   IConversationRepository: Symbol.for("IConversationRepository"),
 
-  // Use Cases
-  ISendMessageUseCase: Symbol.for("ISendMessageUseCase"),
-  IListMessagesUseCase: Symbol.for("IListMessagesUseCase"),
-  IDeleteMessageUseCase: Symbol.for("IDeleteMessageUseCase"),
-
   // Services
   IUserService: Symbol.for("IUserService"),
   ICacheService: Symbol.for("ICacheService"),
   IMessageCacheService: Symbol.for("IMessageCacheService"),
   IMessageBroadcastService: Symbol.for("IMessageBroadcastService"),
+
+  // Use Cases
+  ISendMessageUseCase: Symbol.for("ISendMessageUseCase"),
+  IListMessagesUseCase: Symbol.for("IListMessagesUseCase"),
+  IDeleteMessageUseCase: Symbol.for("IDeleteMessageUseCase"),
+  ICreatePrivateConversationUseCase: Symbol.for("ICreatePrivateConversationUseCase"),
 
   // Controllers
   IMessageController: Symbol.for("IMessageController"),

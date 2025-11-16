@@ -12,10 +12,12 @@ import { ConversationRepositoryImp } from "../repositories/ConversationRepositor
 import { ISendMessageUseCase } from "../../applications/interface/usecase/ISendMessageUseCase";
 import { IListMessagesUseCase } from "../../applications/interface/usecase/IListMessagesUseCase";
 import { IDeleteMessageUseCase } from "../../applications/interface/usecase/IDeleteMessageUseCase";
+import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
 
 import { SendMessageUseCase } from "../../applications/usecase/SendMessageUseCase";
 import { ListMessagesUseCase } from "../../applications/usecase/ListMessagesUseCase";
 import { DeleteMessageUseCase } from "../../applications/usecase/DeleteMessageUseCase";
+import { CreatePrivateConversationUseCase } from "../../applications/usecase/CreatePrivateConversationUseCase";
 
 // Services
 import { UserService } from "../http/UserService";
@@ -53,6 +55,11 @@ container
 container
   .bind<IDeleteMessageUseCase>(TYPES.IDeleteMessageUseCase)
   .to(DeleteMessageUseCase);
+container
+  .bind<ICreatePrivateConversationUseCase>(
+    TYPES.ICreatePrivateConversationUseCase
+  )
+  .to(CreatePrivateConversationUseCase);
 
 // Srevice
 container.bind<IUserService>(TYPES.IUserService).to(UserService);
