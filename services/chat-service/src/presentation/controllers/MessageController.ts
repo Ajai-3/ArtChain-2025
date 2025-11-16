@@ -61,11 +61,14 @@ export class MessageController implements IMessageController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
+      const { conversationId, page, limit } = req.body;
+      const requestUserId = req.headers["x-user-id"] as string;
+
       const dto: ListMessagesDto = {
-        conversationId: req.params.conversationId,
-        requestUserId: req.query.requestUserId as string,
-        page: Number(req.query.page) || 1,
-        limit: Number(req.query.limit) || 20,
+        conversationId,
+        requestUserId,
+        page: Number(page) || 1,
+        limit: Number(limit) || 20,
       };
 
       const messages = await this._listMessagesUseCase.execute(dto);
@@ -91,7 +94,7 @@ export class MessageController implements IMessageController {
       const dto: DeleteMessageDto = {
         messageId: req.params.messageId,
         userId: req.body.userId,
-        mode: req.body.mode, 
+        mode: req.body.mode,
       };
 
       const result = await this._deleteMessageUseCase.execute(dto);
