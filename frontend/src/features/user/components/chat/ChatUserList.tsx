@@ -1,71 +1,51 @@
-import React from "react";
+// components/chat/ChatUserList.tsx
+import React, { useState } from "react";
+import ConversationItem from "./chatUserList/ConversationItem";
+import { type Conversation, ConversationType } from "../../../../types/chat/chat";
+import { dummyConversations } from "./dummyData";
 
 interface ChatUserListProps {
-  selectedUser: string | null;
-  onSelectUser: (userId: string) => void;
+  selectedConversation: string | null;
+  onSelectConversation: (conversationId: string) => void;
 }
 
+type TabType = "private" | "group" | "requests";
+
 const ChatUserList: React.FC<ChatUserListProps> = ({
-  selectedUser,
-  onSelectUser,
+  selectedConversation,
+  onSelectConversation,
 }) => {
-  const users = [
+  const [activeTab, setActiveTab] = useState<TabType>("private");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const tabs = [
+    { id: "private" as TabType, label: "Private", badge: null },
+    { id: "group" as TabType, label: "Groups", badge: null },
     {
-      id: "1",
-      name: "John Doe",
-      username: "johndoe",
-      lastMessage: "Hey, how are you doing?",
-      timestamp: "2m",
-      unread: 2,
-      isOnline: true,
-      avatarColor: "bg-blue-100",
-      textColor: "text-blue-600",
-    },
-    {
-      id: "2",
-      name: "Sarah Wilson",
-      username: "sarahw",
-      lastMessage: "See you tomorrow!",
-      timestamp: "1h",
-      unread: 0,
-      isOnline: true,
-      avatarColor: "bg-pink-100",
-      textColor: "text-pink-600",
-    },
-    {
-      id: "3",
-      name: "Mike Johnson",
-      username: "mikej",
-      lastMessage: "Thanks for the help!",
-      timestamp: "3h",
-      unread: 1,
-      isOnline: false,
-      avatarColor: "bg-green-100",
-      textColor: "text-green-600",
-    },
-    {
-      id: "4",
-      name: "Emma Davis",
-      username: "emmad",
-      lastMessage: "The meeting was great!",
-      timestamp: "5h",
-      unread: 0,
-      isOnline: true,
-      avatarColor: "bg-purple-100",
-      textColor: "text-purple-600",
-    },
-    {
-      id: "5",
-      name: "Alex Brown",
-      username: "alexb",
-      lastMessage: "Check out this design!",
-      timestamp: "1d",
-      unread: 3,
-      isOnline: false,
-      avatarColor: "bg-orange-100",
-      textColor: "text-orange-600",
+      id: "requests" as TabType,
+      label: "Requests",
+      badge: dummyConversations.filter((c) => c.locked).length,
     },
   ];
+
+  const filteredConversations = dummyConversations.filter((conversation) => {
+    const matchesSearch =
+      conversation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conversation.members?.some((member) =>
+        member.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+    const matchesTab =
+      (activeTab === "private" &&
+        conversation.type === ConversationType.PRIVATE &&
+        !conversation.locked) ||
+      (activeTab === "group" &&
+        conversation.type === ConversationType.GROUP &&
+        !conversation.locked) ||
+      (activeTab === "requests" && conversation.locked);
+
+    return matchesSearch && matchesTab;
+  });
 
   return (
     <div className="w-full h-full flex flex-col bg-background border-r border-border">
@@ -91,7 +71,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
         </div>
 
         {/* Search */}
-        <div className="relative">
+        <div className="relative mb-4">
           <svg
             className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
             fill="none"
@@ -107,62 +87,70 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
           </svg>
           <input
             type="text"
-            placeholder="Search"
+            placeholder="Search conversations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-muted/50 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary border-none placeholder:text-muted-foreground"
           />
         </div>
+
+        {/* Tabs */}
+        <div className="flex space-x-1 bg-muted/50 rounded-lg p-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center space-x-2 flex-1 justify-center py-2 px-3 rounded-md text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <span>{tab.label}</span>
+              {tab.badge && tab.badge > 0 && (
+                <span className="bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* User List */}
+      {/* Conversation List */}
       <div className="flex-1 overflow-y-auto">
-        {users.map((user) => (
-          <div
-            key={user.id}
-            onClick={() => onSelectUser(user.id)}
-            className={`flex items-center p-3 cursor-pointer transition-colors border-b border-border hover:bg-muted/50 ${
-              selectedUser === user.id ? "bg-muted" : ""
-            }`}
-          >
-            <div className="relative flex-shrink-0">
-              <div
-                className={`w-12 h-12 rounded-full flex items-center justify-center ${user.avatarColor}`}
-              >
-                <span className={`text-sm font-medium ${user.textColor}`}>
-                  {user.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")}
-                </span>
-              </div>
-              <div
-                className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background ${
-                  user.isOnline ? "bg-green-500" : "bg-gray-400"
-                }`}
+        {filteredConversations.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-32 text-muted-foreground p-4">
+            <svg
+              className="w-8 h-8 mb-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
-            </div>
-
-            <div className="flex-1 ml-3 min-w-0">
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="font-semibold text-sm truncate">{user.name}</h3>
-                <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-                  {user.timestamp}
-                </span>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground truncate pr-2">
-                  {user.lastMessage}
-                </p>
-                {user.unread > 0 && (
-                  <div className="flex-shrink-0 w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-xs text-primary-foreground font-medium">
-                      {user.unread}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
+            </svg>
+            <p className="text-sm text-center">No conversations found</p>
+            <p className="text-xs text-center mt-1">
+              {searchQuery
+                ? "Try a different search term"
+                : `No ${activeTab} conversations`}
+            </p>
           </div>
-        ))}
+        ) : (
+          filteredConversations.map((conversation) => (
+            <ConversationItem
+              key={conversation.id}
+              conversation={conversation}
+              isSelected={selectedConversation === conversation.id}
+              onSelect={onSelectConversation}
+            />
+          ))
+        )}
       </div>
     </div>
   );

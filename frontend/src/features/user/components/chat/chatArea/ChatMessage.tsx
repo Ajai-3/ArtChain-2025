@@ -1,137 +1,195 @@
-import React from "react";
-
-interface Message {
-  id: string;
-  text: string;
-  sender: "me" | "them";
-  timestamp: Date;
-  isRead: boolean;
-  type: "text" | "image";
-  imageUrl?: string;
-}
+// components/chat/chatArea/ChatMessages.tsx
+import React, { useState, useRef, useEffect } from "react";
+import type { Message, Conversation } from "../../../../../types/chat/chat";
+import MessageOptions from "../MessageOptions";
+import MessageBubble from "./MessageBubble";
 
 interface ChatMessagesProps {
   messages: Message[];
-  selectedUser: string | null;
+  conversation: Conversation;
+  currentUserId: string;
+  onDeleteMessage: (messageId: string, deleteForAll: boolean) => void;
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
   messages,
-  selectedUser,
+  conversation,
+  currentUserId,
+  onDeleteMessage,
 }) => {
-  const formatTime = (date: Date) => {
+  const [showOptions, setShowOptions] = useState<{
+    messageId: string;
+    position: { x: number; y: number };
+  } | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const formatTime = (date?: Date) => {
+    if (!date) return "";
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   const shouldShowDateDivider = (currentIndex: number) => {
     if (currentIndex === 0) return true;
+    if (
+      !messages[currentIndex].createdAt ||
+      !messages[currentIndex - 1].createdAt
+    )
+      return false;
 
-    const currentDate = messages[currentIndex].timestamp.toDateString();
-    const prevDate = messages[currentIndex - 1].timestamp.toDateString();
+    const currentDate = messages[currentIndex].createdAt?.toDateString();
+    const prevDate = messages[currentIndex - 1].createdAt?.toDateString();
 
     return currentDate !== prevDate;
   };
 
-  const getDateLabel = (date: Date) => {
+  const getDateLabel = (date?: Date) => {
+    if (!date) return "";
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
     const messageDate = date.toDateString();
 
     if (messageDate === today) return "Today";
     if (messageDate === yesterday) return "Yesterday";
-    return date.toLocaleDateString([], { month: "short", day: "numeric" });
+    return date.toLocaleDateString([], {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const isCurrentUser = (senderId: string) => {
+    return senderId === currentUserId;
+  };
+
+  const handleMessageRightClick = (e: React.MouseEvent, messageId: string) => {
+    e.preventDefault();
+    setShowOptions({
+      messageId,
+      position: { x: e.clientX, y: e.clientY },
+    });
+  };
+
+  const isUserAdmin = () => {
+    return (
+      conversation.adminIds?.includes(currentUserId) ||
+      conversation.ownerId === currentUserId
+    );
   };
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-      {messages.map((message, index) => (
-        <div key={message.id}>
-          {/* Date Divider */}
-          {shouldShowDateDivider(index) && (
-            <div className="flex justify-center my-4">
-              <span className="text-xs text-muted-foreground bg-muted px-3 py-1 rounded-full">
-                {getDateLabel(message.timestamp)}
-              </span>
-            </div>
-          )}
-
-          {/* Message */}
-          <div
-            className={`flex ${
-              message.sender === "me" ? "justify-end" : "justify-start"
-            }`}
-          >
-            {/* Text Message */}
-            {message.type === "text" && (
-              <div
-                className={`max-w-[70%] rounded-2xl px-4 py-2 ${
-                  message.sender === "me"
-                    ? "bg-primary text-primary-foreground rounded-tr-none"
-                    : "bg-muted rounded-tl-none"
-                }`}
+      {messages.length === 0 ? (
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center text-muted-foreground">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg
+                className="w-8 h-8"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                <p className="text-sm">{message.text}</p>
-                <p
-                  className={`text-xs mt-1 ${
-                    message.sender === "me"
-                      ? "text-primary-foreground/70"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {formatTime(message.timestamp)}
-                  {message.sender === "me" && (
-                    <span className="ml-1">{message.isRead ? "✓✓" : "✓"}</span>
-                  )}
-                </p>
-              </div>
-            )}
-
-            {/* Image Message */}
-            {message.type === "image" && (
-              <div className="max-w-[70%]">
-                <div
-                  className={`rounded-2xl overflow-hidden border ${
-                    message.sender === "me"
-                      ? "border-primary/20"
-                      : "border-border"
-                  }`}
-                >
-                  <div className="w-48 h-32 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">
-                      Design Preview
-                    </span>
-                  </div>
-                  {message.text && (
-                    <div
-                      className={`p-3 ${
-                        message.sender === "me" ? "bg-primary/5" : "bg-muted/50"
-                      }`}
-                    >
-                      <p className="text-sm">{message.text}</p>
-                    </div>
-                  )}
-                </div>
-                <p
-                  className={`text-xs mt-1 ${
-                    message.sender === "me" ? "text-right" : "text-left"
-                  } ${
-                    message.sender === "me"
-                      ? "text-primary-foreground/70"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  {formatTime(message.timestamp)}
-                  {message.sender === "me" && (
-                    <span className="ml-1">{message.isRead ? "✓✓" : "✓"}</span>
-                  )}
-                </p>
-              </div>
-            )}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
+              </svg>
+            </div>
+            <p className="text-sm">No messages yet</p>
+            <p className="text-xs mt-1">
+              Start a conversation by sending a message
+            </p>
           </div>
         </div>
-      ))}
+      ) : (
+        messages.map((message, index) => (
+          <div key={message.id}>
+            {/* Date Divider */}
+            {message.createdAt && shouldShowDateDivider(index) && (
+              <div className="flex justify-center my-6">
+                <span className="text-xs text-muted-foreground bg-background px-3 py-1 rounded-full border">
+                  {getDateLabel(message.createdAt)}
+                </span>
+              </div>
+            )}
+
+            {/* Message */}
+            <div
+              className={`flex ${
+                isCurrentUser(message.senderId)
+                  ? "justify-end"
+                  : "justify-start"
+              } group`}
+            >
+              {/* Sender Info for Group Messages */}
+              {conversation.type === "GROUP" &&
+                !isCurrentUser(message.senderId) && (
+                  <div className="flex items-start space-x-2 max-w-[70%]">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                      <span className="text-xs font-medium">
+                        {message.sender?.name?.charAt(0) || "U"}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {message.sender?.name}
+                      </p>
+                      <MessageBubble
+                        message={message}
+                        isCurrentUser={isCurrentUser(message.senderId)}
+                        onRightClick={(e) =>
+                          handleMessageRightClick(e, message.id)
+                        }
+                      />
+                    </div>
+                  </div>
+                )}
+
+              {/* Current User Message or Private Chat */}
+              {(isCurrentUser(message.senderId) ||
+                conversation.type === "PRIVATE") && (
+                <div className="max-w-[70%]">
+                  <MessageBubble
+                    message={message}
+                    isCurrentUser={isCurrentUser(message.senderId)}
+                    onRightClick={(e) => handleMessageRightClick(e, message.id)}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        ))
+      )}
+      <div ref={messagesEndRef} />
+
+      {/* Message Options Menu */}
+      {showOptions && (
+        <MessageOptions
+          messageId={showOptions.messageId}
+          isOwnMessage={isCurrentUser(
+            messages.find((m) => m.id === showOptions.messageId)?.senderId || ""
+          )}
+          isGroup={conversation.type === "GROUP"}
+          isAdmin={isUserAdmin()}
+          onDeleteForMe={() => onDeleteMessage(showOptions.messageId, false)}
+          onDeleteForAll={() => onDeleteMessage(showOptions.messageId, true)}
+          position={showOptions.position}
+          onClose={() => setShowOptions(null)}
+        />
+      )}
     </div>
   );
 };
+
+
 
 export default ChatMessages;
