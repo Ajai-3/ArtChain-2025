@@ -4,21 +4,27 @@ export const MediaType = {
   VIDEO: "VIDEO",
 } as const;
 
+export const DeleteMode = {
+  NONE: "NONE",
+  ME: "ME",
+  ALL: "ALL",
+} as const;
+
+export type DeleteMode = (typeof DeleteMode)[keyof typeof DeleteMode];
 export type MediaType = (typeof MediaType)[keyof typeof MediaType];
 
 export class Message {
   constructor(
-    public id: string,
-    public conversationId: string,
-    public senderId: string,
-    public content: string,
-    public mediaType?: MediaType,
-    public mediaUrl?: string,
-    public readBy: string[] = [],
-    public isDeleted: boolean = false,
-    public deletedFor: string[] = [],
-    public deletedAt?: Date,
-    public createdAt?: Date,
-    public updatedAt?: Date
+    public readonly id: string,
+    public readonly conversationId: string,
+    public readonly senderId: string,
+    public readonly content: string,
+    public readonly mediaType?: MediaType,
+    public readonly mediaUrl?: string,
+    public readonly readBy: string[] = [],
+    public readonly deleteMode: DeleteMode = DeleteMode.NONE,
+    public readonly deletedAt?: Date,
+    public readonly createdAt?: Date,
+    public readonly updatedAt?: Date
   ) {}
 }

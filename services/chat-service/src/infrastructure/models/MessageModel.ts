@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { Message, MediaType } from "../../domain/entities/Message";
+import { Message, MediaType, DeleteMode } from "../../domain/entities/Message";
 
 export interface IMessageDocument extends Omit<Message, "id"> {}
 
@@ -15,9 +15,12 @@ const MessageSchema = new Schema<IMessageDocument>(
     },
     mediaUrl: { type: String },
     readBy: { type: [String], default: [] },
-    isDeleted: { type: Boolean, default: false },
+    deleteMode: {
+      type: String,
+      enum: ["NONE", "ME", "ALL"] as DeleteMode[],
+      default: "NONE",
+    },
     deletedAt: { type: Date },
-    deletedFor: { type: [String], default: [] },
   },
   {
     timestamps: true,

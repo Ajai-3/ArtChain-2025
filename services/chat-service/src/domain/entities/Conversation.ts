@@ -8,13 +8,14 @@ export type ConversationType =
 
 export class Conversation {
   constructor(
-    public id: string,
-    public type: ConversationType = ConversationType.PRIVATE,
-    public memberIds: string[],
-    public adminIds: string[] = [],
-    public name?: string,
-    public locked: boolean = false,
-    public createdAt?: Date,
-    public updatedAt?: Date
+    public readonly id: string,
+    public readonly type: ConversationType = ConversationType.PRIVATE,
+    public readonly memberIds: string[],
+    public readonly ownerId?: string,
+    public readonly adminIds: string[] = [],
+    public readonly name?: string,
+    public readonly locked: boolean = false,
+    public readonly createdAt?: Date,
+    public readonly updatedAt?: Date
   ) {}
 }
