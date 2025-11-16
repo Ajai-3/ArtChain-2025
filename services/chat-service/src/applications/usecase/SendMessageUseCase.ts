@@ -1,11 +1,13 @@
 import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
-import { Message } from "../../domain/entities/Message";
 import { TYPES } from "../../infrastructure/Inversify/types";
 import { SendMessageDto } from "../interface/dto/SendMessageDto";
+import { DeleteMode, Message } from "../../domain/entities/Message";
 import { ConversationType } from "../../domain/entities/Conversation";
 import { ISendMessageUseCase } from "../interface/usecase/ISendMessageUseCase";
+import { IMessageCacheService } from "../interface/service/IMessageCacheService";
 import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
+import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
 
 @injectable()
@@ -13,65 +15,82 @@ export class SendMessageUseCase implements ISendMessageUseCase {
   constructor(
     @inject(TYPES.IMessageRepository)
     private readonly _messageRepo: IMessageRepository,
+    @inject(TYPES.IMessageCacheService)
+    private readonly _cacheService: IMessageCacheService,
     @inject(TYPES.IConversationRepository)
-    private readonly _conversationRepo: IConversationRepository
+    private readonly _conversationRepo: IConversationRepository,
+    @inject(TYPES.IMessageBroadcastService)
+    private readonly _broadcastService: IMessageBroadcastService,
   ) {}
 
   async execute(dto: SendMessageDto): Promise<Message> {
     let { senderId, receiverId, content, conversationId } = dto;
 
-    if (!content || content.trim() === "") {
+    if (!content?.trim()) {
       throw new BadRequestError("Message content cannot be empty");
     }
 
-    if (!conversationId) {
-      if (!receiverId) {
-        throw new BadRequestError("receiverId is required for first message");
-      }
+    conversationId = await this.resolveConversation(
+      senderId,
+      receiverId,
+      conversationId
+    );
 
-      let existing = await this._conversationRepo.findPrivateConversation(
-        senderId,
-        receiverId
-      );
+    // Create message in DB
+    const message = await this._messageRepo.create({
+      conversationId,
+      senderId,
+      content: content.trim(),
+      readBy: [],
+      deleteMode: DeleteMode.NONE,
+    });
 
-      if (existing) {
-        conversationId = existing.id;
-      } else {
-        const conversation = await this._conversationRepo.create({
-          type: ConversationType.PRIVATE,
-          memberIds: [senderId, receiverId],
-          locked: false,
-          adminIds: [],
-        });
-        conversationId = conversation.id;
-      }
-    } else {
+    await this._cacheService.cacheMessage(message);
+
+    await this._broadcastService.publishMessage(message);
+
+    return message;
+  }
+
+  private async resolveConversation(
+    senderId: string,
+    receiverId?: string,
+    conversationId?: string
+  ): Promise<string> {
+    if (conversationId) {
       const conversation = await this._conversationRepo.findById(
         conversationId
       );
-      if (!conversation) {
-        throw new BadRequestError("Conversation not found");
-      }
+      if (!conversation) throw new BadRequestError("Conversation not found");
 
       if (
         conversation.type === ConversationType.PRIVATE &&
         !conversation.memberIds.includes(senderId)
       ) {
         throw new BadRequestError(
-          "You are not allowed to send message to this conversation"
+          "Not allowed to send message to this conversation"
         );
       }
+
+      return conversationId;
     }
 
-    const message = await this._messageRepo.create({
-      conversationId,
+    if (!receiverId)
+      throw new BadRequestError("receiverId is required for first message");
+
+    let existing = await this._conversationRepo.findPrivateConversation(
       senderId,
-      content,
-      readBy: [],
-      isDeleted: false,
-      deletedFor: [],
+      receiverId
+    );
+    if (existing) return existing.id;
+
+    const conversation = await this._conversationRepo.create({
+      type: ConversationType.PRIVATE,
+      memberIds: [senderId, receiverId],
+      locked: false,
+      adminIds: [],
     });
 
-    return message;
+    return conversation.id;
   }
 }

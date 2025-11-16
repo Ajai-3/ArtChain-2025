@@ -18,10 +18,13 @@ import { ListMessagesUseCase } from "../../applications/usecase/ListMessagesUseC
 import { DeleteMessageUseCase } from "../../applications/usecase/DeleteMessageUseCase";
 
 // Services
-import { MessageService } from "../../services/MessageService";
+import { UserService } from "../http/UserService";
+import { MessageCacheService } from "../services/MessageCacheService";
+import { MessageBroadcastService } from "../services/MessageBroadcastService";
 
-import { IMessageService } from "../../services/interface/IMessageService";
-
+import { IUserService } from "../../applications/interface/http/IUserService";
+import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
+import { IMessageCacheService } from "../../applications/interface/service/IMessageCacheService";
 
 // Controller
 import { IMessageController } from "../../presentation/interface/IMessageController";
@@ -51,8 +54,14 @@ container
   .bind<IDeleteMessageUseCase>(TYPES.IDeleteMessageUseCase)
   .to(DeleteMessageUseCase);
 
-  // Srevice
-  container.bind<IMessageService>(TYPES.IMessageService).to(MessageService);
+// Srevice
+container.bind<IUserService>(TYPES.IUserService).to(UserService);
+container
+  .bind<IMessageBroadcastService>(TYPES.IMessageBroadcastService)
+  .to(MessageBroadcastService);
+container
+  .bind<IMessageCacheService>(TYPES.IMessageCacheService)
+  .to(MessageCacheService);
 
 // Controller
 container

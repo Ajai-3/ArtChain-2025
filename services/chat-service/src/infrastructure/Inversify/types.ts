@@ -1,5 +1,4 @@
 export const TYPES = {
-
   // Repositories
   IMessageRepository: Symbol.for("IMessageRepository"),
   IConversationRepository: Symbol.for("IConversationRepository"),
@@ -10,7 +9,10 @@ export const TYPES = {
   IDeleteMessageUseCase: Symbol.for("IDeleteMessageUseCase"),
 
   // Services
-  IMessageService: Symbol.for("IMessageService"),
+  IUserService: Symbol.for("IUserService"),
+  ICacheService: Symbol.for("ICacheService"),
+  IMessageCacheService: Symbol.for("IMessageCacheService"),
+  IMessageBroadcastService: Symbol.for("IMessageBroadcastService"),
 
   // Controllers
   IMessageController: Symbol.for("IMessageController"),
