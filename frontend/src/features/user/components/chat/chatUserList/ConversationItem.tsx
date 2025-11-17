@@ -1,6 +1,10 @@
 // components/chat/ConversationItem.tsx
 import React from "react";
-import { type Conversation, ConversationType } from "../../../../../types/chat/chat";
+import {
+  type Conversation,
+  ConversationType,
+  MediaType,
+} from "../../../../../types/chat/chat";
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -29,10 +33,55 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       { bg: "bg-purple-100", text: "text-purple-600" },
       { bg: "bg-orange-100", text: "text-orange-600" },
     ];
-    return colors[parseInt(id) % colors.length];
+    const index = parseInt(id.replace(/\D/g, ""), 10) || 0;
+    return colors[index % colors.length];
   };
 
   const color = getAvatarColor(conversation.id);
+
+  const renderLastMessage = () => {
+    if (!conversation.lastMessage) return "No messages yet";
+
+    const msg = conversation.lastMessage;
+
+   if (msg.deleteMode !== "NONE") {
+     switch (msg.deleteMode) {
+       case "ALL":
+         return "This message was deleted";
+       case "ME":
+         return "You deleted this message";
+       default:
+         return "Message deleted";
+     }
+   }
+
+    if (msg.mediaType) {
+      switch (msg.mediaType) {
+        case "IMAGE":
+          return "📷 Photo";
+        case "VIDEO":
+          return "🎥 Video";
+        case "AUDIO":
+          return "🎵 Audio";
+        default:
+          return "📎 Attachment";
+      }
+    }
+
+    if (msg.mediaType) {
+      return `[${msg.mediaType}] ${msg.content}`;
+    }
+
+    return msg.content;
+  };
+
+  const getConversationName = () => {
+    if (conversation.type === ConversationType.GROUP) {
+      return conversation.name || conversation.group?.name || "Unnamed Group";
+    }
+
+    return conversation.partner?.name || "Unknown User";
+  };
 
   return (
     <div
@@ -41,6 +90,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         isSelected ? "bg-zinc-200 dark:bg-zinc-800" : ""
       }`}
     >
+      {/* Avatar */}
       <div className="relative flex-shrink-0">
         <div
           className={`w-12 h-12 rounded-full flex items-center justify-center ${color.bg} ${color.text}`}
@@ -54,17 +104,23 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
             </div>
           ) : (
             <span className="text-sm font-medium">
-              {getInitials(
-                conversation.name ||
-                  conversation.members?.find((m) => m.id !== "1")?.name ||
-                  "U"
-              )}
+              {getInitials(getConversationName())}
             </span>
           )}
         </div>
-        {conversation.isOnline && !conversation.locked && (
-          <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background bg-green-500" />
-        )}
+
+        {/* Online indicator */}
+        {conversation.partner?.id &&
+          conversation.partner?.id !== "" &&
+          conversation.partner?.id &&
+          !conversation.locked &&
+          conversation.partner?.id &&
+          conversation.partner?.id &&
+          conversation.partner?.id && (
+            <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background bg-green-500" />
+          )}
+
+        {/* Locked indicator */}
         {conversation.locked && (
           <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
             <svg
@@ -78,14 +134,11 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         )}
       </div>
 
+      {/* Content */}
       <div className="flex-1 ml-3 min-w-0">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-sm truncate flex items-center">
-            {conversation.name ||
-              conversation.members
-                ?.filter((m) => m.id !== "1")
-                .map((m) => m.name)
-                .join(", ")}
+            {getConversationName()}
             {conversation.type === ConversationType.GROUP && (
               <span className="ml-2 text-xs bg-muted px-1.5 py-0.5 rounded text-muted-foreground">
                 Group
@@ -93,30 +146,36 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
             )}
           </h3>
           <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
-            {conversation.lastMessageTime}
+            {conversation.lastMessage?.createdAt
+              ? new Date(
+                  conversation.lastMessage.createdAt
+                ).toLocaleTimeString()
+              : ""}
           </span>
         </div>
+
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground truncate pr-2">
-            {conversation.lastMessage}
+            {renderLastMessage()}
           </p>
-          {(conversation.locked ||
+          {conversation.unreadCount > 0 && (
+            <div className="w-5 h-5 bg-main-color rounded-full flex items-center justify-center">
+              <span className="text-xs text-white font-medium">
+                {conversation.unreadCount > 99
+                  ? "99+"
+                  : conversation.unreadCount}
+              </span>
+            </div>
+          )}
+          {/* {(conversation.locked ||
             (conversation.unreadCount && conversation.unreadCount > 0)) && (
             <div className="flex items-center space-x-1 flex-shrink-0">
               {conversation.locked && (
                 <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
               )}
-              {conversation.unreadCount && conversation.unreadCount > 0 && (
-                <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-xs text-primary-foreground font-medium">
-                    {conversation.unreadCount > 99
-                      ? "99+"
-                      : conversation.unreadCount}
-                  </span>
-                </div>
-              )}
+             
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

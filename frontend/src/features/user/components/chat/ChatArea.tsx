@@ -10,71 +10,29 @@ import {
   DeleteMode,
   MediaType,
 } from "../../../../types/chat/chat";
-import { dummyConversations, dummyMessages } from "./dummyData";
 
 interface ChatAreaProps {
-  selectedConversation: string | null;
+  selectedConversation: Conversation | null;
+  messages: Message[];
   onBack?: () => void;
   currentUserId: string;
+  onSendMessage: (text: string) => void;
+  onSendImage: (mediaUrl?: string) => void;
+  onDeleteMessage: (messageId: string, deleteForAll: boolean) => void;
 }
 
 const ChatArea: React.FC<ChatAreaProps> = ({
   selectedConversation,
+  messages,
   onBack,
   currentUserId,
+  onSendMessage,
+  onSendImage,
+  onDeleteMessage,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(dummyMessages);
 
-  const conversation = dummyConversations.find(
-    (c) => c.id === selectedConversation
-  );
-
-  const handleSendMessage = (text: string) => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      conversationId: selectedConversation!,
-      senderId: currentUserId,
-      content: text,
-      readBy: [],
-      deleteMode: DeleteMode.NONE,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-  };
-
-  const handleSendImage = () => {
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      conversationId: selectedConversation!,
-      senderId: currentUserId,
-      content: "Check out this image!",
-      mediaType: MediaType.IMAGE,
-      mediaUrl: "https://example.com/image.jpg",
-      readBy: [],
-      deleteMode: DeleteMode.NONE,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-  };
-
-  const handleDeleteMessage = (messageId: string, deleteForAll: boolean) => {
-    setMessages((prev) =>
-      prev.map((msg) =>
-        msg.id === messageId
-          ? {
-              ...msg,
-              deleteMode: deleteForAll ? DeleteMode.ALL : DeleteMode.ME,
-              deletedAt: new Date(),
-            }
-          : msg
-      )
-    );
-  };
-
-  if (!selectedConversation || !conversation) {
+  if (!selectedConversation) {
     return (
       <div className="hidden md:flex flex-1 items-center justify-center">
         <div className="text-center p-8 max-w-md">
@@ -107,7 +65,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
       </div>
     );
   }
-  
+
   return (
     <div
       className="flex h-full w-full relative bg-cover bg-center bg-no-repeat"
@@ -116,19 +74,16 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           "url('https://pic.rutubelist.ru/video/84/49/84491f90cc1b8fea562ad525afaaf08f.jpg')",
       }}
     >
-      {/* Dark theme image overlay */}
       <div className="dark:bg-[url('https://i.pinimg.com/originals/47/fb/b6/47fbb68a37492662cd74715d7787a212.jpg')] dark:bg-cover dark:bg-center dark:bg-no-repeat absolute inset-0"></div>
-      {/* Main Chat Area */}
+
       <div
         className={`flex flex-col h-full transition-all duration-300 z-50 ${
-          showDetails
-            ? "w-0 md:w-[calc(100%-384px)]" // 384px = 96 * 4 (w-96)
-            : "w-full"
+          showDetails ? "w-0 md:w-[calc(100%-384px)]" : "w-full"
         }`}
       >
         <ChatHeader
           currentUserId={currentUserId}
-          conversation={conversation}
+          conversation={selectedConversation}
           onBack={onBack}
           onToggleDetails={() => setShowDetails(!showDetails)}
           showDetails={showDetails}
@@ -136,22 +91,21 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 
         <ChatMessages
           messages={messages}
-          conversation={conversation}
+          conversation={selectedConversation}
           currentUserId={currentUserId}
-          onDeleteMessage={handleDeleteMessage}
+          onDeleteMessage={onDeleteMessage}
         />
 
         <ChatInput
-          onSendMessage={handleSendMessage}
-          onSendImage={handleSendImage}
-          disabled={conversation.locked}
+          onSendMessage={onSendMessage}
+          onSendImage={onSendImage}
+          disabled={selectedConversation.locked}
         />
       </div>
 
-      {/* Conversation Details Panel */}
       {showDetails && (
         <ConversationDetails
-          conversation={conversation}
+          conversation={selectedConversation}
           onClose={() => setShowDetails(false)}
           currentUserId={currentUserId}
         />

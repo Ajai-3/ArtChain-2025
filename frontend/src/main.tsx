@@ -21,7 +21,11 @@ createRoot(document.getElementById("root")!).render(
               <ThemeProvider>
                 <App />
                 {import.meta.env.DEV && (
-                  <ReactQueryDevtools initialIsOpen={false} />
+                  <ReactQueryDevtools
+                    initialIsOpen={false}
+                    buttonPosition="top-left"
+                    position="left"
+                  />
                 )}
               </ThemeProvider>
             </SocketProvider>

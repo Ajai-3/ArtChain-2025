@@ -52,7 +52,6 @@ const UserRoutes = (
 
     <Route path="/" element={<UserLayout />}>
       <Route index element={<Home />} />
-      <Route path="chat" element={<Chat />} />
       <Route path="liora.ai" element={<Liora />} />
       <Route path="notifications" element={<Notifications />} />
       <Route path="bidding" element={<Bidding />} />
@@ -60,11 +59,12 @@ const UserRoutes = (
       <Route path="wallet" element={<Wallet />} />
       <Route path="settings" element={<Settings />} />
       <Route path="test" element={<Test />} />
-
       <Route path="success" element={<SuccessPage />} />
-
       <Route path="/:username/art/:artname" element={<ArtPage />} />
-
+      // Chat Routes
+      <Route path="chat" element={<Chat />} />
+      <Route path="/chat/:conversationId" element={<Chat />} />
+      
       {/* Profile Routes */}
       <Route path="/:username" element={<Profile />}>
         <Route index element={<ProfileGallery />} />

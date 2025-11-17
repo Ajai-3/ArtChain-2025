@@ -1,14 +1,23 @@
-// components/Chat.tsx
 import React, { useState } from "react";
-import ChatUserList from "../components/chat/ChatUserList";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 import ChatArea from "../components/chat/ChatArea";
+import type { RootState } from "../../../redux/store";
+import ChatUserList from "../components/chat/ChatUserList";
+
 
 const Chat: React.FC = () => {
+  const { conversationId } = useParams<{ conversationId: string }>();
+  console.log(conversationId);
   const [selectedConversation, setSelectedConversation] = useState<
     string | null
   >(null);
   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
-  const currentUserId = "1";
+  const currentUserId = useSelector((state: RootState) => state.user.user?.id) ;
+
+  if (!currentUserId) {
+    return <div>Loading...</div>;
+  }
 
   const handleSelectConversation = (conversationId: string) => {
     setSelectedConversation(conversationId);
