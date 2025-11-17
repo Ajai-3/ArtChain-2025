@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import ConversationItem from "./chatUserList/ConversationItem";
 import {
   type Conversation,
   ConversationType,
 } from "../../../../types/chat/chat";
 import { useRecentConversations } from "../../hooks/chat/useRecentConversations";
+import {
+  setConversations,
+  addConversation,
+  updateConversation,
+} from "../../../../redux/slices/chatSlice";
+import { type RootState } from "../../../../redux/store";
 
 interface ChatUserListProps {
   selectedConversation: string | null;
@@ -19,17 +26,29 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>("private");
   const [searchQuery, setSearchQuery] = useState("");
+  const dispatch = useDispatch();
+
+  // Get conversations from Redux store
+  const conversations = useSelector((state: RootState) =>
+    Object.values(state.chat.conversations)
+  );
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRecentConversations();
 
-  const allConversations: Conversation[] =
-    data?.pages.flatMap((page) => page.conversations) || [];
+  // Store conversations in Redux when data changes
+  useEffect(() => {
+    if (data?.pages) {
+      const allConversations: Conversation[] =
+        data.pages.flatMap((page) => page.conversations) || [];
 
-    console.log(allConversations);
+      // Dispatch to Redux store
+      dispatch(setConversations(allConversations));
+    }
+  }, [data, dispatch]);
 
   // Filter conversations based on active tab and search query
-  const filteredConversations = allConversations.filter((conversation) => {
+  const filteredConversations = conversations.filter((conversation) => {
     const matchesSearch =
       conversation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conversation.memberIds?.some((memberId) => {
@@ -57,16 +76,19 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
   ];
 
   // Scroll handler for infinite loading
-  const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
-    const target = e.currentTarget;
-    if (
-      target.scrollHeight - target.scrollTop === target.clientHeight &&
-      hasNextPage &&
-      !isFetchingNextPage
-    ) {
-      fetchNextPage();
-    }
-  };
+ const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+   const target = e.currentTarget;
+   const { scrollTop, scrollHeight, clientHeight } = target;
+
+   // Load more when near bottom (more forgiving)
+   if (
+     scrollHeight - scrollTop <= clientHeight + 100 && 
+     hasNextPage &&
+     !isFetchingNextPage
+   ) {
+     fetchNextPage();
+   }
+ };
 
   return (
     <div className="w-full h-full flex flex-col bg-background border-r border-border">
