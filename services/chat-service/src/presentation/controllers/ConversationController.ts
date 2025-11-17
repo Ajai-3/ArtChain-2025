@@ -4,6 +4,7 @@ import { CreatePrivateConversationDto } from "../../applications/interface/dto/C
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
 import { TYPES } from "../../infrastructure/Inversify/types";
 import { HttpStatus } from "art-chain-shared";
+import { logger } from "../../infrastructure/utils/logger";
 
 @injectable()
 export class ConversationController {
@@ -29,6 +30,10 @@ export class ConversationController {
       const { otherUserId } = req.body;
       const userId = req.headers["x-user-id"] as string;
 
+      logger.info(
+        `ConversationController.createPrivateConversation: userId: ${userId}, otherUserId: ${otherUserId}`
+      );
+
       const dto: CreatePrivateConversationDto = {
         userId,
         otherUserId,
@@ -36,6 +41,8 @@ export class ConversationController {
 
       const conversationId =
         await this._createPrivateConversationUseCase.execute(dto);
+
+      logger.info(`Conversation created: ${conversationId}`);
 
       return res
         .status(HttpStatus.CREATED)

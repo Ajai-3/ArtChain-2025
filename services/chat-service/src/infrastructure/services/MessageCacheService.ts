@@ -6,7 +6,7 @@ import { IMessageCacheService } from "../../applications/interface/service/IMess
 
 @injectable()
 export class MessageCacheService implements IMessageCacheService {
-  private readonly MESSAGE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+  private readonly MESSAGE_TTL_MS = 24 * 60 * 60 * 1000; 
   private readonly MAX_CACHE_MESSAGES = 100;
 
   constructor(

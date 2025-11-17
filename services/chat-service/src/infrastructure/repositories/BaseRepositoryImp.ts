@@ -9,16 +9,16 @@ export abstract class BaseRepositoryImp<T, D> implements IBaseRepository<T> {
   constructor(model: Model<D>) {
     this.model = model;
   }
-
   protected mapDbToDomain(dbObj: any): T {
     if (!dbObj) return null as any;
     const obj = dbObj.toObject ? dbObj.toObject({ versionKey: false }) : dbObj;
+
+    const { _id, ...rest } = obj;
     return {
-      ...obj,
-      id: obj.id ?? obj._id?.toString(),
+      ...rest,
+      id: obj.id ?? _id?.toString(),
     } as T;
   }
-
   protected mapDbArrayToDomain(docs: any[]): T[] {
     return docs.map((doc) => this.mapDbToDomain(doc)!).filter(Boolean);
   }

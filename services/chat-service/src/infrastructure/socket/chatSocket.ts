@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import { redisSub } from "../config/redis";
 import { registerClientEvents } from "./handlers/registerClientEvents";
 import { authMiddleware } from "../../presentation/middleware/authMiddleware";
+import { logger } from "../utils/logger";
 
 export const chatSocket = (io: Server) => {
   const onlineUsers = new Map<string, string>();
@@ -10,7 +11,7 @@ export const chatSocket = (io: Server) => {
 
   io.on("connection", (socket) => {
     const userId = socket.data.userId;
-    console.log(`🔌 Socket connected: ${socket.id} (user: ${userId})`);
+    logger.info(`🔌 Socket connected: ${socket.id} (user: ${userId})`);
 
     onlineUsers.set(userId, socket.id);
     io.emit("chatOnline", Array.from(onlineUsers.keys()));

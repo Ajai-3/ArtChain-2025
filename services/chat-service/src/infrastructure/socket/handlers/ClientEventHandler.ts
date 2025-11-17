@@ -1,4 +1,4 @@
-import { inject, injectable } from "inversify";
+import { inject, injectable, unmanaged } from "inversify";
 import { TYPES } from "../../Inversify/types";
 import { IClientEventHandler } from "../interface/IClientEventHandler";
 import { SendMessageDto } from "../../../applications/interface/dto/SendMessageDto";
@@ -9,8 +9,8 @@ import { IDeleteMessageUseCase } from "../../../applications/interface/usecase/I
 @injectable()
 export class ClientEventHandler implements IClientEventHandler {
   constructor(
-    private socket: any,
-    private onlineUsers: Map<string, string>,
+    @unmanaged() private socket: any,
+    @unmanaged() private onlineUsers: Map<string, string>,
     @inject(TYPES.ISendMessageUseCase)
     private readonly _sendMessageUseCase: ISendMessageUseCase,
     @inject(TYPES.IDeleteMessageUseCase)

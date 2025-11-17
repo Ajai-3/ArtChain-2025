@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { BaseRepositoryImp } from "./BaseRepositoryImp";
-import { Conversation } from "../../domain/entities/Conversation";
+import { Conversation, ConversationType } from "../../domain/entities/Conversation";
 import { ConversationModel, IConversationDocument } from './../models/ConversationModel';
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
 
@@ -14,11 +14,12 @@ export class ConversationRepositoryImp
   }
 
   async findPrivateConversation(
-    userA: string,
-    userB: string
+    userId: string,
+    otherUserId: string
   ): Promise<Conversation | null> {
     const conversation = await this.model.findOne({
-      users: { $all: [userA, userB] },
+      memberIds: [userId, otherUserId],
+      type: ConversationType.PRIVATE,
     });
     return this.mapDbToDomain(conversation);
   }

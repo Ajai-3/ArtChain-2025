@@ -12,8 +12,8 @@ export class Conversation {
     public readonly type: ConversationType = ConversationType.PRIVATE,
     public readonly memberIds: string[],
     public readonly ownerId?: string,
-    public readonly adminIds: string[] = [],
     public readonly name?: string,
+    public readonly adminIds: string[] = [],
     public readonly locked: boolean = false,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date

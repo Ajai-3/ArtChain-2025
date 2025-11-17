@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { logger } from "../../infrastructure/utils/logger";
 import { TYPES } from "../../infrastructure/Inversify/types";
 import { ConversationType } from "../../domain/entities/Conversation";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
@@ -16,10 +17,13 @@ export class CreatePrivateConversationUseCase
 
   async execute(dto: CreatePrivateConversationDto): Promise<string> {
     const { userId, otherUserId } = dto;
+
     let conversation = await this._conversationRepo.findPrivateConversation(
       userId,
       otherUserId
     );
+
+    console.log(conversation, "Already exists");
 
     if (!conversation) {
       conversation = await this._conversationRepo.create({

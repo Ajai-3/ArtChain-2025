@@ -21,9 +21,11 @@ import { CreatePrivateConversationUseCase } from "../../applications/usecase/Cre
 
 // Services
 import { UserService } from "../http/UserService";
+import { RedisCacheService } from "../cache/RedisCacheService";
 import { MessageCacheService } from "../services/MessageCacheService";
 import { MessageBroadcastService } from "../services/MessageBroadcastService";
 
+import { ICacheService } from "../../domain/service/ICacheService";
 import { IUserService } from "../../applications/interface/http/IUserService";
 import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 import { IMessageCacheService } from "../../applications/interface/service/IMessageCacheService";
@@ -70,6 +72,7 @@ container
 
 // Srevice
 container.bind<IUserService>(TYPES.IUserService).to(UserService);
+container.bind<ICacheService>(TYPES.ICacheService).to(RedisCacheService);
 container
   .bind<IMessageBroadcastService>(TYPES.IMessageBroadcastService)
   .to(MessageBroadcastService);
