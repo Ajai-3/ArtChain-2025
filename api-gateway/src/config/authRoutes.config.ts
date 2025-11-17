@@ -49,6 +49,9 @@ export const authRoutesConfig = {
     { path: "/api/v1/art/favorite", methods: ["POST"] },
     { path: "/api/v1/art/unfavorite", methods: ["DELETE"] },
     { path: "/api/v1/art/favorites/:postId", methods: ["GET"] },
+
+    { path: "/api/v1/chat/conversation/private", methods: ["POST"] },
+    
   ],
 
   user_optional: [
