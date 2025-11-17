@@ -4,7 +4,7 @@ import { Conversation, ConversationType } from "../../domain/entities/Conversati
 export interface IConversationDocument extends Omit<Conversation, "id"> {}
 
 const ConversationSchema = new Schema<IConversationDocument>({
-  type: { type: String, enum: ["PRIVATE", "GROUP"] as ConversationType[], required: true },
+  type: { type: String, enum: ["PRIVATE", "REQUEST", "GROUP"] as ConversationType[], required: true },
   memberIds: { type: [String], required: true },
   ownerId: { type: String },
   adminIds: { type: [String], default: [] },

@@ -1,6 +1,7 @@
 export const ConversationType = {
-  PRIVATE: "PRIVATE",
   GROUP: "GROUP",
+  PRIVATE: "PRIVATE",
+  REQUEST: "REQUEST",
 } as const;
 
 export type ConversationType =

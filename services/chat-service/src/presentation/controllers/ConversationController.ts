@@ -46,7 +46,10 @@ export class ConversationController {
 
       return res
         .status(HttpStatus.CREATED)
-        .json({ message: "Conversation created successfully", conversationId });
+        .json({
+          message: "Conversation created successfully",
+          data: { conversationId },
+        });
     } catch (error) {
       next(error);
     }
