@@ -3,10 +3,14 @@ import { Request, Response, NextFunction } from "express";
 import { CreatePrivateConversationDto } from "../../applications/interface/dto/CreatePrivateConversationDto";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
 import { TYPES } from "../../infrastructure/Inversify/types";
+import { HttpStatus } from "art-chain-shared";
 
 @injectable()
 export class ConversationController {
-  constructor(@inject(TYPES.ICreatePrivateConversationUseCase) private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase) {}
+  constructor(
+    @inject(TYPES.ICreatePrivateConversationUseCase)
+    private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase
+  ) {}
 
   //#========================================================================================================================
   //# CREATE PRIVATE CONVERSATION
@@ -16,7 +20,11 @@ export class ConversationController {
   //# x-user-id
   //# This endpoint allows a user create a one-on-one chat conversation
   //#========================================================================================================================
-  createPrivateConversation = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  createPrivateConversation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
     try {
       const { otherUserId } = req.body;
       const userId = req.headers["x-user-id"] as string;
@@ -26,10 +34,14 @@ export class ConversationController {
         otherUserId,
       };
 
-      const conversationId = await this._createPrivateConversationUseCase.execute(dto);
-      
+      const conversationId =
+        await this._createPrivateConversationUseCase.execute(dto);
+
+      return res
+        .status(HttpStatus.CREATED)
+        .json({ message: "Conversation created successfully", conversationId });
     } catch (error) {
       next(error);
     }
-  }
+  };
 }

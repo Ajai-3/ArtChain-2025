@@ -20,4 +20,5 @@ export const TYPES = {
 
   // Controllers
   IMessageController: Symbol.for("IMessageController"),
+  IConversationController: Symbol.for("IConversationController"),
 };

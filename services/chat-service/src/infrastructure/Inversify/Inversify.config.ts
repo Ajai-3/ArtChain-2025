@@ -35,8 +35,10 @@ import { ClientEventHandler } from "../socket/handlers/ClientEventHandler";
 
 // Controller
 import { IMessageController } from "../../presentation/interface/IMessageController";
+import { IConversationController } from "../../presentation/interface/IConversationController";
 
 import { MessageController } from "../../presentation/controllers/MessageController";
+import { ConversationController } from "../../presentation/controllers/ConversationController";
 
 const container = new Container();
 
@@ -84,5 +86,8 @@ container
 container
   .bind<IMessageController>(TYPES.IMessageController)
   .to(MessageController);
+container
+  .bind<IConversationController>(TYPES.IConversationController)
+  .to(ConversationController);
 
 export default container;
