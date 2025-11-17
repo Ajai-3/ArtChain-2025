@@ -1,7 +1,9 @@
 // types/chat.ts
+
 export const ConversationType = {
   PRIVATE: "PRIVATE",
   GROUP: "GROUP",
+  REQUEST: "REQUEST", // added based on your backend logic
 } as const;
 
 export type ConversationType =
@@ -27,9 +29,23 @@ export interface User {
   id: string;
   name: string;
   username: string;
-  profileImage?: string;
-  isOnline?: boolean;
-  lastSeen?: Date;
+  plan?: string;
+  role?: string;
+  profileImage?: string | null;
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  mediaType?: MediaType;
+  mediaUrl?: string;
+  readBy: string[];
+  deleteMode: DeleteMode;
+  deletedAt?: Date | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Conversation {
@@ -38,30 +54,21 @@ export interface Conversation {
   memberIds: string[];
   ownerId?: string;
   adminIds?: string[];
+  locked: boolean;
   name?: string;
-  description?: string;
-  members?: User[];
-  lastMessage?: string;
-  lastMessageTime?: string;
-  unreadCount?: number;
-  isOnline?: boolean;
-  lastSeen?: string;
-  locked?: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: string;
+  updatedAt: string;
+  lastMessage?: Message | null;
+  unreadCount: number;
+  partner?: User | null; 
+  group?: { name: string } | null;
 }
 
-export interface Message {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  sender?: User;
-  content: string;
-  mediaType?: MediaType;
-  mediaUrl?: string;
-  readBy?: string[];
-  deleteMode: DeleteMode;
-  deletedAt?: Date;
-  createdAt?: Date;
-  updatedAt?: Date;
+export interface PaginatedConversations {
+  conversations: Conversation[];
+  page: number;
+  limit: number;
+  nextPage: number | null;
+  hasNextPage: boolean;
+  total: number;
 }
