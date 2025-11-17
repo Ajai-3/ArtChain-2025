@@ -1,7 +1,13 @@
 import { injectable } from "inversify";
 import { BaseRepositoryImp } from "./BaseRepositoryImp";
-import { Conversation, ConversationType } from "../../domain/entities/Conversation";
-import { ConversationModel, IConversationDocument } from './../models/ConversationModel';
+import {
+  Conversation,
+  ConversationType,
+} from "../../domain/entities/Conversation";
+import {
+  ConversationModel,
+  IConversationDocument,
+} from "./../models/ConversationModel";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
 
 @injectable()
@@ -24,10 +30,19 @@ export class ConversationRepositoryImp
     return this.mapDbToDomain(conversation);
   }
 
-  async listUserConversations(userId: string): Promise<Conversation[]> {
-    const conversations = await this.model.find({
-      users: { $in: [userId] },
+  async listResentByUser(userId: string, page: number, limit: number) {
+    const skip = (page - 1) * limit;
+
+    const docs = await ConversationModel.find({ memberIds: { $in: [userId] } })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await ConversationModel.countDocuments({
+      memberIds: { $in: [userId] },
     });
-    return this.mapDbArrayToDomain(conversations);
+
+    const conversations = this.mapDbArrayToDomain(docs);
+    return { conversations, total };
   }
 }

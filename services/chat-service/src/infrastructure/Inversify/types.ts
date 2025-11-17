@@ -13,6 +13,7 @@ export const TYPES = {
   ISendMessageUseCase: Symbol.for("ISendMessageUseCase"),
   IListMessagesUseCase: Symbol.for("IListMessagesUseCase"),
   IDeleteMessageUseCase: Symbol.for("IDeleteMessageUseCase"),
+  IGetAllResendConversationUseCase: Symbol.for("IGetAllResendConversationUseCase"),
   ICreatePrivateConversationUseCase: Symbol.for("ICreatePrivateConversationUseCase"),
 
   // Handlers

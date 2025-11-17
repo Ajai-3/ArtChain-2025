@@ -14,6 +14,10 @@ router.post(
   "/conversation/private",
   conversationController.createPrivateConversation
 );
+router.get(
+  "/conversation/recent",
+  conversationController.getResendConversations
+);
 router.post('/message/send', messageController.sendMessage);
 router.get('/message/:conversationId', messageController.listMessages);
 router.delete('/message/:messageId', messageController.deleteMessage);

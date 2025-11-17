@@ -12,11 +12,13 @@ import { ConversationRepositoryImp } from "../repositories/ConversationRepositor
 import { ISendMessageUseCase } from "../../applications/interface/usecase/ISendMessageUseCase";
 import { IListMessagesUseCase } from "../../applications/interface/usecase/IListMessagesUseCase";
 import { IDeleteMessageUseCase } from "../../applications/interface/usecase/IDeleteMessageUseCase";
+import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
 
 import { SendMessageUseCase } from "../../applications/usecase/SendMessageUseCase";
 import { ListMessagesUseCase } from "../../applications/usecase/ListMessagesUseCase";
 import { DeleteMessageUseCase } from "../../applications/usecase/DeleteMessageUseCase";
+import { GetAllResendConversationUseCase } from "../../applications/usecase/GetAllResendConversationUseCase";
 import { CreatePrivateConversationUseCase } from "../../applications/usecase/CreatePrivateConversationUseCase";
 
 // Services
@@ -69,6 +71,11 @@ container
     TYPES.ICreatePrivateConversationUseCase
   )
   .to(CreatePrivateConversationUseCase);
+container
+  .bind<IGetAllResendConversationUseCase>(
+    TYPES.IGetAllResendConversationUseCase
+  )
+  .to(GetAllResendConversationUseCase);
 
 // Srevice
 container.bind<IUserService>(TYPES.IUserService).to(UserService);

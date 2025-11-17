@@ -20,7 +20,7 @@ export class MessageRepositoryImp
   ): Promise<Message[]> {
     const messages = await this.model
       .find({ conversationId })
-      .sort({ createdAt: -1 }) 
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
@@ -30,4 +30,32 @@ export class MessageRepositoryImp
   async markRead(messageIds: string[]): Promise<void> {
     await this.model.updateMany({ _id: { $in: messageIds } }, { read: true });
   }
-}
+
+  async getLastMessages(conversationIds: string[]): Promise<Message[]> {
+    const rows = await this.model.aggregate([
+      { $match: { conversationId: { $in: conversationIds } } },
+      { $sort: { createdAt: -1 } },
+      { $group: { _id: "$conversationId", doc: { $first: "$$ROOT" } } },
+    ]);
+
+    return rows.map((r) => this.mapDbToDomain(r.doc));
+  }
+
+  async getUnreadCounts(conversationIds: string[], userId: string) {
+    const rows = await this.model.aggregate([
+      {
+        $match: {
+          conversationId: { $in: conversationIds },
+          senderId: { $ne: userId },
+          readBy: { $ne: userId },
+        },
+      },
+      { $group: { _id: "$conversationId", count: { $sum: 1 } } },
+    ]);
+
+    return rows.map((r) => ({
+      conversationId: r._id,
+      count: Number(r.count),
+    }));
+  }
+} 

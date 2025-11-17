@@ -3,6 +3,9 @@ export interface UserDto {
   name: string;
   username: string;
   profileImage?: string;
+  plan?: string;
+  role?: string;
+  status?: string;
 }
 export interface MessageResponseDto {
   id: string;

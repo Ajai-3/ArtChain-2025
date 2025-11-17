@@ -8,22 +8,26 @@ import { IUserService } from "../../applications/interface/http/IUserService";
 export class UserService implements IUserService {
   private readonly baseUrl = env.user_service_url;
 
-  async getUserById(userId: string): Promise<UserDto | null> {
+  async getUserById(userId: string): Promise<UserDto> {
     try {
-      const res = await axios.get<UserDto>(`${this.baseUrl}/users/${userId}`);
+      const res = await axios.get<UserDto>(`${this.baseUrl}/api/v1/user/${userId}`);
       return res.data;
     } catch (err) {
-      return null;
+      return {} as UserDto;
     }
   }
 
   async getUsersByIds(userIds: string[]): Promise<UserDto[]> {
     if (!userIds.length) return [];
     try {
-      const res = await axios.post<UserDto[]>(`${this.baseUrl}/api/v1/users/batch`, {
-        ids: userIds,
-      });
-      return res.data;
+      const res = await axios.post<{ data: UserDto[] }>(
+        `${this.baseUrl}/api/v1/user/batch`,
+        {
+          ids: userIds,
+        }
+      );
+      console.log(res.data, "getUsersByIds");
+      return res.data.data;
     } catch (err) {
       return [];
     }

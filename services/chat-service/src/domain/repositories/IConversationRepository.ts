@@ -6,5 +6,9 @@ export interface IConversationRepository extends IBaseRepository<Conversation> {
     userA: string,
     userB: string
   ): Promise<Conversation | null>;
-  listUserConversations(userId: string): Promise<Conversation[]>;
+  listResentByUser(
+    userId: string,
+    page: number,
+    limit: number
+  ): Promise<{ conversations: Conversation[]; total: number }>;
 }

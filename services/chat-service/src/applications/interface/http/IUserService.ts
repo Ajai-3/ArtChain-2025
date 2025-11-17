@@ -1,5 +1,6 @@
 import { UserDto } from "../dto/MessageResponseDto";
 
 export interface IUserService {
-  getUsersByIds(ids: string[]): Promise<UserDto[] | null>;
+  getUserById(id: string): Promise<UserDto>;
+  getUsersByIds(ids: string[]): Promise<UserDto[]>;
 }

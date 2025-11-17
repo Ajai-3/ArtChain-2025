@@ -8,4 +8,6 @@ export interface IMessageRepository extends IBaseRepository<Message> {
     limit: number,
     skip: number
   ): Promise<Message[]>;
+  getLastMessages(conversationIds: string[]): Promise<Message[]>;
+  getUnreadCounts(conversationIds: string[], userId: string): Promise<{ conversationId: string, count: number }[]>;
 }
