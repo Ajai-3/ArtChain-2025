@@ -1,5 +1,6 @@
+import { Server } from "socket.io";
 import { redisSub } from "../config/redis";
-import { Server, Socket } from "socket.io";
+import { registerClientEvents } from "./handlers/registerClientEvents";
 import { authMiddleware } from "../../presentation/middleware/authMiddleware";
 
 export const chatSocket = (io: Server) => {
@@ -7,20 +8,20 @@ export const chatSocket = (io: Server) => {
 
   io.use(authMiddleware);
 
-  io.on("connection", (socket: Socket) => {
+  io.on("connection", (socket) => {
     const userId = socket.data.userId;
     console.log(`🔌 Socket connected: ${socket.id} (user: ${userId})`);
 
     onlineUsers.set(userId, socket.id);
     io.emit("chatOnline", Array.from(onlineUsers.keys()));
 
-    socket.on("typing", (data: { conversationId: string }) => {
-      socket.to(data.conversationId).emit("userTyping", { userId });
-    });
+    // Register all events for this socket
+    registerClientEvents(socket, onlineUsers);
 
     socket.on("disconnect", () => {
       onlineUsers.delete(userId);
       io.emit("updateOnline", Array.from(onlineUsers.keys()));
+      console.log(`🔌 Socket disconnected: ${socket.id} (user: ${userId})`);
     });
   });
 

@@ -28,6 +28,11 @@ import { IUserService } from "../../applications/interface/http/IUserService";
 import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 import { IMessageCacheService } from "../../applications/interface/service/IMessageCacheService";
 
+// Handlers
+import { IClientEventHandler } from "../socket/interface/IClientEventHandler";
+
+import { ClientEventHandler } from "../socket/handlers/ClientEventHandler";
+
 // Controller
 import { IMessageController } from "../../presentation/interface/IMessageController";
 
@@ -69,6 +74,11 @@ container
 container
   .bind<IMessageCacheService>(TYPES.IMessageCacheService)
   .to(MessageCacheService);
+
+// Handlers
+container
+  .bind<IClientEventHandler>(TYPES.IClientEventHandler)
+  .to(ClientEventHandler);
 
 // Controller
 container
