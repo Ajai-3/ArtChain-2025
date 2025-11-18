@@ -3,6 +3,8 @@ import { HttpStatus } from "art-chain-shared";
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../../infrastructure/utils/logger";
 import { TYPES } from "../../infrastructure/Inversify/types";
+import { validateWithZod } from "../../infrastructure/utils/zodValidater";
+import { createPrivateConversationSchema } from "../validators/createPrivateConversationSchema";
 import { CreatePrivateConversationDto } from "../../applications/interface/dto/CreatePrivateConversationDto";
 import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
@@ -13,7 +15,7 @@ export class ConversationController {
     @inject(TYPES.IGetAllResendConversationUseCase)
     private readonly _getAllResendConversationUseCase: IGetAllResendConversationUseCase,
     @inject(TYPES.ICreatePrivateConversationUseCase)
-    private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase,
+    private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase
   ) {}
 
   //#========================================================================================================================
@@ -33,23 +35,28 @@ export class ConversationController {
       const { otherUserId } = req.body;
       const userId = req.headers["x-user-id"] as string;
 
+      const validatedData = validateWithZod(createPrivateConversationSchema, {
+        userId,
+        otherUserId,
+      });
+
       logger.info(
         `ConversationController.createPrivateConversation: userId: ${userId}, otherUserId: ${otherUserId}`
       );
 
       const dto: CreatePrivateConversationDto = {
-        userId,
-        otherUserId,
+        userId: validatedData.userId,
+        otherUserId: validatedData.otherUserId,
       };
 
-      const conversationId =
+      const { isNewConvo, conversationId } =
         await this._createPrivateConversationUseCase.execute(dto);
 
       logger.info(`Conversation created: ${conversationId}`);
 
       return res.status(HttpStatus.CREATED).json({
         message: "Conversation created successfully",
-        data: { conversationId },
+        data: { conversationId, isNewConvo },
       });
     } catch (error) {
       next(error);
@@ -74,6 +81,8 @@ export class ConversationController {
 
       const userId = req.headers["x-user-id"] as string;
 
+      console.log(userId);
+
       logger.info(
         `ConversationController.getAllResendConversation: userId: ${userId}`
       );
@@ -81,10 +90,8 @@ export class ConversationController {
       const data = await this._getAllResendConversationUseCase.execute(
         userId,
         page,
-        limit,
+        limit
       );
-
-      logger.info(`Resend conversations: ${JSON.stringify(data)}`);
 
       return res.status(HttpStatus.OK).json({
         message: "Resend conversations retrieved successfully",

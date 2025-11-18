@@ -5,6 +5,7 @@ import { ConversationType } from "../../domain/entities/Conversation";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
 import { CreatePrivateConversationDto } from "../interface/dto/CreatePrivateConversationDto";
 import { ICreatePrivateConversationUseCase } from "../interface/usecase/ICreatePrivateConversationUseCase";
+import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePrivateConversationResponseDto";
 
 @injectable()
 export class CreatePrivateConversationUseCase
@@ -15,8 +16,10 @@ export class CreatePrivateConversationUseCase
     private readonly _conversationRepo: IConversationRepository
   ) {}
 
-  async execute(dto: CreatePrivateConversationDto): Promise<string> {
+  async execute(dto: CreatePrivateConversationDto): Promise<CreatePrivateConversationResponseDto> {
     const { userId, otherUserId } = dto;
+
+    let isNewConvo = false;
 
     let conversation = await this._conversationRepo.findPrivateConversation(
       userId,
@@ -32,8 +35,9 @@ export class CreatePrivateConversationUseCase
         locked: false,
         adminIds: [],
       });
+      isNewConvo = true;
     }
 
-    return conversation.id;
+    return {isNewConvo, conversationId: conversation.id }
   }
 }
