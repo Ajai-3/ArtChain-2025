@@ -28,7 +28,7 @@ const chatSlice = createSlice({
     addConversation(state, action: PayloadAction<Conversation>) {
       const conv = action.payload;
       const filteredConversations = state.conversations.filter((c) => c.id != conv.id)
-      state.conversations = [conv, ...filteredConversations];
+      state.conversations = [...filteredConversations, conv];
     },
 
     updateConversation(state, action: PayloadAction<Conversation>) {
