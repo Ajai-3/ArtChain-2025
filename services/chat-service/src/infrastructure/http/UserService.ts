@@ -10,7 +10,7 @@ export class UserService implements IUserService {
 
   async getUserById(userId: string): Promise<UserDto> {
     try {
-      const res = await axios.get<UserDto>(`${this.baseUrl}/api/v1/user/${userId}`);
+      const res = await axios.get<UserDto>(`${this.baseUrl}/api/v1/profile-id/${userId}`);
       return res.data;
     } catch (err) {
       return {} as UserDto;

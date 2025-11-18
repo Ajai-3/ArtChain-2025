@@ -10,7 +10,7 @@ const MessageSchema = new Schema<IMessageDocument>(
     content: { type: String, required: true },
     mediaType: {
       type: String,
-      enum: ["IMAGE", "AUDIO", "VIDEO"] as MediaType[],
+      enum: ["TEXT", "IMAGE", "AUDIO", "VIDEO"] as MediaType[],
       required: true,
     },
     mediaUrl: { type: String },

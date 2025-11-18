@@ -1,4 +1,5 @@
 export const MediaType = {
+  TEXT: "TEXT",
   IMAGE: "IMAGE",
   AUDIO: "AUDIO",
   VIDEO: "VIDEO",

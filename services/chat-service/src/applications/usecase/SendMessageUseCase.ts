@@ -2,9 +2,9 @@ import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
 import { TYPES } from "../../infrastructure/Inversify/types";
 import { SendMessageDto } from "../interface/dto/SendMessageDto";
-import { DeleteMode, Message } from "../../domain/entities/Message";
 import { ConversationType } from "../../domain/entities/Conversation";
 import { ISendMessageUseCase } from "../interface/usecase/ISendMessageUseCase";
+import { DeleteMode, MediaType, Message } from "../../domain/entities/Message";
 import { IMessageCacheService } from "../interface/service/IMessageCacheService";
 import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
 import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
@@ -41,6 +41,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       conversationId,
       senderId,
       content: content.trim(),
+      mediaType: MediaType.TEXT,
       readBy: [],
       deleteMode: DeleteMode.NONE,
     });

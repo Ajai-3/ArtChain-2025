@@ -49,14 +49,14 @@ export class ConversationController {
         otherUserId: validatedData.otherUserId,
       };
 
-      const { isNewConvo, conversationId } =
+      const { isNewConvo, conversation } =
         await this._createPrivateConversationUseCase.execute(dto);
 
-      logger.info(`Conversation created: ${conversationId}`);
+      logger.info(`Conversation created: ${conversation}`);
 
       return res.status(HttpStatus.CREATED).json({
         message: "Conversation created successfully",
-        data: { conversationId, isNewConvo },
+        data: { conversation, isNewConvo },
       });
     } catch (error) {
       next(error);
