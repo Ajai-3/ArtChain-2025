@@ -35,8 +35,6 @@ export class CreatePrivateConversationUseCase
       otherUserId
     );
 
-    console.log(conversation, "Already exists");
-
     if (!conversation) {
       conversation = await this._conversationRepo.create({
         type: ConversationType.PRIVATE,

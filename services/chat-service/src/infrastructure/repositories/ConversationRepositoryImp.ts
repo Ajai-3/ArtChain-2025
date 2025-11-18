@@ -24,7 +24,7 @@ export class ConversationRepositoryImp
     otherUserId: string
   ): Promise<Conversation | null> {
     const conversation = await this.model.findOne({
-      memberIds: [userId, otherUserId],
+      memberIds: { $all: [userId, otherUserId] },
       type: ConversationType.PRIVATE,
     });
     return this.mapDbToDomain(conversation);
