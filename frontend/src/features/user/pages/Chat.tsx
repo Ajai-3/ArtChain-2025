@@ -13,29 +13,21 @@ const Chat: React.FC = () => {
 
   const currentUserId = useSelector((state: RootState) => state.user.user?.id);
   const conversations = useSelector(
-    (state: RootState) => state.chat?.conversations || {}
+    (state: RootState) => state.chat?.conversations || []
   );
 
-
-  // ✅ Get conversation from Redux (REAL ID only)
   const selectedConversation = conversationId
-    ? conversations[conversationId]
+    ? conversations.find((conv) => conv.id === conversationId) || null
     : null;
 
-  // ✅ Get messages for REAL conversation
   const messages = useSelector((state: RootState) =>
     conversationId && state.chat?.messages
       ? state.chat.messages[conversationId] || []
       : []
   );
 
-  console.log("🟢 All conversations in Redux:", conversations);
-  console.log("🟢 Selected conversation ID:", conversationId);
-  console.log("🟢 Selected conversation data:", selectedConversation);
-
   useEffect(() => {
     if (conversationId) {
-      console.log("🟡 Auto-selecting conversation:", conversationId);
       setMobileView("chat");
     }
   }, [conversationId]);
@@ -56,7 +48,6 @@ const Chat: React.FC = () => {
 
   const handleSendMessage = (text: string) => {
     if (!conversationId) return;
-    console.log("Sending message to:", conversationId, text);
   };
 
   const handleSendImage = (mediaUrl?: string) => {

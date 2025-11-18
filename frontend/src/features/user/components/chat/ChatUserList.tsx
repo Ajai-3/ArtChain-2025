@@ -7,9 +7,7 @@ import {
 } from "../../../../types/chat/chat";
 import { useRecentConversations } from "../../hooks/chat/useRecentConversations";
 import {
-  setConversations,
-  addConversation,
-  updateConversation,
+  addConversation
 } from "../../../../redux/slices/chatSlice";
 import { type RootState } from "../../../../redux/store";
 
@@ -28,46 +26,45 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useDispatch();
 
-  // Get conversations from Redux store
-  const conversations = useSelector((state: RootState) =>
-    Object.values(state.chat.conversations)
+  const conversations = useSelector(
+    (state: RootState) => state.chat.conversations || []
   );
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRecentConversations();
 
-  // Store conversations in Redux when data changes
   useEffect(() => {
     if (data?.pages) {
       const allConversations: Conversation[] =
         data.pages.flatMap((page) => page.conversations) || [];
 
-      // Dispatch to Redux store
-      dispatch(setConversations(allConversations));
+      allConversations.forEach((conversation) => {
+        dispatch(addConversation(conversation));
+      });
     }
   }, [data, dispatch]);
-  // Filter conversations based on active tab and search query
+
   const filteredConversations = conversations.filter((conversation) => {
     const matchesSearch =
-    conversation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    conversation.memberIds?.some((memberId) => {
-      const partner = conversation.partner;
-      return partner?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-    });
-    
+      conversation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conversation.memberIds?.some((memberId) => {
+        const partner = conversation.partner;
+        return partner?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+
     const matchesTab =
-    (activeTab === "private" &&
-      conversation.type === ConversationType.PRIVATE &&
-      !conversation.locked) ||
+      (activeTab === "private" &&
+        conversation.type === ConversationType.PRIVATE &&
+        !conversation.locked) ||
       (activeTab === "group" &&
         conversation.type === ConversationType.GROUP &&
         !conversation.locked) ||
-        (activeTab === "requests" && conversation.locked);
-        
-        return matchesSearch && matchesTab;
-      });
-      
-      console.log(filteredConversations)
+      (activeTab === "requests" && conversation.locked);
+
+    return matchesSearch && matchesTab;
+  });
+
+  console.log(filteredConversations);
   // Tabs
   const tabs = [
     { id: "private" as TabType, label: "Private" },
@@ -75,20 +72,18 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
     { id: "requests" as TabType, label: "Requests" },
   ];
 
-  // Scroll handler for infinite loading
- const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
-   const target = e.currentTarget;
-   const { scrollTop, scrollHeight, clientHeight } = target;
+  const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
+    const target = e.currentTarget;
+    const { scrollTop, scrollHeight, clientHeight } = target;
 
-   // Load more when near bottom (more forgiving)
-   if (
-     scrollHeight - scrollTop <= clientHeight + 100 && 
-     hasNextPage &&
-     !isFetchingNextPage
-   ) {
-     fetchNextPage();
-   }
- };
+    if (
+      scrollHeight - scrollTop <= clientHeight + 100 &&
+      hasNextPage &&
+      !isFetchingNextPage
+    ) {
+      fetchNextPage();
+    }
+  };
 
   return (
     <div className="w-full h-full flex flex-col bg-background border-r border-border">

@@ -5,14 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import type { ApiError } from "../../../../types/apiError";
 import type { Conversation } from "../../../../types/chat/chat";
-import { addConversation } from "../../../../redux/slices/chatSlice";
-
+import {
+  addConversation,
+  updateConversation,
+} from "../../../../redux/slices/chatSlice";
 
 interface CreateConversationResponse {
   isNewConvo: boolean;
   conversation: Conversation;
 }
-
 
 export const useCreatePrivateConversation = () => {
   const dispatch = useDispatch();
@@ -33,19 +34,17 @@ export const useCreatePrivateConversation = () => {
       return res.data.data;
     },
     onSuccess: (data: CreateConversationResponse) => {
-
-      console.log("✅ Conversation created:", data.conversation);
-
-      dispatch(addConversation(data.conversation));
-
-      navigate(`/chat/${data.conversation.id}`, {});
-
       if (data.isNewConvo) {
+        dispatch(addConversation(data.conversation));
         toast.success("Conversation started");
       } else {
+        dispatch(updateConversation(data.conversation));
         toast.success("Conversation opened");
       }
+
+      navigate(`/chat/${data.conversation.id}`, {});
     },
+
     onError: (error: ApiError) => {
       console.log("Error creating private conversation:", error);
       toast.error(error.message);

@@ -7,7 +7,6 @@ const MessageBubble: React.FC<{
   onRightClick: (e: React.MouseEvent) => void;
 }> = ({ message, isCurrentUser, onRightClick }) => {
   const formatTime = (dateString?: string) => {
-    // ✅ Change to string
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });

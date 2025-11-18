@@ -32,7 +32,6 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
   }, [messages]);
 
   const formatTime = (dateString?: string) => {
-    // ✅ Change to string
     if (!dateString) return "";
     const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -44,12 +43,11 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
       !messages[currentIndex]?.createdAt ||
       !messages[currentIndex - 1]?.createdAt
     )
-      // ✅ Add safe checks
       return false;
 
     const currentDate = new Date(
       messages[currentIndex].createdAt!
-    ).toDateString(); // ✅ Convert to Date
+    ).toDateString(); 
     const prevDate = new Date(
       messages[currentIndex - 1].createdAt!
     ).toDateString();
@@ -58,7 +56,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
   };
 
   const getDateLabel = (dateString?: string) => {
-    // ✅ Change to string
+
     if (!dateString) return "";
     const date = new Date(dateString);
     const today = new Date().toDateString();

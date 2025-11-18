@@ -40,7 +40,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     );
   };
 
-  console.log("🟢 ChatArea - Selected Conversation:", selectedConversation); // Debug log
 
   if (!selectedConversation) {
     return (

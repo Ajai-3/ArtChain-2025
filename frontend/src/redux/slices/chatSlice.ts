@@ -3,14 +3,14 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Conversation, type Message } from "../../types/chat/chat";
 
 interface ChatState {
-  conversations: Record<string, Conversation>;
+  conversations: Conversation[]; // Changed to array
   messages: Record<string, Message[]>;
   selectedConversationId: string | null;
 }
 
 const initialState: ChatState = {
-  conversations: {} as Record<string, Conversation>,
-  messages: {} as Record<string, Message[]>,
+  conversations: [], // Empty array instead of object
+  messages: {},
   selectedConversationId: null,
 };
 
@@ -19,23 +19,29 @@ const chatSlice = createSlice({
   initialState,
   reducers: {
     setConversations(state, action: PayloadAction<Conversation[]>) {
-      action.payload.forEach((conv: Conversation) => {
-        state.conversations[conv.id] = conv;
-      });
+      state.conversations = action.payload.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
     },
 
     addConversation(state, action: PayloadAction<Conversation>) {
       const conv = action.payload;
-      state.conversations[conv.id] = conv;
+      const filteredConversations = state.conversations.filter((c) => c.id != conv.id)
+      state.conversations = [conv, ...filteredConversations];
     },
 
     updateConversation(state, action: PayloadAction<Conversation>) {
       const conv = action.payload;
-      if (state.conversations[conv.id]) {
-        state.conversations[conv.id] = {
-          ...state.conversations[conv.id],
-          ...conv,
-        };
+      const index = state.conversations.findIndex((c) => c.id === conv.id);
+
+      if (index !== -1) {
+        const updatedConversations = [...state.conversations];
+        updatedConversations[index] = conv;
+        state.conversations = [
+          conv,
+          ...updatedConversations.filter((_, i) => i !== index),
+        ];
       }
     },
 
@@ -60,7 +66,6 @@ const chatSlice = createSlice({
     },
 
     addMessage: (state, action: PayloadAction<Message>) => {
-      // ✅ Correct name
       const message = action.payload;
       const convId = message.conversationId;
 
@@ -68,10 +73,9 @@ const chatSlice = createSlice({
         state.messages[convId] = [];
       }
 
-      // Check if exists - if yes, DO NOTHING (or replace if you want)
       const exists = state.messages[convId].some((m) => m.id === message.id);
       if (!exists) {
-        state.messages[convId].push(message); 
+        state.messages[convId].push(message);
       }
     },
 
@@ -99,7 +103,7 @@ const chatSlice = createSlice({
     },
 
     clearConversations(state) {
-      state.conversations = {};
+      state.conversations = [];
     },
   },
   extraReducers: (builder) => {
@@ -114,6 +118,8 @@ export const {
   setSelectedConversation,
   clearConversations,
   updateMessage,
+  addMessage,
+  addMessages,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

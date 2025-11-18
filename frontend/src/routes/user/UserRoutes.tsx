@@ -61,7 +61,7 @@ const UserRoutes = (
       <Route path="test" element={<Test />} />
       <Route path="success" element={<SuccessPage />} />
       <Route path="/:username/art/:artname" element={<ArtPage />} />
-      // Chat Routes
+
       <Route path="chat" element={<Chat />} />
       <Route path="/chat/:conversationId" element={<Chat />} />
       
