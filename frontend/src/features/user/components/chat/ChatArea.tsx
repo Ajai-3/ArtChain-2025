@@ -1,15 +1,9 @@
-// components/chat/ChatArea.tsx
 import React, { useState } from "react";
+import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
 import ChatMessages from "./chatArea/ChatMessage";
-import ChatInput from "./chatArea/Chatinput";
 import ConversationDetails from "./chatArea/ConversationDetails";
-import {
-  type Conversation,
-  type Message,
-  DeleteMode,
-  MediaType,
-} from "../../../../types/chat/chat";
+import { type Conversation, type Message } from "../../../../types/chat/chat";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
@@ -23,7 +17,7 @@ interface ChatAreaProps {
 
 const ChatArea: React.FC<ChatAreaProps> = ({
   selectedConversation,
-  messages,
+  messages = [],
   onBack,
   currentUserId,
   onSendMessage,
@@ -31,6 +25,8 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   onDeleteMessage,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
+
+  console.log("🟢 ChatArea - Selected Conversation:", selectedConversation); // Debug log
 
   if (!selectedConversation) {
     return (
@@ -47,7 +43,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03-8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
           </div>
@@ -81,9 +77,10 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           showDetails ? "w-0 md:w-[calc(100%-384px)]" : "w-full"
         }`}
       >
+        {/* ✅ ChatHeader should show the conversation info */}
         <ChatHeader
           currentUserId={currentUserId}
-          conversation={selectedConversation}
+          conversation={selectedConversation} // This should have the data
           onBack={onBack}
           onToggleDetails={() => setShowDetails(!showDetails)}
           showDetails={showDetails}
@@ -103,13 +100,13 @@ const ChatArea: React.FC<ChatAreaProps> = ({
         />
       </div>
 
-      {showDetails && (
+      {/* {showDetails && (
         <ConversationDetails
           conversation={selectedConversation}
           onClose={() => setShowDetails(false)}
           currentUserId={currentUserId}
         />
-      )}
+      )} */}
     </div>
   );
 };

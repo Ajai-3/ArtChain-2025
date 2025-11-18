@@ -83,6 +83,11 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     return conversation.partner?.name || "Unknown User";
   };
 
+  const handleClick = () => {
+    console.log(conversation);
+    onSelect(conversation.id);
+  }
+
   return (
     <div
       onClick={() => onSelect(conversation.id)}

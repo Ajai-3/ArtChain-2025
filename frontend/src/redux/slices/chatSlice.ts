@@ -1,13 +1,15 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { type Conversation } from "../../types/chat/chat";
+import { type Conversation, type Message } from "../../types/chat/chat";
 
 interface ChatState {
   conversations: Record<string, Conversation>;
+  messages: Record<string, Message[]>;
   selectedConversationId: string | null;
 }
 
 const initialState: ChatState = {
   conversations: {} as Record<string, Conversation>,
+  messages: {} as Record<string, Message[]>,
   selectedConversationId: null,
 };
 
@@ -40,17 +42,61 @@ const chatSlice = createSlice({
       state.selectedConversationId = action.payload;
     },
 
-    // Add this for infinite loading - append new conversations without duplicates
-    appendConversations(state, action: PayloadAction<Conversation[]>) {
-      action.payload.forEach((conv: Conversation) => {
-        // Only add if it doesn't exist to avoid duplicates
-        if (!state.conversations[conv.id]) {
-          state.conversations[conv.id] = conv;
+    updateMessage: (state, action: PayloadAction<Message>) => {
+      const message = action.payload;
+      const convId = message.conversationId;
+
+      if (state.messages[convId]) {
+        const index = state.messages[convId].findIndex(
+          (m) => m.id === message.id
+        );
+        if (index !== -1) {
+          state.messages[convId][index] = message;
+        } else {
+          state.messages[convId].push(message);
         }
-      });
+      }
     },
 
-    // Clear all conversations
+    addMessage: (state, action: PayloadAction<Message>) => {
+      // ✅ Correct name
+      const message = action.payload;
+      const convId = message.conversationId;
+
+      if (!state.messages[convId]) {
+        state.messages[convId] = [];
+      }
+
+      // Check if exists - if yes, DO NOTHING (or replace if you want)
+      const exists = state.messages[convId].some((m) => m.id === message.id);
+      if (!exists) {
+        state.messages[convId].push(message); 
+      }
+    },
+
+    addMessages: (
+      state,
+      action: PayloadAction<{
+        conversationId: string;
+        messages: Message[];
+      }>
+    ) => {
+      const { conversationId, messages } = action.payload;
+
+      if (!state.messages[conversationId]) {
+        state.messages[conversationId] = [];
+      }
+      const existingIds = new Set(
+        state.messages[conversationId].map((m) => m.id)
+      );
+      const newMessages = messages.filter((msg) => !existingIds.has(msg.id));
+
+      state.messages[conversationId] = [
+        ...state.messages[conversationId],
+        ...newMessages,
+      ];
+    },
+
     clearConversations(state) {
       state.conversations = {};
     },
@@ -62,8 +108,8 @@ export const {
   addConversation,
   updateConversation,
   setSelectedConversation,
-  appendConversations,
   clearConversations,
+  updateMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;

@@ -38,6 +38,7 @@ export interface Message {
   id: string;
   conversationId: string;
   senderId: string;
+  sender?: User;
   content: string;
   mediaType?: MediaType;
   mediaUrl?: string;

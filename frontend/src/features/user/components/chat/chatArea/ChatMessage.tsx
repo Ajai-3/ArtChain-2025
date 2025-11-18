@@ -1,8 +1,8 @@
 // components/chat/chatArea/ChatMessages.tsx
-import React, { useState, useRef, useEffect } from "react";
-import type { Message, Conversation } from "../../../../../types/chat/chat";
-import MessageOptions from "../MessageOptions";
 import MessageBubble from "./MessageBubble";
+import React, { useState, useRef, useEffect } from "react";
+import MessageOptions from "../MessageOptions";
+import type { Message, Conversation } from "../../../../../types/chat/chat";
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -12,7 +12,7 @@ interface ChatMessagesProps {
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
-  messages,
+  messages = [],
   conversation,
   currentUserId,
   onDeleteMessage,
@@ -31,27 +31,36 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     scrollToBottom();
   }, [messages]);
 
-  const formatTime = (date?: Date) => {
-    if (!date) return "";
+  const formatTime = (dateString?: string) => {
+    // ✅ Change to string
+    if (!dateString) return "";
+    const date = new Date(dateString);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   const shouldShowDateDivider = (currentIndex: number) => {
     if (currentIndex === 0) return true;
     if (
-      !messages[currentIndex].createdAt ||
-      !messages[currentIndex - 1].createdAt
+      !messages[currentIndex]?.createdAt ||
+      !messages[currentIndex - 1]?.createdAt
     )
+      // ✅ Add safe checks
       return false;
 
-    const currentDate = messages[currentIndex].createdAt?.toDateString();
-    const prevDate = messages[currentIndex - 1].createdAt?.toDateString();
+    const currentDate = new Date(
+      messages[currentIndex].createdAt!
+    ).toDateString(); // ✅ Convert to Date
+    const prevDate = new Date(
+      messages[currentIndex - 1].createdAt!
+    ).toDateString();
 
     return currentDate !== prevDate;
   };
 
-  const getDateLabel = (date?: Date) => {
-    if (!date) return "";
+  const getDateLabel = (dateString?: string) => {
+    // ✅ Change to string
+    if (!dateString) return "";
+    const date = new Date(dateString);
     const today = new Date().toDateString();
     const yesterday = new Date(Date.now() - 86400000).toDateString();
     const messageDate = date.toDateString();
@@ -141,7 +150,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                     </div>
                     <div className="flex-1">
                       <p className="text-xs text-muted-foreground mb-1">
-                        {message.sender?.name}
+                        {message.sender?.name || "Unknown"}
                       </p>
                       <MessageBubble
                         message={message}
@@ -189,7 +198,5 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     </div>
   );
 };
-
-
 
 export default ChatMessages;
