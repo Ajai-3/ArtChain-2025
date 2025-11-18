@@ -1,3 +1,4 @@
+import { logout } from "./userSlice";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { type Conversation, type Message } from "../../types/chat/chat";
 
@@ -100,6 +101,9 @@ const chatSlice = createSlice({
     clearConversations(state) {
       state.conversations = {};
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logout, () => initialState);
   },
 });
 

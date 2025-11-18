@@ -1,78 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import ChatArea from "../components/chat/ChatArea";
 import type { RootState } from "../../../redux/store";
 import ChatUserList from "../components/chat/ChatUserList";
+import type { Conversation } from "../../../types/chat/chat";
+import type { User } from "../../../types/users/user/user";
+
+interface LocationState {
+  profileUser: User;
+}
 
 const Chat: React.FC = () => {
-  const { conversationId: urlConversationId } = useParams<{
-    conversationId: string;
-  }>();
+  const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
-  const currentUserId = useSelector((state: RootState) => state.user.user?.id);
 
-  // ✅ Get conversations from Redux
+  const currentUserId = useSelector((state: RootState) => state.user.user?.id);
   const conversations = useSelector(
     (state: RootState) => state.chat?.conversations || {}
   );
 
-  // ✅ Use URL conversation ID as the selected one
-  const selectedConversationId = urlConversationId || null;
+  // ✅ Get FULL user data from profile page
+  const { profileUser } = (location.state as LocationState) || {};
 
-  console.log("🟢 DEBUG - URL Conversation ID:", urlConversationId);
-  console.log("🟢 DEBUG - Conversations in Redux:", Object.keys(conversations));
-  console.log("🟢 DEBUG - Selected Conversation ID:", selectedConversationId);
+  console.log("🟢 REAL Conversation ID:", conversationId);
+  console.log("🟢 Profile User Data:", profileUser);
 
-  // ✅ Get selected conversation data
-  const selectedConversation = selectedConversationId
-    ? conversations[selectedConversationId]
+  // ✅ Get conversation from Redux (REAL ID only)
+  const selectedConversation = conversationId
+    ? conversations[conversationId]
     : null;
 
-  // ✅ Get messages for selected conversation
+  // ✅ Get messages for REAL conversation
   const messages = useSelector((state: RootState) =>
-    selectedConversationId && state.chat?.messages
-      ? state.chat.messages[selectedConversationId] || []
+    conversationId && state.chat?.messages
+      ? state.chat.messages[conversationId] || []
       : []
   );
 
-  // ✅ Auto-select conversation from URL when component loads
+  // ✅ Auto-select conversation from URL
   useEffect(() => {
-    if (urlConversationId) {
-      console.log(
-        "🟡 Auto-selecting conversation from URL:",
-        urlConversationId
-      );
+    if (conversationId) {
+      console.log("🟡 Auto-selecting conversation:", conversationId);
       setMobileView("chat");
-
-      // Check if conversation exists in Redux
-      if (!conversations[urlConversationId]) {
-        console.error(
-          "❌ Conversation from URL not found in Redux:",
-          urlConversationId
-        );
-      }
     }
-  }, [urlConversationId, conversations]);
+  }, [conversationId]);
 
-  // ✅ Handle conversation selection - UPDATE URL
   const handleSelectConversation = (conversationId: string) => {
-    console.log("🟡 Selecting conversation:", conversationId);
-
-    if (conversations[conversationId]) {
-      // ✅ Update URL to /chat/conversationId
-      navigate(`/chat/${conversationId}`);
-      setMobileView("chat");
-    } else {
-      console.error("❌ Conversation not found:", conversationId);
-    }
+    navigate(`/chat/${conversationId}`);
+    setMobileView("chat");
   };
 
-  // ✅ Handle back to list - CLEAR URL
   const handleBackToList = () => {
-    navigate("/chat"); // Go back to /chat without conversation ID
+    navigate("/chat");
     setMobileView("list");
   };
 
@@ -82,13 +65,13 @@ const Chat: React.FC = () => {
 
   // Message handlers
   const handleSendMessage = (text: string) => {
-    if (!selectedConversationId) return;
-    console.log("Sending message to:", selectedConversationId, text);
+    if (!conversationId) return;
+    console.log("Sending message to:", conversationId, text);
   };
 
   const handleSendImage = (mediaUrl?: string) => {
-    if (!selectedConversationId) return;
-    console.log("Sending image to:", selectedConversationId, mediaUrl);
+    if (!conversationId) return;
+    console.log("Sending image to:", conversationId, mediaUrl);
   };
 
   const handleDeleteMessage = (messageId: string, deleteForAll: boolean) => {
@@ -105,7 +88,7 @@ const Chat: React.FC = () => {
         `}
       >
         <ChatUserList
-          selectedConversation={selectedConversationId}
+          selectedConversation={conversationId || null}
           onSelectConversation={handleSelectConversation}
         />
       </div>
@@ -132,7 +115,6 @@ const Chat: React.FC = () => {
 };
 
 export default Chat;
-
 
 // import React, { useState, useEffect } from "react";
 // import { useDispatch, useSelector } from "react-redux";
@@ -288,7 +270,7 @@ export default Chat;
 //       {/* User List */}
 //       <div
 //         className={`
-//           ${mobileView === "list" ? "flex" : "hidden"} 
+//           ${mobileView === "list" ? "flex" : "hidden"}
 //           md:flex w-full md:w-80 h-full flex-shrink-0
 //         `}
 //       >
@@ -301,7 +283,7 @@ export default Chat;
 //       {/* Chat Area */}
 //       <div
 //         className={`
-//           ${mobileView === "chat" ? "flex" : "hidden"} 
+//           ${mobileView === "chat" ? "flex" : "hidden"}
 //           md:flex flex-1 w-full
 //         `}
 //       >
