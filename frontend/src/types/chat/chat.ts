@@ -1,9 +1,7 @@
-// types/chat.ts
-
 export const ConversationType = {
   PRIVATE: "PRIVATE",
   GROUP: "GROUP",
-  REQUEST: "REQUEST", // added based on your backend logic
+  REQUEST: "REQUEST",
 } as const;
 
 export type ConversationType =
@@ -35,6 +33,12 @@ export interface User {
   profileImage?: string | null;
 }
 
+export interface Group {
+  name: string;
+  profileImage?: string | null;
+  conversationId: string;
+}
+
 export interface Message {
   id: string;
   conversationId: string;
@@ -63,7 +67,7 @@ export interface Conversation {
   lastMessage?: Message | null;
   unreadCount: number;
   partner?: User | null; 
-  group?: { name: string } | null;
+  group?: Group | null;
 }
 
 export interface PaginatedConversations {

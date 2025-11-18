@@ -33,7 +33,6 @@ const Chat: React.FC = () => {
   console.log("🟢 Selected conversation ID:", conversationId);
   console.log("🟢 Selected conversation data:", selectedConversation);
 
-  // ✅ Auto-select conversation from URL
   useEffect(() => {
     if (conversationId) {
       console.log("🟡 Auto-selecting conversation:", conversationId);
@@ -55,7 +54,6 @@ const Chat: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  // Message handlers
   const handleSendMessage = (text: string) => {
     if (!conversationId) return;
     console.log("Sending message to:", conversationId, text);

@@ -1,12 +1,12 @@
 import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
 import apiClient from "../../../../api/axios";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import type { ApiError } from "../../../../types/apiError";
 import type { Conversation } from "../../../../types/chat/chat";
 import { addConversation } from "../../../../redux/slices/chatSlice";
-import { useDispatch } from "react-redux";
-import type { User } from "../../../../types/users/user/user";
+
 
 interface CreateConversationResponse {
   isNewConvo: boolean;
@@ -33,7 +33,7 @@ export const useCreatePrivateConversation = () => {
       return res.data.data;
     },
     onSuccess: (data: CreateConversationResponse) => {
-      console.log("✅ Conversation created:", data.conversation.id);
+
       console.log("✅ Conversation created:", data.conversation);
 
       dispatch(addConversation(data.conversation));

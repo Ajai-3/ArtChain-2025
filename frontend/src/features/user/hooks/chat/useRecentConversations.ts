@@ -8,7 +8,7 @@ export const useRecentConversations = () => {
       const res = await apiClient.get(
         `/api/v1/chat/conversation/recent?page=${pageParam}`
       );
-      console.log(res.data.data, "consoled data on the infinite query res.data.data");
+
       return res.data.data;
     },
     getNextPageParam: (lastPage) => lastPage?.nextPage ?? undefined,
