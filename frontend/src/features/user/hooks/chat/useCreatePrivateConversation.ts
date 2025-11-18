@@ -3,21 +3,25 @@ import apiClient from "../../../../api/axios";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import type { ApiError } from "../../../../types/apiError";
+import type { Conversation } from "../../../../types/chat/chat";
+import { addConversation } from "../../../../redux/slices/chatSlice";
+import { useDispatch } from "react-redux";
 import type { User } from "../../../../types/users/user/user";
 
 interface CreateConversationResponse {
-  conversationId: string;
   isNewConvo: boolean;
+  conversation: Conversation;
 }
 
 
 export const useCreatePrivateConversation = () => {
+  const dispatch = useDispatch();
+
   const navigate = useNavigate();
   return useMutation({
     mutationFn: async (credentials: {
       userId: string;
       otherUserId: string;
-      profileUser: User;
     }) => {
       const res = await apiClient.post(
         "/api/v1/chat/conversation/private",
@@ -28,15 +32,14 @@ export const useCreatePrivateConversation = () => {
 
       return res.data.data;
     },
-    onSuccess: (data: CreateConversationResponse, variables) => {
-      console.log("✅ Conversation created:", data.conversationId);
-      
-      navigate(`/chat/${data.conversationId}`, { 
-        state: { 
-          profileUser: variables.profileUser 
-        } 
-      });
-      
+    onSuccess: (data: CreateConversationResponse) => {
+      console.log("✅ Conversation created:", data.conversation.id);
+      console.log("✅ Conversation created:", data.conversation);
+
+      dispatch(addConversation(data.conversation));
+
+      navigate(`/chat/${data.conversation.id}`, {});
+
       if (data.isNewConvo) {
         toast.success("Conversation started");
       } else {

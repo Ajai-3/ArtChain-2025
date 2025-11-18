@@ -39,23 +39,41 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
 
   const color = getAvatarColor(conversation.id);
 
+  const getProfileImage = () => {
+    if (
+      conversation.type === ConversationType.PRIVATE &&
+      conversation.partner?.profileImage
+    ) {
+      return conversation.partner.profileImage;
+    }
+    if (
+      conversation.type === ConversationType.GROUP &&
+      conversation?.group?.profileImage
+    ) {
+      return conversation?.group?.profileImage;
+    }
+    return null;
+  };
+
+  const profileImage = getProfileImage();
+
   const renderLastMessage = () => {
     if (!conversation.lastMessage) return "No messages yet";
 
     const msg = conversation.lastMessage;
 
-   if (msg.deleteMode !== "NONE") {
-     switch (msg.deleteMode) {
-       case "ALL":
-         return "This message was deleted";
-       case "ME":
-         return "You deleted this message";
-       default:
-         return "Message deleted";
-     }
-   }
+    if (msg.deleteMode !== "NONE") {
+      switch (msg.deleteMode) {
+        case "ALL":
+          return "This message was deleted";
+        case "ME":
+          return "You deleted this message";
+        default:
+          return "Message deleted";
+      }
+    }
 
-    if (msg.mediaType) {
+    if (msg.mediaType && msg.mediaType !== "TEXT") {
       switch (msg.mediaType) {
         case "IMAGE":
           return "📷 Photo";
@@ -66,10 +84,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         default:
           return "📎 Attachment";
       }
-    }
-
-    if (msg.mediaType) {
-      return `[${msg.mediaType}] ${msg.content}`;
     }
 
     return msg.content;
@@ -86,7 +100,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   const handleClick = () => {
     console.log(conversation);
     onSelect(conversation.id);
-  }
+  };
 
   return (
     <div
@@ -95,12 +109,17 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         isSelected ? "bg-zinc-200 dark:bg-zinc-800" : ""
       }`}
     >
-      {/* Avatar */}
       <div className="relative flex-shrink-0">
         <div
-          className={`w-12 h-12 rounded-full flex items-center justify-center ${color.bg} ${color.text}`}
+          className={`w-12 h-12 rounded-full flex items-center justify-center ${color.bg} ${color.text} overflow-hidden`}
         >
-          {conversation.type === ConversationType.GROUP ? (
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt={getConversationName()}
+              className="w-full h-full object-cover"
+            />
+          ) : conversation.type === ConversationType.GROUP ? (
             <div className="flex flex-wrap w-6 h-6">
               <div className="w-3 h-3 bg-current rounded-tl-full opacity-70"></div>
               <div className="w-3 h-3 bg-current rounded-tr-full opacity-90"></div>
@@ -114,7 +133,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           )}
         </div>
 
-        {/* Online indicator */}
         {conversation.partner?.id &&
           conversation.partner?.id !== "" &&
           conversation.partner?.id &&
@@ -125,7 +143,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
             <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background bg-green-500" />
           )}
 
-        {/* Locked indicator */}
         {conversation.locked && (
           <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
             <svg
@@ -139,7 +156,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
         )}
       </div>
 
-      {/* Content */}
       <div className="flex-1 ml-3 min-w-0">
         <div className="flex items-center justify-between mb-1">
           <h3 className="font-semibold text-sm truncate flex items-center">
@@ -172,15 +188,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
               </span>
             </div>
           )}
-          {/* {(conversation.locked ||
-            (conversation.unreadCount && conversation.unreadCount > 0)) && (
-            <div className="flex items-center space-x-1 flex-shrink-0">
-              {conversation.locked && (
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              )}
-             
-            </div>
-          )} */}
         </div>
       </div>
     </div>

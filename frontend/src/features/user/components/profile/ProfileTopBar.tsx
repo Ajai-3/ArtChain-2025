@@ -56,7 +56,6 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
     createPrivateConversationMutation.mutate({
       userId,
       otherUserId,
-      profileUser: user,
     });
   };
 

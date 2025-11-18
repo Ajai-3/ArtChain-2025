@@ -10,6 +10,7 @@ export type ConversationType =
   (typeof ConversationType)[keyof typeof ConversationType];
 
 export const MediaType = {
+  TEXT: "TEXT",
   IMAGE: "IMAGE",
   AUDIO: "AUDIO",
   VIDEO: "VIDEO",

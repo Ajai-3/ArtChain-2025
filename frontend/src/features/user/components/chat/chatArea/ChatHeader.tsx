@@ -1,5 +1,6 @@
 // components/chat/chatArea/ChatHeader.tsx
 import React from "react";
+import { Video, Phone, Search, MoreVertical } from "lucide-react";
 import type { Conversation } from "../../../../../types/chat/chat";
 
 interface ChatHeaderProps {
@@ -8,6 +9,9 @@ interface ChatHeaderProps {
   onBack?: () => void;
   onToggleDetails: () => void;
   showDetails: boolean;
+  onVideoCall?: () => void;
+  onVoiceCall?: () => void;
+  onSearch?: () => void;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -16,8 +20,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onBack,
   onToggleDetails,
   showDetails,
+  onVideoCall,
+  onVoiceCall,
 }) => {
-  console.log("🟢 ChatHeader - Conversation:", conversation); // Debug log
+  console.log("🟢 ChatHeader - Conversation:", conversation);
 
   const getConversationName = () => {
     if (conversation.type === "GROUP") {
@@ -26,13 +32,33 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     return conversation.partner?.name || "Unknown User";
   };
 
+  const getProfileImage = () => {
+    if (conversation.type === "PRIVATE" && conversation.partner?.profileImage) {
+      return conversation.partner.profileImage;
+    }
+    if (conversation.type === "GROUP" && conversation?.group?.profileImage) {
+      return conversation?.group?.profileImage;
+    }
+    return null;
+  };
+
+  const profileImage = getProfileImage();
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+  };
+
   const getStatusText = () => {
     if (conversation.locked) return "Pending request";
-    return "Online"; // You can make this dynamic later
+    return "Online";
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border-b border-border bg-background/80 backdrop-blur-sm">
+    <div className="flex items-center justify-between py-2 px-4 border-b border-border bg-background/80 backdrop-blur-sm">
       {/* Left side - Back button and conversation info */}
       <div className="flex items-center space-x-3">
         {/* Back button (mobile only) */}
@@ -58,11 +84,19 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
 
         {/* Conversation avatar and info */}
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-sm font-medium text-primary">
-              {getConversationName().charAt(0).toUpperCase()}
-            </span>
+        <div className="flex items-center space-x-3 cursor-pointer" onClick={onToggleDetails}>
+          <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+            {profileImage ? (
+              <img
+                src={profileImage}
+                alt={getConversationName()}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-sm font-medium text-primary">
+                {getInitials(getConversationName())}
+              </span>
+            )}
           </div>
           <div>
             <h2 className="font-semibold text-foreground">
@@ -73,25 +107,35 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </div>
       </div>
 
-      {/* Right side - Details toggle */}
-      <button
-        onClick={onToggleDetails}
-        className="p-2 hover:bg-muted rounded-full transition-colors"
-      >
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <div className="flex items-center space-x-1">
+        {onVoiceCall && conversation.type === "PRIVATE" && (
+          <button
+            onClick={onVoiceCall}
+            className="p-2 hover:bg-muted rounded-full transition-colors"
+            title="Voice call"
+          >
+            <Phone className="w-5 h-5" />
+          </button>
+        )}
+
+        {onVideoCall && conversation.type === "PRIVATE" && (
+          <button
+            onClick={onVideoCall}
+            className="p-2 hover:bg-muted rounded-full transition-colors"
+            title="Video call"
+          >
+            <Video className="w-5 h-5" />
+          </button>
+        )}
+
+        <button
+          onClick={onToggleDetails}
+          className="p-2 hover:bg-muted rounded-full transition-colors"
+          title="More options"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-          />
-        </svg>
-      </button>
+          <MoreVertical className="w-5 h-5" />
+        </button>
+      </div>
     </div>
   );
 };

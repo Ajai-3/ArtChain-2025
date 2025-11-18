@@ -26,6 +26,20 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
+  const handleVideoCall = () => {
+    console.log(
+      "Video call initiated with:",
+      selectedConversation?.partner?.name
+    );
+  };
+
+  const handleVoiceCall = () => {
+    console.log(
+      "Voice call initiated with:",
+      selectedConversation?.partner?.name
+    );
+  };
+
   console.log("🟢 ChatArea - Selected Conversation:", selectedConversation); // Debug log
 
   if (!selectedConversation) {
@@ -84,6 +98,8 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           onBack={onBack}
           onToggleDetails={() => setShowDetails(!showDetails)}
           showDetails={showDetails}
+          onVideoCall={handleVideoCall}
+          onVoiceCall={handleVoiceCall}
         />
 
         <ChatMessages
@@ -100,13 +116,13 @@ const ChatArea: React.FC<ChatAreaProps> = ({
         />
       </div>
 
-      {/* {showDetails && (
+      {showDetails && (
         <ConversationDetails
           conversation={selectedConversation}
           onClose={() => setShowDetails(false)}
           currentUserId={currentUserId}
         />
-      )} */}
+      )}
     </div>
   );
 };

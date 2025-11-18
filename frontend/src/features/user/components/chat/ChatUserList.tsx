@@ -46,28 +46,28 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
       dispatch(setConversations(allConversations));
     }
   }, [data, dispatch]);
-
   // Filter conversations based on active tab and search query
   const filteredConversations = conversations.filter((conversation) => {
     const matchesSearch =
-      conversation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conversation.memberIds?.some((memberId) => {
-        const partner = conversation.partner;
-        return partner?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-      });
-
+    conversation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    conversation.memberIds?.some((memberId) => {
+      const partner = conversation.partner;
+      return partner?.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+    
     const matchesTab =
-      (activeTab === "private" &&
-        conversation.type === ConversationType.PRIVATE &&
-        !conversation.locked) ||
+    (activeTab === "private" &&
+      conversation.type === ConversationType.PRIVATE &&
+      !conversation.locked) ||
       (activeTab === "group" &&
         conversation.type === ConversationType.GROUP &&
         !conversation.locked) ||
-      (activeTab === "requests" && conversation.locked);
-
-    return matchesSearch && matchesTab;
-  });
-
+        (activeTab === "requests" && conversation.locked);
+        
+        return matchesSearch && matchesTab;
+      });
+      
+      console.log(filteredConversations)
   // Tabs
   const tabs = [
     { id: "private" as TabType, label: "Private" },
