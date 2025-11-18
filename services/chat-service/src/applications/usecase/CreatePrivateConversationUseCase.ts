@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { logger } from "../../infrastructure/utils/logger";
-import { DeleteMode, MediaType } from "../../domain/entities/Message";
+import { DeleteMode, MediaType, Message } from "../../domain/entities/Message";
 import { TYPES } from "../../infrastructure/Inversify/types";
 import { mapConversation } from "../mappers/mapConversations";
 import { IUserService } from "../interface/http/IUserService";
@@ -10,6 +10,7 @@ import { IConversationRepository } from "../../domain/repositories/IConversation
 import { CreatePrivateConversationDto } from "../interface/dto/CreatePrivateConversationDto";
 import { ICreatePrivateConversationUseCase } from "../interface/usecase/ICreatePrivateConversationUseCase";
 import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePrivateConversationResponseDto";
+import { UserDto } from "../interface/dto/MessageResponseDto";
 
 @injectable()
 export class CreatePrivateConversationUseCase
@@ -27,6 +28,14 @@ export class CreatePrivateConversationUseCase
     dto: CreatePrivateConversationDto
   ): Promise<CreatePrivateConversationResponseDto> {
     const { userId, otherUserId } = dto;
+
+    if (!userId || !otherUserId) {
+      throw new Error("User ID and Other User ID are required");
+    }
+
+    if (userId === otherUserId) {
+      throw new Error("Cannot create conversation with yourself");
+    }
 
     let isNewConvo = false;
 
@@ -46,7 +55,6 @@ export class CreatePrivateConversationUseCase
     }
 
     const partnerUser = await this._userService.getUserById(otherUserId);
-    console.log("Partner user data:", partnerUser);
 
     if (!partnerUser) {
       throw new Error("Partner user not found");
@@ -77,27 +85,34 @@ export class CreatePrivateConversationUseCase
       unreadCounts.find((u) => u.conversationId === conversation.id)?.count ||
       0;
 
-    const lastMap = new Map();
+    const lastMap = new Map<string, Message>();
+    // const unreadMap = new Map<string, number>();
+    const partnersMap = new Map<string, UserDto>();
+
     if (lastMessage) {
       lastMap.set(conversation.id, lastMessage);
     }
 
-    const unreadMap = new Map();
-    unreadMap.set(conversation.id, unreadCount);
-
-    const partnersMap = new Map();
+    // unreadMap.set(conversation.id, unreadCount);
     partnersMap.set(otherUserId, partnerUser);
 
     const enrichedConversation = mapConversation({
       conversation: conversation,
       userId: userId,
       lastMap: lastMap,
-      unreadMap: unreadMap,
+      unreadMap: new Map<string, number>(),
       partnersMap: partnersMap,
     });
 
-    console.log("Enriched conversation:", enrichedConversation);
+    logger.info(
+      `Private conversation ${isNewConvo ? "created" : "found"}: ${
+        conversation.id
+      }`
+    );
 
-    return { isNewConvo, conversation: enrichedConversation }; 
+    return {
+      isNewConvo,
+      conversation: enrichedConversation,
+    };
   }
 }
