@@ -33,6 +33,11 @@ export const registerSocketEvents = (
     console.log("👥 Online users in chat socket:", users);
   });
 
+  socket.on("newMessage", (payload: any) => {
+    console.log("🔔 New message received:", payload);
+    // store.dispatch(addMessage(payload));
+  });
+
   socket.on("connect_error", (err) =>
     console.error(`❌ ${type} socket error:`, err.message)
   );

@@ -96,7 +96,6 @@ const Chat: React.FC = () => {
       >
         <ChatArea
           selectedConversation={selectedConversation}
-          messages={messages}
           onBack={handleBackToList}
           currentUserId={currentUserId}
           onSendMessage={handleSendMessage}

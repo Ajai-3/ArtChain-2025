@@ -4,12 +4,14 @@ import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
 import ChatMessages from "./chatArea/ChatMessage";
 import ConversationDetails from "./chatArea/ConversationDetails";
-import { type Conversation, type Message } from "../../../../types/chat/chat";
 import { useUserResolver } from "../../hooks/chat/useUserResolver";
+import { useInitialMessages } from "../../hooks/chat/useInitialMessages";
+import { useSelector } from "react-redux";
+import { type Conversation } from "../../../../types/chat/chat";
+import { type RootState } from "../../../../redux/store";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
-  messages: Message[];
   onBack?: () => void;
   currentUserId: string;
   onSendMessage: (text: string) => void;
@@ -19,46 +21,54 @@ interface ChatAreaProps {
 
 const ChatArea: React.FC<ChatAreaProps> = ({
   selectedConversation,
-  messages = [],
   onBack,
   currentUserId,
   onSendMessage,
   onSendImage,
   onDeleteMessage,
 }) => {
+  const convId = selectedConversation?.id ?? "";
+
+  // Get messages from hook - it handles Redux and HTTP
+  const {
+    messages,
+    loadMoreMessages,
+    hasMore,
+    isLoading,
+    isFetchingMore,
+    isVirtualPagination,
+    visibleCount,
+    totalCount,
+  } = useInitialMessages(convId);
+
+  console.log(`ChatArea: Showing ${visibleCount} of ${totalCount} messages`);
+
   const [showDetails, setShowDetails] = useState(false);
 
-  // NEW: Resolve user details for messages
+  const userCache = useSelector((s: RootState) => s.chat?.userCache ?? {});
+
+  // Get sender IDs for user resolution
   const senderIds = useMemo(
-    () => messages.map((msg) => msg.senderId).filter(Boolean),
+    () => messages.map((m) => m.senderId).filter(Boolean),
     [messages]
   );
 
-  const userCache = useUserResolver(senderIds);
+  useUserResolver(senderIds);
 
-  // NEW: Enhance messages with sender data from cache
+  // Enhance messages with sender info
   const enhancedMessages = useMemo(
     () =>
-      messages.map((msg) => ({
-        ...msg,
-        sender: userCache[msg.senderId], // Add sender from cache
+      messages.map((m) => ({
+        ...m,
+        sender: userCache[m.senderId],
       })),
     [messages, userCache]
   );
 
-  const handleVideoCall = () => {
-    console.log(
-      "Video call initiated with:",
-      selectedConversation?.partner?.name
-    );
-  };
-
-  const handleVoiceCall = () => {
-    console.log(
-      "Voice call initiated with:",
-      selectedConversation?.partner?.name
-    );
-  };
+  const handleVideoCall = () =>
+    console.log("Video call with:", selectedConversation?.partner?.name);
+  const handleVoiceCall = () =>
+    console.log("Voice call with:", selectedConversation?.partner?.name);
 
   if (!selectedConversation) {
     return (
@@ -75,7 +85,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03-8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
           </div>
@@ -103,7 +113,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
       }}
     >
       <div className="dark:bg-[url('https://i.pinimg.com/originals/47/fb/b6/47fbb68a37492662cd74715d7787a212.jpg')] dark:bg-cover dark:bg-center dark:bg-no-repeat absolute inset-0"></div>
-
       <div
         className={`flex flex-col h-full transition-all duration-300 z-50 ${
           showDetails ? "w-0 md:w-[calc(100%-384px)]" : "w-full"
@@ -119,12 +128,16 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           onVoiceCall={handleVoiceCall}
         />
 
-        {/* UPDATED: Pass enhanced messages with sender data */}
         <ChatMessages
-          messages={enhancedMessages} // Now includes sender data
+          messages={enhancedMessages}
           conversation={selectedConversation}
           currentUserId={currentUserId}
           onDeleteMessage={onDeleteMessage}
+          loadMoreMessages={loadMoreMessages}
+          hasMore={hasMore}
+          isLoading={isLoading}
+          isFetchingMore={isFetchingMore}
+          isVirtualPagination={isVirtualPagination}
         />
 
         <ChatInput

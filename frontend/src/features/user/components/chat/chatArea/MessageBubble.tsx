@@ -24,7 +24,7 @@ const MessageBubble: React.FC<{
           ? "bg-primary text-primary-foreground rounded-br-none"
           : "bg-background border border-border rounded-bl-none"
       } ${
-        message.deleteMode !== "NONE" ? "opacity-60" : ""
+        message.isDeleted ? "opacity-60" : ""
       } cursor-context-menu`}
     >
       {/* NEW: Sender name for group chats */}
@@ -34,16 +34,14 @@ const MessageBubble: React.FC<{
         </div>
       )}
 
-      {message.deleteMode !== "NONE" ? (
+      {message.isDeleted ? (
         <p className="text-sm italic text-muted-foreground">
-          {message.deleteMode === "ALL"
-            ? "This message was deleted"
-            : "You deleted this message"}
+          "This message was deleted"
         </p>
       ) : (
         <>
           {/* Media Message */}
-          {message.mediaType && (
+          {/* {message.mediaType && (
             <div className="mb-2 last:mb-0">
               <div className="w-48 h-32 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
                 <span className="text-white text-sm font-medium">
@@ -53,7 +51,7 @@ const MessageBubble: React.FC<{
                 </span>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Message Content */}
           {message.content && (

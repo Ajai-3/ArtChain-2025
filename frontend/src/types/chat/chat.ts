@@ -48,6 +48,7 @@ export interface Message {
   mediaType?: MediaType;
   mediaUrl?: string;
   readBy: string[];
+  isDeleted?: boolean;
   deleteMode: DeleteMode;
   deletedAt?: Date | null;
   createdAt: string;
