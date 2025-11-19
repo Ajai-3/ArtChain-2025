@@ -52,7 +52,7 @@ export const authRoutesConfig = {
 
     { path: "/api/v1/chat/conversation/private", methods: ["POST"] },
     { path: "/api/v1/chat/conversation/recent", methods: ["GET"] },
-    
+    { path: "/api/v1/chat/message/:conversationId", methods: ["GET"] },
   ],
 
   user_optional: [
