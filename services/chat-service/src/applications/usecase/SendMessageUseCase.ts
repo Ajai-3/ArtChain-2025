@@ -42,7 +42,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       senderId,
       content: content.trim(),
       mediaType: MediaType.TEXT,
-      readBy: [],
+      readBy: [senderId],
       deleteMode: DeleteMode.NONE,
     });
 
