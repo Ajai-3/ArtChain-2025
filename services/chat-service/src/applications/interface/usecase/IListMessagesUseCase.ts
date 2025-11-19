@@ -1,6 +1,6 @@
 import { ListMessagesDto } from "../dto/ListMessagesDto";
-import { MessageResponseDto } from "../dto/MessageResponseDto";
+import { ListMessagesResponse } from "../dto/ListMessageResponceDto";
 
 export interface IListMessagesUseCase {
-  execute(dto: ListMessagesDto): Promise<MessageResponseDto[]>;
+  execute(dto: ListMessagesDto): Promise<ListMessagesResponse>;
 }

@@ -9,6 +9,8 @@ import { DeleteMessageDto } from "../../applications/interface/dto/DeleteMessage
 import { ISendMessageUseCase } from "../../applications/interface/usecase/ISendMessageUseCase";
 import { IListMessagesUseCase } from "../../applications/interface/usecase/IListMessagesUseCase";
 import { IDeleteMessageUseCase } from "../../applications/interface/usecase/IDeleteMessageUseCase";
+import { validateWithZod } from "../../infrastructure/utils/zodValidater";
+import { getMessagesSchema } from "../validators/getMessagesSchema";
 
 @injectable()
 export class MessageController implements IMessageController {
@@ -61,8 +63,15 @@ export class MessageController implements IMessageController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { conversationId, page, limit } = req.body;
-      const requestUserId = req.headers["x-user-id"] as string;
+      const parsed = validateWithZod(getMessagesSchema, {
+        query: req.query,
+        params: req.params,
+        headers: req.headers,
+      });
+
+      const { limit, page } = parsed.query;
+      const { conversationId } = parsed.params;
+      const requestUserId = parsed.headers["x-user-id"] as string;
 
       const dto: ListMessagesDto = {
         conversationId,
@@ -71,8 +80,9 @@ export class MessageController implements IMessageController {
         limit: Number(limit) || 20,
       };
 
-      const messages = await this._listMessagesUseCase.execute(dto);
-      res.json(messages);
+      const data = await this._listMessagesUseCase.execute(dto);
+
+      return res.status(HttpStatus.OK).json({ message: "Messages fetched successfully", data: data });
     } catch (error) {
       next(error);
     }

@@ -31,6 +31,12 @@ export class MessageRepositoryImp
     await this.model.updateMany({ _id: { $in: messageIds } }, { read: true });
   }
 
+  async getTotalCountByConversation(conversationId: string): Promise<number> {
+    return await this.model.countDocuments({
+      conversationId,
+    });
+  }
+
   async getLastMessages(conversationIds: string[]): Promise<Message[]> {
     const rows = await this.model.aggregate([
       { $match: { conversationId: { $in: conversationIds } } },
@@ -58,4 +64,4 @@ export class MessageRepositoryImp
       count: Number(r.count),
     }));
   }
-} 
+}

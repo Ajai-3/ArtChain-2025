@@ -1,15 +1,11 @@
 import { Message } from "../../domain/entities/Message";
 import { DeleteMode } from "../../domain/entities/Message";
-import {
-  MessageResponseDto,
-  UserDto,
-} from "../interface/dto/MessageResponseDto";
+import { MessageResponseDto } from "../interface/dto/MessageResponseDto";
 
 export class MessageMapper {
   static toResponse(
     message: Message,
-    requestUserId: string,
-    sender?: UserDto
+    requestUserId: string
   ): MessageResponseDto {
     const isDeletedForRequester =
       message.deleteMode === DeleteMode.ALL ||
@@ -21,7 +17,6 @@ export class MessageMapper {
         id: message.id,
         conversationId: message.conversationId,
         senderId: message.senderId,
-        sender,
         content: null,
         mediaType: null,
         mediaUrl: null,
@@ -36,7 +31,6 @@ export class MessageMapper {
       id: message.id,
       conversationId: message.conversationId,
       senderId: message.senderId,
-      sender,
       content: message.content,
       mediaType: message.mediaType ?? null,
       mediaUrl: message.mediaUrl ?? null,

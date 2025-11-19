@@ -1,25 +1,18 @@
 import { inject, injectable } from "inversify";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { Message } from "../../domain/entities/Message";
 import { MessageMapper } from "../mappers/MessageMapper";
 import { TYPES } from "../../infrastructure/Inversify/types";
+import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { ListMessagesDto } from "../interface/dto/ListMessagesDto";
-import { IUserService } from "../interface/http/IUserService";
-import { ConversationType } from "../../domain/entities/Conversation";
+import { MessageResponseDto } from "../interface/dto/MessageResponseDto";
 import { IMessageCacheService } from "../interface/service/IMessageCacheService";
 import { IListMessagesUseCase } from "../interface/usecase/IListMessagesUseCase";
-import {
-  MessageResponseDto,
-  UserDto,
-} from "../interface/dto/MessageResponseDto";
 import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-
+import { ListMessagesResponse } from "../interface/dto/ListMessageResponceDto";
 @injectable()
 export class ListMessagesUseCase implements IListMessagesUseCase {
   constructor(
-    @inject(TYPES.IUserService)
-    private readonly _userService: IUserService,
     @inject(TYPES.IMessageCacheService)
     private readonly _cacheService: IMessageCacheService,
     @inject(TYPES.IMessageRepository)
@@ -28,10 +21,11 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
     private readonly _conversationRepo: IConversationRepository
   ) {}
 
-  async execute(dto: ListMessagesDto): Promise<MessageResponseDto[]> {
+  async execute(dto: ListMessagesDto): Promise<ListMessagesResponse> {
     const { conversationId, requestUserId, page, limit } = dto;
 
-    this.validateInput(page, limit, conversationId);
+    console.log("🚀 ListMessagesUseCase executing with:", dto);
+
     const conversation = await this.validateConversationAccess(
       conversationId,
       requestUserId
@@ -40,6 +34,10 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
     const start = (page - 1) * limit;
     const end = start + limit - 1;
 
+    console.log(
+      `📊 Fetching messages: start=${start}, end=${end}, limit=${limit}`
+    );
+
     // Try cache first
     let messages = await this._cacheService.getCachedMessages(
       conversationId,
@@ -47,83 +45,80 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
       end
     );
 
+    console.log(`💾 Cache returned ${messages.length} messages`);
+
     // Fallback to DB if cache incomplete
     if (messages.length < limit) {
+      console.log(`🔄 Cache incomplete, querying database...`);
       const dbMessages = await this._messageRepo.listByConversationPaginated(
         conversationId,
         limit,
         start
       );
+      console.log(`🗃️ Database returned ${dbMessages.length} messages`);
       messages = dbMessages;
 
-      // Cache the results for next time
       if (page === 1) {
+        console.log(`💡 Caching messages for conversation ${conversationId}`);
         await this._cacheService.cacheMessageList(conversationId, dbMessages);
       }
     }
 
-    return this.mapToResponse(messages, requestUserId, conversation);
-  }
+    // NEW: Get total count for pagination
+    const totalCount = await this._messageRepo.getTotalCountByConversation(
+      conversationId
+    );
+    const hasMore = start + messages.length < totalCount;
+    const nextPage = hasMore ? page + 1 : undefined;
 
-  private validateInput(
-    page: number,
-    limit: number,
-    conversationId?: string
-  ): void {
-    if (page < 1 || limit < 1)
-      throw new BadRequestError("Page and limit must be > 0");
-    if (!conversationId)
-      throw new BadRequestError("ConversationId is required");
+    const responseMessages = this.mapToResponse(messages, requestUserId);
+
+    console.log(
+      `✅ Returning ${responseMessages.length} messages with pagination`
+    );
+
+    return {
+      messages: responseMessages,
+      pagination: {
+        currentPage: page,
+        hasMore,
+        totalCount,
+        nextPage,
+      },
+    };
   }
 
   private async validateConversationAccess(
     conversationId: string,
     requestUserId: string
   ) {
-    const conversation = await this._conversationRepo.findById(conversationId);
-    if (!conversation) throw new BadRequestError("Conversation not found");
+    console.log(
+      `🔐 Validating access for user ${requestUserId} to conversation ${conversationId}`
+    );
 
-    if (
-      conversation.type === ConversationType.PRIVATE &&
-      !conversation.memberIds.includes(requestUserId)
-    ) {
+    const conversation = await this._conversationRepo.findById(conversationId);
+    if (!conversation) throw new NotFoundError("Conversation not found");
+
+    console.log(`👥 Conversation members:`, conversation.memberIds);
+
+    const isMember = conversation.memberIds.includes(requestUserId);
+
+    if (!isMember) {
       throw new BadRequestError("Not authorized to view this conversation");
     }
 
+    console.log(`✅ User authorized`);
     return conversation;
   }
 
-  private async mapToResponse(
+  private mapToResponse(
     messages: Message[],
-    requestUserId: string,
-    conversation: any
-  ): Promise<MessageResponseDto[]> {
-    if (conversation.type === ConversationType.GROUP) {
-      const senderIds = Array.from(new Set(messages.map((m) => m.senderId)));
-
-      const users = await this._userService.getUsersByIds(senderIds);
-      if (!users) throw new NotFoundError("Users not found");
-
-      const userMap = new Map(users.map((u: UserDto) => [u.id, u]));
-
-      return messages.map((msg) =>
-        MessageMapper.toResponse(msg, requestUserId, userMap.get(msg.senderId))
-      );
-    }
-
-    const otherUserId = conversation.memberIds.find(
-      (id: string) => id !== requestUserId
+    requestUserId: string
+  ): MessageResponseDto[] {
+    const response = messages.map((msg) =>
+      MessageMapper.toResponse(msg, requestUserId)
     );
-    let otherUser: UserDto | undefined;
-
-    if (otherUserId) {
-      const users = await this._userService.getUsersByIds([otherUserId]);
-      if (!users) throw new NotFoundError("Users not found");
-      otherUser = users[0];
-    }
-
-    return messages.map((msg) =>
-      MessageMapper.toResponse(msg, requestUserId, otherUser)
-    );
+    console.log(`📨 Mapped ${response.length} messages to response DTO`);
+    return response;
   }
 }
