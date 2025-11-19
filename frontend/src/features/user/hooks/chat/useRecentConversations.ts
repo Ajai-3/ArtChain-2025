@@ -13,5 +13,7 @@ export const useRecentConversations = () => {
     },
     getNextPageParam: (lastPage) => lastPage?.nextPage ?? undefined,
     initialPageParam: 1,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 };

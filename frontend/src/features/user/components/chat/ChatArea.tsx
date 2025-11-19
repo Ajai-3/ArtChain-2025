@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+// components/chat/ChatArea.tsx
+import React, { useState, useMemo } from "react";
 import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
 import ChatMessages from "./chatArea/ChatMessage";
 import ConversationDetails from "./chatArea/ConversationDetails";
 import { type Conversation, type Message } from "../../../../types/chat/chat";
+import { useUserResolver } from "../../hooks/chat/useUserResolver";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
@@ -26,6 +28,24 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
+  // NEW: Resolve user details for messages
+  const senderIds = useMemo(
+    () => messages.map((msg) => msg.senderId).filter(Boolean),
+    [messages]
+  );
+
+  const userCache = useUserResolver(senderIds);
+
+  // NEW: Enhance messages with sender data from cache
+  const enhancedMessages = useMemo(
+    () =>
+      messages.map((msg) => ({
+        ...msg,
+        sender: userCache[msg.senderId], // Add sender from cache
+      })),
+    [messages, userCache]
+  );
+
   const handleVideoCall = () => {
     console.log(
       "Video call initiated with:",
@@ -39,7 +59,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
       selectedConversation?.partner?.name
     );
   };
-
 
   if (!selectedConversation) {
     return (
@@ -90,10 +109,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           showDetails ? "w-0 md:w-[calc(100%-384px)]" : "w-full"
         }`}
       >
-        {/* ✅ ChatHeader should show the conversation info */}
         <ChatHeader
           currentUserId={currentUserId}
-          conversation={selectedConversation} // This should have the data
+          conversation={selectedConversation}
           onBack={onBack}
           onToggleDetails={() => setShowDetails(!showDetails)}
           showDetails={showDetails}
@@ -101,8 +119,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           onVoiceCall={handleVoiceCall}
         />
 
+        {/* UPDATED: Pass enhanced messages with sender data */}
         <ChatMessages
-          messages={messages}
+          messages={enhancedMessages} // Now includes sender data
           conversation={selectedConversation}
           currentUserId={currentUserId}
           onDeleteMessage={onDeleteMessage}

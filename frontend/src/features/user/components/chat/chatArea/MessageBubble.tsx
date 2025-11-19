@@ -1,3 +1,4 @@
+// components/chat/MessageBubble.tsx
 import React from "react";
 import type { Message } from "../../../../../types/chat/chat";
 
@@ -12,6 +13,9 @@ const MessageBubble: React.FC<{
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  // NEW: Show sender name for group chats
+  const showSenderName = !isCurrentUser && message.sender;
+
   return (
     <div
       onContextMenu={onRightClick}
@@ -23,6 +27,13 @@ const MessageBubble: React.FC<{
         message.deleteMode !== "NONE" ? "opacity-60" : ""
       } cursor-context-menu`}
     >
+      {/* NEW: Sender name for group chats */}
+      {showSenderName && (
+        <div className="text-xs font-medium text-muted-foreground mb-1">
+          {message.sender?.name}
+        </div>
+      )}
+
       {message.deleteMode !== "NONE" ? (
         <p className="text-sm italic text-muted-foreground">
           {message.deleteMode === "ALL"

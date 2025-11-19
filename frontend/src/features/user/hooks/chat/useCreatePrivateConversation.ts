@@ -9,6 +9,8 @@ import {
   addConversation,
   updateConversation,
 } from "../../../../redux/slices/chatSlice";
+import type { RootState } from "../../../../redux/store";
+import { useSelector } from "react-redux";
 
 interface CreateConversationResponse {
   isNewConvo: boolean;
@@ -17,8 +19,9 @@ interface CreateConversationResponse {
 
 export const useCreatePrivateConversation = () => {
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
+  const conversations = useSelector((state: RootState) => state.chat.conversations);
+
   return useMutation({
     mutationFn: async (credentials: {
       userId: string;
@@ -28,23 +31,22 @@ export const useCreatePrivateConversation = () => {
         "/api/v1/chat/conversation/private",
         credentials
       );
-
-      console.log("Private conversation created data f  :", res.data);
-
       return res.data.data;
     },
     onSuccess: (data: CreateConversationResponse) => {
       if (data.isNewConvo) {
         dispatch(addConversation(data.conversation));
         toast.success("Conversation started");
+
       } else {
         dispatch(updateConversation(data.conversation));
         toast.success("Conversation opened");
       }
 
-      navigate(`/chat/${data.conversation.id}`, {});
+      setTimeout(() => {
+        navigate(`/chat/${data.conversation.id}`);
+      }, 500);
     },
-
     onError: (error: ApiError) => {
       console.log("Error creating private conversation:", error);
       toast.error(error.message);

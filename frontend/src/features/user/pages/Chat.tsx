@@ -1,85 +1,98 @@
-import { useSelector } from "react-redux";
-import React, { useState, useEffect } from "react";
-import ChatArea from "../components/chat/ChatArea";
-import type { RootState } from "../../../redux/store";
+// pages/Chat.tsx
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
+import ChatArea from "../components/chat/ChatArea";
 import ChatUserList from "../components/chat/ChatUserList";
+import { useRecentConversations } from "../hooks/chat/useRecentConversations";
+import {
+  setConversations,
+  addConversations,
+} from "../../../redux/slices/chatSlice";
+import type { RootState } from "../../../redux/store";
 
 const Chat: React.FC = () => {
+  const dispatch = useDispatch();
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useRecentConversations();
+
+  const conversations = useSelector((s: RootState) => s.chat.conversations);
+
+  useEffect(() => {
+    if (!data?.pages) return;
+    const server = data.pages.flatMap((p) => p.conversations);
+    if (!conversations.length) dispatch(setConversations(server));
+    else {
+      const next = server.filter(
+        (c) => !conversations.some((ex) => ex.id === c.id)
+      );
+      if (next.length) dispatch(addConversations(next));
+    }
+  }, [data, conversations, dispatch]);
 
   const [mobileView, setMobileView] = useState<"list" | "chat">("list");
-
-  const currentUserId = useSelector((state: RootState) => state.user.user?.id);
-  const conversations = useSelector(
-    (state: RootState) => state.chat?.conversations || []
+  const currentUserId = useSelector((s: RootState) => s.user.user?.id);
+  const chatMessages = useSelector((s: RootState) => s.chat.messages);
+  const selectedConversation = useMemo(
+    () =>
+      conversationId
+        ? conversations.find((c) => c.id === conversationId) || null
+        : null,
+    [conversationId, conversations]
   );
-
-  const selectedConversation = conversationId
-    ? conversations.find((conv) => conv.id === conversationId) || null
-    : null;
-
-  const messages = useSelector((state: RootState) =>
-    conversationId && state.chat?.messages
-      ? state.chat.messages[conversationId] || []
-      : []
+  const messages = useMemo(
+    () => (conversationId ? chatMessages[conversationId] || [] : []),
+    [conversationId, chatMessages]
   );
 
   useEffect(() => {
-    if (conversationId) {
-      setMobileView("chat");
-    }
+    setMobileView(conversationId ? "chat" : "list");
   }, [conversationId]);
 
-  const handleSelectConversation = (conversationId: string) => {
-    navigate(`/chat/${conversationId}`);
+  const handleSelectConversation = (id: string) => {
+    navigate(`/chat/${id}`);
     setMobileView("chat");
   };
-
   const handleBackToList = () => {
     navigate("/chat");
     setMobileView("list");
   };
-
-  if (!currentUserId) {
-    return <div>Loading...</div>;
-  }
-
   const handleSendMessage = (text: string) => {
     if (!conversationId) return;
+    console.log("TODO: send text", text);
   };
-
   const handleSendImage = (mediaUrl?: string) => {
     if (!conversationId) return;
-    console.log("Sending image to:", conversationId, mediaUrl);
+    console.log("TODO: send image", mediaUrl);
+  };
+  const handleDeleteMessage = (id: string, forAll: boolean) => {
+    console.log("TODO: delete message", id, forAll);
   };
 
-  const handleDeleteMessage = (messageId: string, deleteForAll: boolean) => {
-    console.log("Deleting message:", messageId, deleteForAll);
-  };
+  if (!currentUserId) return <div>Loading user…</div>;
 
   return (
     <div className="flex h-full bg-background overflow-hidden">
-      {/* User List */}
       <div
-        className={`
-          ${mobileView === "list" ? "flex" : "hidden"} 
-          md:flex w-full md:w-80 h-full flex-shrink-0
-        `}
+        className={`${
+          mobileView === "list" ? "flex" : "hidden"
+        } md:flex w-full md:w-80 flex-shrink-0`}
       >
         <ChatUserList
           selectedConversation={conversationId || null}
           onSelectConversation={handleSelectConversation}
+          onScrollToLoadMore={() =>
+            hasNextPage && !isFetchingNextPage && fetchNextPage()
+          }
+          isFetchingNextPage={isFetchingNextPage}
         />
       </div>
-
-      {/* Chat Area */}
       <div
-        className={`
-          ${mobileView === "chat" ? "flex" : "hidden"} 
-          md:flex flex-1 w-full
-        `}
+        className={`${
+          mobileView === "chat" ? "flex" : "hidden"
+        } md:flex flex-1 w-full`}
       >
         <ChatArea
           selectedConversation={selectedConversation}

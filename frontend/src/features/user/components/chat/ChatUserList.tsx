@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import ConversationItem from "./chatUserList/ConversationItem";
-import {
-  type Conversation,
-  ConversationType,
-} from "../../../../types/chat/chat";
-import { useRecentConversations } from "../../hooks/chat/useRecentConversations";
-import {
-  addConversation
-} from "../../../../redux/slices/chatSlice";
-import { type RootState } from "../../../../redux/store";
+import type { Conversation } from "../../../../types/chat/chat";
+import type { RootState } from "../../../../redux/store";
 
 interface ChatUserListProps {
   selectedConversation: string | null;
-  onSelectConversation: (conversationId: string) => void;
+  onSelectConversation: (id: string) => void;
+  onScrollToLoadMore: () => void;
+  isFetchingNextPage: boolean;
 }
 
 type TabType = "private" | "group" | "requests";
@@ -21,73 +16,52 @@ type TabType = "private" | "group" | "requests";
 const ChatUserList: React.FC<ChatUserListProps> = ({
   selectedConversation,
   onSelectConversation,
+  onScrollToLoadMore,
+  isFetchingNextPage,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>("private");
   const [searchQuery, setSearchQuery] = useState("");
-  const dispatch = useDispatch();
 
+  /* ---- read ONLY from Redux ---- */
   const conversations = useSelector(
     (state: RootState) => state.chat.conversations || []
   );
+  console.log(
+    "ChatUserList visible conversations from userlis",
+    conversations.length,
+    conversations.map((c) => c.id)
+  );
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useRecentConversations();
-
-  useEffect(() => {
-    if (data?.pages) {
-      const allConversations: Conversation[] =
-        data.pages.flatMap((page) => page.conversations) || [];
-
-      allConversations.forEach((conversation) => {
-        dispatch(addConversation(conversation));
-      });
-    }
-  }, [data, dispatch]);
-
-  const filteredConversations = conversations.filter((conversation) => {
+  const filtered = conversations.filter((c) => {
     const matchesSearch =
-      conversation.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      conversation.memberIds?.some((memberId) => {
-        const partner = conversation.partner;
-        return partner?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-      });
+      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.partner?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      false;
 
     const matchesTab =
-      (activeTab === "private" &&
-        conversation.type === ConversationType.PRIVATE &&
-        !conversation.locked) ||
-      (activeTab === "group" &&
-        conversation.type === ConversationType.GROUP &&
-        !conversation.locked) ||
-      (activeTab === "requests" && conversation.locked);
+      (activeTab === "private" && c.type === "PRIVATE" && !c.locked) ||
+      (activeTab === "group" && c.type === "GROUP" && !c.locked) ||
+      (activeTab === "requests" && c.locked);
 
     return matchesSearch && matchesTab;
   });
 
-  console.log(filteredConversations);
-  // Tabs
   const tabs = [
     { id: "private" as TabType, label: "Private" },
     { id: "group" as TabType, label: "Groups" },
     { id: "requests" as TabType, label: "Requests" },
   ];
 
-  const handleScroll = (e: React.UIEvent<HTMLDivElement, UIEvent>) => {
-    const target = e.currentTarget;
-    const { scrollTop, scrollHeight, clientHeight } = target;
-
-    if (
-      scrollHeight - scrollTop <= clientHeight + 100 &&
-      hasNextPage &&
-      !isFetchingNextPage
-    ) {
-      fetchNextPage();
+  const handleScroll: React.UIEventHandler<HTMLDivElement> = (e) => {
+    const t = e.currentTarget;
+    if (t.scrollHeight - t.scrollTop <= t.clientHeight + 100) {
+      onScrollToLoadMore();
     }
   };
 
   return (
     <div className="w-full h-full flex flex-col bg-background border-r border-border">
-      {/* Header */}
+      {/* ---- header / search / tabs identical to before ---- */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Messages</h2>
@@ -108,7 +82,6 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
           </button>
         </div>
 
-        {/* Search */}
         <div className="relative mb-4">
           <svg
             className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground"
@@ -132,7 +105,6 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
           />
         </div>
 
-        {/* Tabs */}
         <div className="flex space-x-1 bg-muted/50 rounded-lg p-1">
           {tabs.map((tab) => (
             <button
@@ -150,18 +122,18 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
         </div>
       </div>
 
-      {/* Conversation List */}
+      {/* ---- list ---- */}
       <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
-        {filteredConversations.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-muted-foreground p-4">
             <p className="text-sm text-center">No conversations found</p>
           </div>
         ) : (
-          filteredConversations.map((conversation) => (
+          filtered.map((c) => (
             <ConversationItem
-              key={conversation.id}
-              conversation={conversation}
-              isSelected={selectedConversation === conversation.id}
+              key={c.id}
+              conversation={c}
+              isSelected={selectedConversation === c.id}
               onSelect={onSelectConversation}
             />
           ))
