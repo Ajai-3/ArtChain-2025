@@ -12,6 +12,7 @@ export interface MessageResponseDto {
   conversationId: string;
   senderId: string;
   sender?: UserDto;
+  readBy: string[];
   content: string | null;
   mediaType: string | null;
   mediaUrl: string | null;
