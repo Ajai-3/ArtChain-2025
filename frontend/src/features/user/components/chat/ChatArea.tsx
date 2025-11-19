@@ -36,12 +36,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     hasMore,
     isLoading,
     isFetchingMore,
-    isVirtualPagination,
-    visibleCount,
     totalCount,
   } = useInitialMessages(convId);
 
-  console.log(`ChatArea: Showing ${visibleCount} of ${totalCount} messages`);
 
   const [showDetails, setShowDetails] = useState(false);
 
@@ -54,16 +51,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   );
 
   useUserResolver(senderIds);
-
-  // Enhance messages with sender info
-  const enhancedMessages = useMemo(
-    () =>
-      messages.map((m) => ({
-        ...m,
-        sender: userCache[m.senderId],
-      })),
-    [messages, userCache]
-  );
 
   const handleVideoCall = () =>
     console.log("Video call with:", selectedConversation?.partner?.name);
@@ -129,7 +116,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
         />
 
         <ChatMessages
-          messages={enhancedMessages}
+          messages={messages}
           conversation={selectedConversation}
           currentUserId={currentUserId}
           onDeleteMessage={onDeleteMessage}
@@ -137,7 +124,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           hasMore={hasMore}
           isLoading={isLoading}
           isFetchingMore={isFetchingMore}
-          isVirtualPagination={isVirtualPagination}
+          userMap={userCache}
         />
 
         <ChatInput

@@ -1,8 +1,11 @@
-// components/chat/chatArea/ChatMessage.tsx
 import MessageBubble from "./MessageBubble";
 import MessageOptions from "../MessageOptions";
-import React, { useState, useRef, useEffect, useCallback } from "react";
-import type { Message, Conversation } from "../../../../../types/chat/chat";
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from "react";
+import type {
+  Message,
+  Conversation,
+  User,
+} from "../../../../../types/chat/chat";
 
 interface ChatMessagesProps {
   messages: Message[];
@@ -14,6 +17,7 @@ interface ChatMessagesProps {
   isLoading: boolean;
   isFetchingMore: boolean;
   isVirtualPagination?: boolean;
+  userMap: Record<string, User | undefined>;
 }
 
 const ChatMessages: React.FC<ChatMessagesProps> = ({
@@ -26,6 +30,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
   isLoading,
   isFetchingMore,
   isVirtualPagination = false,
+  userMap,
 }) => {
   const [showOptions, setShowOptions] = useState<{
     messageId: string;
@@ -34,11 +39,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const loadMoreTriggerRef = useRef<HTMLDivElement>(null);
+  const loadLockRef = useRef(false);
   const autoScrollRef = useRef(true);
-  const prevMessagesLengthRef = useRef(0);
-  const prevScrollHeightRef = useRef(0);
+  const initialLoadRef = useRef(true);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
     if (autoScrollRef.current && messagesEndRef.current) {
@@ -55,9 +58,22 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
       messagesContainerRef.current;
     const scrollPosition = scrollHeight - scrollTop - clientHeight;
     autoScrollRef.current = scrollPosition < 100;
-  }, []);
 
-  // Track scroll position
+    if (
+      scrollTop <= 100 &&
+      hasMore &&
+      !loadLockRef.current &&
+      !isFetchingMore
+    ) {
+      loadLockRef.current = true;
+      console.log("ChatMessages: Scroll trigger - loading older messages");
+      loadMoreMessages();
+      setTimeout(() => {
+        loadLockRef.current = false;
+      }, 500);
+    }
+  }, [hasMore, isFetchingMore, loadMoreMessages]);
+
   useEffect(() => {
     const container = messagesContainerRef.current;
     if (container) {
@@ -66,39 +82,18 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     }
   }, [handleScroll]);
 
-  // Initial scroll to bottom when messages first load
-  useEffect(() => {
-    if (messages.length > 0 && prevMessagesLengthRef.current === 0) {
-      setTimeout(() => {
-        scrollToBottom("auto");
-      }, 100);
-    }
-    prevMessagesLengthRef.current = messages.length;
-  }, [messages.length, scrollToBottom]);
-
-  // Maintain scroll position when loading older messages
-  useEffect(() => {
-    if (!messagesContainerRef.current) return;
-
-    const container = messagesContainerRef.current;
-    const currentScrollHeight = container.scrollHeight;
-    const previousScrollHeight = prevScrollHeightRef.current;
-
-    // If messages increased and we're not at bottom, maintain position
-    if (
-      messages.length > prevMessagesLengthRef.current &&
-      !autoScrollRef.current
-    ) {
-      const heightDiff = currentScrollHeight - previousScrollHeight;
-      if (heightDiff > 0) {
-        container.scrollTop += heightDiff;
+  useLayoutEffect(() => {
+    if (messages.length > 0 && initialLoadRef.current) {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({
+          behavior: "auto",
+          block: "end",
+        });
+        initialLoadRef.current = false;
       }
     }
-
-    prevScrollHeightRef.current = currentScrollHeight;
   }, [messages.length]);
 
-  // Auto-scroll for new messages (when at bottom)
   useEffect(() => {
     if (messages.length > 0 && autoScrollRef.current) {
       const latestMessage = messages[messages.length - 1];
@@ -110,69 +105,13 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     }
   }, [messages, scrollToBottom]);
 
-  // Intersection Observer for loading more
   useEffect(() => {
-    if (!hasMore || !loadMoreTriggerRef.current) return;
-
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isFetchingMore) {
-          console.log("Triggering load more");
-          loadMoreMessages();
-        }
-      },
-      {
-        root: messagesContainerRef.current,
-        rootMargin: "200px",
-        threshold: 0.1,
-      }
-    );
-
-    observerRef.current.observe(loadMoreTriggerRef.current);
-
-    return () => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-    };
-  }, [hasMore, isFetchingMore, loadMoreMessages]);
-
-  const formatTime = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  };
-
-  const shouldShowDateDivider = (currentIndex: number) => {
-    if (currentIndex === 0) return true;
-    if (
-      !messages[currentIndex]?.createdAt ||
-      !messages[currentIndex - 1]?.createdAt
-    )
-      return false;
-    const currentDate = new Date(
-      messages[currentIndex].createdAt!
-    ).toDateString();
-    const prevDate = new Date(
-      messages[currentIndex - 1].createdAt!
-    ).toDateString();
-    return currentDate !== prevDate;
-  };
-
-  const getDateLabel = (dateString?: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const today = new Date().toDateString();
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
-    const messageDate = date.toDateString();
-    if (messageDate === today) return "Today";
-    if (messageDate === yesterday) return "Yesterday";
-    return date.toLocaleDateString([], {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+    if (conversation.id) {
+      initialLoadRef.current = true;
+      autoScrollRef.current = true;
+      loadLockRef.current = false;
+    }
+  }, [conversation.id]);
 
   const isCurrentUser = (senderId: string) => {
     return senderId === currentUserId;
@@ -193,16 +132,25 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     );
   };
 
+  const resolveSender = useCallback(
+    (message: Message) => {
+      return userMap?.[message.senderId] || message.sender;
+    },
+    [userMap]
+  );
+
   return (
     <div
       ref={messagesContainerRef}
       className="flex-1 overflow-y-auto p-4 relative"
     >
       {isLoading && messages.length === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-10">
-          <div className="text-center">
-            <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-            <p className="text-sm text-muted-foreground">Loading messages...</p>
+        <div className="absolute inset-0 flex items-center justify-center bg-transparent backdrop-blur-sm z-10">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 border-4 border-main-color border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-muted-foreground">
+              Loading conversation…
+            </p>
           </div>
         </div>
       )}
@@ -234,76 +182,74 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
           </div>
         ) : (
           <>
-            {hasMore && <div ref={loadMoreTriggerRef} className="h-4" />}
-
             {isFetchingMore && (
               <div className="flex justify-center py-3">
-                <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  <span>
-                    {isVirtualPagination
-                      ? "Loading more messages..."
-                      : "Loading older messages..."}
-                  </span>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground bg-background/80 px-4 py-2 rounded-full shadow-sm backdrop-blur">
+                  <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                  <span>Fetching older messages…</span>
                 </div>
               </div>
             )}
 
-            {messages.map((message, index) => (
-              <div key={message.id}>
-                {message.createdAt && shouldShowDateDivider(index) && (
-                  <div className="flex justify-center my-6">
-                    <span className="text-xs text-muted-foreground bg-background/80 px-3 py-1 rounded-full border backdrop-blur-sm">
-                      {getDateLabel(message.createdAt)}
-                    </span>
-                  </div>
-                )}
+            {messages.map((message, index) => {
+              const sender = resolveSender(message);
+              const hydratedMessage =
+                sender && sender !== message.sender
+                  ? { ...message, sender }
+                  : message;
 
-                <div
-                  className={`flex ${
-                    isCurrentUser(message.senderId)
-                      ? "justify-end"
-                      : "justify-start"
-                  } mb-1`}
-                >
-                  {conversation.type === "GROUP" &&
-                    !isCurrentUser(message.senderId) && (
-                      <div className="flex items-start space-x-2 max-w-[70%]">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                          <span className="text-xs font-medium">
-                            {message.sender?.name?.charAt(0) || "U"}
-                          </span>
+              return (
+                <div key={message.id}>
+                  <div
+                    className={`flex ${
+                      isCurrentUser(hydratedMessage.senderId)
+                        ? "justify-end"
+                        : "justify-start"
+                    } mb-1`}
+                  >
+                    {conversation.type === "GROUP" &&
+                      !isCurrentUser(hydratedMessage.senderId) && (
+                        <div className="flex items-start space-x-2 max-w-[70%]">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                            <span className="text-xs font-medium">
+                              {sender?.name?.charAt(0) || "U"}
+                            </span>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs text-muted-foreground mb-1">
+                              {sender?.name || "Unknown"}
+                            </p>
+                            <MessageBubble
+                              message={hydratedMessage}
+                              isCurrentUser={isCurrentUser(
+                                hydratedMessage.senderId
+                              )}
+                              onRightClick={(e) =>
+                                handleMessageRightClick(e, hydratedMessage.id)
+                              }
+                            />
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="text-xs text-muted-foreground mb-1">
-                            {message.sender?.name || "Unknown"}
-                          </p>
-                          <MessageBubble
-                            message={message}
-                            isCurrentUser={isCurrentUser(message.senderId)}
-                            onRightClick={(e) =>
-                              handleMessageRightClick(e, message.id)
-                            }
-                          />
-                        </div>
+                      )}
+
+                    {(isCurrentUser(hydratedMessage.senderId) ||
+                      conversation.type === "PRIVATE") && (
+                      <div className="max-w-[70%]">
+                        <MessageBubble
+                          message={hydratedMessage}
+                          isCurrentUser={isCurrentUser(
+                            hydratedMessage.senderId
+                          )}
+                          onRightClick={(e) =>
+                            handleMessageRightClick(e, hydratedMessage.id)
+                          }
+                        />
                       </div>
                     )}
-
-                  {(isCurrentUser(message.senderId) ||
-                    conversation.type === "PRIVATE") && (
-                    <div className="max-w-[70%]">
-                      <MessageBubble
-                        message={message}
-                        isCurrentUser={isCurrentUser(message.senderId)}
-                        onRightClick={(e) =>
-                          handleMessageRightClick(e, message.id)
-                        }
-                      />
-                    </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </>
         )}
       </div>

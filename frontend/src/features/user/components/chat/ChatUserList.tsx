@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import ConversationItem from "./chatUserList/ConversationItem";
 import type { Conversation } from "../../../../types/chat/chat";
@@ -26,25 +26,42 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
   const conversations = useSelector(
     (state: RootState) => state.chat.conversations || []
   );
+
+  const sortedConversations = useMemo(() => {
+    const clone = [...conversations];
+    clone.sort((a, b) => {
+      const aTime = new Date(
+        a.lastMessage?.createdAt || a.updatedAt || 0
+      ).getTime();
+      const bTime = new Date(
+        b.lastMessage?.createdAt || b.updatedAt || 0
+      ).getTime();
+      return bTime - aTime;
+    });
+    return clone;
+  }, [conversations]);
+
+  const filtered = useMemo(() => {
+    return sortedConversations.filter((c) => {
+      const query = searchQuery.toLowerCase();
+      const matchesSearch =
+        c.name?.toLowerCase().includes(query) ||
+        c.partner?.name?.toLowerCase().includes(query) ||
+        false;
+
+      const matchesTab =
+        (activeTab === "private" && c.type === "PRIVATE" && !c.locked) ||
+        (activeTab === "group" && c.type === "GROUP" && !c.locked) ||
+        (activeTab === "requests" && c.locked);
+
+      return matchesSearch && matchesTab;
+    });
+  }, [sortedConversations, searchQuery, activeTab]);
+
   console.log(
-    "ChatUserList visible conversations from userlis",
-    conversations.length,
-    conversations.map((c) => c.id)
+    "ChatUserList: rendering conversations",
+    filtered.map((c) => c.id)
   );
-
-  const filtered = conversations.filter((c) => {
-    const matchesSearch =
-      c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.partner?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      false;
-
-    const matchesTab =
-      (activeTab === "private" && c.type === "PRIVATE" && !c.locked) ||
-      (activeTab === "group" && c.type === "GROUP" && !c.locked) ||
-      (activeTab === "requests" && c.locked);
-
-    return matchesSearch && matchesTab;
-  });
 
   const tabs = [
     { id: "private" as TabType, label: "Private" },
@@ -54,7 +71,10 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
 
   const handleScroll: React.UIEventHandler<HTMLDivElement> = (e) => {
     const t = e.currentTarget;
-    if (t.scrollHeight - t.scrollTop <= t.clientHeight + 100) {
+    if (
+      !isFetchingNextPage &&
+      t.scrollHeight - t.scrollTop <= t.clientHeight + 100
+    ) {
       onScrollToLoadMore();
     }
   };

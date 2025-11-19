@@ -1,5 +1,5 @@
-// components/chat/MessageBubble.tsx
 import React from "react";
+import { Clock, Check, CheckCheck } from "lucide-react";
 import type { Message } from "../../../../../types/chat/chat";
 
 const MessageBubble: React.FC<{
@@ -23,9 +23,7 @@ const MessageBubble: React.FC<{
         isCurrentUser
           ? "bg-primary text-primary-foreground rounded-br-none"
           : "bg-background border border-border rounded-bl-none"
-      } ${
-        message.isDeleted ? "opacity-60" : ""
-      } cursor-context-menu`}
+      } ${message.isDeleted ? "opacity-60" : ""} cursor-context-menu`}
     >
       {/* NEW: Sender name for group chats */}
       {showSenderName && (
@@ -70,8 +68,27 @@ const MessageBubble: React.FC<{
           >
             <span>{formatTime(message.createdAt)}</span>
             {isCurrentUser && (
-              <span>
-                {message.readBy && message.readBy.length > 1 ? "✓✓" : "✓"}
+              <span className="inline-flex items-center">
+                {(() => {
+                  const readBy = message.readBy || [];
+
+                  if (readBy.length === 0) {
+                    return <Clock className="w-4 h-4 text-gray-400" />;
+                  }
+
+                  if (readBy.length === 1 && readBy[0] === message.sender?.id) {
+                    return <Check className="w-4 h-4 text-gray-500" />;
+                  }
+
+                  if (
+                    readBy.length > 1 ||
+                    (readBy.length === 1 && readBy[0] !== message.sender?.id)
+                  ) {
+                    return <CheckCheck className="w-4 h-4 text-blue-500" />;
+                  }
+
+                  return null;
+                })()}
               </span>
             )}
           </p>

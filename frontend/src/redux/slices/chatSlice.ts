@@ -9,9 +9,8 @@ import {
 
 interface ChatState {
   conversations: Conversation[];
-  messages: Record<string, Message[]>; // conversationId -> all messages
-  visibleCount: Record<string, number>; // conversationId -> how many to show
-  pagination: Record<string, { currentPage: number; hasMore: boolean }>; // conversationId -> pagination state
+  messages: Record<string, Message[]>;
+  pagination: Record<string, { hasMore: boolean; nextFromId?: string }>;
   selectedConversationId: string | null;
   userCache: Record<string, User>;
   loadingMessages: Record<string, boolean>;
@@ -20,7 +19,6 @@ interface ChatState {
 const initialState: ChatState = {
   conversations: [],
   messages: {},
-  visibleCount: {},
   pagination: {},
   selectedConversationId: null,
   userCache: {},
@@ -67,84 +65,62 @@ const chatSlice = createSlice({
       state.userCache[action.payload.id] = action.payload;
     },
 
-    // Store messages from HTTP response
     storeMessages(
       state,
       action: PayloadAction<{
         conversationId: string;
         messages: Message[];
-        page: number;
         hasMore: boolean;
+        nextFromId?: string;
       }>
     ) {
-      const { conversationId, messages, page, hasMore } = action.payload;
+      const { conversationId, messages, hasMore, nextFromId } = action.payload;
 
-      // Initialize if doesn't exist
       if (!state.messages[conversationId]) {
         state.messages[conversationId] = [];
       }
 
-      // Merge new messages (avoid duplicates)
       const existingIds = new Set(
         state.messages[conversationId].map((m) => m.id)
       );
       const newMessages = messages.filter((m) => !existingIds.has(m.id));
 
-      // Add new messages and sort by timestamp
       state.messages[conversationId] = [
-        ...state.messages[conversationId],
         ...newMessages,
+        ...state.messages[conversationId],
       ].sort(
         (a, b) =>
           new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
       );
 
-      // Update pagination
       state.pagination[conversationId] = {
-        currentPage: page,
         hasMore,
+        nextFromId,
       };
 
-      // If this is page 1, reset visible count to show last 10
-      if (page === 1) {
-        state.visibleCount[conversationId] = Math.min(
-          10,
-          state.messages[conversationId].length
-        );
-      }
-
       console.log(
-        `Redux: Stored ${messages.length} messages for ${conversationId}, page ${page}, total ${state.messages[conversationId].length}`
+        `Redux: Stored ${newMessages.length} messages for ${conversationId}, total ${state.messages[conversationId].length}, hasMore: ${hasMore}, nextFromId: ${nextFromId}`
       );
     },
 
-    // Add single message (for real-time updates)
     addMessage(state, action: PayloadAction<Message>) {
       const m = action.payload;
       if (!state.messages[m.conversationId]) {
         state.messages[m.conversationId] = [];
       }
 
-      // Avoid duplicates
       const exists = state.messages[m.conversationId].some(
         (x) => x.id === m.id
       );
       if (!exists) {
         state.messages[m.conversationId].push(m);
-        // Sort to maintain order
         state.messages[m.conversationId].sort(
           (a, b) =>
             new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
         );
-
-        // Auto-increment visible count for new messages
-        if (state.visibleCount[m.conversationId]) {
-          state.visibleCount[m.conversationId]++;
-        }
       }
     },
 
-    // Update existing message
     updateMessage(state, action: PayloadAction<Message>) {
       const m = action.payload;
       if (!state.messages[m.conversationId]) return;
@@ -157,39 +133,6 @@ const chatSlice = createSlice({
       }
     },
 
-    // Load more messages from Redux (virtual pagination)
-    loadMoreFromRedux(
-      state,
-      action: PayloadAction<{ conversationId: string }>
-    ) {
-      const { conversationId } = action.payload;
-      const current = state.visibleCount[conversationId] || 0;
-      const total = state.messages[conversationId]?.length || 0;
-      const newVisible = Math.min(current + 10, total);
-
-      state.visibleCount[conversationId] = newVisible;
-
-      console.log(
-        `Redux: Load more for ${conversationId}: ${current} -> ${newVisible} of ${total}`
-      );
-    },
-
-    // Reset visible count (when switching conversations)
-    resetVisibleCount(
-      state,
-      action: PayloadAction<{ conversationId: string }>
-    ) {
-      const { conversationId } = action.payload;
-      const total = state.messages[conversationId]?.length || 0;
-
-      // Always show last 10 messages when resetting
-      state.visibleCount[conversationId] = Math.min(10, total);
-
-      console.log(
-        `Redux: Reset visible for ${conversationId} to ${state.visibleCount[conversationId]}`
-      );
-    },
-
     setMessagesLoading(
       state,
       action: PayloadAction<{ conversationId: string; loading: boolean }>
@@ -200,6 +143,9 @@ const chatSlice = createSlice({
 
     clearConversations(state) {
       state.conversations = [];
+      state.messages = {};
+      state.pagination = {};
+      state.loadingMessages = {};
     },
   },
   extraReducers: (builder) => builder.addCase(logout, () => initialState),
@@ -215,8 +161,6 @@ export const {
   updateMessage,
   addMessage,
   storeMessages,
-  loadMoreFromRedux,
-  resetVisibleCount,
   setMessagesLoading,
   cacheUsers,
   cacheUser,
