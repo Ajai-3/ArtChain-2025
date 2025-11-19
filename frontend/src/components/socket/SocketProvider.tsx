@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from "react";
 import { initSocket, disconnectSocket } from "../../socket";
-import { registerSocketEvents } from "../../socket/socketEvents";
+import { registerChatSocketEvents, registerNotificationSocketEvents } from "../../socket/socketEvents";
 import {
   setNotificationSocket,
   setChatSocket,
@@ -27,8 +27,8 @@ export const SocketProvider = ({ children }: Props) => {
     setNotificationSocket(notificationSocket);
     setChatSocket(chatSocket);
 
-    registerSocketEvents(notificationSocket, "notification");
-    registerSocketEvents(chatSocket, "chat");
+     registerNotificationSocketEvents(notificationSocket);
+     registerChatSocketEvents(chatSocket);
 
     return () => {
       disconnectSocket(notificationSocket);

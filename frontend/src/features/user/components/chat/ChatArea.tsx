@@ -1,14 +1,13 @@
-// components/chat/ChatArea.tsx
-import React, { useState, useMemo } from "react";
-import ChatInput from "./chatArea/Chatinput";
+import { useSelector } from "react-redux";
+import ChatInput from "./chatArea/ChatInput";
 import ChatHeader from "./chatArea/ChatHeader";
+import React, { useState, useMemo } from "react";
 import ChatMessages from "./chatArea/ChatMessage";
+import { type RootState } from "../../../../redux/store";
+import { type Conversation } from "../../../../types/chat/chat";
 import ConversationDetails from "./chatArea/ConversationDetails";
 import { useUserResolver } from "../../hooks/chat/useUserResolver";
 import { useInitialMessages } from "../../hooks/chat/useInitialMessages";
-import { useSelector } from "react-redux";
-import { type Conversation } from "../../../../types/chat/chat";
-import { type RootState } from "../../../../redux/store";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;

@@ -73,7 +73,7 @@ const MessageBubble: React.FC<{
                   const readBy = message.readBy || [];
 
                   if (readBy.length === 0) {
-                    return <Clock className="w-4 h-4 text-gray-400" />;
+                    return <Clock className="w-4 h-4 text-red-600" />;
                   }
 
                   if (readBy.length === 1 && readBy[0] === message.sender?.id) {

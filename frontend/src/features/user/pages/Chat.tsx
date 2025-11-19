@@ -11,10 +11,15 @@ import {
 } from "../../../redux/slices/chatSlice";
 import type { RootState } from "../../../redux/store";
 
+import { useSendMessage } from "../hooks/chat/socket/useSendMessage";
+import { useConvoOpen } from "../hooks/chat/socket/useConvoOpen";
+
 const Chat: React.FC = () => {
   const dispatch = useDispatch();
-  const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
+  const { sendMessage } = useSendMessage();
+  const { conversationId } = useParams<{ conversationId: string }>();
+  useConvoOpen(conversationId);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRecentConversations();
 
@@ -59,14 +64,22 @@ const Chat: React.FC = () => {
     navigate("/chat");
     setMobileView("list");
   };
+
+
   const handleSendMessage = (text: string) => {
     if (!conversationId) return;
-    console.log("TODO: send text", text);
+    let obj = {
+      conversationId,
+      content: text
+    }
+    sendMessage(obj);
   };
+
   const handleSendImage = (mediaUrl?: string) => {
     if (!conversationId) return;
     console.log("TODO: send image", mediaUrl);
   };
+
   const handleDeleteMessage = (id: string, forAll: boolean) => {
     console.log("TODO: delete message", id, forAll);
   };
