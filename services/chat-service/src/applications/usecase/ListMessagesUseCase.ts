@@ -22,7 +22,7 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
   ) {}
 
   async execute(dto: ListMessagesDto): Promise<ListMessagesResponse> {
-    const { conversationId, requestUserId, page, limit } = dto;
+    const { conversationId, requestUserId, page, limit, fromId } = dto;
 
     console.log("🚀 ListMessagesUseCase executing with:", dto);
 
@@ -53,7 +53,8 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
       const dbMessages = await this._messageRepo.listByConversationPaginated(
         conversationId,
         limit,
-        start
+        fromId,
+        start,
       );
       console.log(`🗃️ Database returned ${dbMessages.length} messages`);
       messages = dbMessages;

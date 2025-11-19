@@ -69,13 +69,14 @@ export class MessageController implements IMessageController {
         headers: req.headers,
       });
 
-      const { limit, page } = parsed.query;
+      const { limit, page, fromId } = parsed.query;
       const { conversationId } = parsed.params;
       const requestUserId = parsed.headers["x-user-id"] as string;
 
       const dto: ListMessagesDto = {
         conversationId,
         requestUserId,
+        fromId: fromId || "",
         page: Number(page) || 1,
         limit: Number(limit) || 20,
       };

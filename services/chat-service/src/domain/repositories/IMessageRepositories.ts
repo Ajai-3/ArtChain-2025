@@ -6,6 +6,7 @@ export interface IMessageRepository extends IBaseRepository<Message> {
   listByConversationPaginated(
     conversationId: string,
     limit: number,
+    fromId: string,
     skip: number
   ): Promise<Message[]>;
   getLastMessages(conversationIds: string[]): Promise<Message[]>;

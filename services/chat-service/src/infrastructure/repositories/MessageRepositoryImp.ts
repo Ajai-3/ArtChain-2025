@@ -16,13 +16,31 @@ export class MessageRepositoryImp
   async listByConversationPaginated(
     conversationId: string,
     limit: number,
+    fromId: string,
     skip: number
   ): Promise<Message[]> {
-    const messages = await this.model
-      .find({ conversationId })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+    let messages;
+    if (fromId) {
+      const pivot = await this.model.findById(fromId).lean();
+      if (!pivot) {
+        throw new Error(`Invalid fromId: ${fromId}`);
+      }
+      messages = await this.model
+        .find({
+          conversationId,
+          _id: { $lt: pivot._id },
+        })
+        .sort({ _id: -1 })
+        .limit(limit)
+        .lean();
+    } else {
+      messages = await this.model
+        .find({ conversationId })
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean();
+    }
 
     return this.mapDbArrayToDomain(messages.reverse());
   }

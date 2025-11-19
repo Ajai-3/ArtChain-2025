@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const getMessagesSchema = z.object({
   query: z.object({
+    fromId: z.string().optional(),
     limit: z
       .string()
       .default("10")
