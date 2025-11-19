@@ -24,7 +24,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
   ) {}
 
   async execute(dto: SendMessageDto): Promise<void> {
-    let { senderId, receiverId, content, conversationId } = dto;
+    let { senderId, receiverId, content, conversationId, tempId } = dto;
 
     if (!content?.trim()) {
       throw new BadRequestError("Message content cannot be empty");
@@ -48,7 +48,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
 
     await this._cacheService.cacheMessage(message);
 
-    await this._broadcastService.publishMessage(message);
+    await this._broadcastService.publishMessage(message, tempId);
   }
 
   private async resolveConversation(

@@ -24,13 +24,14 @@ export class ClientEventHandler implements IClientEventHandler {
 
   sendMessage = async (
     socket: Socket,
-    payload: { conversationId: string; content: string; receiverId?: string },
+    payload: SendMessageDto,
     callback?: (ack: boolean) => void
   ) => {
     const userId = socket.data.userId;
 
     try {
       const dto: SendMessageDto = {
+        tempId: payload.tempId,
         conversationId: payload.conversationId,
         senderId: userId,
         receiverId: payload.receiverId,

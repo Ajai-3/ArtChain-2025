@@ -32,7 +32,7 @@ export const chatSocket = (io: Server) => {
     const msg = JSON.parse(message);
     console.log(
       `🔔 Redis message in conversation ${msg.conversationId}:`,
-      msg?.message.content
+      msg
     );
 
     if (channel === "chat_messages") {
