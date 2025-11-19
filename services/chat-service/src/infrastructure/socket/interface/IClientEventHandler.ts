@@ -1,12 +1,16 @@
+import { Socket } from "socket.io";
+
 export interface IClientEventHandler {
-  typing(data: { conversationId: string }): void;
+  typing(socket: Socket, data: { conversationId: string }): void;
 
   sendMessage(
+    socket: Socket,
     payload: { conversationId: string; content: string; receiverId?: string },
     callback?: (ack: boolean) => void
   ): Promise<void>;
 
   deleteMessage(
+    socket: Socket,
     payload: {
       conversationId: string;
       messageId: string;
@@ -15,5 +19,8 @@ export interface IClientEventHandler {
     callback?: (ack: boolean) => void
   ): Promise<void>;
 
-  convoOpened(payload: { conversationId: string; time: Date }): void;
+  convoOpened(
+    socket: Socket,
+    payload: { conversationId: string; time: Date }
+  ): void;
 }

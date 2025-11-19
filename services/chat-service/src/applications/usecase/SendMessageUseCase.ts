@@ -23,7 +23,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     private readonly _broadcastService: IMessageBroadcastService,
   ) {}
 
-  async execute(dto: SendMessageDto): Promise<Message> {
+  async execute(dto: SendMessageDto): Promise<void> {
     let { senderId, receiverId, content, conversationId } = dto;
 
     if (!content?.trim()) {
@@ -49,8 +49,6 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     await this._cacheService.cacheMessage(message);
 
     await this._broadcastService.publishMessage(message);
-
-    return message;
   }
 
   private async resolveConversation(

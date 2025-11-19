@@ -1,3 +1,4 @@
+import { Message } from './../../domain/entities/Message';
 import { Server } from "socket.io";
 import { redisSub } from "../config/redis";
 import { registerClientEvents } from "./handlers/registerClientEvents";
@@ -26,12 +27,12 @@ export const chatSocket = (io: Server) => {
     });
   });
 
-  redisSub.subscribe("chat");
+  redisSub.subscribe("chat_messages");
   redisSub.on("message", (channel, message) => {
     const msg = JSON.parse(message);
     console.log(
       `🔔 Redis message in conversation ${msg.conversationId}:`,
-      msg.content
+      msg?.message.content
     );
 
     if (channel === "chat_messages") {

@@ -1,5 +1,6 @@
-import { inject, injectable, unmanaged } from "inversify";
+import { Socket } from "socket.io";
 import { TYPES } from "../../Inversify/types";
+import { inject, injectable, unmanaged } from "inversify";
 import { IClientEventHandler } from "../interface/IClientEventHandler";
 import { SendMessageDto } from "../../../applications/interface/dto/SendMessageDto";
 import { DeleteMessageDto } from "../../../applications/interface/dto/DeleteMessageDto";
@@ -9,7 +10,6 @@ import { IDeleteMessageUseCase } from "../../../applications/interface/usecase/I
 @injectable()
 export class ClientEventHandler implements IClientEventHandler {
   constructor(
-    @unmanaged() private socket: any,
     @unmanaged() private onlineUsers: Map<string, string>,
     @inject(TYPES.ISendMessageUseCase)
     private readonly _sendMessageUseCase: ISendMessageUseCase,
@@ -17,16 +17,17 @@ export class ClientEventHandler implements IClientEventHandler {
     private readonly _deleteMessageUseCase: IDeleteMessageUseCase
   ) {}
 
-  typing = (data: { conversationId: string }) => {
-    const userId = this.socket.data.userId;
-    this.socket.to(data.conversationId).emit("userTyping", { userId });
+  typing = (socket: Socket, data: { conversationId: string }) => {
+    const userId = socket.data.userId;
+    socket.to(data.conversationId).emit("userTyping", { userId });
   };
 
   sendMessage = async (
+    socket: Socket,
     payload: { conversationId: string; content: string; receiverId?: string },
     callback?: (ack: boolean) => void
   ) => {
-    const userId = this.socket.data.userId;
+    const userId = socket.data.userId;
 
     try {
       const dto: SendMessageDto = {
@@ -45,6 +46,7 @@ export class ClientEventHandler implements IClientEventHandler {
   };
 
   deleteMessage = async (
+    socket: Socket,
     payload: {
       conversationId: string;
       messageId: string;
@@ -52,7 +54,7 @@ export class ClientEventHandler implements IClientEventHandler {
     },
     callback?: (ack: boolean) => void
   ) => {
-    const userId = this.socket.data.userId;
+    const userId = socket.data.userId;
 
     try {
       const dto: DeleteMessageDto = {
@@ -69,8 +71,16 @@ export class ClientEventHandler implements IClientEventHandler {
     }
   };
 
-  convoOpened = (payload: { conversationId: string; time: Date }) => {
-    const userId = this.socket.data.userId;
-    console.log(`User ${userId} opened conversation ${payload.conversationId}`);
+  convoOpened = (
+    socket: Socket,
+    payload: { conversationId: string; time: Date }
+  ) => {
+    const userId = socket.data.userId;
+    const conversationId = payload.conversationId;
+    
+    console.log(`User ${userId} opened conversation ${conversationId}`);
+    socket.join(conversationId);
+
+    socket.to(conversationId).emit("userJoined", { userId });
   };
 }
