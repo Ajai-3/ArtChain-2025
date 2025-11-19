@@ -11,15 +11,6 @@ export const getMessagesSchema = z.object({
         (v) => Number.isInteger(v) && v > 0,
         "limit must be a positive integer"
       ),
-
-    page: z
-      .string()
-      .default("1")
-      .transform((v) => Number(v))
-      .refine(
-        (v) => Number.isInteger(v) && v > 0,
-        "page must be a positive integer"
-      ),
   }),
 
   params: z.object({

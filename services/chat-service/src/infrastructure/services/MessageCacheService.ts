@@ -6,7 +6,7 @@ import { IMessageCacheService } from "../../applications/interface/service/IMess
 
 @injectable()
 export class MessageCacheService implements IMessageCacheService {
-  private readonly MESSAGE_TTL_MS = 24 * 60 * 60 * 1000; 
+  private readonly MESSAGE_TTL_MS = 24 * 60 * 60 * 1000;
   private readonly MAX_CACHE_MESSAGES = 100;
 
   constructor(
@@ -36,21 +36,34 @@ export class MessageCacheService implements IMessageCacheService {
 
   async getCachedMessages(
     conversationId: string,
-    start: number,
-    end: number
+    limit: number,
+    fromId?: string
   ): Promise<Message[]> {
-    const cacheKey = `messages:${conversationId}`;
-    const messageIds = await this.cacheService.lrange(cacheKey, start, end);
+    const listKey = `messages:${conversationId}`;
+    const allIds = await this.cacheService.lrange(listKey, 0, -1);
+    if (allIds.length === 0) return [];
 
-    const messages: Message[] = [];
+    let startIndex: number;
 
-    for (const messageId of messageIds) {
-      const cached = await this.cacheService.get(`message:${messageId}`);
-      if (cached) {
-        messages.push(JSON.parse(cached));
+    if (!fromId) {
+      startIndex = 0;
+    } else {
+      const pivotIndex = allIds.indexOf(fromId);
+      if (pivotIndex === -1) {
+        return [];
       }
+      startIndex = pivotIndex + 1;
     }
 
+    const endIndex = startIndex + limit - 1;
+
+    const messageIds = allIds.slice(startIndex, endIndex + 1);
+
+    const messages: Message[] = [];
+    for (const id of messageIds) {
+      const cached = await this.cacheService.get(`message:${id}`);
+      if (cached) messages.push(JSON.parse(cached));
+    }
     return messages;
   }
 

@@ -4,8 +4,8 @@ export interface IMessageCacheService {
   cacheMessage(message: Message): Promise<void>;
   getCachedMessages(
     conversationId: string,
-    start: number,
-    end: number
+    limit: number,
+    fromId?: string
   ): Promise<Message[]>;
   updateCachedMessage(
     messageId: string,

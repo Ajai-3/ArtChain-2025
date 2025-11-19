@@ -6,8 +6,7 @@ export interface IMessageRepository extends IBaseRepository<Message> {
   listByConversationPaginated(
     conversationId: string,
     limit: number,
-    fromId: string,
-    skip: number
+    fromId?: string,
   ): Promise<Message[]>;
   getLastMessages(conversationIds: string[]): Promise<Message[]>;
   getTotalCountByConversation(conversationId: string): Promise<number>;

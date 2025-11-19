@@ -5,11 +5,12 @@ import { TYPES } from "../../infrastructure/Inversify/types";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { ListMessagesDto } from "../interface/dto/ListMessagesDto";
 import { MessageResponseDto } from "../interface/dto/MessageResponseDto";
+import { ListMessagesResponse } from "../interface/dto/ListMessageResponceDto";
 import { IMessageCacheService } from "../interface/service/IMessageCacheService";
 import { IListMessagesUseCase } from "../interface/usecase/IListMessagesUseCase";
 import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { ListMessagesResponse } from "../interface/dto/ListMessageResponceDto";
+
 @injectable()
 export class ListMessagesUseCase implements IListMessagesUseCase {
   constructor(
@@ -22,69 +23,58 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
   ) {}
 
   async execute(dto: ListMessagesDto): Promise<ListMessagesResponse> {
-    const { conversationId, requestUserId, page, limit, fromId } = dto;
+    const { conversationId, requestUserId, limit, fromId } = dto;
 
-    console.log("🚀 ListMessagesUseCase executing with:", dto);
+    console.log("ListMessagesUseCase.execute", dto);
 
-    const conversation = await this.validateConversationAccess(
+    await this.validateConversationAccess(conversationId, requestUserId);
+
+    let messages: Message[] = [];
+
+    console.log("Trying cache");
+
+    const cached = await this._cacheService.getCachedMessages(
       conversationId,
-      requestUserId
+      limit,
+      fromId
     );
+    console.log("Cache returned", cached.length);
 
-    const start = (page - 1) * limit;
-    const end = start + limit - 1;
+    if (cached.length === limit) {
+      messages = cached;
+      console.log("Using cached results");
+    } else {
+      console.log("Cache miss, querying DB");
 
-    console.log(
-      `📊 Fetching messages: start=${start}, end=${end}, limit=${limit}`
-    );
-
-    // Try cache first
-    let messages = await this._cacheService.getCachedMessages(
-      conversationId,
-      start,
-      end
-    );
-
-    console.log(`💾 Cache returned ${messages.length} messages`);
-
-    // Fallback to DB if cache incomplete
-    if (messages.length < limit) {
-      console.log(`🔄 Cache incomplete, querying database...`);
-      const dbMessages = await this._messageRepo.listByConversationPaginated(
+      messages = await this._messageRepo.listByConversationPaginated(
         conversationId,
         limit,
-        fromId,
-        start,
+        fromId
       );
-      console.log(`🗃️ Database returned ${dbMessages.length} messages`);
-      messages = dbMessages;
 
-      if (page === 1) {
-        console.log(`💡 Caching messages for conversation ${conversationId}`);
-        await this._cacheService.cacheMessageList(conversationId, dbMessages);
+      console.log("DB returned", messages.length);
+
+      if (messages.length > 0) {
+        console.log("Caching DB results");
+        await this._cacheService.cacheMessageList(conversationId, messages);
       }
     }
 
-    // NEW: Get total count for pagination
     const totalCount = await this._messageRepo.getTotalCountByConversation(
       conversationId
     );
-    const hasMore = start + messages.length < totalCount;
-    const nextPage = hasMore ? page + 1 : undefined;
+
+    const hasMore = messages.length === limit;
+    const nextFromId = hasMore ? messages[0].id : undefined;
 
     const responseMessages = this.mapToResponse(messages, requestUserId);
-
-    console.log(
-      `✅ Returning ${responseMessages.length} messages with pagination`
-    );
 
     return {
       messages: responseMessages,
       pagination: {
-        currentPage: page,
         hasMore,
         totalCount,
-        nextPage,
+        nextFromId,
       },
     };
   }
@@ -93,33 +83,17 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
     conversationId: string,
     requestUserId: string
   ) {
-    console.log(
-      `🔐 Validating access for user ${requestUserId} to conversation ${conversationId}`
-    );
-
     const conversation = await this._conversationRepo.findById(conversationId);
     if (!conversation) throw new NotFoundError("Conversation not found");
-
-    console.log(`👥 Conversation members:`, conversation.memberIds);
-
-    const isMember = conversation.memberIds.includes(requestUserId);
-
-    if (!isMember) {
-      throw new BadRequestError("Not authorized to view this conversation");
+    if (!conversation.memberIds.includes(requestUserId)) {
+      throw new BadRequestError("Not authorized");
     }
-
-    console.log(`✅ User authorized`);
-    return conversation;
   }
 
   private mapToResponse(
     messages: Message[],
     requestUserId: string
   ): MessageResponseDto[] {
-    const response = messages.map((msg) =>
-      MessageMapper.toResponse(msg, requestUserId)
-    );
-    console.log(`📨 Mapped ${response.length} messages to response DTO`);
-    return response;
+    return messages.map((msg) => MessageMapper.toResponse(msg, requestUserId));
   }
 }
