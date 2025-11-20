@@ -31,7 +31,7 @@ export class ClientEventHandler implements IClientEventHandler {
 
     try {
       const dto: SendMessageDto = {
-        tempId: payload.tempId,
+        tempId: payload.id,
         conversationId: payload.conversationId,
         senderId: userId,
         receiverId: payload.receiverId,

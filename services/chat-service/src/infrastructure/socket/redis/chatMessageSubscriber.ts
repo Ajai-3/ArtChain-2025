@@ -42,7 +42,8 @@ export const subscribeChatMessages = (
 
 
       if (data.type === "new_message") {
-        socket.emit("newMessage", data.message, data.tempId);
+         const payload = { ...data.message, tempId: data.tempId };
+        socket.emit("newMessage", payload);
         console.log(`Emitted newMessage to user: ${userId}`);
       } else if (data.type === "delete_message") {
         socket.emit("messageDeleted", { messageId: data.messageId });
