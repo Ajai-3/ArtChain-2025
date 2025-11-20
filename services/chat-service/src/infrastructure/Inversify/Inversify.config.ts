@@ -26,11 +26,13 @@ import { UserService } from "../http/UserService";
 import { RedisCacheService } from "../cache/RedisCacheService";
 import { MessageCacheService } from "../services/MessageCacheService";
 import { MessageBroadcastService } from "../services/MessageBroadcastService";
+import { ConversationCacheService } from "../services/ConversationCacheService";
 
 import { ICacheService } from "../../domain/service/ICacheService";
 import { IUserService } from "../../applications/interface/http/IUserService";
 import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 import { IMessageCacheService } from "../../applications/interface/service/IMessageCacheService";
+import { IConversationCacheService } from "../../applications/interface/service/IConversationCacheService";
 
 // Handlers
 import { IClientEventHandler } from "../socket/interface/IClientEventHandler";
@@ -86,6 +88,9 @@ container
 container
   .bind<IMessageCacheService>(TYPES.IMessageCacheService)
   .to(MessageCacheService);
+container
+  .bind<IConversationCacheService>(TYPES.IConversationCacheService)
+  .to(ConversationCacheService);
 
 // Handlers
 container

@@ -12,4 +12,17 @@ export interface IMessageCacheService {
     updates: Partial<Message>
   ): Promise<void>;
   cacheMessageList(conversationId: string, messages: Message[]): Promise<void>;
+  cacheConversationMembers(
+    conversationId: string,
+    memberIds: string[]
+  ): Promise<void>;
+  getConversationMembers(conversationId: string): Promise<string[]>;
+  updateConversationMembers(
+    conversationId: string,
+    memberIds: string[]
+  ): Promise<void>;
+  removeConversationMembers(
+    conversationId: string,
+    memberIdsToRemove: string[]
+  ): Promise<void>;
 }

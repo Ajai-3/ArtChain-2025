@@ -4,11 +4,12 @@ import { TYPES } from "../../infrastructure/Inversify/types";
 import { SendMessageDto } from "../interface/dto/SendMessageDto";
 import { ConversationType } from "../../domain/entities/Conversation";
 import { ISendMessageUseCase } from "../interface/usecase/ISendMessageUseCase";
-import { DeleteMode, MediaType, Message } from "../../domain/entities/Message";
+import { DeleteMode, MediaType } from "../../domain/entities/Message";
 import { IMessageCacheService } from "../interface/service/IMessageCacheService";
 import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
 import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
+import { IConversationCacheService } from "../interface/service/IConversationCacheService";
 
 @injectable()
 export class SendMessageUseCase implements ISendMessageUseCase {
@@ -21,6 +22,8 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     private readonly _conversationRepo: IConversationRepository,
     @inject(TYPES.IMessageBroadcastService)
     private readonly _broadcastService: IMessageBroadcastService,
+    @inject(TYPES.IConversationCacheService)
+    private readonly _conversationCacheService: IConversationCacheService
   ) {}
 
   async execute(dto: SendMessageDto): Promise<void> {
@@ -60,7 +63,14 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       const conversation = await this._conversationRepo.findById(
         conversationId
       );
+
+      
       if (!conversation) throw new BadRequestError("Conversation not found");
+
+      await this._conversationCacheService.updateConversationMembers(
+        conversation.id,
+        conversation.memberIds
+      );
 
       if (
         conversation.type === ConversationType.PRIVATE &&
@@ -89,6 +99,12 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       locked: false,
       adminIds: [],
     });
+
+     await this._conversationCacheService.cacheConversationMembers(
+       conversation.id,
+       conversation.memberIds
+     );
+
 
     return conversation.id;
   }

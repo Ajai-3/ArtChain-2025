@@ -14,6 +14,7 @@ interface SendMessageParams {
 export const useSendMessage = () => {
   const dispatch = useDispatch();
   const currentUserId = useSelector((s: RootState) => s.user.user?.id);
+  const message = useSelector((s: RootState) => s.chat.messages)
   
   const sendMessage = useCallback(
     async ({ conversationId, content }: SendMessageParams) => {
@@ -28,8 +29,8 @@ export const useSendMessage = () => {
       }
 
       const tempId = `temp-${Date.now()}`;
-      const tempMessage: Message = {
-        id: tempId,
+      const tempMessage: any = {
+        tempId: tempId,
         conversationId,
         senderId: currentUserId,
         content: content.trim(),
@@ -43,6 +44,8 @@ export const useSendMessage = () => {
       });
 
       dispatch(addMessage(tempMessage));
+
+      console.log(message)
 
       try {
         socket.emit("sendMessage", {

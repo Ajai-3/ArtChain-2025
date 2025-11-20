@@ -8,6 +8,7 @@ export const TYPES = {
   ICacheService: Symbol.for("ICacheService"),
   IMessageCacheService: Symbol.for("IMessageCacheService"),
   IMessageBroadcastService: Symbol.for("IMessageBroadcastService"),
+  IConversationCacheService: Symbol.for("IConversationCacheService"),
 
   // Use Cases
   ISendMessageUseCase: Symbol.for("ISendMessageUseCase"),

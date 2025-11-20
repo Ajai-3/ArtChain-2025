@@ -1,9 +1,10 @@
-import { Message } from './../../domain/entities/Message';
+
 import { Server } from "socket.io";
+import { logger } from "../utils/logger";
 import { redisSub } from "../config/redis";
 import { registerClientEvents } from "./handlers/registerClientEvents";
 import { authMiddleware } from "../../presentation/middleware/authMiddleware";
-import { logger } from "../utils/logger";
+import { subscribeChatMessages } from "./redis/chatMessageSubscriber";
 
 export const chatSocket = (io: Server) => {
   const onlineUsers = new Map<string, string>();
@@ -17,6 +18,7 @@ export const chatSocket = (io: Server) => {
     onlineUsers.set(userId, socket.id);
     io.emit("chatOnline", Array.from(onlineUsers.keys()));
 
+    logger.info(`Online users ${Array.from(onlineUsers.keys())}`);
     // Register all events for this socket
     registerClientEvents(socket, onlineUsers);
 
@@ -27,24 +29,5 @@ export const chatSocket = (io: Server) => {
     });
   });
 
-  redisSub.subscribe("chat_messages");
-  redisSub.on("message", (channel, message) => {
-    const msg = JSON.parse(message);
-    console.log(
-      `🔔 Redis message in conversation ${msg.conversationId}:`,
-      msg
-    );
-
-    if (channel === "chat_messages") {
-      const data = JSON.parse(message);
-
-      if (data.type === "new_message") {
-        io.to(data.conversationId).emit("newMessage", data.message);
-      } else if (data.type === "delete_message") {
-        io.to(data.conversationId).emit("messageDeleted", {
-          messageId: data.messageId,
-        });
-      }
-    }
-  });
+  subscribeChatMessages(io, onlineUsers);
 };
