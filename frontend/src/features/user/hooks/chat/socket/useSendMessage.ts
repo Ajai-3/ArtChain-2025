@@ -46,6 +46,7 @@ export const useSendMessage = () => {
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         readBy: [],
+        tempId: id,
       };
 
       console.log("📤 Sending message via socket:", {
