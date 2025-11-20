@@ -36,23 +36,22 @@ export const useSendMessage = () => {
         return;
       }
 
-      const tempId = `temp-${Date.now()}`;
+      const id = `temp-${Date.now()}`;
       const tempMessage: Message = {
-        id: tempId,
+        id,
         conversationId,
         senderId: currentUserId,
         deleteMode: DeleteMode.NONE,
         content: content.trim(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        readBy: [currentUserId],
-        tempId,
+        readBy: [],
       };
 
       console.log("📤 Sending message via socket:", {
         conversationId,
         content: content.trim(),
-        tempId,
+        id
       });
 
       dispatch(addMessage(tempMessage));
@@ -73,7 +72,7 @@ export const useSendMessage = () => {
         socket.emit("sendMessage", {
           conversationId,
           content: content.trim(),
-          tempId,
+          id,
         });
       } catch (error) {
         console.error("❌ Failed to send message via socket:", error);

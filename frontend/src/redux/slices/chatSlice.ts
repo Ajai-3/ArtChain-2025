@@ -124,43 +124,62 @@ const chatSlice = createSlice({
       state,
       action: PayloadAction<Message & { tempId?: string }>
     ) {
-      const m = action.payload;
-      if (!state.messages[m.conversationId]) {
-        state.messages[m.conversationId] = [];
+      const incoming = action.payload;
+
+      console.log("🔵 [Reducer] Incoming payload:", incoming);
+
+      if (!state.messages[incoming.conversationId]) {
+        console.log("🆕 Initializing new array for conversation");
+        state.messages[incoming.conversationId] = [];
       }
 
-      if (m.tempId) {
-        const idx = state.messages[m.conversationId].findIndex(
-          (x) => x.tempId === m.tempId
-        );
+      const list = state.messages[incoming.conversationId];
+      console.log("📦 Current list before update:", list);
+
+      if (incoming.tempId) {
+        console.log("🟣 Incoming has tempId:", incoming.tempId);
+
+        const idx = list.findIndex((m) => m.tempId === incoming.tempId);
+        console.log("🔍 Match by tempId index:", idx);
+
         if (idx !== -1) {
-          state.messages[m.conversationId][idx] = m;
+          console.log("♻️ Replacing optimistic message");
+          list[idx] = { ...incoming, tempId: undefined };
         } else {
-          state.messages[m.conversationId].push(m);
+          console.log("➕ No optimistic match found, pushing real message");
+          list.push({ ...incoming, tempId: undefined });
         }
       } else {
-        const exists = state.messages[m.conversationId].some(
-          (x) => x.id === m.id
-        );
-        if (!exists) state.messages[m.conversationId].push(m);
+        console.log("🟠 Incoming has NO tempId, normal message");
+        const exists = list.some((m) => m.id === incoming.id);
+        console.log("🔍 Already exists:", exists);
+
+        if (!exists) {
+          console.log("➕ Adding real message to list");
+          list.push(incoming);
+        }
       }
 
-      state.messages[m.conversationId].sort(
+      list.sort(
         (a, b) =>
-          new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
+      console.log("📚 Sorted list:", list);
 
       const convIdx = state.conversations.findIndex(
-        (c) => c.id === m.conversationId
+        (c) => c.id === incoming.conversationId
       );
+      console.log("🔍 conversation index:", convIdx);
+
       if (convIdx !== -1) {
+        console.log("🟢 Updating lastMessage for conversation");
         state.conversations[convIdx] = {
           ...state.conversations[convIdx],
-          lastMessage: m,
+          lastMessage: { ...incoming, tempId: undefined },
+          updatedAt: new Date().toISOString(),
         };
       }
     },
-
     updateMessage(state, action: PayloadAction<Message>) {
       const m = action.payload;
       if (!state.messages[m.conversationId]) return;

@@ -17,9 +17,14 @@ export const registerChatSocketEvents = (socket: Socket) => {
     console.log("👥 Online users in chat socket:", users);
   });
 
-  socket.on("newMessage", (message: Message) => {
-    console.log("🔔 New message received:", message);
-    store.dispatch(addOrReplaceMessage(message));
+  socket.on("newMessage", (message: Message, tempId: string) => {
+    console.log("🔔 New message received:", message, tempId);
+    store.dispatch(
+      addOrReplaceMessage({
+        ...message,
+        tempId,
+      })
+    );
   });
 
   socket.on("connect_error", (err) =>

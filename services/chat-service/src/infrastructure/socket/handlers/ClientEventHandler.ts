@@ -38,6 +38,8 @@ export class ClientEventHandler implements IClientEventHandler {
         content: payload.content,
       };
 
+      console.log(dto)
+
       await this._sendMessageUseCase.execute(dto);
       if (callback) callback(true);
     } catch (err) {

@@ -49,6 +49,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     });
 
     await this._cacheService.cacheMessage(message);
+    console.log(tempId)
     await this._broadcastService.publishMessage(message, tempId);
   }
 
