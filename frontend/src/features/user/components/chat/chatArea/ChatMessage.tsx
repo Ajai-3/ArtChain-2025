@@ -1,6 +1,12 @@
 import MessageBubble from "./MessageBubble";
 import MessageOptions from "../MessageOptions";
-import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import type {
   Message,
   Conversation,
@@ -209,16 +215,13 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                   >
                     {conversation.type === "GROUP" &&
                       !isCurrentUser(hydratedMessage.senderId) && (
-                        <div className="flex items-start space-x-2 max-w-[70%]">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                            <span className="text-xs font-medium">
+                        <div className="flex items-end space-x-2 max-w-[70%]">
+                          <div className="w-10 h-10 rounded-full bg-zinc-800 text-white dark:bg-blue-600 flex items-center justify-center flex-shrink-0">
+                            <span className="text-md font-medium">
                               {sender?.name?.charAt(0) || "U"}
                             </span>
                           </div>
                           <div className="flex-1">
-                            <p className="text-xs text-muted-foreground mb-1">
-                              {sender?.name || "Unknown"}
-                            </p>
                             <MessageBubble
                               message={hydratedMessage}
                               isCurrentUser={isCurrentUser(
