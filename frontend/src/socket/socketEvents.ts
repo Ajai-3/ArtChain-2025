@@ -4,7 +4,8 @@ import {
   addNotification,
   setUnreadCount,
 } from "../redux/slices/notificationSlice";
-import { addMessage } from "../redux/slices/chatSlice";
+import { addMessage, addOrReplaceMessage } from "../redux/slices/chatSlice";
+import type { Message } from "../types/chat/chat";
 
 
 export const registerChatSocketEvents = (socket: Socket) => {
@@ -16,14 +17,9 @@ export const registerChatSocketEvents = (socket: Socket) => {
     console.log("👥 Online users in chat socket:", users);
   });
 
-  socket.on("newMessage", (message: any) => {
+  socket.on("newMessage", (message: Message) => {
     console.log("🔔 New message received:", message);
-    store.dispatch(addMessage(message));
-  });
-
-  socket.on("messageSent", (message: any) => {
-    console.log("✅ Message sent successfully:", message);
-    store.dispatch(addMessage(message));
+    store.dispatch(addOrReplaceMessage(message));
   });
 
   socket.on("connect_error", (err) =>

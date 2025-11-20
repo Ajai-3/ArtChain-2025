@@ -120,6 +120,46 @@ const chatSlice = createSlice({
         );
       }
     },
+    addOrReplaceMessage(
+      state,
+      action: PayloadAction<Message & { tempId?: string }>
+    ) {
+      const m = action.payload;
+      if (!state.messages[m.conversationId]) {
+        state.messages[m.conversationId] = [];
+      }
+
+      if (m.tempId) {
+        const idx = state.messages[m.conversationId].findIndex(
+          (x) => x.tempId === m.tempId
+        );
+        if (idx !== -1) {
+          state.messages[m.conversationId][idx] = m;
+        } else {
+          state.messages[m.conversationId].push(m);
+        }
+      } else {
+        const exists = state.messages[m.conversationId].some(
+          (x) => x.id === m.id
+        );
+        if (!exists) state.messages[m.conversationId].push(m);
+      }
+
+      state.messages[m.conversationId].sort(
+        (a, b) =>
+          new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime()
+      );
+
+      const convIdx = state.conversations.findIndex(
+        (c) => c.id === m.conversationId
+      );
+      if (convIdx !== -1) {
+        state.conversations[convIdx] = {
+          ...state.conversations[convIdx],
+          lastMessage: m,
+        };
+      }
+    },
 
     updateMessage(state, action: PayloadAction<Message>) {
       const m = action.payload;
@@ -161,6 +201,7 @@ export const {
   updateMessage,
   addMessage,
   storeMessages,
+  addOrReplaceMessage,
   setMessagesLoading,
   cacheUsers,
   cacheUser,

@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useDispatch } from "react-redux";
-import type { Message } from "../../../../../types/chat/chat";
-import { addMessage } from "../../../../../redux/slices/chatSlice";
+import { DeleteMode, type Message } from "../../../../../types/chat/chat";
+import { addMessage, updateConversation } from "../../../../../redux/slices/chatSlice";
 import { getChatSocket } from "../../../../../socket/socketManager";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../../redux/store";
@@ -13,8 +13,9 @@ interface SendMessageParams {
 
 export const useSendMessage = () => {
   const dispatch = useDispatch();
-  const currentUserId = useSelector((s: RootState) => s.user.user?.id);
   const message = useSelector((s: RootState) => s.chat.messages)
+  const currentUserId = useSelector((s: RootState) => s.user.user?.id);
+  const conversations = useSelector((s: RootState) => s.chat.conversations)
   
   const sendMessage = useCallback(
     async ({ conversationId, content }: SendMessageParams) => {
@@ -29,12 +30,14 @@ export const useSendMessage = () => {
       }
 
       const tempId = `temp-${Date.now()}`;
-      const tempMessage: any = {
-        tempId: tempId,
+      const tempMessage: Message = {
+        id: tempId,
         conversationId,
         senderId: currentUserId,
+        deleteMode: DeleteMode.NONE,
         content: content.trim(),
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         readBy: [],
       };
 
@@ -44,6 +47,18 @@ export const useSendMessage = () => {
       });
 
       dispatch(addMessage(tempMessage));
+       const currentConversation = conversations.find(
+         (c) => c.id === conversationId
+       );
+       if (currentConversation) {
+         const updatedConversation = {
+           ...currentConversation,
+           lastMessage: tempMessage,
+           updatedAt: new Date().toISOString(),
+         };
+
+         dispatch(updateConversation(updatedConversation));
+       }
 
       console.log(message)
 

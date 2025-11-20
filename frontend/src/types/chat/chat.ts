@@ -41,6 +41,7 @@ export interface Group {
 
 export interface Message {
   id: string;
+  tempId?: string
   conversationId: string;
   senderId: string;
   sender?: User;
