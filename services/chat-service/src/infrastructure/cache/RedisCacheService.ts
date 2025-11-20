@@ -30,4 +30,8 @@ export class RedisCacheService implements ICacheService {
   async ltrim(key: string, start: number, stop: number): Promise<string> {
     return await redisCache.ltrim(key, start, stop);
   }
+
+  async llen(key: string): Promise<number> {
+    return await redisCache.llen(key);
+  }
 }

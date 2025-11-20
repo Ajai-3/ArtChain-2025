@@ -25,37 +25,26 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
   async execute(dto: ListMessagesDto): Promise<ListMessagesResponse> {
     const { conversationId, requestUserId, limit, fromId } = dto;
 
-    console.log("ListMessagesUseCase.execute", dto);
-
     await this.validateConversationAccess(conversationId, requestUserId);
 
     let messages: Message[] = [];
-
-    console.log("Trying cache");
 
     const cached = await this._cacheService.getCachedMessages(
       conversationId,
       limit,
       fromId
     );
-    console.log("Cache returned", cached.length);
 
     if (cached.length === limit) {
       messages = cached;
-      console.log("Using cached results");
     } else {
-      console.log("Cache miss, querying DB");
-
       messages = await this._messageRepo.listByConversationPaginated(
         conversationId,
         limit,
         fromId
       );
 
-      console.log("DB returned", messages.length);
-
       if (messages.length > 0) {
-        console.log("Caching DB results");
         await this._cacheService.cacheMessageList(conversationId, messages);
       }
     }
@@ -65,7 +54,7 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
     );
 
     const hasMore = messages.length === limit;
-    const nextFromId = hasMore ? messages[0].id : undefined;
+    const nextFromId = hasMore ? messages[messages.length - 1].id : undefined;
 
     const responseMessages = this.mapToResponse(messages, requestUserId);
 
