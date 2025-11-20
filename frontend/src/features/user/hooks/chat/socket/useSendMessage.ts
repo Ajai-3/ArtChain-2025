@@ -1,10 +1,15 @@
 import { useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DeleteMode, type Message } from "../../../../../types/chat/chat";
-import { addMessage, updateConversation } from "../../../../../redux/slices/chatSlice";
+import {
+  addMessage,
+  updateConversation,
+} from "../../../../../redux/slices/chatSlice";
 import { getChatSocket } from "../../../../../socket/socketManager";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../../../redux/store";
+import {
+  selectCurrentUserId,
+  selectConversations,
+} from "../../../../../redux/selectors/chatSelectors";
 
 interface SendMessageParams {
   conversationId: string;
@@ -13,15 +18,17 @@ interface SendMessageParams {
 
 export const useSendMessage = () => {
   const dispatch = useDispatch();
-  const message = useSelector((s: RootState) => s.chat.messages)
-  const currentUserId = useSelector((s: RootState) => s.user.user?.id);
-  const conversations = useSelector((s: RootState) => s.chat.conversations)
-  
+  const currentUserId = useSelector(selectCurrentUserId);
+  const conversations = useSelector(selectConversations);
+
   const sendMessage = useCallback(
     async ({ conversationId, content }: SendMessageParams) => {
-      if (!currentUserId) return;
-      const socket = getChatSocket();
+      if (!currentUserId) {
+        console.error("No current user ID");
+        return;
+      }
 
+      const socket = getChatSocket();
       if (!conversationId || !content.trim() || !socket) {
         console.error(
           "Cannot send message: missing required parameters or socket"
@@ -38,29 +45,29 @@ export const useSendMessage = () => {
         content: content.trim(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        readBy: [],
+        readBy: [currentUserId],
+        tempId,
       };
 
       console.log("📤 Sending message via socket:", {
         conversationId,
         content: content.trim(),
+        tempId,
       });
 
       dispatch(addMessage(tempMessage));
-       const currentConversation = conversations.find(
-         (c) => c.id === conversationId
-       );
-       if (currentConversation) {
-         const updatedConversation = {
-           ...currentConversation,
-           lastMessage: tempMessage,
-           updatedAt: new Date().toISOString(),
-         };
 
-         dispatch(updateConversation(updatedConversation));
-       }
-
-      console.log(message)
+      const currentConversation = conversations.find(
+        (c) => c.id === conversationId
+      );
+      if (currentConversation) {
+        const updatedConversation = {
+          ...currentConversation,
+          lastMessage: tempMessage,
+          updatedAt: new Date().toISOString(),
+        };
+        dispatch(updateConversation(updatedConversation));
+      }
 
       try {
         socket.emit("sendMessage", {
@@ -72,9 +79,8 @@ export const useSendMessage = () => {
         console.error("❌ Failed to send message via socket:", error);
       }
     },
-    [dispatch]
+    [dispatch, currentUserId, conversations]
   );
 
   return { sendMessage };
 };
-

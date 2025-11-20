@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import ConversationItem from "./chatUserList/ConversationItem";
 import type { Conversation } from "../../../../types/chat/chat";
-import type { RootState } from "../../../../redux/store";
+import { selectConversations } from "../../../../redux/selectors/chatSelectors";
 
 interface ChatUserListProps {
   selectedConversation: string | null;
@@ -22,10 +22,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
   const [activeTab, setActiveTab] = useState<TabType>("private");
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* ---- read ONLY from Redux ---- */
-  const conversations = useSelector(
-    (state: RootState) => state.chat.conversations || []
-  );
+  const conversations = useSelector(selectConversations);
 
   const sortedConversations = useMemo(() => {
     const clone = [...conversations];
@@ -58,30 +55,38 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
     });
   }, [sortedConversations, searchQuery, activeTab]);
 
-  console.log(
-    "ChatUserList: rendering conversations",
-    filtered.map((c) => c.id)
-  );
-
   const tabs = [
     { id: "private" as TabType, label: "Private" },
     { id: "group" as TabType, label: "Groups" },
     { id: "requests" as TabType, label: "Requests" },
   ];
 
-  const handleScroll: React.UIEventHandler<HTMLDivElement> = (e) => {
-    const t = e.currentTarget;
-    if (
-      !isFetchingNextPage &&
-      t.scrollHeight - t.scrollTop <= t.clientHeight + 100
-    ) {
-      onScrollToLoadMore();
-    }
-  };
+  const handleScroll: React.UIEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      const t = e.currentTarget;
+      if (
+        !isFetchingNextPage &&
+        t.scrollHeight - t.scrollTop <= t.clientHeight + 100
+      ) {
+        onScrollToLoadMore();
+      }
+    },
+    [isFetchingNextPage, onScrollToLoadMore]
+  );
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchQuery(e.target.value);
+    },
+    []
+  );
+
+  const handleTabChange = useCallback((tabId: TabType) => {
+    setActiveTab(tabId);
+  }, []);
 
   return (
     <div className="w-full h-full flex flex-col bg-background border-r border-border">
-      {/* ---- header / search / tabs identical to before ---- */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Messages</h2>
@@ -120,7 +125,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full bg-muted/50 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary border-none placeholder:text-muted-foreground"
           />
         </div>
@@ -129,7 +134,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               className={`flex items-center flex-1 justify-center py-2 px-3 rounded-md text-sm font-medium transition-colors ${
                 activeTab === tab.id
                   ? "bg-background text-foreground shadow-sm"
@@ -142,7 +147,6 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
         </div>
       </div>
 
-      {/* ---- list ---- */}
       <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-muted-foreground p-4">

@@ -1,5 +1,4 @@
-// pages/Chat.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, useNavigate } from "react-router-dom";
 import ChatArea from "../components/chat/ChatArea";
@@ -9,8 +8,11 @@ import {
   setConversations,
   addConversations,
 } from "../../../redux/slices/chatSlice";
-import type { RootState } from "../../../redux/store";
-
+import {
+  selectConversations,
+  selectCurrentUserId,
+  selectMessagesByConversationId,
+} from "../../../redux/selectors/chatSelectors";
 import { useSendMessage } from "../hooks/chat/socket/useSendMessage";
 import { useConvoOpen } from "../hooks/chat/socket/useConvoOpen";
 
@@ -19,27 +21,44 @@ const Chat: React.FC = () => {
   const navigate = useNavigate();
   const { sendMessage } = useSendMessage();
   const { conversationId } = useParams<{ conversationId: string }>();
+
+  // Safe socket subscription
   useConvoOpen(conversationId);
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRecentConversations();
 
-  const conversations = useSelector((s: RootState) => s.chat.conversations);
+  const conversations = useSelector(selectConversations);
+  const currentUserId = useSelector(selectCurrentUserId);
 
+  // Select messages for current conversation
+  const messages = useSelector((state: any) =>
+    selectMessagesByConversationId(state, conversationId || "")
+  );
+
+  // Merge server conversations safely
   useEffect(() => {
     if (!data?.pages) return;
-    const server = data.pages.flatMap((p) => p.conversations);
-    if (!conversations.length) dispatch(setConversations(server));
-    else {
-      const next = server.filter(
+    const serverConversations = data.pages.flatMap((p) => p.conversations);
+
+    if (conversations.length === 0) {
+      dispatch(setConversations(serverConversations));
+    } else {
+      const newConvs = serverConversations.filter(
         (c) => !conversations.some((ex) => ex.id === c.id)
       );
-      if (next.length) dispatch(addConversations(next));
+      if (newConvs.length > 0) {
+        dispatch(addConversations(newConvs));
+      }
     }
-  }, [data, conversations, dispatch]);
+  }, [data?.pages, conversations.length, dispatch]); // depend on conversations.length only
 
-  const [mobileView, setMobileView] = useState<"list" | "chat">("list");
-  const currentUserId = useSelector((s: RootState) => s.user.user?.id);
-  const chatMessages = useSelector((s: RootState) => s.chat.messages);
+  // Determine mobile view mode
+  const [mobileView] = useState<"list" | "chat">(
+    conversationId ? "chat" : "list"
+  );
+
+  // Memoize selected conversation
   const selectedConversation = useMemo(
     () =>
       conversationId
@@ -47,42 +66,37 @@ const Chat: React.FC = () => {
         : null,
     [conversationId, conversations]
   );
-  const messages = useMemo(
-    () => (conversationId ? chatMessages[conversationId] || [] : []),
-    [conversationId, chatMessages]
+
+  const handleSelectConversation = useCallback(
+    (id: string) => {
+      navigate(`/chat/${id}`);
+    },
+    [navigate]
   );
 
-  useEffect(() => {
-    setMobileView(conversationId ? "chat" : "list");
-  }, [conversationId]);
-
-  const handleSelectConversation = (id: string) => {
-    navigate(`/chat/${id}`);
-    setMobileView("chat");
-  };
-  const handleBackToList = () => {
+  const handleBackToList = useCallback(() => {
     navigate("/chat");
-    setMobileView("list");
-  };
+  }, [navigate]);
 
+  const handleSendMessage = useCallback(
+    (text: string) => {
+      if (!conversationId) return;
+      sendMessage({ conversationId, content: text });
+    },
+    [conversationId, sendMessage]
+  );
 
-  const handleSendMessage = (text: string) => {
-    if (!conversationId) return;
-    let obj = {
-      conversationId,
-      content: text
-    }
-    sendMessage(obj);
-  };
+  const handleSendImage = useCallback(
+    (mediaUrl?: string) => {
+      if (!conversationId) return;
+      console.log("TODO: send image", mediaUrl);
+    },
+    [conversationId]
+  );
 
-  const handleSendImage = (mediaUrl?: string) => {
-    if (!conversationId) return;
-    console.log("TODO: send image", mediaUrl);
-  };
-
-  const handleDeleteMessage = (id: string, forAll: boolean) => {
+  const handleDeleteMessage = useCallback((id: string, forAll: boolean) => {
     console.log("TODO: delete message", id, forAll);
-  };
+  }, []);
 
   if (!currentUserId) return <div>Loading user…</div>;
 
@@ -90,7 +104,7 @@ const Chat: React.FC = () => {
     <div className="flex h-full bg-background overflow-hidden">
       <div
         className={`${
-          mobileView === "list" ? "flex" : "hidden"
+          mobileView === "list" || !conversationId ? "flex" : "hidden"
         } md:flex w-full md:w-80 flex-shrink-0`}
       >
         <ChatUserList
@@ -102,9 +116,10 @@ const Chat: React.FC = () => {
           isFetchingNextPage={isFetchingNextPage}
         />
       </div>
+
       <div
         className={`${
-          mobileView === "chat" ? "flex" : "hidden"
+          mobileView === "chat" && conversationId ? "flex" : "hidden"
         } md:flex flex-1 w-full`}
       >
         <ChatArea

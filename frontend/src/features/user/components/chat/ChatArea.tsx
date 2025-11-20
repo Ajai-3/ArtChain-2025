@@ -1,9 +1,9 @@
 import { useSelector } from "react-redux";
-import ChatInput from "./chatArea/ChatInput";
+import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import ChatMessages from "./chatArea/ChatMessage";
-import { type RootState } from "../../../../redux/store";
+import { selectUserCache } from "../../../../redux/selectors/chatSelectors";
 import { type Conversation } from "../../../../types/chat/chat";
 import ConversationDetails from "./chatArea/ConversationDetails";
 import { useUserResolver } from "../../hooks/chat/useUserResolver";
@@ -28,7 +28,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 }) => {
   const convId = selectedConversation?.id ?? "";
 
-  // Get messages from hook - it handles Redux and HTTP
   const {
     messages,
     loadMoreMessages,
@@ -38,12 +37,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     totalCount,
   } = useInitialMessages(convId);
 
-
   const [showDetails, setShowDetails] = useState(false);
+  const userCache = useSelector(selectUserCache);
 
-  const userCache = useSelector((s: RootState) => s.chat?.userCache ?? {});
-
-  // Get sender IDs for user resolution
   const senderIds = useMemo(
     () => messages.map((m) => m.senderId).filter(Boolean),
     [messages]
@@ -51,10 +47,21 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 
   useUserResolver(senderIds);
 
-  const handleVideoCall = () =>
+  const handleVideoCall = useCallback(() => {
     console.log("Video call with:", selectedConversation?.partner?.name);
-  const handleVoiceCall = () =>
+  }, [selectedConversation]);
+
+  const handleVoiceCall = useCallback(() => {
     console.log("Voice call with:", selectedConversation?.partner?.name);
+  }, [selectedConversation]);
+
+  const handleToggleDetails = useCallback(() => {
+    setShowDetails((prev) => !prev);
+  }, []);
+
+  const handleCloseDetails = useCallback(() => {
+    setShowDetails(false);
+  }, []);
 
   if (!selectedConversation) {
     return (
@@ -108,7 +115,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           currentUserId={currentUserId}
           conversation={selectedConversation}
           onBack={onBack}
-          onToggleDetails={() => setShowDetails(!showDetails)}
+          onToggleDetails={handleToggleDetails}
           showDetails={showDetails}
           onVideoCall={handleVideoCall}
           onVoiceCall={handleVoiceCall}
@@ -136,7 +143,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
       {showDetails && (
         <ConversationDetails
           conversation={selectedConversation}
-          onClose={() => setShowDetails(false)}
+          onClose={handleCloseDetails}
           currentUserId={currentUserId}
         />
       )}
