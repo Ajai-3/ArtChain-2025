@@ -8,6 +8,7 @@ import { ICommentController } from "../interface/ICommentController";
 import { IFavoriteController } from "../interface/IFavoriteController";
 import { ICategoryController } from "../interface/ICategoryController";
 import { container } from "../../infrastructure/Inversify/inversify.config";
+import { ROUTES } from "../../constants/routes";
 
 const router = express.Router();
 
@@ -25,38 +26,38 @@ const favoriteController = container.get<IFavoriteController>(
 );
 
 // Category
-router.get("/category", categoryController.getCategory);
-router.post("/category", categoryController.createCategory);
-router.patch("/category/:id", categoryController.editCategory);
+router.get(ROUTES.CATEGORY.BASE, categoryController.getCategory);
+router.post(ROUTES.CATEGORY.BASE, categoryController.createCategory);
+router.patch(ROUTES.CATEGORY.BY_ID, categoryController.editCategory);
 
 // Art
-router.get("/", artController.getAllArt);
-router.post("/", artController.createArt);
-router.get("/user/:userId", artController.getArtWithUser);
-router.get("/count/:userId", artController.countArtwork);
-router.get("/by-name/:artname", artController.getArtByArtName);
+router.get(ROUTES.ART.BASE, artController.getAllArt);
+router.post(ROUTES.ART.BASE, artController.createArt);
+router.get(ROUTES.ART.BY_USER_ID, artController.getArtWithUser);
+router.get(ROUTES.ART.COUNT, artController.countArtwork);
+router.get(ROUTES.ART.BY_ART_NAME, artController.getArtByArtName);
 
 // Comment
-router.patch("/comment", commentController.editComment);
-router.post("/comment", commentController.createComment);
-router.delete("/comment", commentController.deleteComment);
-router.get("/comments/:postId", commentController.getComments);
+router.patch(ROUTES.COMMENT.BASE, commentController.editComment);
+router.post(ROUTES.COMMENT.BASE, commentController.createComment);
+router.delete(ROUTES.COMMENT.BASE, commentController.deleteComment);
+router.get(ROUTES.COMMENT.COMMENTS_BY_POST_ID, commentController.getComments);
 
 // Likes
-router.post("/like", likeController.likePost);
-router.delete("/unlike", likeController.unlikePost);
-router.get("/likes/:postId", likeController.getLikedUsers);
-router.get("/likes-count/:postId", likeController.getLikeCount);
+router.post(ROUTES.LIKE.BASE, likeController.likePost);
+router.delete(ROUTES.LIKE.UNLIKE, likeController.unlikePost);
+router.get(ROUTES.LIKE.LIKES_BY_POST_ID, likeController.getLikedUsers);
+router.get(ROUTES.LIKE.LIKES_COUNT_BY_POST_ID, likeController.getLikeCount);
 
 // Favorites
-router.post("/favorite", favoriteController.addFavorite);
-router.delete("/unfavorite", favoriteController.removeFavorite);
-router.get("/favorites/:postId", favoriteController.getFavoritedUsers);
-router.get("/favorites-count/:postId", favoriteController.getFavoriteCount);
-router.get("/favorites/user/:userId", favoriteController.getUserFavoritedArts);
+router.post(ROUTES.FAVORITE.BASE, favoriteController.addFavorite);
+router.delete(ROUTES.FAVORITE.UNFAVORITE, favoriteController.removeFavorite);
+router.get(ROUTES.FAVORITE.FAVORITES_BY_POST_ID, favoriteController.getFavoritedUsers);
+router.get(ROUTES.FAVORITE.FAVORITES_COUNT_BY_POST_ID, favoriteController.getFavoriteCount);
+router.get(ROUTES.FAVORITE.FAVORITES_BY_USER_ID, favoriteController.getUserFavoritedArts);
 
 // Shop
-router.get("/shop", shopController.getAllShopItems);
-router.get("/shop/:userId", shopController.getShopItemsByUser);
+router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
+router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
 
 export default router;

@@ -3,6 +3,7 @@ import { createErrorHandler } from "art-chain-shared";
 
 import artRouter from "./presentation/routes/art.routes";
 import { logger } from "./utils/logger";
+import { ROUTES } from "./constants/routes";
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/v1/art", artRouter);
+app.use(ROUTES.BASE, artRouter);
 
 app.use(createErrorHandler(false))
 
