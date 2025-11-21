@@ -3,6 +3,7 @@ import { injectable } from 'inversify';
 import { config } from '../config/env';
 import { BadRequestError } from 'art-chain-shared';
 import { IArtService } from '../../application/interface/http/IArtService';
+import { ROUTES } from '../../constants/routes';
 
 @injectable()
 export class ArtService implements IArtService {
@@ -14,7 +15,8 @@ export class ArtService implements IArtService {
 
   async getUserArtCount(userId: string): Promise<number> {
     try {
-      const res = await axios.get(`${this.baseUrl}/api/v1/art/count/${userId}`);
+      const route = ROUTES.EXTERNAL.ART_COUNT.replace(':userId', userId);
+      const res = await axios.get(`${this.baseUrl}${route}`);
       return res.data.artworksCount;
     } catch (err) {
       console.warn(
