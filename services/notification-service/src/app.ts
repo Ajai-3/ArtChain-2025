@@ -1,6 +1,7 @@
 import express from "express";
 import notificationRoutes from "./presentation/routes/notification.routes"
 import { logger } from "./infrastructure/utils/logger";
+import { ROUTES } from "./config/routes";
 
 const app = express()
 
@@ -11,6 +12,6 @@ app.use((req, res, next) => {
 });
 
 
-app.use("/api/v1/notifications", notificationRoutes)
+app.use(ROUTES.BASE, notificationRoutes)
 
 export default app;
