@@ -6,6 +6,7 @@ import { IWalletController } from "../interface/IWalletController";
 import { IStripeController } from "./../interface/IStripeController";
 import { container } from "../../infrastructure/inversify/inversify.config";
 import { ITransactionController } from "../interface/ITransactionController";
+import { ROUTES } from "../../constants/routes";
 
 const router = express.Router();
 
@@ -20,22 +21,22 @@ const transactionController = container.get<ITransactionController>(
 );
 
 // Wallet Controller Routes
-router.get("/details", walletController.getWallet);
-router.post("/create", walletController.createWallet);
-router.patch("/update", walletController.updateWallet);
+router.get(ROUTES.WALLET.DETAILS, walletController.getWallet);
+router.post(ROUTES.WALLET.CREATE, walletController.createWallet);
+router.patch(ROUTES.WALLET.UPDATE, walletController.updateWallet);
 
 // Trascation Controller Routes
-router.get("/get-transactions", transactionController.getTransactions);
-router.post("/create-transaction", transactionController.createTransaction);
+router.get(ROUTES.TRANSACTION.GET_TRANSACTIONS, transactionController.getTransactions);
+router.post(ROUTES.TRANSACTION.CREATE_TRANSACTION, transactionController.createTransaction);
 
 // Stripe Controller Routes
 router.post(
-  "/stripe/create-checkout-session",
+  ROUTES.STRIPE.CREATE_CHECKOUT_SESSION,
   stripeController.createCheckoutSession
 );
-router.get("/stripe/session/:id", stripeController.getSession);
+router.get(ROUTES.STRIPE.SESSION_BY_ID, stripeController.getSession);
 router.post(
-  "/stripe/webhook",
+  ROUTES.STRIPE.WEBHOOK,
   bodyParser.raw({ type: "application/json" }),
   stripeController.handleWebhook
 );
