@@ -11,6 +11,8 @@ import { IListMessagesUseCase } from "../../applications/interface/usecase/IList
 import { IDeleteMessageUseCase } from "../../applications/interface/usecase/IDeleteMessageUseCase";
 import { validateWithZod } from "../../infrastructure/utils/zodValidater";
 import { getMessagesSchema } from "../validators/getMessagesSchema";
+import { SUCCESS_MESSAGES } from "../../constants/messages";
+import { ROUTES } from "../../constants/routes";
 
 @injectable()
 export class MessageController implements IMessageController {
@@ -26,7 +28,7 @@ export class MessageController implements IMessageController {
   //#========================================================================================================================
   //# SEND MESSAGE
   //#========================================================================================================================
-  //# POST /api/v1/chat/message
+  //# POST ROUTES.API_V1_CHAT + ROUTES.CHAT.MESSAGE_SEND
   //# Request Body: { senderId: string, receiverId: string, content: string, conversationId: string }
   //# This endpoint allows a user to send a message to another user or any group conversation.
   //#========================================================================================================================
@@ -53,7 +55,7 @@ export class MessageController implements IMessageController {
   //#========================================================================================================================
   //# LIST MESSAGES
   //#========================================================================================================================
-  //# GET /api/v1/chat/message/:conversationId
+  //# GET ROUTES.API_V1_CHAT + ROUTES.CHAT.MESSAGE_BY_CONVERSATION_ID
   //# Query Parameters: requestUserId (string), page (number), limit (number)
   //# This endpoint allows a user to list messages in a specific conversation.
   //#========================================================================================================================
@@ -82,7 +84,7 @@ export class MessageController implements IMessageController {
 
       const data = await this._listMessagesUseCase.execute(dto);
 
-      return res.status(HttpStatus.OK).json({ message: "Messages fetched successfully", data: data });
+      return res.status(HttpStatus.OK).json({ message: SUCCESS_MESSAGES.MESSAGES_FETCHED_SUCCESSFULLY, data: data });
     } catch (error) {
       next(error);
     }
@@ -91,7 +93,7 @@ export class MessageController implements IMessageController {
   //#========================================================================================================================
   //# DELETE MESSAGE
   //#========================================================================================================================
-  //# DELETE /api/v1/chat/message/:messageId
+  //# DELETE ROUTES.API_V1_CHAT + ROUTES.CHAT.MESSAGE_BY_MESSAGE_ID
   //# Request Body: { userId: string, mode: "ME" | "EVERYONE" }
   //# This endpoint allows a user to delete a message in a conversation.
   //#========================================================================================================================

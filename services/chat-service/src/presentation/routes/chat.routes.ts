@@ -3,6 +3,7 @@ import { TYPES } from '../../infrastructure/Inversify/types';
 import { IMessageController } from '../interface/IMessageController';
 import container from '../../infrastructure/Inversify/Inversify.config';
 import { IConversationController } from '../interface/IConversationController';
+import { ROUTES } from '../../constants/routes';
 
 const router = express.Router();
 
@@ -11,16 +12,16 @@ const conversationController = container.get<IConversationController>(TYPES.ICon
 
 // Routes
 router.post(
-  "/conversation/private",
+  ROUTES.CHAT.CONVERSATION_PRIVATE,
   conversationController.createPrivateConversation
 );
 router.get(
-  "/conversation/recent",
+  ROUTES.CHAT.CONVERSATION_RECENT,
   conversationController.getResendConversations
 );
-router.post('/message/send', messageController.sendMessage);
-router.get('/message/:conversationId', messageController.listMessages);
-router.delete('/message/:messageId', messageController.deleteMessage);
+router.post(ROUTES.CHAT.MESSAGE_SEND, messageController.sendMessage);
+router.get(ROUTES.CHAT.MESSAGE_BY_CONVERSATION_ID, messageController.listMessages);
+router.delete(ROUTES.CHAT.MESSAGE_BY_MESSAGE_ID, messageController.deleteMessage);
 
 
 

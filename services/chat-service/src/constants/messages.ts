@@ -1,0 +1,41 @@
+export const ERROR_MESSAGES = {
+  // Message related errors
+  MESSAGE_CONTENT_EMPTY: "Message content cannot be empty",
+  MESSAGE_NOT_FOUND: "Message not found",
+  MESSAGE_ID_USER_ID_REQUIRED: "MessageId and UserId are required",
+  INVALID_DELETE_MODE: "Invalid delete mode",
+  DELETION_WINDOW_EXPIRED: "Deletion window expired",
+  ONLY_SENDER_CAN_DELETE: "Only sender can delete this message",
+  ONLY_SENDER_ADMIN_OWNER_CAN_DELETE: "Only sender, admin, or group owner can delete for everyone",
+
+  // Conversation related errors
+  CONVERSATION_NOT_FOUND: "Conversation not found",
+  NOT_ALLOWED_TO_SEND_MESSAGE: "Not allowed to send message to this conversation",
+  RECEIVER_ID_REQUIRED: "receiverId is required for first message",
+
+  // User related errors
+  USER_ID_OTHER_USER_ID_REQUIRED: "User ID and Other User ID are required",
+  CANNOT_CREATE_CONVERSATION_WITH_SELF: "Cannot create conversation with yourself",
+  PARTNER_USER_NOT_FOUND: "Partner user not found",
+  USER_ID_OTHER_USER_ID_CANNOT_BE_SAME: "userId and otherUserId cannot be the same",
+
+  // Authorization errors
+  NOT_AUTHORIZED: "Not authorized",
+  AUTHENTICATION_ERROR_TOKEN_MISSING: "Authentication error: Token missing",
+  AUTHENTICATION_ERROR: "Authentication error",
+
+  // Validation errors
+  LIMIT_MUST_BE_POSITIVE_INTEGER: "limit must be a positive integer",
+  CONVERSATION_ID_REQUIRED: "conversationId is required",
+  X_USER_ID_HEADER_REQUIRED: "x-user-id header is required",
+} as const;
+
+export const SUCCESS_MESSAGES = {
+  // Message related success messages
+  MESSAGES_FETCHED_SUCCESSFULLY: "Messages fetched successfully",
+
+  // Conversation related success messages
+  CONVERSATION_CREATED_SUCCESSFULLY: "Conversation created successfully",
+  RESEND_CONVERSATIONS_RETRIEVED_SUCCESSFULLY: "Resend conversations retrieved successfully",
+} as const;
+

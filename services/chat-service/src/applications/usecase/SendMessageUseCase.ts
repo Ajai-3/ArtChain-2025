@@ -10,6 +10,7 @@ import { IMessageRepository } from "../../domain/repositories/IMessageRepositori
 import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
 import { IConversationCacheService } from "../interface/service/IConversationCacheService";
+import { ERROR_MESSAGES } from "../../constants/messages";
 
 @injectable()
 export class SendMessageUseCase implements ISendMessageUseCase {
@@ -30,7 +31,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     let { senderId, receiverId, content, conversationId, tempId } = dto;
 
     if (!content?.trim()) {
-      throw new BadRequestError("Message content cannot be empty");
+      throw new BadRequestError(ERROR_MESSAGES.MESSAGE_CONTENT_EMPTY);
     }
 
     conversationId = await this.resolveConversation(
@@ -63,7 +64,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
         conversationId
       );
 
-      if (!conversation) throw new BadRequestError("Conversation not found");
+      if (!conversation) throw new BadRequestError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
 
       await this._conversationCacheService.updateConversationMembers(
         conversation.id,
@@ -75,7 +76,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
         !conversation.memberIds.includes(senderId)
       ) {
         throw new BadRequestError(
-          "Not allowed to send message to this conversation"
+          ERROR_MESSAGES.NOT_ALLOWED_TO_SEND_MESSAGE
         );
       }
 
@@ -83,7 +84,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     }
 
     if (!receiverId)
-      throw new BadRequestError("receiverId is required for first message");
+      throw new BadRequestError(ERROR_MESSAGES.RECEIVER_ID_REQUIRED);
 
     let existing = await this._conversationRepo.findPrivateConversation(
       senderId,

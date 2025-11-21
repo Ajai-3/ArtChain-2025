@@ -2,6 +2,7 @@ import express from 'express';
 import chatRoutes from './presentation/routes/chat.routes';
 import { logger } from './infrastructure/utils/logger';
 import { createErrorHandler } from 'art-chain-shared';
+import { ROUTES } from './constants/routes';
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/api/v1/chat', chatRoutes);
+app.use(ROUTES.API_V1_CHAT, chatRoutes);
 
 app.use(createErrorHandler)
 

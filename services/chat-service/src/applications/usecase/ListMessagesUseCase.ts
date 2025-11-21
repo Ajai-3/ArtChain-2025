@@ -10,6 +10,7 @@ import { IMessageCacheService } from "../interface/service/IMessageCacheService"
 import { IListMessagesUseCase } from "../interface/usecase/IListMessagesUseCase";
 import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
+import { ERROR_MESSAGES } from "../../constants/messages";
 
 @injectable()
 export class ListMessagesUseCase implements IListMessagesUseCase {
@@ -73,9 +74,9 @@ export class ListMessagesUseCase implements IListMessagesUseCase {
     requestUserId: string
   ) {
     const conversation = await this._conversationRepo.findById(conversationId);
-    if (!conversation) throw new NotFoundError("Conversation not found");
+    if (!conversation) throw new NotFoundError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
     if (!conversation.memberIds.includes(requestUserId)) {
-      throw new BadRequestError("Not authorized");
+      throw new BadRequestError(ERROR_MESSAGES.NOT_AUTHORIZED);
     }
   }
 

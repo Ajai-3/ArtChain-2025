@@ -8,6 +8,8 @@ import { createPrivateConversationSchema } from "../validators/createPrivateConv
 import { CreatePrivateConversationDto } from "../../applications/interface/dto/CreatePrivateConversationDto";
 import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
+import { SUCCESS_MESSAGES } from "../../constants/messages";
+import { ROUTES } from "../../constants/routes";
 
 @injectable()
 export class ConversationController {
@@ -21,7 +23,7 @@ export class ConversationController {
   //#========================================================================================================================
   //# CREATE PRIVATE CONVERSATION
   //#========================================================================================================================
-  //# GET /api/v1/chat/private-conversation
+  //# POST ROUTES.API_V1_CHAT + ROUTES.CHAT.CONVERSATION_PRIVATE
   //# Request Body: { otherUserId }
   //# x-user-id
   //# This endpoint allows a user create a one-on-one chat conversation
@@ -55,7 +57,7 @@ export class ConversationController {
       logger.info(`Conversation created: ${conversation}`);
 
       return res.status(HttpStatus.CREATED).json({
-        message: "Conversation created successfully",
+        message: SUCCESS_MESSAGES.CONVERSATION_CREATED_SUCCESSFULLY,
         data: { conversation, isNewConvo },
       });
     } catch (error) {
@@ -66,7 +68,7 @@ export class ConversationController {
   //#========================================================================================================================
   //# GET ALL RESEND CONVERSATION
   //#========================================================================================================================
-  //# GET /api/v1/chat/resend-conversation
+  //# GET ROUTES.API_V1_CHAT + ROUTES.CHAT.CONVERSATION_RECENT
   //# Request Header: x-user-id
   //# This endpoint allows a user get all resend conversation
   //#========================================================================================================================
@@ -94,7 +96,7 @@ export class ConversationController {
       );
 
       return res.status(HttpStatus.OK).json({
-        message: "Resend conversations retrieved successfully",
+        message: SUCCESS_MESSAGES.RESEND_CONVERSATIONS_RETRIEVED_SUCCESSFULLY,
         data: data,
       });
     } catch (error) {

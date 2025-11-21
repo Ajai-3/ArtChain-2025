@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ERROR_MESSAGES } from "../../constants/messages";
 
 export const getMessagesSchema = z.object({
   query: z.object({
@@ -9,16 +10,16 @@ export const getMessagesSchema = z.object({
       .transform((v) => Number(v))
       .refine(
         (v) => Number.isInteger(v) && v > 0,
-        "limit must be a positive integer"
+        ERROR_MESSAGES.LIMIT_MUST_BE_POSITIVE_INTEGER
       ),
   }),
 
   params: z.object({
-    conversationId: z.string().min(1, "conversationId is required"),
+    conversationId: z.string().min(1, ERROR_MESSAGES.CONVERSATION_ID_REQUIRED),
   }),
 
   headers: z.object({
-    "x-user-id": z.string().min(1, "x-user-id header is required"),
+    "x-user-id": z.string().min(1, ERROR_MESSAGES.X_USER_ID_HEADER_REQUIRED),
   }),
 });
 

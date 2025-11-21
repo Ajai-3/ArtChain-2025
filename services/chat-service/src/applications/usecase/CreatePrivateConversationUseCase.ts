@@ -11,6 +11,8 @@ import { CreatePrivateConversationDto } from "../interface/dto/CreatePrivateConv
 import { ICreatePrivateConversationUseCase } from "../interface/usecase/ICreatePrivateConversationUseCase";
 import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePrivateConversationResponseDto";
 import { UserDto } from "../interface/dto/MessageResponseDto";
+import { BadRequestError, NotFoundError } from "art-chain-shared";
+import { ERROR_MESSAGES } from "../../constants/messages";
 
 @injectable()
 export class CreatePrivateConversationUseCase
@@ -30,11 +32,11 @@ export class CreatePrivateConversationUseCase
     const { userId, otherUserId } = dto;
 
     if (!userId || !otherUserId) {
-      throw new Error("User ID and Other User ID are required");
+      throw new BadRequestError(ERROR_MESSAGES.USER_ID_OTHER_USER_ID_REQUIRED);
     }
 
     if (userId === otherUserId) {
-      throw new Error("Cannot create conversation with yourself");
+      throw new BadRequestError(ERROR_MESSAGES.CANNOT_CREATE_CONVERSATION_WITH_SELF);
     }
 
     let isNewConvo = false;
@@ -57,7 +59,7 @@ export class CreatePrivateConversationUseCase
     const partnerUser = await this._userService.getUserById(otherUserId);
 
     if (!partnerUser) {
-      throw new Error("Partner user not found");
+      throw new NotFoundError(ERROR_MESSAGES.PARTNER_USER_NOT_FOUND);
     }
 
     let lastMessage;

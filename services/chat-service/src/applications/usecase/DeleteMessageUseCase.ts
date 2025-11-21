@@ -9,6 +9,7 @@ import { IMessageRepository } from "../../domain/repositories/IMessageRepositori
 import { IDeleteMessageUseCase } from "./../interface/usecase/IDeleteMessageUseCase";
 import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
+import { ERROR_MESSAGES } from "../../constants/messages";
 
 @injectable()
 export class DeleteMessageUseCase implements IDeleteMessageUseCase {
@@ -29,18 +30,18 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     const { mode, messageId, userId } = dto;
 
     if (!messageId || !userId) {
-      throw new BadRequestError("MessageId and UserId are required");
+      throw new BadRequestError(ERROR_MESSAGES.MESSAGE_ID_USER_ID_REQUIRED);
     }
 
     const message = await this._repo.findById(messageId);
-    if (!message) throw new NotFoundError("Message not found");
+    if (!message) throw new NotFoundError(ERROR_MESSAGES.MESSAGE_NOT_FOUND);
 
     if (mode === "ME") {
       return this.deleteForMe(message, userId);
     } else if (mode === "EVERYONE") {
       return this.deleteForEveryone(message, userId);
     } else {
-      throw new BadRequestError("Invalid delete mode");
+      throw new BadRequestError(ERROR_MESSAGES.INVALID_DELETE_MODE);
     }
   }
 
@@ -74,13 +75,13 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     const conversation = await this._conversationRepo.findById(
       message.conversationId
     );
-    if (!conversation) throw new NotFoundError("Conversation not found");
+    if (!conversation) throw new NotFoundError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
 
     this.validateDeletePermission(message, userId, conversation);
 
     const diff = Date.now() - (message.createdAt?.getTime() ?? 0);
     if (diff > this.DELETE_WINDOW_MS) {
-      throw new BadRequestError("Deletion window expired");
+      throw new BadRequestError(ERROR_MESSAGES.DELETION_WINDOW_EXPIRED);
     }
 
     await this._repo.update(message.id, {
@@ -107,7 +108,7 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
   ): void {
     if (conversation.type === ConversationType.PRIVATE) {
       if (message.senderId !== userId) {
-        throw new BadRequestError("Only sender can delete this message");
+        throw new BadRequestError(ERROR_MESSAGES.ONLY_SENDER_CAN_DELETE);
       }
     } else if (conversation.type === ConversationType.GROUP) {
       const isSender = message.senderId === userId;
@@ -116,7 +117,7 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
 
       if (!isSender && !isAdmin && !isGroupOwner) {
         throw new BadRequestError(
-          "Only sender, admin, or group owner can delete for everyone"
+          ERROR_MESSAGES.ONLY_SENDER_ADMIN_OWNER_CAN_DELETE
         );
       }
     }

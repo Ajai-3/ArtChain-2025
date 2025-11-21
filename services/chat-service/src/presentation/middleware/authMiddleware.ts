@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
 import { env } from "../../infrastructure/config/env";
 import { logger } from "../../infrastructure/utils/logger";
+import { ERROR_MESSAGES } from "../../constants/messages";
 
 export const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
   try {
@@ -9,7 +10,7 @@ export const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
 
     if (!token) {
       logger.error("Socket.IO user token is missing");
-      return next(new Error("Authentication error: Token missing"));
+      return next(new Error(ERROR_MESSAGES.AUTHENTICATION_ERROR_TOKEN_MISSING));
     }
 
     console.log("🔍 JWT Secret:", env.jwt.accessSecret);
@@ -22,6 +23,6 @@ export const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
     next();
   } catch (err) {
     logger.error("❌ Invalid token:", err);
-    next(new Error("Authentication error"));
+    next(new Error(ERROR_MESSAGES.AUTHENTICATION_ERROR));
   }
 };

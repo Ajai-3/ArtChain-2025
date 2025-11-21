@@ -4,6 +4,7 @@ import { injectable } from "inversify";
 import { UserDto } from "../../applications/interface/dto/MessageResponseDto";
 import { IUserService } from "../../applications/interface/http/IUserService";
 import { mapToUserDto } from "../../applications/mappers/mapUser";
+import { ROUTES, buildUserServiceRoute } from "../../constants/routes";
 
 @injectable()
 export class UserService implements IUserService {
@@ -11,8 +12,9 @@ export class UserService implements IUserService {
 
   async getUserById(userId: string): Promise<UserDto> {
     try {
+      const route = buildUserServiceRoute(ROUTES.EXTERNAL.USER.PROFILE_BY_ID, { userId });
       const res = await axios.get<{ data: UserDto }>(
-        `${this.baseUrl}/api/v1/user/profile-id/${userId}`
+        `${this.baseUrl}${route}`
       );
       return mapToUserDto(res.data.data);
     } catch (err) {
@@ -24,7 +26,7 @@ export class UserService implements IUserService {
     if (!userIds.length) return [];
     try {
       const res = await axios.post<{ data: UserDto[] }>(
-        `${this.baseUrl}/api/v1/user/batch`,
+        `${this.baseUrl}${ROUTES.EXTERNAL.USER.BATCH}`,
         {
           ids: userIds,
         }
