@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { User } from "../../types/users/user/user";
-import { disconnectSocket } from "../../socket";
+import { disconnectSockets } from './../../socket/socketManager';
 
 interface UserState {
   user: User | null;
@@ -57,7 +57,7 @@ const userSlice = createSlice({
       state.artWorkCount = 0;
       state.supportingCount = 0;
       state.supportersCount = 0;
-      disconnectSocket();
+      disconnectSockets();
     },
   },
 });

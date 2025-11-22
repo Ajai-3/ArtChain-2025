@@ -4,12 +4,13 @@ import cookieParser from 'cookie-parser';
 import { createErrorHandler } from 'art-chain-shared';
 
 import walletRouter from "./presentation/routes/wallet.routes"
+import { ROUTES } from "./constants/routes";
 
 const app = express();
 
 app.use(cookieParser());
 app.use((req, res, next) => {
-  if (req.originalUrl === "/api/v1/wallet/stripe/webhook") {
+  if (req.originalUrl === ROUTES.FULL.STRIPE_WEBHOOK) {
     next(); // skip JSON parsing for webhook
   } else {
     express.json()(req, res, next);
@@ -23,7 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/v1/wallet", walletRouter)
+app.use(ROUTES.BASE.WALLET, walletRouter)
 
 app.use(createErrorHandler(false));
 

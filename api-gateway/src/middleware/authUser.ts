@@ -1,3 +1,4 @@
+import { logger } from "../utils/logger";
 import { tokenService } from "../service/tokenService";
 import { Request, Response, NextFunction } from "express";
 import {
@@ -6,8 +7,6 @@ import {
   HttpStatus,
   UnauthorizedError,
 } from "art-chain-shared";
-import { decode } from "punycode";
-import { logger } from "../utils/logger";
 
 export const authUser = async (
   req: Request,
@@ -21,6 +20,8 @@ export const authUser = async (
     if (!accessToken) {
       throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
+
+    console.log(accessToken)
 
     const decoded = tokenService.verifyAccessToken(accessToken);
 

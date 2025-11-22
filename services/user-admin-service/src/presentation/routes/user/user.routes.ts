@@ -6,6 +6,7 @@ import { container } from '../../../infrastructure/inversify/inversify.config';
 import { IUserController } from '../../interfaces/user/IUserController';
 import { ISecurityController } from '../../interfaces/user/ISecurityController';
 import { IArtistRequestController } from './../../interfaces/user/IArtistRequestController';
+import { ROUTES } from '../../../constants/routes';
 
 const router = express.Router();
 
@@ -18,27 +19,27 @@ const artistRequestController = container.get<IArtistRequestController>(
 );
 
 // User Controller Routes
-router.patch('/profile', userController.updateProfile);
-router.post('/batch', userController.getAllUserWithIds);
-router.get('/:id/supporting', userController.getSupporing);
-router.get('/:id/supporters', userController.getSupporters);
-router.post('/support/:userId', userController.supportUser);
-router.get('/profile/:username', userController.getProfile);
-router.delete('/un-support/:userId', userController.unSupportUser);
-router.delete('/remove/:supporterId', userController.removeSupporter);
-router.get('/profile-id/:userId', userController.getUserProfileWithId);
+router.patch(ROUTES.USER.PROFILE, userController.updateProfile);
+router.post(ROUTES.USER.BATCH, userController.getAllUserWithIds);
+router.get(ROUTES.USER.SUPPORTING, userController.getSupporing);
+router.get(ROUTES.USER.SUPPORTERS, userController.getSupporters);
+router.post(ROUTES.USER.SUPPORT, userController.supportUser);
+router.get(ROUTES.USER.PROFILE_BY_USERNAME, userController.getProfile);
+router.delete(ROUTES.USER.UNSUPPORT, userController.unSupportUser);
+router.delete(ROUTES.USER.REMOVE_SUPPORTER, userController.removeSupporter);
+router.get(ROUTES.USER.PROFILE_BY_ID, userController.getUserProfileWithId);
 
 // Artist Request Controller Routes
-router.post('/artist-request', artistRequestController.createArtistRequest);
+router.post(ROUTES.USER.ARTIST_REQUEST, artistRequestController.createArtistRequest);
 router.get(
-  '/artist-request/status',
+  ROUTES.USER.ARTIST_REQUEST_STATUS,
   artistRequestController.hasUserSubmittedRequest
 );
 
 // Security Controller Routes
-router.post('/change-email', securityController.changeEmail);
-router.post('/deactivate', securityController.deactivateAccount);
-router.post('/change-password', securityController.changePassword);
-router.post('/verify-email-token', securityController.emailVerifyToken);
+router.post(ROUTES.USER.CHANGE_EMAIL, securityController.changeEmail);
+router.post(ROUTES.USER.DEACTIVATE, securityController.deactivateAccount);
+router.post(ROUTES.USER.CHANGE_PASSWORD, securityController.changePassword);
+router.post(ROUTES.USER.VERIFY_EMAIL_TOKEN, securityController.emailVerifyToken);
 
 export default router;

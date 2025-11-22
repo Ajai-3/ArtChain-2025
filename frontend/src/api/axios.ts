@@ -34,6 +34,8 @@ apiClient.interceptors.request.use((config) => {
     token = state?.user?.accessToken ?? null;
   }
 
+  console.log("Token for request:", token);
+
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`

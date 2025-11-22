@@ -29,7 +29,12 @@
       }
 
       return users.map((user) => ({
-        ...user,
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        plan: user.plan,
+        role: user.role,
+        status: user.status,
         profileImage: mapCdnUrl(user.profileImage) ?? null,
         ...(currentUserId && { isSupporting: supportingMap[user.id] ?? false }),
       }));

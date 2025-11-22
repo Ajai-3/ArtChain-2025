@@ -12,6 +12,7 @@ import ImageCropper from "../settings/profileSettings/ImageCropper";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { useNavigate } from "react-router-dom";
+import { useCreatePrivateConversation } from "../../hooks/chat/useCreatePrivateConversation";
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
@@ -44,6 +45,19 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   const uploadUserImageMutation = useUploadUserImage();
 
   const isMutating = supportMutation.isPending || unSupportMutation.isPending;
+
+  const createPrivateConversationMutation = useCreatePrivateConversation();
+
+  const handleCreatePrivateConversation = () => {
+    const otherUserId = user.id;
+    const userId = currentUser.user?.id;
+    if (!userId || !otherUserId) return;
+
+    createPrivateConversationMutation.mutate({
+      userId,
+      otherUserId,
+    });
+  };
 
   // ======= Actions =======
   const handleSupportClick = () => {
@@ -262,8 +276,20 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                     "Support"
                   )}
                 </Button>
-                <Button variant="profileMessage" size="profileMessage">
-                  Message
+                <Button
+                  variant="profileMessage"
+                  size="profileMessage"
+                  onClick={handleCreatePrivateConversation}
+                  disabled={createPrivateConversationMutation.isPending}
+                  className="relative flex items-center justify-center min-w-[120px]"
+                >
+                  <span className="flex items-center justify-center">
+                    {createPrivateConversationMutation.isPending ? (
+                      <CustomLoader />
+                    ) : (
+                      "Message"
+                    )}
+                  </span>
                 </Button>
                 <Ellipsis />
               </div>

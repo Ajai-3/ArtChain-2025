@@ -7,6 +7,7 @@ import { createErrorHandler } from 'art-chain-shared';
 import authRouter from './presentation/routes/user/auth.routes';
 import userRouter from './presentation/routes/user/user.routes';
 import adminRouter from './presentation/routes/admin/admin.routes';
+import { ROUTES } from './constants/routes';
 
 const app = express();
 
@@ -21,9 +22,9 @@ app.use((req, res, next) => {
 });
 
 
-app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/user', userRouter);
-app.use('/api/v1/admin', adminRouter);
+app.use(ROUTES.API.AUTH, authRouter);
+app.use(ROUTES.API.USER, userRouter);
+app.use(ROUTES.API.ADMIN, adminRouter);
 
 app.use(createErrorHandler(false));
 

@@ -1,28 +1,28 @@
-import { useEffect, type ReactNode } from "react";
-import { useSelector } from "react-redux";
-import { disconnectSocket, initSocket } from "../../socket";
-import { registerSocketEvents } from "../../socket/socketEvents";
+// import { useEffect, type ReactNode } from "react";
+// import { useSelector } from "react-redux";
+// import { disconnectSocket, initSocket } from "../../socket";
+// import { registerSocketEvents } from "../../socket/socketEvents";
 
-interface Props {
-  children: ReactNode;
-}
+// interface Props {
+//   children: ReactNode;
+// }
 
-export const NotificationProvider = ({ children }: Props) => {
-  const accessToken = useSelector((state: any) => state.user.accessToken);
+// export const NotificationProvider = ({ children }: Props) => {
+//   const accessToken = useSelector((state: any) => state.user.accessToken);
 
-  console.log(accessToken)
+//   console.log(accessToken)
 
-  useEffect(() => {
-    if (!accessToken) return;
-    const socket = initSocket(accessToken, "http://localhost:4005");
-    registerSocketEvents(socket);
+//   useEffect(() => {
+//     if (!accessToken) return;
+//     const socket = initSocket(accessToken, "http://localhost:4005");
+//     registerSocketEvents(socket);
 
-    console.log("Connected to socket")
+//     console.log("Connected to socket")
 
-    return () => {
-      disconnectSocket();
-    };
-  }, [accessToken]);
+//     return () => {
+//       disconnectSocket();
+//     };
+//   }, [accessToken]);
 
-  return <>{children}</>;
-};
+//   return <>{children}</>;
+// };
