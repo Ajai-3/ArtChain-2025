@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { ArtWithUser } from "../../hooks/art/useGetAllArt";
-import { View, User, MessageSquare, Divide } from "lucide-react";
+import { View, User, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLikePost } from "../../hooks/art/useLikePost";
 import { useUnlikePost } from "../../hooks/art/useUnlikePost";
@@ -72,18 +72,16 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
     <>
       <div
         ref={lastArtRef ?? null}
-        className="relative w-auto h-72 overflow-hidden shadow-lg group cursor-pointer"
+        className="relative w-full h-full overflow-hidden shadow-lg group cursor-pointer"
         onClick={handleArtClick}
       >
         <img
           src={item?.art?.imageUrl}
           alt={item.art.title}
-          className="h-72 w-auto object-contain group-hover:brightness-50 transition-all duration-300"
+          className="w-full h-full object-cover group-hover:brightness-50 transition-all duration-300"
         />
 
-        {/* Overlay */}
         <div className="absolute inset-0 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3">
-          {/* Top-right: zoom */}
           <div className="flex justify-between">
             {item?.art?.isForSale && (
               <div className="relative w-4 h-4">
@@ -104,8 +102,6 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
             </button>
           </div>
 
-          {/* Bottom-left: profile + title */}
-          {/* Bottom-left: profile + title */}
           <div
             className="absolute bottom-3 left-3 flex items-center gap-2 cursor-pointer max-w-[70%]"
             onClick={(e) => {
@@ -139,7 +135,6 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
             </div>
           </div>
 
-          {/* Bottom-right: vertical icons */}
           <div className="flex flex-col gap-4 absolute bottom-3 right-3">
             <ArtCardLikeButton
               isLiked={item.isLiked}
@@ -166,7 +161,6 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
         </div>
       </div>
 
-      {/* Zoom modal */}
       {isZoomOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-20"
