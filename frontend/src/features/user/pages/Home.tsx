@@ -4,6 +4,7 @@ import React, {
   useState,
   useMemo,
   useEffect,
+  useLayoutEffect,
 } from "react";
 import { useGetAllArt } from "../hooks/art/useGetAllArt";
 import { useGetCategories, type Category } from "../hooks/art/useGetCategories";
@@ -12,13 +13,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import ArtCardSkeleton from "../components/skeletons/ArtCardSkeleton";
 import type { ArtWithUser } from "../hooks/art/useGetAllArt";
 
-// Image dimension cache
+// Image dimension cache (unchanged)
 const imageDimensionsCache = new Map<
   string,
   { width: number; height: number; aspectRatio: number }
 >();
 
-// Load image dimensions
 const loadImageDimensions = (
   url: string
 ): Promise<{ width: number; height: number; aspectRatio: number }> => {
@@ -38,18 +38,13 @@ const loadImageDimensions = (
       resolve(dimensions);
     };
     img.onerror = () => {
-      const dimensions = {
-        width: 300,
-        height: 200,
-        aspectRatio: 1.5,
-      };
-      resolve(dimensions);
+      resolve({ width: 300, height: 200, aspectRatio: 1.5 });
     };
     img.src = url;
   });
 };
 
-// Moreh Layout Algorithm
+// Moreh layout: uses effectiveWidth fallback so it never returns empty due to 0 width
 const calculateMorehLayout = (
   items: ArtWithUser[],
   dimensions: Map<
@@ -60,7 +55,11 @@ const calculateMorehLayout = (
   targetRowHeight: number = 250,
   spacing: number = 4
 ) => {
-  if (!items.length || containerWidth <= 0) return [];
+  if (!items.length) return [];
+
+  // fallback to a reasonable width if containerWidth is 0 (pre-measure)
+  const effectiveWidth =
+    containerWidth > 0 ? containerWidth : window.innerWidth || 1200;
 
   const rows: any[] = [];
   let currentRow: any[] = [];
@@ -69,10 +68,9 @@ const calculateMorehLayout = (
   items.forEach((item, index) => {
     const dim = dimensions.get(item.art.id) || {
       width: 300,
-      height: 200,
+      height: 250,
       aspectRatio: 1.5,
     };
-
     const itemWidth = targetRowHeight * dim.aspectRatio;
 
     const layoutItem = {
@@ -88,27 +86,22 @@ const calculateMorehLayout = (
     currentRowWidth += itemWidth + spacing;
 
     const isLastItem = index === items.length - 1;
-    const rowIsFull = currentRowWidth >= containerWidth;
+    const rowIsFull = currentRowWidth >= effectiveWidth;
 
     if (rowIsFull || isLastItem) {
       const totalSpacing = spacing * (currentRow.length - 1);
-      const availableWidth = containerWidth - totalSpacing;
-      const currentWidthWithoutSpacing = currentRow.reduce(
-        (sum, item) => sum + item.width,
-        0
-      );
+      const availableWidth = Math.max(effectiveWidth - totalSpacing, 1); // guard divide by zero
+      const currentWidthWithoutSpacing =
+        currentRow.reduce((sum, it) => sum + it.width, 0) || 1;
       const ratio = availableWidth / currentWidthWithoutSpacing;
 
-      const adjustedRow = currentRow.map((layoutItem) => ({
-        ...layoutItem,
-        calculatedWidth: layoutItem.width * ratio,
-        calculatedHeight: layoutItem.height * ratio,
+      const adjustedRow = currentRow.map((li) => ({
+        ...li,
+        calculatedWidth: li.width * ratio,
+        calculatedHeight: li.height * ratio,
       }));
 
-      rows.push({
-        items: adjustedRow,
-        rowHeight: targetRowHeight * ratio,
-      });
+      rows.push({ items: adjustedRow, rowHeight: targetRowHeight * ratio });
 
       currentRow = [];
       currentRowWidth = 0;
@@ -124,8 +117,10 @@ const Home: React.FC = () => {
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
   const [categoryScrollPos, setCategoryScrollPos] = useState(0);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+
   const [imageDimensions, setImageDimensions] = useState<
     Map<string, { width: number; height: number; aspectRatio: number }>
   >(new Map());
@@ -143,69 +138,109 @@ const Home: React.FC = () => {
 
   const observer = useRef<IntersectionObserver | null>(null);
 
+  // last item infinite-scroll ref
   const lastArtRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (!node || isFetchingNextPage) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNextPage) fetchNextPage();
+        if (entries[0]?.isIntersecting && hasNextPage) fetchNextPage();
       });
       if (node) observer.current.observe(node);
     },
     [isFetchingNextPage, fetchNextPage, hasNextPage]
   );
 
-  const allItems = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data) || [];
-  }, [data]);
+  const allItems = useMemo(
+    () => data?.pages.flatMap((p) => p.data) || [],
+    [data]
+  );
 
-  // Load image dimensions
+  // load image dimensions (unchanged but triggers measurement after complete)
   useEffect(() => {
+    let mounted = true;
     const loadDimensions = async () => {
       const newDimensions = new Map<
         string,
         { width: number; height: number; aspectRatio: number }
       >();
-
       await Promise.all(
         allItems.map(async (item) => {
           const dim = await loadImageDimensions(item.art.imageUrl);
           newDimensions.set(item.art.id, dim);
         })
       );
-
+      if (!mounted) return;
       setImageDimensions(newDimensions);
       setLoadedCount(allItems.length);
+      // trigger re-measure immediately so layout uses new dimensions
+      requestAnimationFrame(() => {
+        if (containerRef.current) {
+          const w = Math.max(
+            containerRef.current.getBoundingClientRect().width,
+            0
+          );
+          setContainerWidth(w);
+        } else {
+          setContainerWidth(window.innerWidth || 1200);
+        }
+      });
     };
 
-    if (allItems.length > 0) {
-      loadDimensions();
-    }
+    if (allItems.length > 0) loadDimensions();
+
+    return () => {
+      mounted = false;
+    };
   }, [allItems]);
 
-  useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
+  // --- Use useLayoutEffect to measure container width synchronously before paint ---
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!containerRef.current) {
+        setContainerWidth(window.innerWidth || 1200);
+        return;
       }
+      const rect = containerRef.current.getBoundingClientRect();
+      const w = Math.max(Math.round(rect.width), 0);
+      setContainerWidth(w || window.innerWidth || 1200);
     };
 
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
+    // initial synchronous measurement (pre-paint) to avoid blank render
+    measure();
+
+    // ResizeObserver (preferred)
+    let ro: ResizeObserver | null = null;
+    if (containerRef.current && typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => {
+        // measure inside RAF to avoid layout thrash
+        requestAnimationFrame(measure);
+      });
+      ro.observe(containerRef.current);
+    } else {
+      // fallback
+      const onResize = () => requestAnimationFrame(measure);
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    }
+
+    return () => {
+      if (ro) ro.disconnect();
+    };
   }, []);
 
+  // compute rows using effective width fallback, re-compute when dimensions change
   const rows = useMemo(
     () =>
       calculateMorehLayout(allItems, imageDimensions, containerWidth, 320, 4),
     [allItems, imageDimensions, containerWidth, loadedCount]
   );
 
+  // categories scroll helpers (unchanged)
   const scrollCategories = (direction: "left" | "right") => {
     if (categoriesScrollRef.current) {
-      const scrollAmount = 200;
       categoriesScrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
+        left: direction === "left" ? -200 : 200,
         behavior: "smooth",
       });
     }
@@ -215,49 +250,61 @@ const Home: React.FC = () => {
     const el = categoriesScrollRef.current;
     if (!el) return;
     setShowLeft(el.scrollLeft > 0);
-    setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth);
+    setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1); // Added -1 for better boundary detection
   };
 
-  useEffect(() => {
+  // FIX: Use useLayoutEffect for initial scroll check and add timeout for safe measure
+  useLayoutEffect(() => {
     checkScroll();
+  }, [categories]); // Re-check when categories change
+
+  useEffect(() => {
     const el = categoriesScrollRef.current;
     if (el) el.addEventListener("scroll", checkScroll);
     window.addEventListener("resize", checkScroll);
+
     return () => {
       if (el) el.removeEventListener("scroll", checkScroll);
       window.removeEventListener("resize", checkScroll);
     };
   }, []);
 
+  // FIX: Add multiple timeouts to ensure scrollbar detection after render
   useEffect(() => {
-    const timer = setTimeout(() => {
-      checkScroll();
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [categories]);
+    const timers = [
+      setTimeout(() => checkScroll(), 100),
+      setTimeout(() => checkScroll(), 300), // Additional check after render
+      setTimeout(() => checkScroll(), 500), // Final check to be sure
+    ];
 
-  const activeCategories = useMemo(() => {
-    return (
-      categories?.filter((cat) => cat.status === "active" && cat.count > 0) ||
-      []
-    );
-  }, [categories]);
+    return () => timers.forEach(clearTimeout);
+  }, [categories, selectedCategory]); // Also check when selected category changes
 
-  const getCategoryId = (cat: Category): string => cat._id || cat.id;
+  const activeCategories = useMemo(
+    () => categories?.filter((c) => c.status === "active" && c.count > 0) || [],
+    [categories]
+  );
+
+  const getCategoryId = (cat: Category) => cat._id || cat.id;
 
   const handleCategoryClick = (id: string | null) => {
-    if (categoriesScrollRef.current) {
+    if (categoriesScrollRef.current)
       setCategoryScrollPos(categoriesScrollRef.current.scrollLeft);
-    }
     setSelectedCategory(id);
   };
 
   useEffect(() => {
-    if (categoriesScrollRef.current) {
+    if (categoriesScrollRef.current)
       categoriesScrollRef.current.scrollLeft = categoryScrollPos;
-    }
   }, [categoryScrollPos]);
 
+  // FIX: Also check scroll after category selection
+  useEffect(() => {
+    const timer = setTimeout(() => checkScroll(), 150);
+    return () => clearTimeout(timer);
+  }, [selectedCategory]);
+
+  // Loading/error UI same as before
   if (status === "pending")
     return (
       <div>
@@ -269,6 +316,7 @@ const Home: React.FC = () => {
       <div>Error: {(error as Error)?.message || "Something went wrong"}</div>
     );
 
+  // Final render: same layout and styles as you provided
   return (
     <div className="flex flex-col min-h-screen">
       <div className="sticky top-0 px-2 z-10 w-full bg-black/30 backdrop-blur-sm flex items-center h-12">
@@ -283,7 +331,7 @@ const Home: React.FC = () => {
 
         <div
           ref={categoriesScrollRef}
-          className="flex gap-2 overflow-x-auto w-[1416px]"
+          className="flex gap-2 overflow-x-auto w-[1416px] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" // ADDED: scrollbar styles
           style={{ scrollBehavior: "smooth" }}
         >
           <button
@@ -322,8 +370,9 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      <div className="flex-1 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+      <div className="p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
         <div ref={containerRef} className="w-full">
+          {/* Render layout even when initial measurement was small, we use fallback width so it won't be blank */}
           {rows.map((row, rowIndex) => (
             <div
               key={rowIndex}
@@ -335,7 +384,6 @@ const Home: React.FC = () => {
                   rowIndex === rows.length - 1 &&
                   itemIndex === row.items.length - 1;
                 const item = layoutItem.item;
-
                 return (
                   <div
                     key={item.art.id}

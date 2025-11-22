@@ -81,7 +81,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
           className="w-full h-full object-cover group-hover:brightness-50 transition-all duration-300"
         />
 
-        <div className="absolute inset-0 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-3">
+        <div className="absolute inset-0 flex flex-col justify-between opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-2">
           <div className="flex justify-between">
             {item?.art?.isForSale && (
               <div className="relative w-4 h-4">
@@ -103,7 +103,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
           </div>
 
           <div
-            className="absolute bottom-3 left-3 flex items-center gap-2 cursor-pointer max-w-[70%]"
+            className="absolute bottom-3 left-2 flex items-center gap-1 cursor-pointer max-w-[70%]"
             onClick={(e) => {
               e.stopPropagation();
               handleProfileClick();
@@ -113,29 +113,29 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
               <img
                 src={item.user.profileImage}
                 alt={item.user.name || "Profile"}
-                className="w-10 h-10 rounded-full border border-zinc-300 dark:border-zinc-600 flex-shrink-0"
+                className="w-9 h-9 rounded-full border border-zinc-300 dark:border-zinc-600 flex-shrink-0"
               />
             ) : item.user?.name ? (
-              <div className="w-10 h-10 rounded-full bg-zinc-600 dark:bg-zinc-700 flex items-center justify-center text-white text-xl flex-shrink-0">
+              <div className="w-9 h-9 rounded-full bg-zinc-600 dark:bg-zinc-700 flex items-center justify-center text-white text-xl flex-shrink-0">
                 {item.user.name.charAt(0).toUpperCase()}
               </div>
             ) : (
-              <div className="w-10 h-10 rounded-full bg-zinc-600 dark:bg-zinc-700 flex items-center justify-center text-white flex-shrink-0">
+              <div className="w-9 h-9 rounded-full bg-zinc-600 dark:bg-zinc-700 flex items-center justify-center text-white flex-shrink-0">
                 <User className="w-5 h-5" />
               </div>
             )}
 
             <div className="flex flex-col overflow-hidden">
-              <span className="font-semibold text-white truncate">
+              <span className="font-medium text-sm text-white truncate">
                 {item.user?.name || "Unknown"}
               </span>
-              <span className="text-sm text-white truncate">
+              <span className="text-xs text-white truncate">
                 {item.art.title}
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 absolute bottom-3 right-3">
+          <div className="flex flex-col gap-4 absolute bottom-3 right-2">
             <ArtCardLikeButton
               isLiked={item.isLiked}
               likedCount={item.likeCount}
