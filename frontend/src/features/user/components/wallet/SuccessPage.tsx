@@ -2,6 +2,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useStripeSession } from "../../hooks/wallet/useStripeSession";
 import { Button } from "../../../../components/ui/button";
 import { Check, Mail, Phone, Share2, Star, Coins, Wallet } from "lucide-react";
+import { ROUTES } from "../../../../constants/routes";
 
 const SuccessPage = () => {
   const [searchParams] = useSearchParams();
@@ -78,7 +79,7 @@ const SuccessPage = () => {
           <Button
             variant="outline"
             className="border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-transparent"
-            onClick={() => navigate("/wallet")}
+            onClick={() => navigate(ROUTES.WALLET)}
           >
             <Wallet className="w-4 h-4 mr-2" />
             My Wallet
@@ -208,7 +209,7 @@ const SuccessPage = () => {
                 <Button
                 variant={"outline"}
                   className="w-full bg-main-color hover:bg-main-color-dark h-11 text-base font-semibold flex items-center justify-center gap-2 text-white"
-                  onClick={() => navigate("/wallet")}
+                  onClick={() => navigate(ROUTES.WALLET)}
                 >
                   <Wallet className="w-4 h-4" />
                   Go to Wallet

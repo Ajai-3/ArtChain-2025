@@ -4,6 +4,7 @@ import apiClient from "../../../../api/axios";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { adminLogout } from "../../../../redux/slices/adminSlice";
+import { ROUTES } from "../../../../constants/routes";
 
 export const useAdminLogoutMutation = () => {
   const dispatch = useDispatch();
@@ -13,12 +14,12 @@ export const useAdminLogoutMutation = () => {
     onSuccess: () => {
       toast.success("Logout successful");
       dispatch(adminLogout());
-      navigate("/admin-login");
+      navigate(ROUTES.ADMIN_LOGIN);
     },
     onError: (error) => {
       console.error("Logout failed:", error);
       dispatch(adminLogout());
-      navigate("/admin-login");
+      navigate(ROUTES.ADMIN_LOGIN);
     },
   });
 };

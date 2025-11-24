@@ -15,6 +15,7 @@ import {
 } from "../../../redux/selectors/chatSelectors";
 import { useSendMessage } from "../hooks/chat/socket/useSendMessage";
 import { useConvoOpen } from "../hooks/chat/socket/useConvoOpen";
+import { ROUTES } from "../../../constants/routes";
 
 const Chat: React.FC = () => {
   const dispatch = useDispatch();
@@ -69,13 +70,13 @@ const Chat: React.FC = () => {
 
   const handleSelectConversation = useCallback(
     (id: string) => {
-      navigate(`/chat/${id}`);
+      navigate(ROUTES.CHAT_CONVERSATION(id));
     },
     [navigate]
   );
 
   const handleBackToList = useCallback(() => {
-    navigate("/chat");
+    navigate(ROUTES.CHAT);
   }, [navigate]);
 
   const handleSendMessage = useCallback(

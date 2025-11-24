@@ -10,7 +10,6 @@ import {
   Shield,
   ShoppingBag,
   FileText,
-  Mail,
   HelpCircle,
   Sun,
   Moon,
@@ -19,18 +18,19 @@ import {
   X,
 } from "lucide-react";
 import { useTheme } from "../../../../context/ThemeContext";
+import { ROUTES, SETTINGS_TABS } from "../../../../constants/routes";
 
 const userSettingsTabs = [
-  { id: "profile", path: "/settings/profile", icon: User, label: "Edit Profile" },
-  { id: "password", path: "/settings/password", icon: Lock, label: "Password & Security" },
-  { id: "privacy", path: "/settings/privacy", icon: Shield, label: "Privacy Settings" },
-  { id: "notifications", path: "/settings/notifications", icon: Bell, label: "Notifications" },
-  { id: "subscriptions", path: "/settings/subscriptions", icon: CreditCard, label: "Subscriptions" },
-  { id: "purchases", path: "/settings/purchases", icon: ShoppingBag, label: "Purchase History" },
-  { id: "sales", path: "/settings/sales", icon: FileText, label: "Sales History" },
-  { id: "liked", path: "/settings/liked", icon: Heart, label: "Liked Items" },
-  { id: "blocked", path: "/settings/blocked", icon: Ban, label: "Blocked Users" },
-  { id: "support", path: "/settings/support", icon: HelpCircle, label: "Help & Support" },
+  { id: SETTINGS_TABS.PROFILE, path: ROUTES.SETTINGS_PROFILE, icon: User, label: "Edit Profile" },
+  { id: SETTINGS_TABS.PASSWORD, path: ROUTES.SETTINGS_PASSWORD, icon: Lock, label: "Password & Security" },
+  { id: SETTINGS_TABS.PRIVACY, path: ROUTES.SETTINGS_PRIVACY, icon: Shield, label: "Privacy Settings" },
+  { id: SETTINGS_TABS.NOTIFICATIONS, path: ROUTES.SETTINGS_NOTIFICATIONS, icon: Bell, label: "Notifications" },
+  { id: SETTINGS_TABS.SUBSCRIPTIONS, path: ROUTES.SETTINGS_SUBSCRIPTIONS, icon: CreditCard, label: "Subscriptions" },
+  { id: SETTINGS_TABS.PURCHASES, path: ROUTES.SETTINGS_PURCHASES, icon: ShoppingBag, label: "Purchase History" },
+  { id: SETTINGS_TABS.SALES, path: ROUTES.SETTINGS_SALES, icon: FileText, label: "Sales History" },
+  { id: SETTINGS_TABS.LIKED, path: ROUTES.SETTINGS_LIKED, icon: Heart, label: "Liked Items" },
+  { id: SETTINGS_TABS.BLOCKED, path: ROUTES.SETTINGS_BLOCKED, icon: Ban, label: "Blocked Users" },
+  { id: SETTINGS_TABS.SUPPORT, path: ROUTES.SETTINGS_SUPPORT, icon: HelpCircle, label: "Help & Support" },
 ];
 
 const UserSettingsSideBar: React.FC<{
@@ -137,4 +137,3 @@ const UserSettingsSideBar: React.FC<{
 };
 
 export default UserSettingsSideBar;
-

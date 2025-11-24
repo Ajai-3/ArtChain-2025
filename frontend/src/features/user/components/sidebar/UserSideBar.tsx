@@ -10,29 +10,29 @@ import {
   User,
   Settings,
 } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
+import { ROUTES } from "../../../../constants/routes";
 
 const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
   createPostClick,
 }) => {
-  const navigate = useNavigate();
   const unreadCount = useSelector(
     (state: any) => state.notification.unreadCount
   );
   const user = useSelector((state: RootState) => state.user.user);
 
   const links = [
-    { to: "/", icon: House, label: "Home", authRequired: false, showOn: "all" },
-    { to: "/chat", icon: MessageSquareText, label: "Chat", authRequired: true, showOn: "all" },
-    { to: "/liora.ai", icon: FlaskConical, label: "Liora.Ai", authRequired: true, showOn: "all" },
-    { to: "/notifications", icon: Bell, label: "Notifications", authRequired: true, showOn: "desktop" },
-    { to: "/create", icon: Plus, label: "Create Post", authRequired: true, showOn: "all" },
-    { to: "/bidding", icon: Gavel, label: "Bidding", authRequired: true, showOn: "all" },
-    { to: "/shop", icon: ShoppingBag, label: "Shop", authRequired: true, showOn: "desktop" },
-    { to: "/wallet", icon: CreditCard, label: "Wallet", authRequired: true, showOn: "desktop" },
-    { to: `/${user?.username}`, icon: User, label: "Profile", authRequired: true, showOn: "all" },
+    { to: ROUTES.HOME, icon: House, label: "Home", authRequired: false, showOn: "all" },
+    { to: ROUTES.CHAT, icon: MessageSquareText, label: "Chat", authRequired: true, showOn: "all" },
+    { to: ROUTES.LIORA_AI, icon: FlaskConical, label: "Liora.Ai", authRequired: true, showOn: "all" },
+    { to: ROUTES.NOTIFICATIONS, icon: Bell, label: "Notifications", authRequired: true, showOn: "desktop" },
+    { to: ROUTES.CREATE, icon: Plus, label: "Create Post", authRequired: true, showOn: "all" },
+    { to: ROUTES.BIDDING, icon: Gavel, label: "Bidding", authRequired: true, showOn: "all" },
+    { to: ROUTES.SHOP, icon: ShoppingBag, label: "Shop", authRequired: true, showOn: "desktop" },
+    { to: ROUTES.WALLET, icon: CreditCard, label: "Wallet", authRequired: true, showOn: "desktop" },
+    { to: user ? ROUTES.PROFILE(user.username) : ROUTES.LOGIN, icon: User, label: "Profile", authRequired: true, showOn: "all" },
   ];
 
   return (
@@ -43,7 +43,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
         {links.map((link) => {
           const { to, icon: Icon, label, showOn, authRequired } = link;
           const responsiveClass = showOn === "desktop" ? "hidden sm:block" : "";
-          const navTo = authRequired && !user ? "/login" : to;
+          const navTo = authRequired && !user ? ROUTES.LOGIN : to;
 
           return (
             <NavLink
@@ -87,7 +87,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
       {user && (
         <div className="hidden md:flex items-center justify-center gap-2">
           <NavLink
-            to="/settings"
+            to={ROUTES.SETTINGS}
             title="Settings"
             className={({ isActive }) =>
               `p-3 rounded-md flex items-center justify-center transition-colors ${

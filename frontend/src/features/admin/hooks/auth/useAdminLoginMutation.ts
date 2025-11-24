@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { setAdmin } from "../../../../redux/slices/adminSlice";
 import { logout } from "../../../../redux/slices/userSlice";
+import { ROUTES } from "../../../../constants/routes";
 
 export const useAdminLoginMutation = () => {
   const dispatch = useDispatch();
@@ -21,7 +22,7 @@ export const useAdminLoginMutation = () => {
 
       dispatch(logout());
 
-      navigate("/admin/dashboard");
+      navigate(ROUTES.ADMIN_DASHBOARD);
     },
     onError: (error: any) => {
       const errorMessage =

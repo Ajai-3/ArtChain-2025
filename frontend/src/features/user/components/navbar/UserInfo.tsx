@@ -4,6 +4,7 @@ import { Button } from "../../../../components/ui/button";
 import type { User as safeuser } from "../../../../types/users/user/user";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
+import { ROUTES } from "../../../../constants/routes";
 
 type UserInfoProps = {
   onBecomeArtist: () => void;
@@ -22,7 +23,7 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
       {isAuthenticated && user ? (
         <>
           <button
-            onClick={() => navigate("/notifications")}
+            onClick={() => navigate(ROUTES.NOTIFICATIONS)}
             className="relative p-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             aria-label="Notifications"
           >
@@ -36,7 +37,7 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
           </button>
 
           <button
-            onClick={() => navigate(`/${user?.username}`)}
+            onClick={() => navigate(user?.username ? ROUTES.PROFILE(user.username) : ROUTES.HOME)}
             className="rounded-full hidden sm:block hover:bg-zinc-100 dark:hover:bg-zinc-800"
             aria-label="Profile"
           >
@@ -69,10 +70,10 @@ const UserInfo = ({ user, isAuthenticated, onBecomeArtist }: UserInfoProps) => {
         </>
       ) : (
         <>
-          <Button variant="ghost" onClick={() => navigate("/login")}>
+          <Button variant="ghost" onClick={() => navigate(ROUTES.LOGIN)}>
             Log in
           </Button>
-          <Button variant="main" onClick={() => navigate("/signup")}>
+          <Button variant="main" onClick={() => navigate(ROUTES.SIGNUP)}>
             Sign up
           </Button>
         </>
