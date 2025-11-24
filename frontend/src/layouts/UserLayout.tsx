@@ -17,24 +17,24 @@ const UserLayout: React.FC = () => {
     location.pathname.startsWith(path)
   );
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden bg-background">
       <Navbar onBecomeArtist={() => setShowBecomeArtistModal(true)} />
 
-      <div className="flex flex-col sm:flex-row">
+      <div className="flex flex-1 overflow-hidden">
         <div className="hidden sm:block">
           <UserSideBar createPostClick={() => setShowCreatePostModal(true)} />
         </div>
-        <div className="w-full flex flex-col h-[calc(100vh-62px)]">
-          <div className="flex-1 overflow-y-auto scrollbar relative sm:pb-0">
+        <div className="flex-1 flex flex-col min-w-0 relative">
+          <div className="flex-1 overflow-y-auto scrollbar pb-20 sm:pb-0">
             <Outlet />
-            {!shouldHideBottomSidebar && (
-              <div className="block sm:hidden w-full fixed bottom-0 left-0">
-                <UserSideBar
-                  createPostClick={() => setShowCreatePostModal(true)}
-                />
-              </div>
-            )}
           </div>
+          {!shouldHideBottomSidebar && (
+            <div className="block sm:hidden w-full absolute bottom-0 left-0 z-50">
+              <UserSideBar
+                createPostClick={() => setShowCreatePostModal(true)}
+              />
+            </div>
+          )}
         </div>
       </div>
 

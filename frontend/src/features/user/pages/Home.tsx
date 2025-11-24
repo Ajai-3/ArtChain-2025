@@ -318,7 +318,7 @@ const Home: React.FC = () => {
 
   // Final render: same layout and styles as you provided
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-full">
       <div className="sticky top-0 px-2 z-10 w-full bg-black/30 backdrop-blur-sm flex items-center h-12">
         {showLeft && (
           <button
@@ -331,7 +331,7 @@ const Home: React.FC = () => {
 
         <div
           ref={categoriesScrollRef}
-          className="flex gap-2 overflow-x-auto w-[1416px] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" // ADDED: scrollbar styles
+          className="flex gap-2 overflow-x-auto w-full scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" // ADDED: scrollbar styles
           style={{ scrollBehavior: "smooth" }}
         >
           <button
@@ -370,7 +370,7 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      <div className="p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
+      <div className="p-2">
         <div ref={containerRef} className="w-full">
           {/* Render layout even when initial measurement was small, we use fallback width so it won't be blank */}
           {rows.map((row, rowIndex) => (
