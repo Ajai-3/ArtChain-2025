@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetArtByName } from "../hooks/art/useGetArtByName";
 import CommentInputSection from "../components/art/CommentInputSection";
@@ -25,6 +25,8 @@ import { formatNumber } from "../../../libs/formatNumber";
 import ArtPageSkeleton from "../components/skeletons/ArtPageSkeleton";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
+import { useRelatedArtworks } from "../hooks/art/useRelatedArtworks";
+import RecommendedArtCard from "../components/art/RecommendedArtCard";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
@@ -42,6 +44,38 @@ const ArtPage: React.FC = () => {
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
+
+  // Recommendations Hook
+  const {
+    data: recommendedArts,
+    fetchNextPage,
+    hasNextPage,
+    isLoading: isRecLoading,
+  } = useRelatedArtworks(data?.data?.art?.artType, data?.data?.art?.id || "");
+
+  // Intersection Observer for Infinite Scroll
+  const observerTarget = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [observerTarget, hasNextPage, fetchNextPage]);
 
   if (isLoading)
     return (
@@ -127,9 +161,9 @@ const ArtPage: React.FC = () => {
     });
 
   return (
-    <div className="flex flex-col md:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen">
+    <div className="flex flex-col lg:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen">
       {/* Main content */}
-      <div className="w-full md:w-3/4 flex flex-col items-center relative">
+      <div className="w-full lg:w-3/4 flex flex-col items-center relative">
         {/* Art image */}
         <div className="relative w-full flex justify-center items-center">
           <div className="absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-900 dark:text-zinc-400 z-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-full">
@@ -303,12 +337,26 @@ const ArtPage: React.FC = () => {
       </div>
 
       {/* Recommendations sidebar */}
-      <div className="w-full md:w-1/4 bg-zinc-900 rounded p-4 text-white mt-6 md:mt-0">
-        <p className="font-semibold mb-2">Recommendations</p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          Recommendations go here.
-        </p>
+      <div className="w-full lg:w-1/4 p-4 mt-6 lg:mt-0">
+        <h3 className="text-lg font-semibold mb-4 text-white">
+          Recommended
+        </h3>
+        <div className="flex flex-col gap-4">
+          {recommendedArts.map((item) => (
+            <RecommendedArtCard
+              key={item.art.id}
+              art={item.art}
+              username={item.user?.username || ""}
+            />
+          ))}
+          {isRecLoading && (
+            <div className="text-center text-gray-400 py-4">Loading...</div>
+          )}
+          {!isRecLoading && recommendedArts.length === 0 && (
+             <div className="text-center text-gray-400 py-4">No recommendations found.</div>
+          )}
+          <div ref={observerTarget} className="h-4 w-full" />
+        </div>
       </div>
 
       {/* Zoom overlay */}
