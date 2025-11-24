@@ -11,105 +11,7 @@ import { useGetCategories, type Category } from "../hooks/art/useGetCategories";
 import ArtCard from "../components/art/ArtCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ArtCardSkeleton from "../components/skeletons/ArtCardSkeleton";
-import type { ArtWithUser } from "../hooks/art/useGetAllArt";
-
-// Image dimension cache (unchanged)
-const imageDimensionsCache = new Map<
-  string,
-  { width: number; height: number; aspectRatio: number }
->();
-
-const loadImageDimensions = (
-  url: string
-): Promise<{ width: number; height: number; aspectRatio: number }> => {
-  if (imageDimensionsCache.has(url)) {
-    return Promise.resolve(imageDimensionsCache.get(url)!);
-  }
-
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      const dimensions = {
-        width: img.width,
-        height: img.height,
-        aspectRatio: img.width / img.height,
-      };
-      imageDimensionsCache.set(url, dimensions);
-      resolve(dimensions);
-    };
-    img.onerror = () => {
-      resolve({ width: 300, height: 200, aspectRatio: 1.5 });
-    };
-    img.src = url;
-  });
-};
-
-// Moreh layout: uses effectiveWidth fallback so it never returns empty due to 0 width
-const calculateMorehLayout = (
-  items: ArtWithUser[],
-  dimensions: Map<
-    string,
-    { width: number; height: number; aspectRatio: number }
-  >,
-  containerWidth: number,
-  targetRowHeight: number = 250,
-  spacing: number = 4
-) => {
-  if (!items.length) return [];
-
-  // fallback to a reasonable width if containerWidth is 0 (pre-measure)
-  const effectiveWidth =
-    containerWidth > 0 ? containerWidth : window.innerWidth || 1200;
-
-  const rows: any[] = [];
-  let currentRow: any[] = [];
-  let currentRowWidth = 0;
-
-  items.forEach((item, index) => {
-    const dim = dimensions.get(item.art.id) || {
-      width: 300,
-      height: 250,
-      aspectRatio: 1.5,
-    };
-    const itemWidth = targetRowHeight * dim.aspectRatio;
-
-    const layoutItem = {
-      item,
-      width: itemWidth,
-      height: targetRowHeight,
-      aspectRatio: dim.aspectRatio,
-      calculatedWidth: itemWidth,
-      calculatedHeight: targetRowHeight,
-    };
-
-    currentRow.push(layoutItem);
-    currentRowWidth += itemWidth + spacing;
-
-    const isLastItem = index === items.length - 1;
-    const rowIsFull = currentRowWidth >= effectiveWidth;
-
-    if (rowIsFull || isLastItem) {
-      const totalSpacing = spacing * (currentRow.length - 1);
-      const availableWidth = Math.max(effectiveWidth - totalSpacing, 1); // guard divide by zero
-      const currentWidthWithoutSpacing =
-        currentRow.reduce((sum, it) => sum + it.width, 0) || 1;
-      const ratio = availableWidth / currentWidthWithoutSpacing;
-
-      const adjustedRow = currentRow.map((li) => ({
-        ...li,
-        calculatedWidth: li.width * ratio,
-        calculatedHeight: li.height * ratio,
-      }));
-
-      rows.push({ items: adjustedRow, rowHeight: targetRowHeight * ratio });
-
-      currentRow = [];
-      currentRowWidth = 0;
-    }
-  });
-
-  return rows;
-};
+import { useMasonryLayout } from "../../../hooks/useMasonryLayout";
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -117,14 +19,6 @@ const Home: React.FC = () => {
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
   const [categoryScrollPos, setCategoryScrollPos] = useState(0);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  const [imageDimensions, setImageDimensions] = useState<
-    Map<string, { width: number; height: number; aspectRatio: number }>
-  >(new Map());
-  const [loadedCount, setLoadedCount] = useState(0);
 
   const { data: categories } = useGetCategories();
   const {
@@ -156,84 +50,10 @@ const Home: React.FC = () => {
     [data]
   );
 
-  // load image dimensions (unchanged but triggers measurement after complete)
-  useEffect(() => {
-    let mounted = true;
-    const loadDimensions = async () => {
-      const newDimensions = new Map<
-        string,
-        { width: number; height: number; aspectRatio: number }
-      >();
-      await Promise.all(
-        allItems.map(async (item) => {
-          const dim = await loadImageDimensions(item.art.imageUrl);
-          newDimensions.set(item.art.id, dim);
-        })
-      );
-      if (!mounted) return;
-      setImageDimensions(newDimensions);
-      setLoadedCount(allItems.length);
-      // trigger re-measure immediately so layout uses new dimensions
-      requestAnimationFrame(() => {
-        if (containerRef.current) {
-          const w = Math.max(
-            containerRef.current.getBoundingClientRect().width,
-            0
-          );
-          setContainerWidth(w);
-        } else {
-          setContainerWidth(window.innerWidth || 1200);
-        }
-      });
-    };
-
-    if (allItems.length > 0) loadDimensions();
-
-    return () => {
-      mounted = false;
-    };
-  }, [allItems]);
-
-  // --- Use useLayoutEffect to measure container width synchronously before paint ---
-  useLayoutEffect(() => {
-    const measure = () => {
-      if (!containerRef.current) {
-        setContainerWidth(window.innerWidth || 1200);
-        return;
-      }
-      const rect = containerRef.current.getBoundingClientRect();
-      const w = Math.max(Math.round(rect.width), 0);
-      setContainerWidth(w || window.innerWidth || 1200);
-    };
-
-    // initial synchronous measurement (pre-paint) to avoid blank render
-    measure();
-
-    // ResizeObserver (preferred)
-    let ro: ResizeObserver | null = null;
-    if (containerRef.current && typeof ResizeObserver !== "undefined") {
-      ro = new ResizeObserver(() => {
-        // measure inside RAF to avoid layout thrash
-        requestAnimationFrame(measure);
-      });
-      ro.observe(containerRef.current);
-    } else {
-      // fallback
-      const onResize = () => requestAnimationFrame(measure);
-      window.addEventListener("resize", onResize);
-      return () => window.removeEventListener("resize", onResize);
-    }
-
-    return () => {
-      if (ro) ro.disconnect();
-    };
-  }, []);
-
-  // compute rows using effective width fallback, re-compute when dimensions change
-  const rows = useMemo(
-    () =>
-      calculateMorehLayout(allItems, imageDimensions, containerWidth, 320, 4),
-    [allItems, imageDimensions, containerWidth, loadedCount]
+  const { containerRef, rows } = useMasonryLayout(
+    allItems,
+    (item) => item.art.id,
+    (item) => item.art.imageUrl
   );
 
   // categories scroll helpers (unchanged)
@@ -379,18 +199,17 @@ const Home: React.FC = () => {
               className="flex"
               style={{ gap: "4px", marginBottom: "4px" }}
             >
-              {row.items.map((layoutItem: any, itemIndex: number) => {
+              {row.items.map((item: any, itemIndex: number) => {
                 const isLastItem =
                   rowIndex === rows.length - 1 &&
                   itemIndex === row.items.length - 1;
-                const item = layoutItem.item;
                 return (
                   <div
                     key={item.art.id}
                     ref={isLastItem ? lastArtRef : null}
                     style={{
-                      width: `${layoutItem.calculatedWidth}px`,
-                      height: `${layoutItem.calculatedHeight}px`,
+                      width: `${item.calculatedWidth}px`,
+                      height: `${item.calculatedHeight}px`,
                     }}
                   >
                     <ArtCard item={item} />
