@@ -36,6 +36,7 @@ router.post(ROUTES.ART.BASE, artController.createArt);
 router.get(ROUTES.ART.BY_USER_ID, artController.getArtWithUser);
 router.get(ROUTES.ART.COUNT, artController.countArtwork);
 router.get(ROUTES.ART.BY_ART_NAME, artController.getArtByArtName);
+router.get(ROUTES.ART.RECOMMENDED, artController.getRecommendedArt);
 
 // Comment
 router.patch(ROUTES.COMMENT.BASE, commentController.editComment);

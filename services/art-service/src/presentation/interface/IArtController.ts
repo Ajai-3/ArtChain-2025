@@ -11,6 +11,11 @@ export interface IArtController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+  getRecommendedArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
   getArtWithUser(
     req: Request,
     res: Response,

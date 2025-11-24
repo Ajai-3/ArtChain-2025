@@ -22,6 +22,7 @@ export const ROUTES = {
     BY_USER_ID: "/user/:userId",
     BY_ART_NAME: "/by-name/:artname",
     COUNT: "/count/:userId",
+    RECOMMENDED: "/recommended",
   },
 
   // Comment routes

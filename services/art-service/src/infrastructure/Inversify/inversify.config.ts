@@ -31,8 +31,8 @@ import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCa
 import { CountArtWorkUseCase } from "../../application/usecase/art/CountArtWorkUseCase";
 import { GetArtByNameUseCase } from "../../application/usecase/art/GetArtByNameUseCase";
 import { CreateArtPostUseCase } from "../../application/usecase/art/CreateArtPostUseCase";
-import { GetAllShopArtsUseCase } from "../../application/usecase/art/GetAllShopArtsUseCase";
-import { GetShopArtsByUserUseCase } from "../../application/usecase/art/GetShopArtsByUserUseCase";
+import { GetAllShopArtsUseCase } from "../../application/usecase/shop/GetAllShopArtsUseCase";
+import { GetShopArtsByUserUseCase } from "../../application/usecase/shop/GetShopArtsByUserUseCase";
 import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToElasticSearchUseCase";
 import { GetAllArtWithUserIdUseCase } from "../../application/usecase/art/GetAllArtWithUserIdUseCase";
 

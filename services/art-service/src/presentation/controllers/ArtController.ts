@@ -100,6 +100,38 @@ export class ArtController implements IArtController {
   };
 
   //# ================================================================================================================
+  //# GET RECOMENTED ART
+  //# ================================================================================================================
+  //# GET /api/v1/art/recommended
+  //# Query params: page (number), limit (number)
+  //# This controller fetches recommended art items with pagination support.
+  //# ================================================================================================================
+  getRecommendedArt = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const currentUserId = req.headers["x-user-id"] as string;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const categoryId = req.query.categoryId as string | undefined;
+
+      const result = await this._getAllArtUseCase.execute(
+        page,
+        limit,
+        currentUserId,
+        categoryId
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.ART_FETCH_SUCESSFULL,
+        page,
+        limit,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
   //# GET ART OF USER
   //# ================================================================================================================
   //# GET /api/v1/art/user/:userId
