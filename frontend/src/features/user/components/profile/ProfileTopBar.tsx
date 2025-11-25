@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { useCreatePrivateConversation } from "../../hooks/chat/useCreatePrivateConversation";
+import { ContentOptionsModal } from "../report/ContentOptionsModal";
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
@@ -26,6 +27,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   const [modalType, setModalType] = useState<
     "supporters" | "supporting" | null
   >(null);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const currentUser = useSelector((state: RootState) => state.user);
 
   const [zoomImage, setZoomImage] = useState<string | null>(null);
@@ -291,7 +293,12 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                     )}
                   </span>
                 </Button>
-                <Ellipsis />
+                <div 
+                  className={iconButtonClasses}
+                  onClick={() => setIsOptionsOpen(true)}
+                >
+                  <Ellipsis />
+                </div>
               </div>
             )}
           </div>
@@ -338,6 +345,15 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
           onSave={handleCropSave}
           onCancel={handleCropCancel}
           isSaving={isSaving}
+        />
+      )}
+
+      {user?.id && (
+        <ContentOptionsModal
+          isOpen={isOptionsOpen}
+          onClose={() => setIsOptionsOpen(false)}
+          targetId={user.id}
+          targetType="user"
         />
       )}
     </div>

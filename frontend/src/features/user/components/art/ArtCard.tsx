@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import type { ArtWithUser } from "../../hooks/art/useGetAllArt";
-import { View, User, MessageSquare } from "lucide-react";
+import { View, User, MessageSquare, MoreVertical } from "lucide-react";
+import { ContentOptionsModal } from "../report/ContentOptionsModal";
 import { useNavigate } from "react-router-dom";
 import { useLikePost } from "../../hooks/art/useLikePost";
 import { useUnlikePost } from "../../hooks/art/useUnlikePost";
@@ -19,6 +20,7 @@ interface ArtCardProps {
 const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
   const user = useSelector((state: RootState) => state.user);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const navigate = useNavigate();
 
   const likePost = useLikePost();
@@ -91,15 +93,26 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
             )}
 
             <div></div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsZoomOpen(true);
-              }}
-              className="text-white bg-white/10 p-1 rounded-full hover:bg-black/70"
-            >
-              <View />
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsZoomOpen(true);
+                }}
+                className="text-white bg-white/10 p-1 rounded-full hover:bg-black/70"
+              >
+                <View />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsOptionsOpen(true);
+                }}
+                className="text-white bg-white/10 p-1 rounded-full hover:bg-black/70"
+              >
+                <MoreVertical size={24} />
+              </button>
+            </div>
           </div>
 
           <div
@@ -174,6 +187,13 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
           />
         </div>
       )}
+
+      <ContentOptionsModal
+        isOpen={isOptionsOpen}
+        onClose={() => setIsOptionsOpen(false)}
+        targetId={item.art.id}
+        targetType="art"
+      />
     </>
   );
 };

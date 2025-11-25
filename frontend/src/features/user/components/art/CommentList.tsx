@@ -1,7 +1,9 @@
 import React from "react";
 import { useGetComments } from "../../hooks/art/useGetComments";
 import type { Comment } from "../../hooks/art/useGetComments";
-import { User } from "lucide-react";
+import { User, MoreVertical } from "lucide-react";
+import { ContentOptionsModal } from "../report/ContentOptionsModal";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../../../libs/formatTimeAgo";
 
@@ -11,6 +13,7 @@ interface Props {
 
 const CommentList: React.FC<Props> = ({ postId }) => {
   const navigate = useNavigate();
+  const [reportingCommentId, setReportingCommentId] = useState<string | null>(null);
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetComments(postId);
 
@@ -64,6 +67,13 @@ const CommentList: React.FC<Props> = ({ postId }) => {
               {/* <span className="text-gray-400 text-sm mt-0.5 mb-1">@{c.userName}</span> */}
               <p className="text-gray-300 mt-1">{c.content}</p>
             </div>
+            
+            <button 
+              onClick={() => setReportingCommentId(c._id)}
+              className="p-1 hover:bg-zinc-800 rounded-full h-fit"
+            >
+              <MoreVertical size={16} className="text-gray-400" />
+            </button>
           </div>
         ))
       )}
@@ -79,6 +89,15 @@ const CommentList: React.FC<Props> = ({ postId }) => {
       )}
       {!hasNextPage && (
         <p className="text-gray-400 text-center mt-2">No more comments</p>
+      )}
+
+      {reportingCommentId && (
+        <ContentOptionsModal
+          isOpen={!!reportingCommentId}
+          onClose={() => setReportingCommentId(null)}
+          targetId={reportingCommentId}
+          targetType="comment"
+        />
       )}
     </div>
   );
