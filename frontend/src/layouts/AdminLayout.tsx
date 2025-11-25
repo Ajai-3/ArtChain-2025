@@ -7,7 +7,7 @@ const AdminLayout: React.FC = () => {
     <div className="h-screen">
       <div className="flex">
         <Sidebar />
-        <Outlet />
+          <Outlet />
       </div>
     </div>
   );

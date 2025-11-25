@@ -67,6 +67,7 @@ const CategoryManagement: React.FC = () => {
         onPageChange={setPage}
       />
     </div>
+
   );
 };
 

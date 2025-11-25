@@ -12,6 +12,7 @@ const UserManagement = lazy(
 const CategoryMangement = lazy(
   () => import("../../features/admin/pages/CategoryMangement")
 );
+const AIConfigPage = lazy(() => import("../../features/admin/pages/ai/AIConfigPage"));
 
 const AdminRoutes = (
   <>
@@ -25,6 +26,7 @@ const AdminRoutes = (
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="user-management" element={<UserManagement />} />
         <Route path="category-management" element={<CategoryMangement />} />
+        <Route path="ai-settings" element={<AIConfigPage />} />
       </Route>
     </Route>
   </>
