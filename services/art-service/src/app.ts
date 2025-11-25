@@ -2,6 +2,8 @@ import express from "express";
 import { createErrorHandler } from "art-chain-shared";
 
 import artRouter from "./presentation/routes/art.routes";
+import aiRouter from "./presentation/routes/ai.routes";
+import adminAIRouter from "./presentation/routes/admin-ai.routes";
 import { logger } from "./utils/logger";
 import { ROUTES } from "./constants/routes";
 
@@ -17,6 +19,8 @@ app.use((req, res, next) => {
 });
 
 app.use(ROUTES.BASE, artRouter);
+app.use(ROUTES.BASE, aiRouter);
+app.use(ROUTES.BASE, adminAIRouter);
 
 app.use(createErrorHandler(false))
 

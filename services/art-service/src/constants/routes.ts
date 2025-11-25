@@ -53,5 +53,22 @@ export const ROUTES = {
     BASE: "/shop",
     BY_USER_ID: "/shop/:userId",
   },
+
+  // AI routes
+  AI: {
+    BASE: "/ai",
+    QUOTA: "/ai/quota",
+    CONFIG: "/ai/config",
+    GENERATE: "/ai/generate",
+    GENERATIONS: "/ai/generations",
+  },
+
+  // Admin AI routes
+  ADMIN_AI: {
+    BASE: "/admin/ai",
+    CONFIG: "/admin/ai/config",
+    TEST_PROVIDER: "/admin/ai/test-provider",
+    ANALYTICS: "/admin/ai/analytics",
+  },
 } as const;
 

@@ -8,7 +8,8 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "seed": "tsx src/scripts/seedAIConfigs.ts"
   },
   "keywords": [],
   "type": "module",
@@ -16,6 +17,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/genai": "^1.30.0",
     "amqplib": "^0.10.9",
     "art-chain-shared": "^1.0.22",
     "axios": "^1.12.2",

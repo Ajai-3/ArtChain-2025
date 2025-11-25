@@ -6,6 +6,11 @@ export const TYPES = {
   ICategoryRepository: Symbol.for("ICategoryRepository"),
   IFavoriteRepository: Symbol.for("IFavoriteRepository"),
 
+  // AI Repositories
+  IAIGenerationRepository: Symbol.for("IAIGenerationRepository"),
+  IAIConfigRepository: Symbol.for("IAIConfigRepository"),
+  AIProviderService: Symbol.for("AIProviderService"),
+
   // Use Cases - Art
   IGetAllArtUseCase: Symbol.for("IGetAllArtUseCase"),
   IGetArtByIdUseCase: Symbol.for("IGetArtByIdUseCase"),
@@ -39,6 +44,15 @@ export const TYPES = {
   IGetLikeCountUseCase: Symbol.for("IGetLikeCountUseCase"),
   IGetLikedUsersUseCase: Symbol.for("IGetLikedUsersUseCase"),
 
+  // Use Cases - AI
+  IGenerateAIImageUseCase: Symbol.for("IGenerateAIImageUseCase"),
+  IGetMyAIGenerationsUseCase: Symbol.for("IGetMyAIGenerationsUseCase"),
+  ICheckAIQuotaUseCase: Symbol.for("ICheckAIQuotaUseCase"),
+  IGetEnabledAIConfigsUseCase: Symbol.for("IGetEnabledAIConfigsUseCase"),
+  IUpdateAIConfigUseCase: Symbol.for("IUpdateAIConfigUseCase"),
+  IGetAIConfigsUseCase: Symbol.for("IGetAIConfigsUseCase"),
+  IGetAIAnalyticsUseCase: Symbol.for("IGetAIAnalyticsUseCase"),
+
   // Controllers
   IArtController: Symbol.for("IArtController"),
   IShopController: Symbol.for("IShopController"),
@@ -46,4 +60,6 @@ export const TYPES = {
   ICommentController: Symbol.for("ICommentController"),
   IFavoriteController: Symbol.for("IFavoriteController"),
   ICategoryController: Symbol.for("ICategoryController"),
+  IAIController: Symbol.for("IAIController"),
+  IAdminAIController: Symbol.for("IAdminAIController"),
 };

@@ -2,18 +2,25 @@ import "reflect-metadata";
 import { TYPES } from "./types";
 import { Container } from "inversify";
 
+const container = new Container();
+
 // Repositories
 import { ILikeRepository } from "../../domain/repositories/ILikeRepository";
 import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
 import { ICommentRepository } from "../../domain/repositories/ICommentRepository";
 import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
 import { IFavoriteRepository } from "../../domain/repositories/IFavoriteRepository";
+import { IAIGenerationRepository } from "../../domain/repositories/IAIGenerationRepository";
+import { IAIConfigRepository } from "../../domain/repositories/IAIConfigRepository";
+import { AIProviderService } from "../service/AIProviderService";
 
 import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
 import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
 import { CommentRepositoryImpl } from "../repositories/CommentRepositoryImpl";
 import { CategoryRepositoryImpl } from "../repositories/CategoryRepositoryImpl";
 import { FavoriteRepositoryImpl } from "../repositories/FavoriteRepositoryImpl";
+import { AIGenerationRepositoryImpl } from "../repositories/AIGenerationRepositoryImpl";
+import { AIConfigRepositoryImpl } from "../repositories/AIConfigRepositoryImpl";
 
 // Use Cases - Art
 import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
@@ -76,13 +83,28 @@ import { UnlikePostUseCase } from "../../application/usecase/like/UnlikePostUseC
 import { GetLikeCountUseCase } from "../../application/usecase/like/GetLikeCountUseCase";
 import { GetLikedUsersUseCase } from "../../application/usecase/like/GetLikedUsersUseCase";
 
+// Use Cases - AI
+import { IGenerateAIImageUseCase } from "../../application/interface/usecase/ai/IGenerateAIImageUseCase";
+import { IGetMyAIGenerationsUseCase } from "../../application/interface/usecase/ai/IGetMyAIGenerationsUseCase";
+import { ICheckAIQuotaUseCase } from "../../application/interface/usecase/ai/ICheckAIQuotaUseCase";
+import { IUpdateAIConfigUseCase } from "../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase";
+import { IGetAIConfigsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase";
+import { IGetAIAnalyticsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase";
+
+import { GenerateAIImageUseCase } from "../../application/usecase/ai/GenerateAIImageUseCase";
+import { GetMyAIGenerationsUseCase } from "../../application/usecase/ai/GetMyAIGenerationsUseCase";
+import { CheckAIQuotaUseCase } from "../../application/usecase/ai/CheckAIQuotaUseCase";
+import { UpdateAIConfigUseCase } from "../../application/usecase/ai/admin/UpdateAIConfigUseCase";
+import { GetAIConfigsUseCase } from "../../application/usecase/ai/admin/GetAIConfigsUseCase";
+import { GetAIAnalyticsUseCase } from "../../application/usecase/ai/admin/GetAIAnalyticsUseCase";
+import { GetEnabledAIConfigsUseCase } from "../../application/usecase/ai/GetEnabledAIConfigsUseCase";
+import { IGetEnabledAIConfigsUseCase } from "../../application/interface/usecase/ai/IGetEnabledAIConfigsUseCase";
+
 // Controllers
-import { IArtController } from "../../presentation/interface/IArtController";
-import { IShopController } from "../../presentation/interface/IShopController";
-import { ILikeController } from "../../presentation/interface/ILikeController";
-import { ICommentController } from "../../presentation/interface/ICommentController";
-import { IFavoriteController } from "../../presentation/interface/IFavoriteController";
-import { ICategoryController } from "../../presentation/interface/ICategoryController";
+import { IAIController } from "../../presentation/interface/IAIController";
+import { IAdminAIController } from "../../presentation/interface/IAdminAIController";
+import { AIController } from "../../presentation/controllers/AIController";
+import { AdminAIController } from "../../presentation/controllers/AdminAIController";
 
 import { ArtController } from "../../presentation/controllers/ArtController";
 import { ShopController } from "../../presentation/controllers/ShopController";
@@ -91,22 +113,35 @@ import { CommentController } from "../../presentation/controllers/CommentControl
 import { FavoriteController } from "../../presentation/controllers/FavoriteController";
 import { CategoryController } from "../../presentation/controllers/CategoryController";
 
-const container = new Container();
+import { IArtController } from "../../presentation/interface/IArtController";
+import { IShopController } from "../../presentation/interface/IShopController";
+import { ILikeController } from "../../presentation/interface/ILikeController";
+import { ICommentController } from "../../presentation/interface/ICommentController";
+import { IFavoriteController } from "../../presentation/interface/IFavoriteController";
+import { ICategoryController } from "../../presentation/interface/ICategoryController";
 
-// Repositories
+// AI Repositories
+container.bind<IArtPostRepository>(TYPES.IArtPostRepository).to(ArtPostRepositoryImpl);
+container.bind<ICategoryRepository>(TYPES.ICategoryRepository).to(CategoryRepositoryImpl);
 container.bind<ILikeRepository>(TYPES.ILikeRepository).to(LikeRepositoryImpl);
-container
-  .bind<IArtPostRepository>(TYPES.IArtPostRepository)
-  .to(ArtPostRepositoryImpl);
-container
-  .bind<ICommentRepository>(TYPES.ICommentRepository)
-  .to(CommentRepositoryImpl);
-container
-  .bind<ICategoryRepository>(TYPES.ICategoryRepository)
-  .to(CategoryRepositoryImpl);
-container
-  .bind<IFavoriteRepository>(TYPES.IFavoriteRepository)
-  .to(FavoriteRepositoryImpl);
+container.bind<ICommentRepository>(TYPES.ICommentRepository).to(CommentRepositoryImpl);
+container.bind<IFavoriteRepository>(TYPES.IFavoriteRepository).to(FavoriteRepositoryImpl);
+container.bind<IAIGenerationRepository>(TYPES.IAIGenerationRepository).to(AIGenerationRepositoryImpl);
+container.bind<IAIConfigRepository>(TYPES.IAIConfigRepository).to(AIConfigRepositoryImpl);
+
+// AI Use Cases
+container.bind<IGenerateAIImageUseCase>(TYPES.IGenerateAIImageUseCase).to(GenerateAIImageUseCase);
+container.bind<IGetMyAIGenerationsUseCase>(TYPES.IGetMyAIGenerationsUseCase).to(GetMyAIGenerationsUseCase);
+container.bind<ICheckAIQuotaUseCase>(TYPES.ICheckAIQuotaUseCase).to(CheckAIQuotaUseCase);
+container.bind<IGetEnabledAIConfigsUseCase>(TYPES.IGetEnabledAIConfigsUseCase).to(GetEnabledAIConfigsUseCase);
+container.bind<IUpdateAIConfigUseCase>(TYPES.IUpdateAIConfigUseCase).to(UpdateAIConfigUseCase);
+container.bind<IGetAIConfigsUseCase>(TYPES.IGetAIConfigsUseCase).to(GetAIConfigsUseCase);
+container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAnalyticsUseCase);
+container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
+
+// AI Controllers
+container.bind<IAIController>(TYPES.IAIController).to(AIController);
+container.bind<IAdminAIController>(TYPES.IAdminAIController).to(AdminAIController);
 
 // Use Cases - Art
 container.bind<IGetAllArtUseCase>(TYPES.IGetAllArtUseCase).to(GetAllArtUseCase);
