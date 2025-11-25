@@ -53,13 +53,18 @@ export const authRoutesConfig = {
     { path: "/api/v1/chat/conversation/private", methods: ["POST"] },
     { path: "/api/v1/chat/conversation/recent", methods: ["GET"] },
     { path: "/api/v1/chat/message/:conversationId", methods: ["GET"] },
+
+    { path: "/api/v1/art/ai/generate", methods: ["POST"] },
+    { path: "/api/v1/art/ai/quota", methods: ["GET"] },
+    { path: "/api/v1/art/ai/generations", methods: ["GET"] },
   ],
-
+  
   user_optional: [
+    { path: "/api/v1/art/ai/config", methods: ["GET"] },
     { path: "/api/v1/user/profile/:username", methods: ["GET"] },
-
+    
     { path: "/api/v1/art/favorites/user/:userId", methods: ["GET"] },
-
+    
     { path: "/api/v1/art", methods: ["GET"] },
     { path: "/api/v1/art/by-name/:artname", methods: ["GET"] },
     { path: "/api/v1/art/user/:userId", methods: ["GET"] },
@@ -73,5 +78,8 @@ export const authRoutesConfig = {
     { path: "/api/v1/admin/dashboard", methods: ["GET"] },
     { path: "/api/v1/admin/users", methods: ["GET", "PATCH", "DELETE"] },
     { path: "/api/v1/art/category", methods: ["POST", "PATCH", "DELETE"] },
+    { path: "/api/v1/art/ai/config", methods: ["POST", "PATCH", "DELETE"] },
+    { path: "/api/v1/art/ai/analytics", methods: ["GET"] },
+    { path: "/api/v1/art/ai/test-provider", methods: ["POST"] },
   ],
 };
