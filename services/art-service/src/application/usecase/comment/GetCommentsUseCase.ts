@@ -15,7 +15,7 @@ export class GetCommentsUseCase {
 
     if (comments.length === 0) return [];
 
-    const userIds = [...new Set(comments.map((c) => c.userId))];
+    const userIds = [...new Set(comments.map((c) => c.userId.toString()))];
 
     const users = await UserService.getUsersByIds(userIds);
 
