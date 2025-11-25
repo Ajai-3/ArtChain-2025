@@ -10,6 +10,7 @@ import { LikeButton } from "../LikeButton";
 import { formatNumber } from "../../../../../libs/formatNumber";
 import FavoriteUsersModal from "../FavoriteUsersModal";
 import LikeUsersModal from "../LikeUsersModal";
+import { ContentOptionsModal } from "../../report/ContentOptionsModal";
 
 interface ArtActionsProps {
   art: {
@@ -37,10 +38,13 @@ interface ArtActionsProps {
     onZoom: () => void;
     onCloseLikes: () => void;
     onCloseFavorites: () => void;
+    onReport: () => void;
+    onCloseReport: () => void;
   };
   modals: {
     showLikes: boolean;
     showFavorites: boolean;
+    showReport: boolean;
   };
 }
 
@@ -147,11 +151,20 @@ const ArtActions: React.FC<ArtActionsProps> = ({
         </button>
 
         {/* More */}
-        <MoreVertical
-          className="cursor-pointer hover:text-gray-400 transition-colors"
-          size={22}
-        />
+        <button
+          onClick={() => handlers.onReport()}
+          className="hover:text-gray-400 transition-colors"
+        >
+          <MoreVertical size={22} />
+        </button>
       </div>
+
+      <ContentOptionsModal
+        isOpen={modals.showReport}
+        onClose={handlers.onCloseReport}
+        targetId={art.id}
+        targetType="art"
+      />
     </div>
   );
 };

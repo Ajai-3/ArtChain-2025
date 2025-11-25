@@ -32,6 +32,7 @@ const ArtPage: React.FC = () => {
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const {
@@ -41,7 +42,7 @@ const ArtPage: React.FC = () => {
     isLoading: isRecLoading,
   } = useRelatedArtworks(data?.data?.art?.artType, data?.data?.art?.id || "");
 
-  const observerTarget = useRef(null);
+  const observerTarget = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -133,8 +134,18 @@ const ArtPage: React.FC = () => {
           art={{ id: art.id, artName: art.artName, isForSale: art.isForSale, downloadingDisabled: art.downloadingDisabled, price }}
           stats={{ isLiked: data.data.isLiked, likeCount: data.data.likeCount || 0, isFavorited: data.data.isFavorited, favoriteCount: data.data.favoriteCount || 0, commentCount: data.data.commentCount || 0 }}
           user={{ isAuthenticated: user.isAuthenticated }}
-          handlers={{ onLike: handleLike, onFavorite: handleFavorite, onShowLikes: handleShowLikes, onShowFavorites: handleShowFavorites, onZoom: handleZoomIconClick, onCloseLikes: () => setShowLikes(false), onCloseFavorites: () => setShowFavorites(false) }}
-          modals={{ showLikes, showFavorites }}
+          handlers={{ 
+            onLike: handleLike, 
+            onFavorite: handleFavorite, 
+            onShowLikes: handleShowLikes, 
+            onShowFavorites: handleShowFavorites, 
+            onZoom: handleZoomIconClick, 
+            onCloseLikes: () => setShowLikes(false), 
+            onCloseFavorites: () => setShowFavorites(false),
+            onReport: () => setShowReport(true),
+            onCloseReport: () => setShowReport(false)
+          }}
+          modals={{ showLikes, showFavorites, showReport }}
         />
 
         <ArtInfo
@@ -152,7 +163,7 @@ const ArtPage: React.FC = () => {
         onBuy={() => console.log("Buy clicked")}
         recommendedArts={recommendedArts}
         isRecLoading={isRecLoading}
-        observerTarget={observerTarget}
+        observerTarget={observerTarget as React.RefObject<HTMLDivElement>}
       />
 
       <ZoomOverlay

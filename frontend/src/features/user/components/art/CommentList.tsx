@@ -6,6 +6,8 @@ import { ContentOptionsModal } from "../report/ContentOptionsModal";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../../../libs/formatTimeAgo";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
 
 interface Props {
   postId: string;
@@ -14,6 +16,7 @@ interface Props {
 const CommentList: React.FC<Props> = ({ postId }) => {
   const navigate = useNavigate();
   const [reportingCommentId, setReportingCommentId] = useState<string | null>(null);
+  const user = useSelector((state: RootState) => state.user);
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useGetComments(postId);
 
@@ -97,6 +100,11 @@ const CommentList: React.FC<Props> = ({ postId }) => {
           onClose={() => setReportingCommentId(null)}
           targetId={reportingCommentId}
           targetType="comment"
+          canEdit={data?.pages.flatMap(p => p.comments).find(c => c._id === reportingCommentId)?.userId === user.user?.id}
+          onEdit={() => {
+            // Logic to open edit mode for this comment
+            console.log("Edit comment", reportingCommentId);
+          }}
         />
       )}
     </div>

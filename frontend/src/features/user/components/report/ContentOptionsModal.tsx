@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "../../../../components/ui/radio-grou
 import { Label } from "../../../../components/ui/label";
 import { Textarea } from "../../../../components/ui/textarea";
 import { useReport } from "../../hooks/report/useReport";
-import { Flag, X } from "lucide-react";
+import { Flag, X, Edit } from "lucide-react";
 import CustomLoader from "../../../../components/CustomLoader";
 
 interface ContentOptionsModalProps {
@@ -19,6 +19,8 @@ interface ContentOptionsModalProps {
   onClose: () => void;
   targetId: string;
   targetType: "art" | "comment" | "user";
+  canEdit?: boolean;
+  onEdit?: () => void;
 }
 
 type ModalView = "options" | "report";
@@ -36,6 +38,8 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
   onClose,
   targetId,
   targetType,
+  canEdit,
+  onEdit,
 }) => {
   const [view, setView] = useState<ModalView>("options");
   const [selectedReason, setSelectedReason] = useState<string>("");
@@ -80,6 +84,19 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
 
         {view === "options" ? (
           <div className="flex flex-col gap-2 py-4">
+            {canEdit && (
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-zinc-300 hover:text-white hover:bg-zinc-800"
+                onClick={() => {
+                  onEdit?.();
+                  handleClose();
+                }}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit
+              </Button>
+            )}
             <Button
               variant="ghost"
               className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10"
