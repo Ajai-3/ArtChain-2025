@@ -22,6 +22,7 @@ interface ContentOptionsModalProps {
   targetType: "art" | "comment" | "user";
   canEdit?: boolean;
   onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 type ModalView = "options" | "report";
@@ -41,6 +42,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
   targetType,
   canEdit,
   onEdit,
+  onDelete,
 }) => {
   const [view, setView] = useState<ModalView>("options");
   const [selectedReason, setSelectedReason] = useState<string>("");
@@ -86,17 +88,30 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
         {view === "options" ? (
           <div className="flex flex-col gap-2 py-4">
             {canEdit && (
-              <Button
-                variant="ghost"
-                className="w-full justify-start"
-                onClick={() => {
-                  onEdit?.();
-                  handleClose();
-                }}
-              >
-                <Edit className="mr-2 h-4 w-4" />
-                Edit
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={() => {
+                    onEdit?.();
+                    handleClose();
+                  }}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    onDelete?.();
+                    handleClose();
+                  }}
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Delete
+                </Button>
+              </>
             )}
             <Button
               variant="ghost"
