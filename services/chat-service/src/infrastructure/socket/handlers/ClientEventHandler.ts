@@ -19,7 +19,11 @@ export class ClientEventHandler implements IClientEventHandler {
 
   typing = (socket: Socket, data: { conversationId: string }) => {
     const userId = socket.data.userId;
-    socket.to(data.conversationId).emit("userTyping", { userId });
+    console.log(`⌨️ User ${userId} typing in conversation ${data.conversationId}`);
+    socket.to(data.conversationId).emit("userTyping", { 
+      userId, 
+      conversationId: data.conversationId 
+    });
   };
 
   sendMessage = async (

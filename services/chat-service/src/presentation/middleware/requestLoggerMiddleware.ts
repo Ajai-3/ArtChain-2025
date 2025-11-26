@@ -11,9 +11,9 @@ export const requestLoggerMiddleware = (
   const basicInfo = {
     method: req.method,
     url: req.originalUrl || req.url,
-    ip: req.ip || req.socket.remoteAddress,
+    // ip: req.ip || req.socket.remoteAddress,
     userId: req.headers["x-user-id"],
-    userAgent: req.get("user-agent"),
+    // userAgent: req.get("user-agent"),
   };
 
 
