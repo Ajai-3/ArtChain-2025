@@ -30,6 +30,7 @@ export const ROUTES = {
     BASE: "/comment",
     COMMENTS_BY_POST_ID: "/comments/:postId",
     BY_ID: "/comment/:id",
+    EDIT: "/comments/:id",
   },
 
   // Like routes

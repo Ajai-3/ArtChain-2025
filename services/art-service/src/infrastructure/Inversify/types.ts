@@ -31,6 +31,8 @@ export const TYPES = {
   IGetCommentsUseCase: Symbol.for("IGetCommentsUseCase"),
   IGetCommentByIdUseCase: Symbol.for("IGetCommentByIdUseCase"),
   ICreateCommentUseCase: Symbol.for("ICreateCommentUseCase"),
+  IEditCommentUseCase: Symbol.for("IEditCommentUseCase"),
+  IDeleteCommentUseCase: Symbol.for("IDeleteCommentUseCase"),
 
   // Use Cases - Favorite
   IAddFavoriteUseCase: Symbol.for("IAddFavoriteUseCase"),

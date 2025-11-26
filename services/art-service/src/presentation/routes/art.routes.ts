@@ -40,9 +40,9 @@ router.get(ROUTES.ART.RECOMMENDED, artController.getRecommendedArt);
 router.get(ROUTES.ART.BY_ID, artController.getArtById);
 
 // Comment
-router.patch(ROUTES.COMMENT.BASE, commentController.editComment);
+router.put(ROUTES.COMMENT.EDIT, commentController.editComment);
 router.post(ROUTES.COMMENT.BASE, commentController.createComment);
-router.delete(ROUTES.COMMENT.BASE, commentController.deleteComment);
+router.delete(ROUTES.COMMENT.EDIT, commentController.deleteComment);
 router.get(ROUTES.COMMENT.COMMENTS_BY_POST_ID, commentController.getComments);
 router.get(ROUTES.COMMENT.BY_ID, commentController.getCommentById);
 

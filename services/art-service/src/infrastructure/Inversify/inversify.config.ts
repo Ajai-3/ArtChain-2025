@@ -60,6 +60,10 @@ import { ICreateCommentUseCase } from "../../application/interface/usecase/comme
 import { GetCommentsUseCase } from "../../application/usecase/comment/GetCommentsUseCase";
 import { GetCommentByIdUseCase } from "../../application/usecase/comment/GetCommentByIdUseCase";
 import { CreateCommentUseCase } from "../../application/usecase/comment/CreateCommentUseCase";
+import { IEditCommentUseCase } from "../../application/interface/usecase/comment/IEditCommentUseCase";
+import { EditCommentUseCase } from "../../application/usecase/comment/EditCommentUseCase";
+import { IDeleteCommentUseCase } from "../../application/interface/usecase/comment/IDeleteCommentUseCase";
+import { DeleteCommentUseCase } from "../../application/usecase/comment/DeleteCommentUseCase";
 
 // Use Cases - Favorite
 import { IAddFavoriteUseCase } from "../../application/interface/usecase/favorite/IAddFavoriteUseCase";
@@ -205,6 +209,12 @@ container
 container
   .bind<ICreateCommentUseCase>(TYPES.ICreateCommentUseCase)
   .to(CreateCommentUseCase);
+container
+  .bind<IEditCommentUseCase>(TYPES.IEditCommentUseCase)
+  .to(EditCommentUseCase);
+container
+  .bind<IDeleteCommentUseCase>(TYPES.IDeleteCommentUseCase)
+  .to(DeleteCommentUseCase);
 
 // Use Cases - Favorite
 container

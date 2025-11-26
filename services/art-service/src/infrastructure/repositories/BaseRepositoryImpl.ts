@@ -43,6 +43,6 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
   }
 
   async delete(id: string): Promise<void> {
-    await this.model.deleteOne({ id });
+    await this.model.deleteOne({ _id: id });
   }
 }
