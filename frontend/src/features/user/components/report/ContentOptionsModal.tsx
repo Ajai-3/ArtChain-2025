@@ -13,6 +13,7 @@ import { Textarea } from "../../../../components/ui/textarea";
 import { useReport } from "../../hooks/report/useReport";
 import { Flag, X, Edit } from "lucide-react";
 import CustomLoader from "../../../../components/CustomLoader";
+import toast from "react-hot-toast";
 
 interface ContentOptionsModalProps {
   isOpen: boolean;
@@ -67,7 +68,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
       {
         onSuccess: () => {
           handleClose();
-          // You might want to show a toast here
+          toast.success("Report submitted successfully");
         },
       }
     );

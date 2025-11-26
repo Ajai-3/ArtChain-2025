@@ -15,8 +15,9 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { ROUTES } from "../../../../constants/routes";
 
-const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
+const UserSideBar: React.FC<{ createPostClick: () => void; onShowNotifications: () => void }> = ({
   createPostClick,
+  onShowNotifications,
 }) => {
   const unreadCount = useSelector(
     (state: any) => state.notification.unreadCount
@@ -27,7 +28,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
     { to: ROUTES.HOME, icon: House, label: "Home", authRequired: false, showOn: "all" },
     { to: ROUTES.CHAT, icon: MessageSquareText, label: "Chat", authRequired: true, showOn: "all" },
     { to: ROUTES.LIORA_AI, icon: FlaskConical, label: "Liora.Ai", authRequired: true, showOn: "all" },
-    { to: ROUTES.NOTIFICATIONS, icon: Bell, label: "Notifications", authRequired: true, showOn: "desktop" },
+    { to: "#", icon: Bell, label: "Notifications", authRequired: true, showOn: "desktop" },
     { to: ROUTES.CREATE, icon: Plus, label: "Create Post", authRequired: true, showOn: "all" },
     { to: ROUTES.BIDDING, icon: Gavel, label: "Bidding", authRequired: true, showOn: "all" },
     { to: ROUTES.SHOP, icon: ShoppingBag, label: "Shop", authRequired: true, showOn: "desktop" },
@@ -47,18 +48,21 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
 
           return (
             <NavLink
-              key={to}
+              key={label}
               to={navTo}
               title={label}
               onClick={(e) => {
                 if (label === "Create Post") {
                   e.preventDefault(); // prevent navigation
                   createPostClick();
+                } else if (label === "Notifications") {
+                  e.preventDefault();
+                  onShowNotifications();
                 }
               }}
               className={({ isActive }) =>
                 `relative p-3 rounded-md transition-colors ${
-                  isActive
+                  isActive && label !== "Notifications"
                     ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
                     : "text-zinc-800 hover:text-white dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
                 } ${responsiveClass}`
@@ -68,7 +72,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void }> = ({
                 <>
                   <Icon
                     className={`w-6 h-6 transition-colors ${
-                      isActive ? "text-white" : "text-zinc-800 dark:text-gray-500"
+                      isActive && label !== "Notifications" ? "text-white" : "text-zinc-800 dark:text-gray-500"
                     }`}
                   />
                   {label === "Notifications" && unreadCount > 0 && (

@@ -10,9 +10,10 @@ import type { RootState } from "../../../../redux/store";
 
 type NavbarProps = {
   onBecomeArtist: () => void;
+  onShowNotifications: () => void;
 };
 
-const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist }) => {
+const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist, onShowNotifications }) => {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
 
   const user = useSelector((state: RootState) => state.user.user);
@@ -22,38 +23,41 @@ const Navbar: React.FC<NavbarProps> = ({ onBecomeArtist }) => {
 
   return (
     <>
-      <div className="flex items-center justify-between px-2 sm:px-4 border-b border-zinc-400 dark:border-b-zinc-800 py-2">
-        <div className="flex items-center">
-          <Menu className="w-6 h-6 mr-2 sm:mr-6 text-zinc-800 dark:text-gray-300" />
-          <Logo />
-        </div>
+      <div className="relative grid grid-cols-[auto,1fr,auto] items-center px-2 sm:px-4 border-b border-zinc-400 dark:border-zinc-800 py-2">
+  <div className="flex items-center">
+    <Menu className="w-6 h-6 mr-2 sm:mr-6 text-zinc-800 dark:text-gray-300" />
+    <Logo />
+  </div>
 
-        {/* Desktop Search */}
-        {user && isAuthenticated && (
-          <div className="hidden md:block flex-1 max-w-2xl mx-4">
-            <SearchBar />
-          </div>
-        )}
 
-        <div className="flex items-center gap-2 sm:gap-6">
-          {/* Mobile Search Icon */}
-          {user && isAuthenticated && (
-            <button
-              className="md:hidden text-zinc-800 dark:text-gray-300"
-              onClick={() => setIsMobileSearchOpen(true)}
-            >
-              <Search className="w-5 h-5" />
-            </button>
-          )}
-          {user && isAuthenticated ? <ArtCoin /> : null}
-          <ThemeToggle />
-          <UserInfo
-            user={user}
-            isAuthenticated={isAuthenticated}
-            onBecomeArtist={onBecomeArtist}
-          />
-        </div>
-      </div>
+    <div className="hidden md:flex justify-center">
+    <div className="w-full max-w-3xl">
+      <SearchBar />
+    </div>
+  </div>
+
+
+  <div className="flex items-center gap-2 sm:gap-6">
+    {user && isAuthenticated && (
+      <button
+        className="md:hidden text-zinc-800 dark:text-gray-300"
+        onClick={() => setIsMobileSearchOpen(true)}
+      >
+        <Search className="w-5 h-5" />
+      </button>
+    )}
+
+    {user && isAuthenticated ? <ArtCoin /> : null}
+    <ThemeToggle />
+    <UserInfo
+      user={user}
+      isAuthenticated={isAuthenticated}
+      onBecomeArtist={onBecomeArtist}
+      onShowNotifications={onShowNotifications}
+    />
+  </div>
+</div>
+
 
       {/* Mobile Search Overlay */}
       {isMobileSearchOpen && (

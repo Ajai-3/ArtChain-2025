@@ -18,9 +18,6 @@ const SignupPassword = lazy(
 );
 const Chat = lazy(() => import("../../features/user/pages/Chat"));
 const Liora = lazy(() => import("../../features/user/pages/Liora"));
-const Notifications = lazy(
-  () => import("../../features/user/pages/Notifications")
-);
 const Bidding = lazy(() => import("../../features/user/pages/Bidding"));
 const Shop = lazy(() => import("../../features/user/pages/Shop"));
 const Wallet = lazy(() => import("../../features/user/pages/Wallet"));
@@ -89,7 +86,6 @@ const UserRoutes = (
     <Route path="/" element={<UserLayout />}>
       <Route index element={<Home />} />
       <Route path="liora.ai" element={<Liora />} />
-      <Route path="notifications" element={<Notifications />} />
       <Route path="bidding" element={<Bidding />} />
       <Route path="shop" element={<Shop />} />
       <Route path="wallet" element={<Wallet />} />
