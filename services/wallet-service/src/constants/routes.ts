@@ -43,5 +43,14 @@ export const ROUTES = {
     STRIPE_SESSION_BY_ID: "/api/v1/wallet/stripe/session/:id",
     STRIPE_WEBHOOK: "/api/v1/wallet/stripe/webhook",
   },
+
+  // Admin routes
+  ADMIN: {
+    BASE: "/admin",
+    WALLETS: "/admin/wallets",
+    SEARCH_WALLETS: "/admin/wallets/search",
+    UPDATE_STATUS: "/admin/wallets/:walletId/status",
+    GET_USER_TRANSACTIONS: "/admin/wallets/:walletId/transactions",
+  },
 } as const;
 

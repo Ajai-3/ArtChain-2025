@@ -24,7 +24,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(ROUTES.BASE.WALLET, walletRouter)
+import adminRouter from "./presentation/routes/admin.routes";
+
+app.use(ROUTES.BASE.WALLET, walletRouter);
+app.use(ROUTES.BASE.WALLET, adminRouter);
 
 app.use(createErrorHandler(false));
 
