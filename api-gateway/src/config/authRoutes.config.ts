@@ -57,6 +57,8 @@ export const authRoutesConfig = {
     { path: "/api/v1/art/ai/generate", methods: ["POST"] },
     { path: "/api/v1/art/ai/quota", methods: ["GET"] },
     { path: "/api/v1/art/ai/generations", methods: ["GET"] },
+
+    { path: "/api/v1/user/report", methods: ["POST"] },
   ],
   
   user_optional: [
