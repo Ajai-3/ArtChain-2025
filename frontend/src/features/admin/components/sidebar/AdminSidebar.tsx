@@ -23,7 +23,7 @@ const adminLinks = [
   { to: "/admin/category-management", icon: Tags, label: "Category Mangement" },
   { to: "/admin/ai-settings", icon: Sparkles, label: "AI Settings" },
   { to: "/admin/content-moderation", icon: Shield, label: "Content Moderation" },
-  { to: "/admin/wallet", icon: Wallet, label: "Wallet & Financial" },
+  { to: "/admin/wallet-management", icon: Wallet, label: "Wallet & Financial" },
   { to: "/admin/posts", icon: FileEdit, label: "Post Control" },
   { to: "/admin/settings", icon: Settings, label: "Platform Settings" },
 ];
