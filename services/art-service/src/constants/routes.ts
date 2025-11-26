@@ -71,5 +71,12 @@ export const ROUTES = {
     TEST_PROVIDER: "/admin/ai/test-provider",
     ANALYTICS: "/admin/ai/analytics",
   },
+
+  // Admin Art routes
+  ADMIN_ART: {
+    BASE: "/admin/art",
+    STATS: "/stats",
+    STATUS: "/:id/status",
+  },
 } as const;
 

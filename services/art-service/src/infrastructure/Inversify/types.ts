@@ -63,4 +63,12 @@ export const TYPES = {
   ICategoryController: Symbol.for("ICategoryController"),
   IAIController: Symbol.for("IAIController"),
   IAdminAIController: Symbol.for("IAdminAIController"),
+
+  // Admin Art
+  IAdminArtRepository: Symbol.for("IAdminArtRepository"),
+  IGetAllArtsUseCase: Symbol.for("IGetAllArtsUseCase"),
+  IGetArtStatsUseCase: Symbol.for("IGetArtStatsUseCase"),
+  IUpdateArtStatusUseCase: Symbol.for("IUpdateArtStatusUseCase"),
+  IAdminArtController: Symbol.for("IAdminArtController"),
+  UserServiceClient: Symbol.for("UserServiceClient"),
 };

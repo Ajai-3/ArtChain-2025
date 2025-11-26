@@ -122,6 +122,18 @@ import { ICommentController } from "../../presentation/interface/ICommentControl
 import { IFavoriteController } from "../../presentation/interface/IFavoriteController";
 import { ICategoryController } from "../../presentation/interface/ICategoryController";
 
+import { IAdminArtRepository } from "../../domain/repository/IAdminArtRepository";
+import { AdminArtRepositoryImpl } from "../repositories/AdminArtRepositoryImpl";
+import { IGetAllArtsUseCase } from "../../application/interface/usecase/admin/IGetAllArtsUseCase";
+import { GetAllArtsUseCase } from "../../application/usecase/admin/GetAllArtsUseCase";
+import { IGetArtStatsUseCase } from "../../application/interface/usecase/admin/IGetArtStatsUseCase";
+import { GetArtStatsUseCase } from "../../application/usecase/admin/GetArtStatsUseCase";
+import { IUpdateArtStatusUseCase } from "../../application/interface/usecase/admin/IUpdateArtStatusUseCase";
+import { UpdateArtStatusUseCase } from "../../application/usecase/admin/UpdateArtStatusUseCase";
+import { IAdminArtController } from "../../presentation/interface/IAdminArtController";
+import { AdminArtController } from "../../presentation/controllers/AdminArtController";
+
+
 // AI Repositories
 container.bind<IArtPostRepository>(TYPES.IArtPostRepository).to(ArtPostRepositoryImpl);
 container.bind<ICategoryRepository>(TYPES.ICategoryRepository).to(CategoryRepositoryImpl);
@@ -234,7 +246,13 @@ container
   .bind<IFavoriteController>(TYPES.IFavoriteController)
   .to(FavoriteController);
 container
-  .bind<ICategoryController>(TYPES.ICategoryController)
-  .to(CategoryController);
+container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryController);
+
+// Admin Art
+container.bind<IAdminArtRepository>(TYPES.IAdminArtRepository).to(AdminArtRepositoryImpl);
+container.bind<IGetAllArtsUseCase>(TYPES.IGetAllArtsUseCase).to(GetAllArtsUseCase);
+container.bind<IGetArtStatsUseCase>(TYPES.IGetArtStatsUseCase).to(GetArtStatsUseCase);
+container.bind<IUpdateArtStatusUseCase>(TYPES.IUpdateArtStatusUseCase).to(UpdateArtStatusUseCase);
+container.bind<IAdminArtController>(TYPES.IAdminArtController).to(AdminArtController);
 
 export { container };

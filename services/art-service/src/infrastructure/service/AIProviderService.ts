@@ -103,13 +103,15 @@ class GeminiProvider implements IAIProvider {
     const images: string[] = [];
 
     try {
-      const response = await this.client.models.generateContent({
+      const result = await this.client.models.generateContent({
         model: "gemini-2.5-flash-image",
         contents: prompt,
       });
 
-      if (response.candidates && response.candidates.length > 0) {
-        for (const part of response.candidates[0].content.parts) {
+      const candidates = result.candidates || (result as any).response?.candidates;
+
+      if (candidates && candidates.length > 0) {
+        for (const part of candidates[0].content.parts) {
            if (part.inlineData) {
             const imageData = part.inlineData.data;
             const mimeType = "image/png"; 
