@@ -22,7 +22,8 @@ export const authRoutesConfig = {
     { path: "/api/v1/notifications/mark-all-read", methods: ["PATCH"] },
 
     { path: "/api/v1/art", methods: ["POST", "PATCH", "DELETE"] },
-    { path: "/api/v1/art/comment", methods: ["POST", "PATCH", "DELETE"] },
+    { path: "/api/v1/art/comment", methods: ["POST"] },
+    { path: "/api/v1/art/comments/:id", methods: ["PUT", "DELETE"] },
 
     { path: "/api/v1/art/like", methods: ["POST"] },
     { path: "/api/v1/art/disLike", methods: ["DELETE"] },
@@ -57,6 +58,11 @@ export const authRoutesConfig = {
     { path: "/api/v1/art/ai/generations", methods: ["GET"] },
 
     { path: "/api/v1/user/report", methods: ["POST"] },
+
+    { path: "/api/v1/chat/conversation/group", methods: ["POST"] },
+    { path: "/api/v1/chat/conversation/group/:conversationId", methods: ["GET"] },
+    { path: "/api/v1/chat/conversation/group/:conversationId", methods: ["PATCH"] },
+    { path: "/api/v1/chat/conversation/group/:conversationId", methods: ["DELETE"] },
   ],
   
   user_optional: [
