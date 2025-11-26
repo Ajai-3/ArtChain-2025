@@ -14,6 +14,7 @@ import { IGetCommentByIdUseCase } from "../../application/interface/usecase/comm
 import { IEditCommentUseCase } from "../../application/interface/usecase/comment/IEditCommentUseCase";
 import { IDeleteCommentUseCase } from "../../application/interface/usecase/comment/IDeleteCommentUseCase";
 import { EditCommentDTO } from "../../application/interface/dto/comment/EditCommentDTO";
+import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
 export class CommentController implements ICommentController {
@@ -153,7 +154,7 @@ export class CommentController implements ICommentController {
       if (!comment) {
         return res
           .status(HttpStatus.NOT_FOUND)
-          .json({ message: "Comment not found" });
+          .json({ message: ERROR_MESSAGES.COMMENT_NOT_FOUND });
       }
 
       return res

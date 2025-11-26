@@ -10,6 +10,8 @@ import { HttpStatus } from "art-chain-shared";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { generateAIImageSchema } from "../validators/ai.schema";
 import { GenerateAIImageDTO } from "../../application/interface/dto/ai/GenerateAIImageDTO";
+import { AI_MESSAGES } from "../../constants/AIMessages";
+import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
 export class AIController implements IAIController {
@@ -26,15 +28,13 @@ export class AIController implements IAIController {
 
       if (!userId) {
         res.status(HttpStatus.UNAUTHORIZED).json({
-          message: "Unauthorized - Missing x-user-id header"
+          message: ERROR_MESSAGES.UNAUTHORIZED_MISSING_HEADER
         });
         return;
       }
 
       const validatedData = validateWithZod(generateAIImageSchema, req.body);
 
-
-      
       const dto: GenerateAIImageDTO = {
         ...validatedData,
         userId
@@ -43,7 +43,7 @@ export class AIController implements IAIController {
       const result = await this._generateAIImageUseCase.execute(dto);
 
       res.status(HttpStatus.CREATED).json({
-        message: "Image generated successfully",
+        message: AI_MESSAGES.IMAGE_GENERATED_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -57,7 +57,7 @@ export class AIController implements IAIController {
 
       if (!userId) {
         res.status(HttpStatus.UNAUTHORIZED).json({
-          message: "Unauthorized - Missing x-user-id header"
+          message: ERROR_MESSAGES.UNAUTHORIZED_MISSING_HEADER
         });
         return;
       }
@@ -68,7 +68,7 @@ export class AIController implements IAIController {
       const result = await this._getMyAIGenerationsUseCase.execute(userId, page, limit);
 
       res.status(HttpStatus.OK).json({
-        message: "Generations fetched successfully",
+        message: AI_MESSAGES.GENERATIONS_FETCHED_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -82,7 +82,7 @@ export class AIController implements IAIController {
 
       if (!userId) {
         res.status(HttpStatus.UNAUTHORIZED).json({
-          message: "Unauthorized - Missing x-user-id header"
+          message: ERROR_MESSAGES.UNAUTHORIZED_MISSING_HEADER
         });
         return;
       }
@@ -90,7 +90,7 @@ export class AIController implements IAIController {
       const result = await this._checkAIQuotaUseCase.execute(userId);
 
       res.status(HttpStatus.OK).json({
-        message: "Quota checked successfully",
+        message: AI_MESSAGES.QUOTA_CHECKED_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -103,7 +103,7 @@ export class AIController implements IAIController {
       const result = await this._getEnabledAIConfigsUseCase.execute();
 
       res.status(HttpStatus.OK).json({
-        message: "Enabled AI configs fetched successfully",
+        message: AI_MESSAGES.CONFIGS_FETCHED_SUCCESS,
         data: result
       });
     } catch (error) {

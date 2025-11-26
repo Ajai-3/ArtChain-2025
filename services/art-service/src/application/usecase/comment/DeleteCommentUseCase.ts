@@ -3,6 +3,7 @@ import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IDeleteCommentUseCase } from "../../interface/usecase/comment/IDeleteCommentUseCase";
 import { BadRequestError } from "art-chain-shared";
+import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
 
 @injectable()
 export class DeleteCommentUseCase implements IDeleteCommentUseCase {
@@ -15,11 +16,11 @@ export class DeleteCommentUseCase implements IDeleteCommentUseCase {
     const comment = await this._commentRepository.getById(id);
 
     if (!comment) {
-      throw new BadRequestError("Comment not found");
+      throw new BadRequestError(ERROR_MESSAGES.COMMENT_NOT_FOUND);
     }
 
     if (comment.userId !== userId) {
-      throw new BadRequestError("Unauthorized to delete this comment");
+      throw new BadRequestError(ERROR_MESSAGES.UNAUTHORIZED_DELETE_COMMENT);
     }
 
     await this._commentRepository.delete(id);

@@ -10,6 +10,7 @@ import { HttpStatus } from "art-chain-shared";
 import { updateArtStatusSchema } from "../validators/updateArtStatus.schema";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { UpdateArtStatusDTO } from "../../application/interface/dto/admin/UpdateArtStatusDTO";
+import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
 export class AdminArtController implements IAdminArtController {
@@ -71,7 +72,7 @@ export class AdminArtController implements IAdminArtController {
       if (!updated) {
         res.status(HttpStatus.NOT_FOUND).json({
           success: false,
-          message: "Art not found",
+          message: ERROR_MESSAGES.ART_NOT_FOUND,
         });
         return;
       }

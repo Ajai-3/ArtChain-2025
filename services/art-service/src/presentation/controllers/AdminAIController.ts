@@ -7,6 +7,8 @@ import { IGetAIConfigsUseCase } from "../../application/interface/usecase/ai/adm
 import { IGetAIAnalyticsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase";
 import { AIProviderService } from "../../infrastructure/service/AIProviderService";
 import { HttpStatus } from "art-chain-shared";
+import { AI_MESSAGES } from "../../constants/AIMessages";
+import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
 export class AdminAIController implements IAdminAIController {
@@ -21,7 +23,7 @@ export class AdminAIController implements IAdminAIController {
     try {
       const result = await this._getAIAnalyticsUseCase.execute();
       res.status(HttpStatus.OK).json({
-        message: "Analytics fetched successfully",
+        message: AI_MESSAGES.ANALYTICS_FETCHED_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -35,7 +37,7 @@ export class AdminAIController implements IAdminAIController {
       
       if (!provider) {
         res.status(HttpStatus.BAD_REQUEST).json({
-          message: "Provider is required"
+          message: ERROR_MESSAGES.PROVIDER_REQUIRED
         });
         return;
       }
@@ -43,7 +45,7 @@ export class AdminAIController implements IAdminAIController {
       const result = await this._updateAIConfigUseCase.execute(provider, updates);
 
       res.status(HttpStatus.OK).json({
-        message: "Config updated successfully",
+        message: AI_MESSAGES.CONFIG_UPDATED_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -56,7 +58,7 @@ export class AdminAIController implements IAdminAIController {
       const result = await this._getAIConfigsUseCase.execute();
 
       res.status(HttpStatus.OK).json({
-        message: "Configs fetched successfully",
+        message: AI_MESSAGES.ALL_CONFIGS_FETCHED_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -70,7 +72,7 @@ export class AdminAIController implements IAdminAIController {
       
       if (!provider) {
         res.status(HttpStatus.BAD_REQUEST).json({
-          message: "Provider is required"
+          message: ERROR_MESSAGES.PROVIDER_REQUIRED
         });
         return;
       }
@@ -78,7 +80,7 @@ export class AdminAIController implements IAdminAIController {
       const isConnected = await this._aiProviderService.testProvider(provider);
 
       res.status(HttpStatus.OK).json({
-        message: "Provider connection tested",
+        message: AI_MESSAGES.PROVIDER_TESTED_SUCCESS,
         data: { isConnected }
       });
     } catch (error) {

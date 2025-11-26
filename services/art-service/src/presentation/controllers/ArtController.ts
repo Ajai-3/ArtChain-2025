@@ -17,6 +17,7 @@ import { ICountArtWorkUseCase } from "../../application/interface/usecase/art/IC
 import { ICreateArtPostUseCase } from "../../application/interface/usecase/art/ICreateArtPostUseCase";
 import { IArtToElasticSearchUseCase } from "../../application/interface/usecase/art/IArtToElasticSearchUseCase";
 import { IGetAllArtWithUserIdUseCase } from "../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase";
+import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
 export class ArtController implements IArtController {
@@ -203,7 +204,7 @@ export class ArtController implements IArtController {
         logger.warn(`User not found: ${art?.userId}`);
         return res
           .status(HttpStatus.NOT_FOUND)
-          .json({ message: "User not found" });
+          .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
       }
 
       console.log(user, art);

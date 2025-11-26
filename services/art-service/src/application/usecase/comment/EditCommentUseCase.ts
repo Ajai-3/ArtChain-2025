@@ -5,6 +5,7 @@ import { IEditCommentUseCase } from "../../interface/usecase/comment/IEditCommen
 import { EditCommentDTO } from "../../interface/dto/comment/EditCommentDTO";
 import { Comment, CommentStatus } from "../../../domain/entities/Comment";
 import { BadRequestError } from "art-chain-shared";
+import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
 
 @injectable()
 export class EditCommentUseCase implements IEditCommentUseCase {
@@ -19,11 +20,11 @@ export class EditCommentUseCase implements IEditCommentUseCase {
     const comment = await this._commentRepository.getById(id);
 
     if (!comment) {
-      throw new BadRequestError("Comment not found");
+      throw new BadRequestError(ERROR_MESSAGES.COMMENT_NOT_FOUND);
     }
 
     if (comment.userId !== userId) {
-      throw new BadRequestError("Unauthorized to edit this comment");
+      throw new BadRequestError(ERROR_MESSAGES.UNAUTHORIZED_EDIT_COMMENT);
     }
 
     const updatedComment = await this._commentRepository.update(id, {
