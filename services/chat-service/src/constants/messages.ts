@@ -39,3 +39,7 @@ export const SUCCESS_MESSAGES = {
   RESEND_CONVERSATIONS_RETRIEVED_SUCCESSFULLY: "Resend conversations retrieved successfully",
 } as const;
 
+export const DEFAULT_MESSAGES = {
+  WELCOME_MESSAGE: "Hello! Looking forward to chatting with you!",
+} as const;
+

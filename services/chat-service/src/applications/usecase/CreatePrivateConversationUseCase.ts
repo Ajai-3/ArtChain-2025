@@ -12,7 +12,7 @@ import { ICreatePrivateConversationUseCase } from "../interface/usecase/ICreateP
 import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePrivateConversationResponseDto";
 import { UserDto } from "../interface/dto/MessageResponseDto";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { ERROR_MESSAGES, DEFAULT_MESSAGES } from "../../constants/messages";
 
 @injectable()
 export class CreatePrivateConversationUseCase
@@ -67,7 +67,7 @@ export class CreatePrivateConversationUseCase
       lastMessage = await this._messageRepo.create({
         conversationId: conversation.id,
         senderId: userId,
-        content: "Hello! Looking forward to chatting with you!",
+        content: DEFAULT_MESSAGES.WELCOME_MESSAGE,
         readBy: [userId],
         mediaType: MediaType.TEXT,
         deleteMode: DeleteMode.NONE,
