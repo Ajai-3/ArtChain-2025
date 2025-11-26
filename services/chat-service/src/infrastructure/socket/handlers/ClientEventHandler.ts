@@ -6,6 +6,7 @@ import { SendMessageDto } from "../../../applications/interface/dto/SendMessageD
 import { DeleteMessageDto } from "../../../applications/interface/dto/DeleteMessageDto";
 import { ISendMessageUseCase } from "../../../applications/interface/usecase/ISendMessageUseCase";
 import { IDeleteMessageUseCase } from "../../../applications/interface/usecase/IDeleteMessageUseCase";
+import { IMarkMessagesReadUseCase } from "../../../applications/interface/usecase/IMarkMessagesReadUseCase";
 
 @injectable()
 export class ClientEventHandler implements IClientEventHandler {
@@ -14,7 +15,9 @@ export class ClientEventHandler implements IClientEventHandler {
     @inject(TYPES.ISendMessageUseCase)
     private readonly _sendMessageUseCase: ISendMessageUseCase,
     @inject(TYPES.IDeleteMessageUseCase)
-    private readonly _deleteMessageUseCase: IDeleteMessageUseCase
+    private readonly _deleteMessageUseCase: IDeleteMessageUseCase,
+    @inject(TYPES.IMarkMessagesReadUseCase)
+    private readonly _markMessagesReadUseCase: IMarkMessagesReadUseCase
   ) {}
 
   typing = (socket: Socket, data: { conversationId: string }) => {
@@ -89,5 +92,27 @@ export class ClientEventHandler implements IClientEventHandler {
     socket.join(conversationId);
 
     socket.to(conversationId).emit("userJoined", { userId });
+  };
+
+  markMessagesRead = async (
+    socket: Socket,
+    payload: { conversationId: string; messageIds: string[] }
+  ) => {
+    const userId = socket.data.userId;
+    try {
+      await this._markMessagesReadUseCase.execute(
+        payload.messageIds,
+        userId,
+        payload.conversationId
+      );
+
+      socket.to(payload.conversationId).emit("messagesRead", {
+        conversationId: payload.conversationId,
+        messageIds: payload.messageIds,
+        readBy: userId,
+      });
+    } catch (err) {
+      console.error("Mark messages read error:", err);
+    }
   };
 }

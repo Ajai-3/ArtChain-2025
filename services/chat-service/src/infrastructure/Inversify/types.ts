@@ -16,6 +16,7 @@ export const TYPES = {
   IDeleteMessageUseCase: Symbol.for("IDeleteMessageUseCase"),
   IGetAllResendConversationUseCase: Symbol.for("IGetAllResendConversationUseCase"),
   ICreatePrivateConversationUseCase: Symbol.for("ICreatePrivateConversationUseCase"),
+  IMarkMessagesReadUseCase: Symbol.for("IMarkMessagesReadUseCase"),
 
   // Handlers
   IClientEventHandler: Symbol.for("IClientEventHandler"),

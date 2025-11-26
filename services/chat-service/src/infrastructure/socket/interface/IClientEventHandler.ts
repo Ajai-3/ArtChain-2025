@@ -23,4 +23,9 @@ export interface IClientEventHandler {
     socket: Socket,
     payload: { conversationId: string; time: Date }
   ): void;
+
+  markMessagesRead(
+    socket: Socket,
+    payload: { conversationId: string; messageIds: string[] }
+  ): Promise<void>;
 }
