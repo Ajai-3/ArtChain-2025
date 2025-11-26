@@ -18,8 +18,6 @@ export const authRoutesConfig = {
     { path: "/api/v1/user/:id/supporters", methods: ["GET"] },
     { path: "/api/v1/user/:id/supporting", methods: ["GET"] },
 
-    { path: "/api/v1/user/batch", methods: ["POST"] },
-
     { path: "/api/v1/notifications", methods: ["GET"] },
     { path: "/api/v1/notifications/mark-all-read", methods: ["PATCH"] },
 
