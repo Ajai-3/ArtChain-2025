@@ -14,6 +14,7 @@ import type { RootState } from "../../../../redux/store";
 import { useNavigate } from "react-router-dom";
 import { useCreatePrivateConversation } from "../../hooks/chat/useCreatePrivateConversation";
 import { ContentOptionsModal } from "../report/ContentOptionsModal";
+import { ROUTES } from "../../../../constants/routes";
 
 const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   user,
@@ -65,7 +66,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   const handleSupportClick = () => {
     if (!user?.id) return;
     if (!currentUser.user || !currentUser.isAuthenticated) {
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
       return;
     }
     if (isSupporting)
@@ -75,7 +76,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
 
   const handleSupportersModal = () => {
     if (!currentUser.user || !currentUser.isAuthenticated) {
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
       return;
     }
     setModalType("supporters");
@@ -83,7 +84,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
 
   const handleSupportingModal = () => {
     if (!currentUser.user || !currentUser.isAuthenticated) {
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
       return;
     }
     setModalType("supporting");

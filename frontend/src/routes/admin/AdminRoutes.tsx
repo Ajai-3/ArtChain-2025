@@ -3,6 +3,7 @@ import { Route, Navigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import { AdminAuthRouteGuard } from "./AdminAuthRouteGuard";
 import { AdminGuestRouteGuard } from "./AdminGuestRouteGuard";
+import { ROUTES } from "../../constants/routes";
 
 const Login = lazy(() => import("../../features/admin/pages/Login"));
 const Dashboard = lazy(() => import("../../features/admin/pages/Dashboard"));
@@ -21,7 +22,7 @@ const ArtManagement = lazy(() => import("../../features/admin/pages/ArtManagemen
 const AdminRoutes = (
   <>
     <Route element={<AdminGuestRouteGuard />}>
-      <Route path="/admin/login" element={<Login />} />
+      <Route path={ROUTES.ADMIN_LOGIN} element={<Login />} />
     </Route>
 
     <Route element={<AdminAuthRouteGuard />}>

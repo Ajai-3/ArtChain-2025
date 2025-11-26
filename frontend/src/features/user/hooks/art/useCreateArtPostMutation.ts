@@ -3,6 +3,7 @@ import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
 import type { CreatePostInput } from "../../../../types/art/CreatePostInput";
 import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../../constants/routes";
 
 export const useCreatePostMutation = (onClose: ()=> void) => {
   const navigate= useNavigate()
@@ -12,7 +13,7 @@ export const useCreatePostMutation = (onClose: ()=> void) => {
       console.log(res.data);
       toast.success("Post created successfully!");
       onClose()
-      navigate("/")
+      navigate(ROUTES.HOME)
     },
     onError: (err: any) => {
       console.log(err)

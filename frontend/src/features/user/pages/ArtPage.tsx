@@ -15,6 +15,7 @@ import ArtInfo from "../components/art/details/ArtInfo";
 import Comments from "../components/art/details/Comments";
 import ArtSidebar from "../components/art/details/ArtSidebar";
 import ZoomOverlay from "../components/art/details/ZoomOverlay";
+import { ROUTES } from "../../../constants/routes";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
@@ -74,26 +75,26 @@ const ArtPage: React.FC = () => {
   const price = data.data.price;
 
   const handleFavorite = () => {
-    if (!user.isAuthenticated) return navigate("/login");
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
     data.data.isFavorited
       ? unfavoritePost.mutate({ postId: art.id, artname: art.artName })
       : favoritePost.mutate({ postId: art.id, artname: art.artName });
   };
 
   const handleLike = () => {
-    if (!user.isAuthenticated) return navigate("/login");
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
     data.data.isLiked
       ? unlikePost.mutate({ postId: art.id, artname: art.artName })
       : likePost.mutate({ postId: art.id, artname: art.artName });
   };
 
   const handleShowFavorites = () => {
-    if (!user.isAuthenticated) return navigate("/login");
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
     setShowFavorites(true);
   };
 
   const handleShowLikes = () => {
-    if (!user.isAuthenticated) return navigate("/login");
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
     setShowLikes(true);
   };
 
@@ -175,7 +176,7 @@ const ArtPage: React.FC = () => {
         onClose={handleCloseZoom}
         onPrev={() => currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1)}
         onNext={() => currentImageIndex < recommendedArts.length && setCurrentImageIndex(currentImageIndex + 1)}
-        onGoHome={() => { handleCloseZoom(); navigate("/"); }}
+        onGoHome={() => { handleCloseZoom(); navigate(ROUTES.HOME); }}
       />
     </div>
   );

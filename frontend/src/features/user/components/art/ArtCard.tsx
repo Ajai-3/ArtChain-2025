@@ -11,6 +11,7 @@ import { ArtCardLikeButton } from "./ArtCardLikeButton";
 import { useFavoritePost } from "../../hooks/art/useFavoritePost";
 import { useUnfavoritePost } from "../../hooks/art/useUnfavoritePost";
 import { ArtCardFavoriteButton } from "./ArtCardFavoriteButton";
+import { ROUTES } from "../../../../constants/routes";
 
 interface ArtCardProps {
   item: ArtWithUser;
@@ -29,18 +30,20 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
   const unfavoritePost = useUnfavoritePost();
 
   const handleArtClick = () => {
-    navigate(`/${item?.user?.username}/art/${item.art.artName}`);
+    if (!item?.user?.username) return;
+    navigate(ROUTES.ART_PAGE(item.user.username, item.art.artName));
   };
 
   const handleProfileClick = () => {
-    navigate(`/${item?.user?.username}`);
+    if (!item?.user?.username) return;
+    navigate(ROUTES.PROFILE(item.user.username));
   };
 
   const handleLikeClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
     if (!user.user || !user.isAuthenticated) {
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
       return;
     }
 
@@ -60,7 +63,7 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!user.user || !user.isAuthenticated) {
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
       return;
     }
     if (item.isFavorited) {

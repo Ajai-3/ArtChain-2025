@@ -5,6 +5,7 @@ import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
 import { setUser } from "../../../../redux/slices/userSlice";
 import type { ApiError } from "../../../../types/apiError";
+import { ROUTES } from "../../../../constants/routes";
 
 export const useSignupverificationMutation = (
   setFormError: (msg: string | null) => void
@@ -18,7 +19,7 @@ export const useSignupverificationMutation = (
       const { user, accessToken } = res.data;
       toast.success("Verification successful");
       dispatch(setUser({ user, accessToken }));
-      navigate("/");
+      navigate(ROUTES.HOME);
     },
     onError: (error: ApiError) => {
       setFormError(error.message);

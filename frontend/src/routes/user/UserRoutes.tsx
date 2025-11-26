@@ -5,6 +5,7 @@ import SettingsLayout from "../../layouts/SettingsLayout";
 import { AuthRouteGuard } from "./AuthRouteGuard";
 import Test from "../../components/Test";
 import SuccessPage from "../../features/user/components/wallet/SuccessPage";
+import { ROUTES, ROUTE_PATTERNS } from "../../constants/routes";
 
 // Lazy-loaded pages
 const Home = lazy(() => import("../../features/user/pages/Home"));
@@ -78,12 +79,12 @@ const Settings = lazy(
 const UserRoutes = (
   <>
     <Route element={<AuthRouteGuard />}>
-      <Route path="/login" element={<Auth />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/verify" element={<SignupPassword />} />
+      <Route path={ROUTES.LOGIN} element={<Auth />} />
+      <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
+      <Route path={ROUTES.VERIFY} element={<SignupPassword />} />
     </Route>
 
-    <Route path="/" element={<UserLayout />}>
+    <Route path={ROUTES.HOME} element={<UserLayout />}>
       <Route index element={<Home />} />
       <Route path="liora.ai" element={<Liora />} />
       <Route path="bidding" element={<Bidding />} />
@@ -91,10 +92,10 @@ const UserRoutes = (
       <Route path="wallet" element={<Wallet />} />
       <Route path="test" element={<Test />} />
       <Route path="success" element={<SuccessPage />} />
-      <Route path="/:username/art/:artname" element={<ArtPage />} />
+      <Route path={ROUTE_PATTERNS.ART_PAGE} element={<ArtPage />} />
 
       <Route path="chat" element={<Chat />} />
-      <Route path="/chat/:conversationId" element={<Chat />} />
+      <Route path={ROUTE_PATTERNS.CHAT_CONVERSATION} element={<Chat />} />
 
       {/* Settings Routes - Protected */}
       <Route path="settings" element={<SettingsLayout />}>
@@ -112,7 +113,7 @@ const UserRoutes = (
       </Route>
 
       {/* Profile Routes */}
-      <Route path="/:username" element={<Profile />}>
+      <Route path={ROUTE_PATTERNS.PROFILE} element={<Profile />}>
         <Route index element={<ProfileGallery />} />
         <Route path="gallery" element={<ProfileGallery />} />
         <Route path="favorites" element={<ProfileFavorites />} />
