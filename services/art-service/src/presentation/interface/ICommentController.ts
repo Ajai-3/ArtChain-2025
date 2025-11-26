@@ -16,6 +16,11 @@ export interface ICommentController {
     res: Response,
     next: NextFunction
   ) => Promise<Response | void>;
+  getCommentById: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => Promise<Response | void>;
   deleteComment: (
     req: Request,
     res: Response,
