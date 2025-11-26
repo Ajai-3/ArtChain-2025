@@ -6,6 +6,7 @@ import {
 } from "../redux/slices/notificationSlice";
 import { addMessage, addOrReplaceMessage } from "../redux/slices/chatSlice";
 import type { Message } from "../types/chat/chat";
+import { updateOnlineUsers, addTypingUser, removeTypingUser } from "../features/user/hooks/chat/presenceStore";
 
 
 export const registerChatSocketEvents = (socket: Socket) => {
@@ -15,6 +16,12 @@ export const registerChatSocketEvents = (socket: Socket) => {
 
   socket.on("chatOnline", (users: string[]) => {
     console.log("👥 Online users in chat socket:", users);
+    updateOnlineUsers(users);
+  });
+
+  socket.on("updateOnline", (users: string[]) => {
+    console.log("🔄 Online users updated:", users);
+    updateOnlineUsers(users);
   });
 
   socket.on("newMessage", (message: Message, tempId: string) => {
@@ -25,6 +32,14 @@ export const registerChatSocketEvents = (socket: Socket) => {
         tempId,
       })
     );
+  });
+
+  socket.on("userTyping", ({ userId, conversationId }: any) => {
+    console.log("⌨️ TYPING EVENT:", userId, "in", conversationId);
+    if (conversationId) {
+      addTypingUser(conversationId, userId);
+      setTimeout(() => removeTypingUser(conversationId, userId), 3000);
+    }
   });
 
   socket.on("connect_error", (err) =>
