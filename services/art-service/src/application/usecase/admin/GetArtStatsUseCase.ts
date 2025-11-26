@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAdminArtRepository } from "../../../domain/repository/IAdminArtRepository";
+import { IAdminArtRepository } from "../../../domain/repositories/IAdminArtRepository";
 import { IGetArtStatsUseCase } from "../../interface/usecase/admin/IGetArtStatsUseCase";
 
 @injectable()

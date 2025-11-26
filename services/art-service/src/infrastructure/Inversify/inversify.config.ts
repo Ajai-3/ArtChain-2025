@@ -126,7 +126,7 @@ import { ICommentController } from "../../presentation/interface/ICommentControl
 import { IFavoriteController } from "../../presentation/interface/IFavoriteController";
 import { ICategoryController } from "../../presentation/interface/ICategoryController";
 
-import { IAdminArtRepository } from "../../domain/repository/IAdminArtRepository";
+import { IAdminArtRepository } from "../../domain/repositories/IAdminArtRepository";
 import { AdminArtRepositoryImpl } from "../repositories/AdminArtRepositoryImpl";
 import { IGetAllArtsUseCase } from "../../application/interface/usecase/admin/IGetAllArtsUseCase";
 import { GetAllArtsUseCase } from "../../application/usecase/admin/GetAllArtsUseCase";

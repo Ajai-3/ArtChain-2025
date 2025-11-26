@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { IGetAllArtsUseCase } from "../../interface/usecase/admin/IGetAllArtsUseCase";
-import { IAdminArtRepository } from "../../../domain/repository/IAdminArtRepository";
+import { IAdminArtRepository } from "../../../domain/repositories/IAdminArtRepository";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";

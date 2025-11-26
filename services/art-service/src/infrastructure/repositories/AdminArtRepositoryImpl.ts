@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
 import { ArtPostModel } from "../models/ArtPostModel";
 import { ArtPost, PostStatus, PostType, PriceType } from "../../domain/entities/ArtPost";
-import { IAdminArtRepository } from "../../domain/repository/IAdminArtRepository";
+import { IAdminArtRepository } from "../../domain/repositories/IAdminArtRepository";
 
 @injectable()
 export class AdminArtRepositoryImpl implements IAdminArtRepository {
