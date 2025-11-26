@@ -4,7 +4,7 @@ import {
   addNotification,
   setUnreadCount,
 } from "../redux/slices/notificationSlice";
-import { addMessage, addOrReplaceMessage } from "../redux/slices/chatSlice";
+import { addMessage, addOrReplaceMessage, markMessagesAsRead } from "../redux/slices/chatSlice";
 import type { Message } from "../types/chat/chat";
 import { updateOnlineUsers, addTypingUser, removeTypingUser } from "../features/user/hooks/chat/presenceStore";
 
@@ -40,6 +40,17 @@ export const registerChatSocketEvents = (socket: Socket) => {
       addTypingUser(conversationId, userId);
       setTimeout(() => removeTypingUser(conversationId, userId), 3000);
     }
+  });
+
+  socket.on("messagesRead", ({ conversationId, messageIds, readBy }: any) => {
+    console.log("👀 Messages read:", conversationId, messageIds, readBy);
+    store.dispatch(
+      markMessagesAsRead({
+        conversationId,
+        messageIds,
+        readBy,
+      })
+    );
   });
 
   socket.on("connect_error", (err) =>
