@@ -172,6 +172,7 @@ const AIConfigList: React.FC<AIConfigListProps> = ({ configs }) => {
                 <span className="ml-2">Edit</span>
               </Button>
               <Switch
+                variant="green"
                 checked={config.enabled}
                 onCheckedChange={() => handleToggleEnabled(config)}
                 disabled={isUpdating}

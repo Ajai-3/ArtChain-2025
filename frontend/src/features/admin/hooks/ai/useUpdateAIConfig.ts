@@ -9,6 +9,7 @@ export const useUpdateAIConfig = () => {
     mutationFn: (data: any) => apiClient.put("/api/v1/art/admin/ai/config", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-ai-configs"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-ai-analytics"] });
       toast.success("AI configuration updated successfully");
     },
     onError: (err: any) => {

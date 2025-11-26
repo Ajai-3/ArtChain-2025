@@ -76,7 +76,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-900 border-zinc-800 text-white">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">
             {view === "options" ? "Options" : "Report Content"}
@@ -88,7 +88,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
             {canEdit && (
               <Button
                 variant="ghost"
-                className="w-full justify-start text-zinc-300 hover:text-white hover:bg-zinc-800"
+                className="w-full justify-start"
                 onClick={() => {
                   onEdit?.();
                   handleClose();
@@ -100,7 +100,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
             )}
             <Button
               variant="ghost"
-              className="w-full justify-start text-red-500 hover:text-red-400 hover:bg-red-500/10"
+              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
               onClick={() => setView("report")}
             >
               <Flag className="mr-2 h-4 w-4" />
@@ -108,7 +108,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
             </Button>
             <Button
               variant="ghost"
-              className="w-full justify-start text-zinc-300 hover:text-white hover:bg-zinc-800"
+              className="w-full justify-start"
               onClick={handleClose}
             >
               <X className="mr-2 h-4 w-4" />
@@ -117,7 +117,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
           </div>
         ) : (
           <div className="flex flex-col gap-4 py-4">
-            <p className="text-sm text-zinc-400">
+            <p className="text-sm text-muted-foreground">
               Please select a reason for reporting this content.
             </p>
             <RadioGroup
@@ -127,8 +127,8 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
             >
               {REPORT_REASONS.map((reason) => (
                 <div key={reason.id} className="flex items-center space-x-2">
-                  <RadioGroupItem value={reason.id} id={reason.id} className="border-zinc-600 text-main-color" />
-                  <Label htmlFor={reason.id} className="text-zinc-300 cursor-pointer">
+                  <RadioGroupItem value={reason.id} id={reason.id} />
+                  <Label htmlFor={reason.id} className="cursor-pointer">
                     {reason.label}
                   </Label>
                 </div>
@@ -137,7 +137,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
 
             {selectedReason === "other" && (
               <div className="space-y-2 animate-in fade-in slide-in-from-top-2">
-                <Label htmlFor="other-reason" className="text-zinc-300">
+                <Label htmlFor="other-reason">
                   Please specify
                 </Label>
                 <Textarea
@@ -145,7 +145,6 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
                   placeholder="Tell us more about the issue..."
                   value={otherReason}
                   onChange={(e) => setOtherReason(e.target.value)}
-                  className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-500"
                 />
               </div>
             )}
@@ -154,7 +153,6 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
               <Button
                 variant="outline"
                 onClick={() => setView("options")}
-                className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white"
               >
                 Back
               </Button>
@@ -165,7 +163,7 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
                   (selectedReason === "other" && !otherReason.trim()) ||
                   isPending
                 }
-                className="bg-red-600 hover:bg-red-700 text-white border-none"
+                variant="destructive"
               >
                 {isPending ? <CustomLoader /> : "Submit Report"}
               </Button>
