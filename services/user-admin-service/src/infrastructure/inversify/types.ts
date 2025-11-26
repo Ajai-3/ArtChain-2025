@@ -50,6 +50,10 @@ export const TYPES = {
   IGetAllArtistRequestsUseCase: Symbol.for('IGetAllArtistRequestsUseCase'),
   IApproveArtistRequestUseCase: Symbol.for('IApproveArtistRequestUseCase'),
 
+  IGetAllReportsUseCase: Symbol.for('IGetAllReportsUseCase'),
+  IGetGroupedReportsUseCase: Symbol.for('IGetGroupedReportsUseCase'),
+  IUpdateReportStatusBulkUseCase: Symbol.for('IUpdateReportStatusBulkUseCase'),
+
   // Controllers
   IUserController: Symbol.for('IUserController'),
   IReportController: Symbol.for('IReportController'),
@@ -60,4 +64,5 @@ export const TYPES = {
   // Admin Controllers
   IAdminAuthController: Symbol.for('IAdminAuthController'),
   IUserManageMentController: Symbol.for('IUserManageMentController'),
+  IAdminReportController: Symbol.for('IAdminReportController'),
 };

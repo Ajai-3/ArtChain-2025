@@ -20,7 +20,7 @@ export class ReportController implements IReportController {
   //# ================================================================================================================
   //# POST /api/v1/user/report
   //# Request body: { targetType, reason, description, targetId }
-  //# This controller changes the password for the authenticated user.
+  //# This controller creates a new report for content moderation.
   //# ================================================================================================================
   createReport = async (
     req: Request,
@@ -29,20 +29,27 @@ export class ReportController implements IReportController {
   ): Promise<Response | void> => {
     try {
       const reporterId = req.headers['x-user-id'] as string;
-      const { targetId, targetType, reason, description } = req.body;
-
       const validatedData = validateWithZod(ReportRequestSchema, {...req.body, reporterId});
 
-      const dto:ReportRequestDto = { ...validatedData };
+      const dto: ReportRequestDto = {
+        reporterId: validatedData.reporterId,
+        targetId: validatedData.targetId,
+        targetType: validatedData.targetType,
+        reason: validatedData.reason,
+        description: validatedData.description,
+      };
 
       const report = await this._createReportUseCase.execute(dto);
-
       return res.status(HttpStatus.CREATED).json({
+        success: true,
         message: 'Report created successfully',
         data: report,
       });
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: error.message || 'Failed to create report',
+      });
     }
   };
 }
