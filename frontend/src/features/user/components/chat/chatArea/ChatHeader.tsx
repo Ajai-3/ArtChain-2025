@@ -2,6 +2,7 @@
 import React from "react";
 import { Video, Phone, Search, MoreVertical } from "lucide-react";
 import type { Conversation } from "../../../../../types/chat/chat";
+import { usePresence } from "../../../hooks/chat/usePresence";
 
 interface ChatHeaderProps {
   conversation: Conversation;
@@ -24,6 +25,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onVoiceCall,
 }) => {
   console.log("🟢 ChatHeader - Conversation:", conversation);
+
+  const partnerId = conversation.type === "PRIVATE" 
+    ? (conversation.memberIds?.find(id => id !== currentUserId) || conversation.partner?.id)
+    : undefined;
+  
+  const { isOnline, typingUsers } = usePresence(partnerId, conversation.id);
 
   const getConversationName = () => {
     if (conversation.type === "GROUP") {
@@ -54,7 +61,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const getStatusText = () => {
     if (conversation.locked) return "Pending request";
-    return "Online";
+    if (typingUsers.length > 0) return "typing...";
+    return isOnline ? "Online" : "Offline";
   };
 
   return (
@@ -85,7 +93,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
         {/* Conversation avatar and info */}
         <div className="flex items-center space-x-3 cursor-pointer" onClick={onToggleDetails}>
-          <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+          <div className="relative w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
             {profileImage ? (
               <img
                 src={profileImage}
@@ -97,12 +105,18 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
                 {getInitials(getConversationName())}
               </span>
             )}
+            {/* Green dot for online status */}
+            {conversation.type === "PRIVATE" && isOnline && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+            )}
           </div>
           <div>
             <h2 className="font-semibold text-foreground">
               {getConversationName()}
             </h2>
-            <p className="text-xs text-muted-foreground">{getStatusText()}</p>
+            <p className={`text-xs ${typingUsers.length > 0 ? "text-green-500" : "text-muted-foreground"}`}>
+              {getStatusText()}
+            </p>
           </div>
         </div>
       </div>

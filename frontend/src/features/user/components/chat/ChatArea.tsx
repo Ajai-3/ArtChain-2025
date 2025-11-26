@@ -1,13 +1,14 @@
 import { useSelector } from "react-redux";
 import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import ChatMessages from "./chatArea/ChatMessage";
 import { selectUserCache } from "../../../../redux/selectors/chatSelectors";
 import { type Conversation } from "../../../../types/chat/chat";
 import ConversationDetails from "./chatArea/ConversationDetails";
 import { useUserResolver } from "../../hooks/chat/useUserResolver";
 import { useInitialMessages } from "../../hooks/chat/useInitialMessages";
+import { getChatSocket } from "../../../../socket/socketManager";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
@@ -27,6 +28,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   onDeleteMessage,
 }) => {
   const convId = selectedConversation?.id ?? "";
+  const lastTypingRef = useRef<number>(0);
 
   const {
     messages,
@@ -34,7 +36,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     hasMore,
     isLoading,
     isFetchingMore,
-    totalCount,
   } = useInitialMessages(convId);
 
   const [showDetails, setShowDetails] = useState(false);
@@ -62,6 +63,17 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   const handleCloseDetails = useCallback(() => {
     setShowDetails(false);
   }, []);
+
+  const handleTyping = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTypingRef.current > 2000) {
+      const socket = getChatSocket();
+      if (socket && socket.connected && selectedConversation) {
+        socket.emit("typing", { conversationId: selectedConversation.id });
+        lastTypingRef.current = now;
+      }
+    }
+  }, [selectedConversation]);
 
   if (!selectedConversation) {
     return (
@@ -136,6 +148,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
         <ChatInput
           onSendMessage={onSendMessage}
           onSendImage={onSendImage}
+          onTyping={handleTyping}
           disabled={selectedConversation.locked}
         />
       </div>

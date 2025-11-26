@@ -6,12 +6,14 @@ import EmojiPicker, { Theme, type EmojiClickData } from "emoji-picker-react";
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
   onSendImage: () => void;
+  onTyping?: () => void;
   disabled?: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   onSendImage,
+  onTyping,
   disabled = false,
 }) => {
   const [message, setMessage] = useState("");
@@ -39,6 +41,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     setMessage((prev) => prev + emojiData.emoji);
     inputRef.current?.focus();
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+    if (onTyping) {
+      onTyping();
+    }
   };
 
   // close picker on outside click
@@ -127,7 +136,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             ref={inputRef}
             type="text"
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleChange}
             onKeyDown={handleKeyPress}
             disabled={disabled}
             placeholder={
