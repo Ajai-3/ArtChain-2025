@@ -9,6 +9,7 @@ import ConversationDetails from "./chatArea/ConversationDetails";
 import { useUserResolver } from "../../hooks/chat/useUserResolver";
 import { useInitialMessages } from "../../hooks/chat/useInitialMessages";
 import { getChatSocket } from "../../../../socket/socketManager";
+import { useMarkRead } from "../../hooks/chat/useMarkRead";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
@@ -47,6 +48,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   );
 
   useUserResolver(senderIds);
+  useMarkRead(convId, currentUserId);
 
   const handleVideoCall = useCallback(() => {
     console.log("Video call with:", selectedConversation?.partner?.name);
