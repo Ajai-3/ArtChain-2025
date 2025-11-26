@@ -29,6 +29,7 @@ export const TYPES = {
 
   // Use Cases - Comment
   IGetCommentsUseCase: Symbol.for("IGetCommentsUseCase"),
+  IGetCommentByIdUseCase: Symbol.for("IGetCommentByIdUseCase"),
   ICreateCommentUseCase: Symbol.for("ICreateCommentUseCase"),
 
   // Use Cases - Favorite

@@ -10,6 +10,7 @@ import { createCommentSchema } from "../validators/createCommentSchema";
 import { CreateCommentDTO } from "../../application/interface/dto/comment/CreateCommentDTO";
 import { ICreateCommentUseCase } from "../../application/interface/usecase/comment/ICreateCommentUseCase";
 import { IGetCommentsUseCase } from "../../application/interface/usecase/comment/IGetCommentsUseCase";
+import { IGetCommentByIdUseCase } from "../../application/interface/usecase/comment/IGetCommentByIdUseCase";
 
 @injectable()
 export class CommentController implements ICommentController {
@@ -17,7 +18,9 @@ export class CommentController implements ICommentController {
     @inject(TYPES.ICreateCommentUseCase)
     private readonly _createCommentUseCase: ICreateCommentUseCase,
     @inject(TYPES.IGetCommentsUseCase)
-    private readonly _getCommentsUseCase: IGetCommentsUseCase
+    private readonly _getCommentsUseCase: IGetCommentsUseCase,
+    @inject(TYPES.IGetCommentByIdUseCase)
+    private readonly _getCommentByIdUseCase: IGetCommentByIdUseCase
   ) {}
 
   //# ================================================================================================================
@@ -116,6 +119,40 @@ export class CommentController implements ICommentController {
         .json({ message: COMMENT_MESSAGES.FETCH_SUCCESS, data: comments });
     } catch (error) {
       logger.error("Error in getComments", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET COMMENT BY ID
+  //# ================================================================================================================
+  //# GET /api/v1/art/comments/:id
+  //# Request params: id
+  //# This controller fetches a single comment by ID.
+  //# ================================================================================================================
+  getCommentById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { id } = req.params;
+
+      logger.info(`Fetching comment by id=${id}`);
+
+      const comment = await this._getCommentByIdUseCase.execute(id);
+
+      if (!comment) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: "Comment not found" });
+      }
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: COMMENT_MESSAGES.FETCH_SUCCESS, comment });
+    } catch (error) {
+      logger.error("Error in getCommentById", error);
       next(error);
     }
   };

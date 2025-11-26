@@ -54,9 +54,11 @@ import { GetAllCategoryUseCase } from "../../application/usecase/category/GetAll
 
 // Use Cases - Comment
 import { IGetCommentsUseCase } from "../../application/interface/usecase/comment/IGetCommentsUseCase";
+import { IGetCommentByIdUseCase } from "../../application/interface/usecase/comment/IGetCommentByIdUseCase";
 import { ICreateCommentUseCase } from "../../application/interface/usecase/comment/ICreateCommentUseCase";
 
 import { GetCommentsUseCase } from "../../application/usecase/comment/GetCommentsUseCase";
+import { GetCommentByIdUseCase } from "../../application/usecase/comment/GetCommentByIdUseCase";
 import { CreateCommentUseCase } from "../../application/usecase/comment/CreateCommentUseCase";
 
 // Use Cases - Favorite
@@ -185,6 +187,9 @@ container
 container
   .bind<IGetCommentsUseCase>(TYPES.IGetCommentsUseCase)
   .to(GetCommentsUseCase);
+container
+  .bind<IGetCommentByIdUseCase>(TYPES.IGetCommentByIdUseCase)
+  .to(GetCommentByIdUseCase);
 container
   .bind<ICreateCommentUseCase>(TYPES.ICreateCommentUseCase)
   .to(CreateCommentUseCase);

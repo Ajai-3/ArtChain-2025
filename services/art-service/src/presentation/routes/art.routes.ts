@@ -37,12 +37,14 @@ router.get(ROUTES.ART.BY_USER_ID, artController.getArtWithUser);
 router.get(ROUTES.ART.COUNT, artController.countArtwork);
 router.get(ROUTES.ART.BY_ART_NAME, artController.getArtByArtName);
 router.get(ROUTES.ART.RECOMMENDED, artController.getRecommendedArt);
+router.get(ROUTES.ART.BY_ID, artController.getArtById);
 
 // Comment
 router.patch(ROUTES.COMMENT.BASE, commentController.editComment);
 router.post(ROUTES.COMMENT.BASE, commentController.createComment);
 router.delete(ROUTES.COMMENT.BASE, commentController.deleteComment);
 router.get(ROUTES.COMMENT.COMMENTS_BY_POST_ID, commentController.getComments);
+router.get(ROUTES.COMMENT.BY_ID, commentController.getCommentById);
 
 // Likes
 router.post(ROUTES.LIKE.BASE, likeController.likePost);
