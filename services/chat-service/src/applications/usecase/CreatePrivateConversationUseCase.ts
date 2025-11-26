@@ -88,14 +88,13 @@ export class CreatePrivateConversationUseCase
       0;
 
     const lastMap = new Map<string, Message>();
-    // const unreadMap = new Map<string, number>();
+
     const partnersMap = new Map<string, UserDto>();
 
     if (lastMessage) {
       lastMap.set(conversation.id, lastMessage);
     }
 
-    // unreadMap.set(conversation.id, unreadCount);
     partnersMap.set(otherUserId, partnerUser);
 
     const enrichedConversation = mapConversation({

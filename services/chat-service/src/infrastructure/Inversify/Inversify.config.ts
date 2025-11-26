@@ -22,6 +22,8 @@ import { GetAllResendConversationUseCase } from "../../applications/usecase/GetA
 import { CreatePrivateConversationUseCase } from "../../applications/usecase/CreatePrivateConversationUseCase";
 import { IMarkMessagesReadUseCase } from "../../applications/interface/usecase/IMarkMessagesReadUseCase";
 import { MarkMessagesReadUseCase } from "../../applications/usecase/MarkMessagesReadUseCase";
+import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
+import { CreateGroupConversationUseCase } from "../../applications/usecase/CreateGroupConversationUseCase";
 
 // Services
 import { UserService } from "../http/UserService";
@@ -83,6 +85,9 @@ container
 container
   .bind<IMarkMessagesReadUseCase>(TYPES.IMarkMessagesReadUseCase)
   .to(MarkMessagesReadUseCase);
+container
+  .bind<ICreateGroupConversationUseCase>(TYPES.ICreateGroupConversationUseCase)
+  .to(CreateGroupConversationUseCase);
 
 // Srevice
 container.bind<IUserService>(TYPES.IUserService).to(UserService);

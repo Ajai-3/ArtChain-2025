@@ -15,6 +15,10 @@ router.post(
   ROUTES.CHAT.CONVERSATION_PRIVATE,
   conversationController.createPrivateConversation
 );
+router.post(
+  ROUTES.CHAT.CONVERSATION_GROUP,
+  conversationController.createGroupConversation
+);
 router.get(
   ROUTES.CHAT.CONVERSATION_RECENT,
   conversationController.getResendConversations
@@ -22,7 +26,5 @@ router.get(
 router.post(ROUTES.CHAT.MESSAGE_SEND, messageController.sendMessage);
 router.get(ROUTES.CHAT.MESSAGE_BY_CONVERSATION_ID, messageController.listMessages);
 router.delete(ROUTES.CHAT.MESSAGE_BY_MESSAGE_ID, messageController.deleteMessage);
-
-
 
 export default router;

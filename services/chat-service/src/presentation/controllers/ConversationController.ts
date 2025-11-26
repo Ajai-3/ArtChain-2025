@@ -8,6 +8,9 @@ import { createPrivateConversationSchema } from "../validators/createPrivateConv
 import { CreatePrivateConversationDto } from "../../applications/interface/dto/CreatePrivateConversationDto";
 import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
+import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
+import { createGroupConversationSchema } from "../validators/createGroupConversationSchema";
+import { CreateGroupConversationDto } from "../../applications/interface/dto/CreateGroupConversationDto";
 import { SUCCESS_MESSAGES } from "../../constants/messages";
 import { ROUTES } from "../../constants/routes";
 
@@ -17,7 +20,9 @@ export class ConversationController {
     @inject(TYPES.IGetAllResendConversationUseCase)
     private readonly _getAllResendConversationUseCase: IGetAllResendConversationUseCase,
     @inject(TYPES.ICreatePrivateConversationUseCase)
-    private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase
+    private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase,
+    @inject(TYPES.ICreateGroupConversationUseCase)
+    private readonly _createGroupConversationUseCase: ICreateGroupConversationUseCase
   ) {}
 
   //#========================================================================================================================
@@ -59,6 +64,50 @@ export class ConversationController {
       return res.status(HttpStatus.CREATED).json({
         message: SUCCESS_MESSAGES.CONVERSATION_CREATED_SUCCESSFULLY,
         data: { conversation, isNewConvo },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //#========================================================================================================================
+  //# CREATE GROUP CONVERSATION
+  //#========================================================================================================================
+  //# POST ROUTES.API_V1_CHAT + ROUTES.CHAT.CONVERSATION_GROUP
+  //# Request Body: { name, memberIds }
+  //# x-user-id
+  //# This endpoint allows a user create a group chat conversation
+  //#========================================================================================================================
+  createGroupConversation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { name, memberIds } = req.body;
+      const userId = req.headers["x-user-id"] as string;
+
+      const validatedData = validateWithZod(createGroupConversationSchema, {
+        userId,
+        name,
+        memberIds,
+      });
+
+      logger.info(
+        `ConversationController.createGroupConversation: userId: ${userId}, name: ${name}, members: ${memberIds.length}`
+      );
+
+      const dto: CreateGroupConversationDto = {
+        userId: validatedData.userId,
+        name: validatedData.name,
+        memberIds: validatedData.memberIds,
+      };
+
+      const conversation = await this._createGroupConversationUseCase.execute(dto);
+
+      return res.status(HttpStatus.CREATED).json({
+        message: SUCCESS_MESSAGES.CONVERSATION_CREATED_SUCCESSFULLY,
+        data: conversation,
       });
     } catch (error) {
       next(error);
