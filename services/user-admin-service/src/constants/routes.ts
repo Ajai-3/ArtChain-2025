@@ -41,6 +41,7 @@ export const ROUTES = {
     CHANGE_PASSWORD: '/change-password',
     VERIFY_EMAIL_TOKEN: '/verify-email-token',
     DEACTIVATE: '/deactivate',
+    REPORT: '/report',
   },
 
   // Admin routes

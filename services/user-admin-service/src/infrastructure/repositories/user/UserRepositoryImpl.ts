@@ -2,31 +2,32 @@ import { Role } from '@prisma/client';
 import { injectable } from 'inversify';
 import { prisma } from '../../db/prisma';
 import { ArtUser } from '../../../types/ArtUser';
-import { User } from '../../../domain/entities/User';
+import { User, SafeUser } from '../../../domain/entities/User';
 import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
-import { SafeUser } from '../../../domain/repositories/IBaseRepository';
 import { IUserRepository } from '../../../domain/repositories/user/IUserRepository';
 
 @injectable()
 export class UserRepositoryImpl
-  extends BaseRepositoryImpl
+  extends BaseRepositoryImpl<User, SafeUser>
   implements IUserRepository
 {
   protected model = prisma.user;
-  
-  async findById(id: string): Promise<SafeUser | null> {
-    const user = await this.model.findUnique({ where: { id } });
-    return user ? this.toSafeUser(user) : null;
+
+  protected toSafe(user: User): SafeUser {
+    const { password, ...safe } = user;
+    return safe;
   }
+
+  // findById is inherited from BaseRepositoryImpl
 
   async findByEmail(email: string): Promise<SafeUser | null> {
     const user = await this.model.findUnique({ where: { email } });
-    return user ? this.toSafeUser(user) : null;
+    return user ? this.toSafe(user) : null;
   }
 
   async findByUsername(username: string): Promise<SafeUser | null> {
     const user = await this.model.findUnique({ where: { username } });
-    return user ? this.toSafeUser(user) : null;
+    return user ? this.toSafe(user) : null;
   }
 
   async findByUsernameRaw(username: string): Promise<User | null> {
@@ -73,7 +74,10 @@ export class UserRepositoryImpl
       this.model.count({ where }),
     ]);
 
-    const sanitizedUsers: SafeUser[] = users.map(({ password, ...rest }) => rest);
+    const sanitizedUsers: SafeUser[] = users.map((user: User) => {
+        const { password, ...rest } = user;
+        return rest;
+    });
 
     return { meta: { page, limit, total }, data: sanitizedUsers };
   }
@@ -104,7 +108,10 @@ export class UserRepositoryImpl
       this.model.count({ where }),
     ]);
 
-    const sanitizedUsers: SafeUser[] = users.map(({ password, ...rest }) => rest);
+    const sanitizedUsers: SafeUser[] = users.map((user: User) => {
+        const { password, ...rest } = user;
+        return rest;
+    });
 
     return { meta: { page, limit, total }, data: sanitizedUsers };
   }

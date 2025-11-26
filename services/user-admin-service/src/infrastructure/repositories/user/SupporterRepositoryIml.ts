@@ -3,10 +3,11 @@ import { prisma } from '../../db/prisma';
 import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
 import { ISupporterRepository } from '../../../domain/repositories/user/ISupporterRepository';
 import { UserPreview } from '../../../types/UserPreview';
+import { Supporter } from '../../../domain/entities/Supporter';
 
 @injectable()
 export class SupporterRepositoryImpl
-  extends BaseRepositoryImpl
+  extends BaseRepositoryImpl<Supporter>
   implements ISupporterRepository
 {
   protected model = prisma.supporter;

@@ -19,3 +19,5 @@ export class User {
     public readonly updatedAt: Date = new Date()
   ) {}
 }
+
+export type SafeUser = Omit<User, 'password'>;

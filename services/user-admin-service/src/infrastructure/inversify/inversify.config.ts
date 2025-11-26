@@ -100,6 +100,14 @@ import { IUserManageMentController } from '../../presentation/interfaces/admin/I
 import { AdminAuthController } from '../../presentation/controllers/admin/AdminAuthController';
 import { UserManageMentController } from './../../presentation/controllers/admin/UserManagementController';
 
+// Report
+import { IReportRepository } from '../../domain/repositories/user/IReportRepository';
+import { ReportRepository } from '../repositories/user/ReportRepository';
+import { ICreateReportUseCase } from '../../application/interface/usecases/user/report/ICreateReportUseCase';
+import { CreateReportUseCase } from '../../application/usecases/user/report/CreateReportUseCase';
+import { IReportController } from '../../presentation/interfaces/user/IReportController';
+import { ReportController } from '../../presentation/controllers/user/ReportController';
+
 const container = new Container();
 
 // Repositories & Services
@@ -235,5 +243,10 @@ container
 container
   .bind<IUserManageMentController>(TYPES.IUserManageMentController)
   .to(UserManageMentController);
+
+// Report
+container.bind<IReportRepository>(TYPES.IReportRepository).to(ReportRepository).inSingletonScope();
+container.bind<ICreateReportUseCase>(TYPES.ICreateReportUseCase).to(CreateReportUseCase);
+container.bind<IReportController>(TYPES.IReportController).to(ReportController);
 
 export { container };

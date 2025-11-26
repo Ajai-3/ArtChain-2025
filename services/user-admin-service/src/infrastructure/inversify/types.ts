@@ -1,18 +1,19 @@
 export const TYPES = {
   // Repositories
   IUserRepository: Symbol.for('IUserRepository'),
+  IReportRepository: Symbol.for('IReportRepository'),
   ISupporterRepository: Symbol.for('ISupporterRepository'),
   IUserSearchRepository: Symbol.for('IUserSearchRepository'),
   IArtistRequestRepository: Symbol.for('IArtistRequestRepository'),
-
+  
   // Services
   IArtService: Symbol.for('IArtService'),
   IUserService: Symbol.for('IUserService'),
-
+  
   // Use cases - Artist Request
   ICreateArtistRequestUseCase: Symbol.for('ICreateArtistRequestUseCase'),
   ICheckUserArtistRequestUseCase: Symbol.for('ICheckUserArtistRequestUseCase'),
-
+  
   // Use cases - Security
   IChangeEmailUserUseCase: Symbol.for('IChangeEmailUserUseCase'),
   IChangePasswordUserUseCase: Symbol.for('IChangePasswordUserUseCase'),
@@ -38,6 +39,9 @@ export const TYPES = {
   IGetUserSupportingUseCase: Symbol.for('IGetUserSupportingUseCase'),
   IUpdateProfileUserUseCase: Symbol.for('IUpdateProfileUserUseCase'),
 
+  // Use cases - Report
+  ICreateReportUseCase: Symbol.for('ICreateReportUseCase'),
+  
   // Admin Use cases
   ILoginAdminUseCase: Symbol.for('ILoginAdminUseCase'),
   IGetAllUsersUseCase: Symbol.for('IGetAllUsersUseCase'),
@@ -48,6 +52,7 @@ export const TYPES = {
 
   // Controllers
   IUserController: Symbol.for('IUserController'),
+  IReportController: Symbol.for('IReportController'),
   ISecurityController: Symbol.for('ISecurityController'),
   IUserAuthController: Symbol.for('IUserAuthController'),
   IArtistRequestController: Symbol.for('IArtistRequestController'),
