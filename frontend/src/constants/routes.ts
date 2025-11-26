@@ -30,6 +30,7 @@ export const ROUTES = {
   ADMIN_LOGIN: '/admin-login',
   ADMIN_DASHBOARD: '/admin/dashboard',
   ADMIN_WALLET_MANAGEMENT: '/admin/wallet-management',
+  ADMIN_ART_MANAGEMENT: '/admin/art-management',
 
   // Settings
   SETTINGS: '/settings',

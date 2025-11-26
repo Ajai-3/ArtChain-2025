@@ -24,7 +24,7 @@ const adminLinks = [
   { to: "/admin/ai-settings", icon: Sparkles, label: "AI Settings" },
   { to: "/admin/content-moderation", icon: Shield, label: "Content Moderation" },
   { to: "/admin/wallet-management", icon: Wallet, label: "Wallet & Financial" },
-  { to: "/admin/posts", icon: FileEdit, label: "Post Control" },
+  { to: "/admin/art-management", icon: FileEdit, label: "Art Management" },
   { to: "/admin/settings", icon: Settings, label: "Platform Settings" },
 ];
 
