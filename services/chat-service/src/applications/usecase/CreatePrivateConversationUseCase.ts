@@ -13,6 +13,7 @@ import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePri
 import { UserDto } from "../interface/dto/MessageResponseDto";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { ERROR_MESSAGES, DEFAULT_MESSAGES } from "../../constants/messages";
+import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 
 @injectable()
 export class CreatePrivateConversationUseCase
@@ -23,7 +24,9 @@ export class CreatePrivateConversationUseCase
     @inject(TYPES.IMessageRepository)
     private readonly _messageRepo: IMessageRepository,
     @inject(TYPES.IConversationRepository)
-    private readonly _conversationRepo: IConversationRepository
+    private readonly _conversationRepo: IConversationRepository,
+    @inject(TYPES.IMessageBroadcastService)
+    private readonly _broadcastService: IMessageBroadcastService
   ) {}
 
   async execute(
@@ -110,6 +113,15 @@ export class CreatePrivateConversationUseCase
         conversation.id
       }`
     );
+
+    // Notify the recipient via socket if this is a new conversation
+    if (isNewConvo) {
+      await this._broadcastService.publishNewPrivateConversation(
+        enrichedConversation,
+        otherUserId
+      );
+      logger.info(`Notified user ${otherUserId} of new private conversation`);
+    }
 
     return {
       isNewConvo,

@@ -41,5 +41,6 @@ export const SUCCESS_MESSAGES = {
 
 export const DEFAULT_MESSAGES = {
   WELCOME_MESSAGE: "Hello! Looking forward to chatting with you!",
+  GROUP_MESSAGE: "Hey new group created"
 } as const;
 

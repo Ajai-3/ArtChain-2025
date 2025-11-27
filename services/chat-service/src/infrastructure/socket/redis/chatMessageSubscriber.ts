@@ -22,6 +22,44 @@ export const subscribeChatMessages = (
     const data = JSON.parse(message);
     console.log("Parsed message data:", data);
 
+    // Handle new private conversation
+    if (data.type === "new_private_conversation") {
+      const recipientId = data.recipientId;
+      const socketId = onlineUsers.get(recipientId);
+      
+      if (socketId) {
+        const socket = io.sockets.sockets.get(socketId);
+        if (socket) {
+          socket.emit("newPrivateConversation", data.conversation);
+          console.log(`Emitted newPrivateConversation to user: ${recipientId}`);
+        }
+      } else {
+        console.log(`Recipient ${recipientId} is offline, will see conversation on next login`);
+      }
+      return;
+    }
+
+    // Handle new group conversation
+    if (data.type === "new_group_conversation") {
+      const memberIds = data.memberIds;
+      console.log(`Notifying group members:`, memberIds);
+
+      memberIds.forEach((userId: string) => {
+        const socketId = onlineUsers.get(userId);
+        if (socketId) {
+          const socket = io.sockets.sockets.get(socketId);
+          if (socket) {
+            socket.emit("newGroupConversation", data.conversation);
+            console.log(`Emitted newGroupConversation to user: ${userId}`);
+          }
+        } else {
+          console.log(`Member ${userId} is offline, will see conversation on next login`);
+        }
+      });
+      return;
+    }
+
+    // Handle message-related events (existing logic)
     const memberIds = await conversationCacheService.getConversationMembers(
       data.conversationId
     );

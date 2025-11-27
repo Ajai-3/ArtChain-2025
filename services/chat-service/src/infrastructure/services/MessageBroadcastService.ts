@@ -32,4 +32,34 @@ export class MessageBroadcastService implements IMessageBroadcastService {
       })
     );
   }
+
+  async publishNewPrivateConversation(
+    conversation: any,
+    recipientId: string
+  ): Promise<void> {
+    await redisPub.publish(
+      this.CHANNEL,
+      JSON.stringify({
+        type: "new_private_conversation",
+        conversationId: conversation.id,
+        conversation: conversation,
+        recipientId: recipientId,
+      })
+    );
+  }
+
+  async publishNewGroupConversation(
+    conversation: any,
+    memberIds: string[]
+  ): Promise<void> {
+    await redisPub.publish(
+      this.CHANNEL,
+      JSON.stringify({
+        type: "new_group_conversation",
+        conversationId: conversation.id,
+        conversation: conversation,
+        memberIds: memberIds,
+      })
+    );
+  }
 }
