@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import { useUnifiedSearch } from "../../../../../api/user/search/queries";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../../../../../redux/selectors/userSelectors";
-import apiClient from "../../../../../api/axios";
+import React, { useEffect } from "react";
+import { useCreateGroupModal } from "../../../hooks/chat/useCreateGroupModal";
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -15,65 +12,75 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
   onClose,
   onGroupCreated,
 }) => {
-  const [groupName, setGroupName] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
-  const [isCreating, setIsCreating] = useState(false);
-  const currentUser = useSelector(selectCurrentUser);
-
-  // Use unified search to find users
-  const { data: searchResults, isLoading: isSearching } = useUnifiedSearch(
+  const {
+    groupName,
+    setGroupName,
     searchQuery,
-    "user"
-  );
+    setSearchQuery,
+    selectedUsers,
+    isCreating,
+    searchResults,
+    isSearching,
+    currentUser,
+    handleUserSelect,
+    handleUserRemove,
+    handleCreateGroup,
+    resetForm,
+  } = useCreateGroupModal();
 
-  const handleUserSelect = (user: any) => {
-    if (selectedUsers.find((u) => u.id === user.id)) return;
-    setSelectedUsers([...selectedUsers, user]);
-    setSearchQuery(""); // Clear search after selection
-  };
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm();
+    }
+  }, [isOpen, resetForm]);
 
-  const handleUserRemove = (userId: string) => {
-    setSelectedUsers(selectedUsers.filter((u) => u.id !== userId));
-  };
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
-  const handleCreateGroup = async () => {
-    if (!groupName.trim() || selectedUsers.length === 0) return;
-
-    setIsCreating(true);
-    try {
-      await apiClient.post("/api/v1/chat/conversation/group", {
-        name: groupName,
-        memberIds: selectedUsers.map((u) => u.id),
-      });
+  const onSubmit = async () => {
+    await handleCreateGroup(() => {
       onGroupCreated();
       onClose();
-      // Reset state
-      setGroupName("");
-      setSelectedUsers([]);
-    } catch (error) {
-      console.error("Failed to create group:", error);
-    } finally {
-      setIsCreating(false);
-    }
+    });
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-background w-full max-w-md rounded-xl border border-border shadow-lg overflow-hidden">
+    <div 
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div 
+        className="bg-background w-full max-w-md rounded-xl border border-border shadow-2xl overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-4 border-b border-border flex justify-between items-center">
           <h3 className="font-semibold text-lg">Create New Group</h3>
           <button
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground transition-colors"
+            type="button"
           >
             ✕
           </button>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 max-h-[70vh] overflow-y-auto">
           {/* Group Name Input */}
           <div>
             <label className="block text-sm font-medium mb-1">Group Name</label>
@@ -83,6 +90,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
               onChange={(e) => setGroupName(e.target.value)}
               placeholder="Enter group name"
               className="w-full bg-muted/50 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary border-none"
+              autoFocus
             />
           </div>
 
@@ -99,7 +107,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
             
             {/* Search Results Dropdown */}
             {searchQuery && (
-              <div className="max-h-40 overflow-y-auto border border-border rounded-lg bg-card">
+              <div className="max-h-40 overflow-y-auto border border-border rounded-lg bg-card relative z-10">
                 {isSearching ? (
                   <div className="p-2 text-center text-sm text-muted-foreground">Searching...</div>
                 ) : searchResults?.length > 0 ? (
@@ -107,10 +115,11 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                     <button
                       key={user.id}
                       onClick={() => handleUserSelect(user)}
-                      className="w-full text-left px-3 py-2 hover:bg-muted/50 flex items-center gap-2"
+                      className="w-full text-left px-3 py-2 hover:bg-muted/50 flex items-center gap-2 transition-colors"
                       disabled={selectedUsers.some(u => u.id === user.id) || user.id === currentUser?.id}
+                      type="button"
                     >
-                      <div className="w-8 h-8 rounded-full bg-muted overflow-hidden">
+                      <div className="w-8 h-8 rounded-full bg-muted overflow-hidden flex-shrink-0">
                         {user.profileImage ? (
                           <img src={user.profileImage} alt={user.username} className="w-full h-full object-cover" />
                         ) : (
@@ -145,7 +154,8 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                     <span>{user.username}</span>
                     <button
                       onClick={() => handleUserRemove(user.id)}
-                      className="hover:text-primary/80"
+                      className="hover:text-primary/80 transition-colors"
+                      type="button"
                     >
                       ✕
                     </button>
@@ -160,13 +170,15 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            type="button"
           >
             Cancel
           </button>
           <button
-            onClick={handleCreateGroup}
+            onClick={onSubmit}
             disabled={!groupName.trim() || selectedUsers.length === 0 || isCreating}
             className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            type="button"
           >
             {isCreating ? "Creating..." : "Create Group"}
           </button>

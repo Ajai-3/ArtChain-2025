@@ -52,14 +52,12 @@ const Chat: React.FC = () => {
         dispatch(addConversations(newConvs));
       }
     }
-  }, [data?.pages, conversations.length, dispatch]); // depend on conversations.length only
+  }, [data?.pages, conversations.length, dispatch]); 
 
-  // Determine mobile view mode
   const [mobileView] = useState<"list" | "chat">(
     conversationId ? "chat" : "list"
   );
 
-  // Memoize selected conversation
   const selectedConversation = useMemo(
     () =>
       conversationId

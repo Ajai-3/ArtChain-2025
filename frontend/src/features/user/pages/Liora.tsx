@@ -59,10 +59,8 @@ const Liora: React.FC = () => {
     }
   }, [availableModels, model]);
 
-  // Find configuration for the currently selected model
   const currentConfig = availableModels?.find((c: any) => c.availableModels.includes(model));
 
-  // Update resolution if needed when model changes
   useEffect(() => {
     if (currentConfig && currentConfig.allowedResolutions && !currentConfig.allowedResolutions.includes(resolution)) {
       if (currentConfig.allowedResolutions.length > 0) {
@@ -71,7 +69,6 @@ const Liora: React.FC = () => {
     }
   }, [currentConfig, resolution]);
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -100,7 +97,6 @@ const Liora: React.FC = () => {
       return;
     }
     
-    // Find provider for the selected model
     let provider = "pollinations";
     if (availableModels) {
       const config = availableModels.find((c: any) => c.availableModels.includes(model));

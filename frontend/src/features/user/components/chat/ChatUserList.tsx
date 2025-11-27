@@ -186,8 +186,6 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
         isOpen={isCreateGroupModalOpen}
         onClose={() => setIsCreateGroupModalOpen(false)}
         onGroupCreated={() => {
-          // Optionally refresh list or handle success
-          // The socket event or optimistic update should handle the list update usually
         }}
       />
     </div>
