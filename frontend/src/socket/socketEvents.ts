@@ -4,7 +4,7 @@ import {
   addNotification,
   setUnreadCount,
 } from "../redux/slices/notificationSlice";
-import { addMessage, addOrReplaceMessage, markMessagesAsRead } from "../redux/slices/chatSlice";
+import { addConversation, addOrReplaceMessage, markMessagesAsRead } from "../redux/slices/chatSlice";
 import type { Message } from "../types/chat/chat";
 import { updateOnlineUsers, addTypingUser, removeTypingUser } from "../features/user/hooks/chat/presenceStore";
 
@@ -51,6 +51,16 @@ export const registerChatSocketEvents = (socket: Socket) => {
         readBy,
       })
     );
+  });
+
+  socket.on("newPrivateConversation", (conversation: any) => {
+    console.log("🆕 New private conversation received:", conversation);
+    store.dispatch(addConversation(conversation));
+  });
+
+  socket.on("newGroupConversation", (conversation: any) => {
+    console.log("👥 New group conversation received:", conversation);
+    store.dispatch(addConversation(conversation));
   });
 
   socket.on("connect_error", (err) =>
