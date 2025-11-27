@@ -112,7 +112,7 @@ services:
         condition: service_healthy
     networks:
       - backend
-    command: sh -c "npx prisma migrate deploy && npm run dev"
+    command: sh -c "npx prisma db push --accept-data-loss && npx prisma generate && npm run dev"
 
   art-service:
     container_name: art-service
