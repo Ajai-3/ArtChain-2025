@@ -7,7 +7,7 @@ import { ROUTES } from '../../../constants/routes';
 export class ElasticUserSearchRepositoryImpl implements IUserSearchRepository {
   async searchUserIds(query: string): Promise<string[]> {
     const response = await axios.get(
-      `http://elastic-search-service:4004${ROUTES.EXTERNAL.ELASTIC_SEARCH}`,
+      `http://api-gateway:4000${ROUTES.EXTERNAL.ELASTIC_SEARCH}`,
       { params: { q: query } }
     );
 
