@@ -99,12 +99,15 @@ class GeminiProvider implements IAIProvider {
       throw new Error("Gemini API key not configured");
     }
 
-    const { prompt } = params;
+    const { prompt, model } = params;
+    const modelToUse = model || "gemini-2.5-flash-image";
     const images: string[] = [];
+
+    console.log(`[Gemini] Generating with model: ${modelToUse}`);
 
     try {
       const result = await this.client.models.generateContent({
-        model: "gemini-2.5-flash-image",
+        model: modelToUse,
         contents: prompt,
       });
 
@@ -114,9 +117,10 @@ class GeminiProvider implements IAIProvider {
         for (const part of candidates[0].content.parts) {
            if (part.inlineData) {
             const imageData = part.inlineData.data;
-            const mimeType = "image/png"; 
+            const mimeType = part.inlineData.mimeType || "image/png"; 
             const dataUri = `data:${mimeType};base64,${imageData}`;
             images.push(dataUri);
+            console.log(`[Gemini] Image generated successfully`);
           }
         }
       }

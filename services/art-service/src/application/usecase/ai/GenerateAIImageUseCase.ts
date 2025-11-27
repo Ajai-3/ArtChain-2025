@@ -54,6 +54,12 @@ export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
 
     console.log(`[GenerateAIImage] Generating image with provider: ${selectedConfig.provider}, model: ${modelToUse}`);
 
+    // Set API key from config if available (important for Gemini and Puter)
+    if (selectedConfig.apiKey) {
+      console.log(`[GenerateAIImage] Setting API key for provider: ${selectedConfig.provider}`);
+      this._aiProviderService.setApiKey(selectedConfig.provider, selectedConfig.apiKey);
+    }
+
     // Generate images using the AI provider FIRST
     const generationResult = await this._aiProviderService.generateImage(
       selectedConfig.provider,
