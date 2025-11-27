@@ -21,13 +21,9 @@ export class UserServiceClient {
       const headers: any = {};
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
-        headers['x-user-id'] = 'admin-action'; // Mock user id for admin actions if needed
-        // Or better, pass the cookie if available
-        headers['Cookie'] = `token=${token}`; // Try passing as cookie if it's a cookie-based auth
+        headers['x-user-id'] = 'admin-action'; 
+        headers['Cookie'] = `token=${token}`; 
       }
-
-      // If token is a Bearer token, use Authorization header. If it comes from cookie, we might need to pass it differently.
-      // Assuming standard Bearer token for now or just passing what we got.
       
       const config = token ? { headers: { Authorization: `Bearer ${token}`, Cookie: `token=${token}` } } : {};
 

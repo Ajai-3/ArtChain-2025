@@ -10,8 +10,8 @@ export class ElasticsearchClient {
 
   async searchUsers(query: string): Promise<string[]> {
     try {
-      const response = await axios.get(`${this.baseUrl}/api/v1/search/users`, {
-        params: { query },
+      const response = await axios.get(`${this.baseUrl}/api/v1/elastic/admin/search`, {
+        params: { q: query },
       });
       
       // Assuming the response contains an array of user IDs
