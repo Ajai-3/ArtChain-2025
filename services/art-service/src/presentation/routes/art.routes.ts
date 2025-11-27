@@ -30,6 +30,10 @@ router.get(ROUTES.CATEGORY.BASE, categoryController.getCategory);
 router.post(ROUTES.CATEGORY.BASE, categoryController.createCategory);
 router.patch(ROUTES.CATEGORY.BY_ID, categoryController.editCategory);
 
+// Shop
+router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
+router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
+
 // Art
 router.get(ROUTES.ART.BASE, artController.getAllArt);
 router.post(ROUTES.ART.BASE, artController.createArt);
@@ -58,9 +62,5 @@ router.delete(ROUTES.FAVORITE.UNFAVORITE, favoriteController.removeFavorite);
 router.get(ROUTES.FAVORITE.FAVORITES_BY_POST_ID, favoriteController.getFavoritedUsers);
 router.get(ROUTES.FAVORITE.FAVORITES_COUNT_BY_POST_ID, favoriteController.getFavoriteCount);
 router.get(ROUTES.FAVORITE.FAVORITES_BY_USER_ID, favoriteController.getUserFavoritedArts);
-
-// Shop
-router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
-router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
 
 export default router;
