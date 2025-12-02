@@ -66,6 +66,18 @@ export const registerChatSocketEvents = (socket: Socket) => {
   socket.on("connect_error", (err) =>
     console.error("❌ Chat socket error:", err.message)
   );
+
+  return () => {
+    socket.removeAllListeners("connect");
+    socket.removeAllListeners("chatOnline");
+    socket.removeAllListeners("updateOnline");
+    socket.removeAllListeners("newMessage");
+    socket.removeAllListeners("userTyping");
+    socket.removeAllListeners("messagesRead");
+    socket.removeAllListeners("newPrivateConversation");
+    socket.removeAllListeners("newGroupConversation");
+    socket.removeAllListeners("connect_error");
+  };
 };
 
 export const registerNotificationSocketEvents = (socket: Socket) => {

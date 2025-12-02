@@ -42,3 +42,7 @@ export function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
+
+export function getOnlineUsers(): Set<string> {
+  return onlineUsers;
+}

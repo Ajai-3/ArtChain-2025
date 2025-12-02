@@ -180,7 +180,7 @@ const chatSlice = createSlice({
         };
       }
     },
-    updateMessage(state, action: PayloadAction<Message>) {
+    updateMessage(state, action: PayloadAction<Partial<Message> & { id: string; conversationId: string }>) {
       const m = action.payload;
       if (!state.messages[m.conversationId]) return;
 
@@ -188,7 +188,23 @@ const chatSlice = createSlice({
         (x) => x.id === m.id
       );
       if (idx > -1) {
-        state.messages[m.conversationId][idx] = m;
+        const updatedMessage = {
+          ...state.messages[m.conversationId][idx],
+          ...m,
+        };
+        state.messages[m.conversationId][idx] = updatedMessage;
+
+        // Update lastMessage if it matches
+        const convIdx = state.conversations.findIndex(c => c.id === m.conversationId);
+        if (convIdx > -1) {
+           const conv = state.conversations[convIdx];
+           if (conv.lastMessage?.id === m.id) {
+              state.conversations[convIdx].lastMessage = {
+                 ...conv.lastMessage,
+                 ...updatedMessage
+              };
+           }
+        }
       }
     },
 
@@ -250,6 +266,20 @@ const chatSlice = createSlice({
       }
     },
 
+    removeMessage(state, action: PayloadAction<{ conversationId: string; messageId: string }>) {
+      const { conversationId, messageId } = action.payload;
+      if (state.messages[conversationId]) {
+        state.messages[conversationId] = state.messages[conversationId].filter(
+          (m) => m.id !== messageId
+        );
+      }
+      const conv = state.conversations.find((c) => c.id === conversationId);
+      if (conv && conv.lastMessage?.id === messageId) {
+         const messages = state.messages[conversationId];
+         conv.lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
+      }
+    },
+
     clearConversations(state) {
       state.conversations = [];
       state.messages = {};
@@ -276,6 +306,7 @@ export const {
   cacheUser,
   markMessagesAsRead,
   setConversationUnreadCount,
+  removeMessage,
 } = chatSlice.actions;
 
 export default chatSlice.reducer;
