@@ -21,7 +21,9 @@ export class MessageBroadcastService implements IMessageBroadcastService {
 
   async publishDelete(
     messageId: string,
-    conversationId: string
+    conversationId: string,
+    deleteMode: string,
+    userId: string
   ): Promise<void> {
     await redisPub.publish(
       this.CHANNEL,
@@ -29,6 +31,8 @@ export class MessageBroadcastService implements IMessageBroadcastService {
         type: "delete_message",
         conversationId: conversationId,
         messageId: messageId,
+        deleteMode: deleteMode,
+        userId: userId,
       })
     );
   }
@@ -59,6 +63,22 @@ export class MessageBroadcastService implements IMessageBroadcastService {
         conversationId: conversation.id,
         conversation: conversation,
         memberIds: memberIds,
+      })
+    );
+  }
+
+  async publishGroupUpdate(
+    conversationId: string,
+    updateType: string,
+    data: any
+  ): Promise<void> {
+    await redisPub.publish(
+      this.CHANNEL,
+      JSON.stringify({
+        type: "group_update",
+        conversationId,
+        updateType,
+        data,
       })
     );
   }

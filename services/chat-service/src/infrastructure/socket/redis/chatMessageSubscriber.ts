@@ -83,7 +83,16 @@ export const subscribeChatMessages = (
         socket.emit("newMessage", data.message, data.tempId);
         console.log(`Emitted newMessage to user: ${userId}`);
       } else if (data.type === "delete_message") {
-        socket.emit("messageDeleted", { messageId: data.messageId });
+        // For "ME" mode, only emit to the user who deleted it
+        if (data.deleteMode === "ME" && userId !== data.userId) {
+          return; // Skip this user
+        }
+        
+        socket.emit("messageDeleted", { 
+          conversationId: data.conversationId,
+          messageId: data.messageId,
+          deleteMode: data.deleteMode
+        });
         console.log(`Emitted messageDeleted to user: ${userId}`);
       }
     });

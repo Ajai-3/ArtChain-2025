@@ -24,6 +24,16 @@ import { IMarkMessagesReadUseCase } from "../../applications/interface/usecase/I
 import { MarkMessagesReadUseCase } from "../../applications/usecase/MarkMessagesReadUseCase";
 import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
 import { CreateGroupConversationUseCase } from "../../applications/usecase/CreateGroupConversationUseCase";
+import { IGetGroupMembersUseCase } from "../../applications/interface/usecase/IGetGroupMembersUseCase";
+import { IRemoveGroupMemberUseCase } from "../../applications/interface/usecase/IRemoveGroupMemberUseCase";
+import { IAddGroupAdminUseCase } from "../../applications/interface/usecase/IAddGroupAdminUseCase";
+import { GetGroupMembersUseCase } from "../../applications/usecase/GetGroupMembersUseCase";
+import { RemoveGroupMemberUseCase } from "../../applications/usecase/RemoveGroupMemberUseCase";
+import { AddGroupAdminUseCase } from "../../applications/usecase/AddGroupAdminUseCase";
+import { IRemoveGroupAdminUseCase } from "../../applications/interface/usecase/IRemoveGroupAdminUseCase";
+import { RemoveGroupAdminUseCase } from "../../applications/usecase/RemoveGroupAdminUseCase";
+import { IAddGroupMemberUseCase } from "../../applications/interface/usecase/IAddGroupMemberUseCase";
+import { AddGroupMemberUseCase } from "../../applications/usecase/AddGroupMemberUseCase";
 
 // Services
 import { UserService } from "../http/UserService";
@@ -88,6 +98,21 @@ container
 container
   .bind<ICreateGroupConversationUseCase>(TYPES.ICreateGroupConversationUseCase)
   .to(CreateGroupConversationUseCase);
+container
+  .bind<IGetGroupMembersUseCase>(TYPES.IGetGroupMembersUseCase)
+  .to(GetGroupMembersUseCase);
+container
+  .bind<IRemoveGroupMemberUseCase>(TYPES.IRemoveGroupMemberUseCase)
+  .to(RemoveGroupMemberUseCase);
+container
+  .bind<IAddGroupAdminUseCase>(TYPES.IAddGroupAdminUseCase)
+  .to(AddGroupAdminUseCase);
+container
+  .bind<IRemoveGroupAdminUseCase>(TYPES.IRemoveGroupAdminUseCase)
+  .to(RemoveGroupAdminUseCase);
+container
+  .bind<IAddGroupMemberUseCase>(TYPES.IAddGroupMemberUseCase)
+  .to(AddGroupMemberUseCase);
 
 // Srevice
 container.bind<IUserService>(TYPES.IUserService).to(UserService);

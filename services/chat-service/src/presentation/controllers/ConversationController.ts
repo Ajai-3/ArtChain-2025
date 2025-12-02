@@ -11,6 +11,11 @@ import { ICreatePrivateConversationUseCase } from "../../applications/interface/
 import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
 import { createGroupConversationSchema } from "../validators/createGroupConversationSchema";
 import { CreateGroupConversationDto } from "../../applications/interface/dto/CreateGroupConversationDto";
+import { IGetGroupMembersUseCase } from "../../applications/interface/usecase/IGetGroupMembersUseCase";
+import { IRemoveGroupMemberUseCase } from "../../applications/interface/usecase/IRemoveGroupMemberUseCase";
+import { IAddGroupAdminUseCase } from "../../applications/interface/usecase/IAddGroupAdminUseCase";
+import { IRemoveGroupAdminUseCase } from "../../applications/interface/usecase/IRemoveGroupAdminUseCase";
+import { IAddGroupMemberUseCase } from "../../applications/interface/usecase/IAddGroupMemberUseCase";
 import { SUCCESS_MESSAGES } from "../../constants/messages";
 import { ROUTES } from "../../constants/routes";
 
@@ -22,7 +27,17 @@ export class ConversationController {
     @inject(TYPES.ICreatePrivateConversationUseCase)
     private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase,
     @inject(TYPES.ICreateGroupConversationUseCase)
-    private readonly _createGroupConversationUseCase: ICreateGroupConversationUseCase
+    private readonly _createGroupConversationUseCase: ICreateGroupConversationUseCase,
+    @inject(TYPES.IGetGroupMembersUseCase)
+    private readonly _getGroupMembersUseCase: IGetGroupMembersUseCase,
+    @inject(TYPES.IRemoveGroupMemberUseCase)
+    private readonly _removeGroupMemberUseCase: IRemoveGroupMemberUseCase,
+    @inject(TYPES.IAddGroupAdminUseCase)
+    private readonly _addGroupAdminUseCase: IAddGroupAdminUseCase,
+    @inject(TYPES.IRemoveGroupAdminUseCase)
+    private readonly _removeGroupAdminUseCase: IRemoveGroupAdminUseCase,
+    @inject(TYPES.IAddGroupMemberUseCase)
+    private readonly _addGroupMemberUseCase: IAddGroupMemberUseCase
   ) {}
 
   //#========================================================================================================================
@@ -147,6 +162,124 @@ export class ConversationController {
       return res.status(HttpStatus.OK).json({
         message: SUCCESS_MESSAGES.RESEND_CONVERSATIONS_RETRIEVED_SUCCESSFULLY,
         data: data,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
+  getGroupMembers = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { conversationId } = req.params;
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 20;
+
+      const result = await this._getGroupMembersUseCase.execute({
+        conversationId,
+        page,
+        limit,
+      });
+
+      return res.status(HttpStatus.OK).json({
+        message: "Members fetched successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  removeGroupMember = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { conversationId, userId } = req.params;
+      const requesterId = req.headers["x-user-id"] as string;
+
+      await this._removeGroupMemberUseCase.execute({
+        conversationId,
+        requesterId,
+        targetUserId: userId,
+      });
+
+      return res.status(HttpStatus.OK).json({
+        message: "Member removed successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  addGroupAdmin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { conversationId, userId } = req.params;
+      const requesterId = req.headers["x-user-id"] as string;
+
+      await this._addGroupAdminUseCase.execute({
+        conversationId,
+        requesterId,
+        targetUserId: userId,
+      });
+
+      return res.status(HttpStatus.OK).json({
+        message: "Admin added successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  removeGroupAdmin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { conversationId, userId } = req.params;
+      const requesterId = req.headers["x-user-id"] as string;
+
+      await this._removeGroupAdminUseCase.execute({
+        conversationId,
+        requesterId,
+        targetUserId: userId,
+      });
+
+      return res.status(HttpStatus.OK).json({
+        message: "Admin removed successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  addGroupMember = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { conversationId, userId } = req.params;
+      const requesterId = req.headers["x-user-id"] as string;
+
+      await this._addGroupMemberUseCase.execute({
+        conversationId,
+        requesterId,
+        targetUserId: userId,
+      });
+
+      return res.status(HttpStatus.OK).json({
+        message: "Member added successfully",
       });
     } catch (error) {
       next(error);

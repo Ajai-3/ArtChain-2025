@@ -26,5 +26,10 @@ router.get(
 router.post(ROUTES.CHAT.MESSAGE_SEND, messageController.sendMessage);
 router.get(ROUTES.CHAT.MESSAGE_BY_CONVERSATION_ID, messageController.listMessages);
 router.delete(ROUTES.CHAT.MESSAGE_BY_MESSAGE_ID, messageController.deleteMessage);
+router.get(ROUTES.CHAT.CONVERSATION_MEMBERS, conversationController.getGroupMembers);
+router.post(ROUTES.CHAT.CONVERSATION_MEMBER_ADD, conversationController.addGroupMember);
+router.delete(ROUTES.CHAT.CONVERSATION_MEMBER_REMOVE, conversationController.removeGroupMember);
+router.post(ROUTES.CHAT.CONVERSATION_ADMIN_ADD, conversationController.addGroupAdmin);
+router.delete(ROUTES.CHAT.CONVERSATION_ADMIN_REMOVE, conversationController.removeGroupAdmin);
 
 export default router;

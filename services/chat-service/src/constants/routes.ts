@@ -14,6 +14,11 @@ export const ROUTES = {
     MESSAGE_SEND: "/message/send",
     MESSAGE_BY_CONVERSATION_ID: "/message/:conversationId",
     MESSAGE_BY_MESSAGE_ID: "/message/:messageId",
+    CONVERSATION_MEMBERS: "/conversation/:conversationId/members",
+    CONVERSATION_MEMBER_ADD: "/conversation/:conversationId/member/:userId",
+    CONVERSATION_MEMBER_REMOVE: "/conversation/:conversationId/member/:userId",
+    CONVERSATION_ADMIN_ADD: "/conversation/:conversationId/admin/:userId",
+    CONVERSATION_ADMIN_REMOVE: "/conversation/:conversationId/admin/:userId",
   },
 
   // External service routes (User Service)

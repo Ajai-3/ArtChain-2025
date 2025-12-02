@@ -30,8 +30,14 @@ export class MessageRepositoryImp
     return this.mapDbArrayToDomain(messages);
   }
 
-  async markRead(messageIds: string[]): Promise<void> {
-    await this.model.updateMany({ _id: { $in: messageIds } }, { read: true });
+  async markRead(messageIds: string[], userId: string): Promise<void> {
+    await this.model.updateMany(
+      { _id: { $in: messageIds } },
+      { 
+        $addToSet: { readBy: userId },
+        $set: { read: true } // Keep this for backward compatibility if needed, or rely solely on readBy
+      }
+    );
   }
 
   async getTotalCountByConversation(conversationId: string): Promise<number> {

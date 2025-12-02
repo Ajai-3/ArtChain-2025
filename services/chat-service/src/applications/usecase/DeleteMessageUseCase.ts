@@ -63,7 +63,9 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
 
     await this._broadcastService.publishDelete(
       message.id,
-      message.conversationId
+      message.conversationId,
+      DeleteMode.ME,
+      userId
     );
     return true;
   }
@@ -96,7 +98,9 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
 
     await this._broadcastService.publishDelete(
       message.id,
-      message.conversationId
+      message.conversationId,
+      DeleteMode.ALL,
+      userId
     );
     return true;
   }

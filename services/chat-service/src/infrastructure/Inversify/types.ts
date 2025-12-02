@@ -18,6 +18,11 @@ export const TYPES = {
   ICreatePrivateConversationUseCase: Symbol.for("ICreatePrivateConversationUseCase"),
   ICreateGroupConversationUseCase: Symbol.for("ICreateGroupConversationUseCase"),
   IMarkMessagesReadUseCase: Symbol.for("IMarkMessagesReadUseCase"),
+  IGetGroupMembersUseCase: Symbol.for("IGetGroupMembersUseCase"),
+  IRemoveGroupMemberUseCase: Symbol.for("IRemoveGroupMemberUseCase"),
+  IAddGroupAdminUseCase: Symbol.for("IAddGroupAdminUseCase"),
+  IRemoveGroupAdminUseCase: Symbol.for("IRemoveGroupAdminUseCase"),
+  IAddGroupMemberUseCase: Symbol.for("IAddGroupMemberUseCase"),
 
   // Handlers
   IClientEventHandler: Symbol.for("IClientEventHandler"),
