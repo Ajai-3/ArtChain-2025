@@ -5,6 +5,7 @@ import {
   ConversationType,
 } from "../../../../../types/chat/chat";
 import { usePresence } from "../../../hooks/chat/usePresence";
+import { formatChatTime } from "../../../../../libs/dateFormatter";
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -159,9 +160,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           </h3>
           <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
             {conversation.lastMessage?.createdAt
-              ? new Date(
-                  conversation.lastMessage.createdAt
-                ).toLocaleTimeString()
+              ? formatChatTime(conversation.lastMessage.createdAt)
               : ""}
           </span>
         </div>
