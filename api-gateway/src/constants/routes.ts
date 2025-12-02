@@ -58,6 +58,10 @@ export const ROUTES = {
     MESSAGE: "/api/v1/chat/message/:conversationId",
     GROUP: "/api/v1/chat/conversation/group",
     GROUP_BY_ID: "/api/v1/chat/conversation/group/:conversationId",
+    MEMBERS: "/api/v1/chat/conversation/:conversationId/members",
+    MEMBER: "/api/v1/chat/conversation/:conversationId/member/:userId",
+    ADMIN: "/api/v1/chat/conversation/:conversationId/admin/:userId",
+    DELETE_MESSAGE: "/api/v1/chat/message/:messageId",
   },
   AI: {
     GENERATE: "/api/v1/art/ai/generate",

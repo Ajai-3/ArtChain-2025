@@ -63,6 +63,10 @@ export const authRoutesConfig = {
 
     { path: ROUTES.CHAT.GROUP, methods: ["POST"] },
     { path: ROUTES.CHAT.GROUP_BY_ID, methods: ["GET", "PATCH", "DELETE"] },
+    { path: ROUTES.CHAT.MEMBERS, methods: ["GET"] },
+    { path: ROUTES.CHAT.MEMBER, methods: ["DELETE"] },
+    { path: ROUTES.CHAT.ADMIN, methods: ["POST"] },
+    { path: ROUTES.CHAT.DELETE_MESSAGE, methods: ["DELETE"] },
   ],
   
   user_optional: [
