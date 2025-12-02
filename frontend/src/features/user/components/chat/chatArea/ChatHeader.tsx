@@ -1,6 +1,6 @@
 // components/chat/chatArea/ChatHeader.tsx
 import React from "react";
-import { Video, Phone, Search, MoreVertical } from "lucide-react";
+import { Video, Phone, MoreVertical } from "lucide-react";
 import type { Conversation } from "../../../../../types/chat/chat";
 import { usePresence } from "../../../hooks/chat/usePresence";
 
@@ -20,7 +20,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   currentUserId,
   onBack,
   onToggleDetails,
-  showDetails,
+  // showDetails,
   onVideoCall,
   onVoiceCall,
 }) => {
@@ -30,7 +30,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     ? (conversation.memberIds?.find(id => id !== currentUserId) || conversation.partner?.id)
     : undefined;
   
-  const { isOnline, typingUsers } = usePresence(partnerId, conversation.id);
+  const { isOnline, typingUsers, onlineUsers } = usePresence(partnerId, conversation.id);
 
   const getConversationName = () => {
     if (conversation.type === "GROUP") {
@@ -62,6 +62,10 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   const getStatusText = () => {
     if (conversation.locked) return "Pending request";
     if (typingUsers.length > 0) return "typing...";
+    if (conversation.type === "GROUP") {
+       const onlineCount = conversation.memberIds?.filter(id => onlineUsers.has(id)).length || 0;
+       return `${onlineCount} online`;
+    }
     return isOnline ? "Online" : "Offline";
   };
 

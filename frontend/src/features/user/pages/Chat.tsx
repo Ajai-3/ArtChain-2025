@@ -15,6 +15,8 @@ import {
 } from "../../../redux/selectors/chatSelectors";
 import { useSendMessage } from "../hooks/chat/socket/useSendMessage";
 import { useConvoOpen } from "../hooks/chat/socket/useConvoOpen";
+import { useDeleteMessage } from "../hooks/chat/socket/useDeleteMessage";
+import { useSocketMessages } from "../hooks/chat/socket/useSocketMessages";
 import { ROUTES } from "../../../constants/routes";
 
 const Chat: React.FC = () => {
@@ -22,16 +24,18 @@ const Chat: React.FC = () => {
   const navigate = useNavigate();
   const { sendMessage } = useSendMessage();
   const { conversationId } = useParams<{ conversationId: string }>();
+  const currentUserId = useSelector(selectCurrentUserId);
+  const { deleteMessage } = useDeleteMessage(currentUserId || "");
 
   // Safe socket subscription
   useConvoOpen(conversationId);
+  useSocketMessages();
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useRecentConversations();
 
   const conversations = useSelector(selectConversations);
-  const currentUserId = useSelector(selectCurrentUserId);
-
+  
   // Select messages for current conversation
   const messages = useSelector((state: any) =>
     selectMessagesByConversationId(state, conversationId || "")
@@ -94,8 +98,9 @@ const Chat: React.FC = () => {
   );
 
   const handleDeleteMessage = useCallback((id: string, forAll: boolean) => {
-    console.log("TODO: delete message", id, forAll);
-  }, []);
+    if (!conversationId) return;
+    deleteMessage(id, conversationId, forAll);
+  }, [conversationId, deleteMessage]);
 
   if (!currentUserId) return <div>Loading user…</div>;
 
