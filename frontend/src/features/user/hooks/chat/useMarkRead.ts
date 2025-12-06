@@ -23,10 +23,13 @@ export const useMarkRead = (conversationId: string | undefined, currentUserId: s
       // Emit socket event
       const socket = getChatSocket();
       if (socket && socket.connected) {
+        console.log(`Emitting markMessagesRead for ${messageIds.length} messages in conversation ${conversationId}`);
         socket.emit("markMessagesRead", {
           conversationId,
           messageIds,
         });
+      } else {
+        console.warn("Socket not connected, cannot mark messages as read");
       }
 
       // Optimistic update
