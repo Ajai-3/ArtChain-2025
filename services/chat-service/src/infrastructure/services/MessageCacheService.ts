@@ -110,4 +110,9 @@ export class MessageCacheService implements IMessageCacheService {
 
     await Promise.all(cachePromises);
   }
+
+  async invalidateConversationCache(conversationId: string): Promise<void> {
+    const listKey = `messages:${conversationId}`;
+    await this.cacheService.del(listKey);
+  }
 }

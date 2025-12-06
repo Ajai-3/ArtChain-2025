@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { Types } from "mongoose";
 import { Message } from "../../domain/entities/Message";
 import { BaseRepositoryImp } from "./BaseRepositoryImp";
 import { IMessageDocument, MessageModel } from "../models/MessageModel";
@@ -31,13 +32,24 @@ export class MessageRepositoryImp
   }
 
   async markRead(messageIds: string[], userId: string): Promise<void> {
-    await this.model.updateMany(
-      { _id: { $in: messageIds } },
-      { 
-        $addToSet: { readBy: userId },
-        $set: { read: true } // Keep this for backward compatibility if needed, or rely solely on readBy
+    try {
+      const validIds = messageIds.filter(id => Types.ObjectId.isValid(id));
+      if (validIds.length === 0) {
+        console.warn("No valid ObjectIds found in messageIds:", messageIds);
+        return;
       }
-    );
+
+      const result = await this.model.updateMany(
+        { _id: { $in: validIds.map(id => new Types.ObjectId(id)) } },
+        { 
+          $addToSet: { readBy: userId }
+        }
+      );
+      console.log(`Marked ${result.modifiedCount} messages as read for user ${userId}`);
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+      throw error;
+    }
   }
 
   async getTotalCountByConversation(conversationId: string): Promise<number> {

@@ -99,6 +99,7 @@ export class ClientEventHandler implements IClientEventHandler {
     payload: { conversationId: string; messageIds: string[] }
   ) => {
     const userId = socket.data.userId;
+    console.log(`Received markMessagesRead event from user ${userId} for conversation ${payload.conversationId}, messages: ${payload.messageIds.length}`);
     try {
       await this._markMessagesReadUseCase.execute(
         payload.messageIds,
