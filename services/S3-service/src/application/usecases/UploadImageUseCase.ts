@@ -42,13 +42,15 @@ export class UploadImageUseCase implements IUploadImageUseCase {
       userId
     );
 
-    await publishNotification("user.profile_update", {
-      payload: {
-        userId: userId,
-        category,
-        key: uploadResult.key,
-      },
-    });
+    if (category === "profile" || category === "banner" || category === "background") {
+      await publishNotification("user.profile_update", {
+        payload: {
+          userId: userId,
+          category,
+          key: uploadResult.key,
+        },
+      });
+    }
 
     return {
       url: uploadResult.publicUrl,

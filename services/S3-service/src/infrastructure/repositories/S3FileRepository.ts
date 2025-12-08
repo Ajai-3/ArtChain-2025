@@ -146,6 +146,25 @@ export class S3FileRepository implements IFileRepository {
       throw err;
     }
   }
+
+  async getSignedUrl(key: string, category: FileCategory): Promise<string> {
+    const bucketConfig = getBucketConfig(category);
+    
+    if (category === "art") {
+      return s3Client.getSignedUrlPromise("getObject", {
+        Bucket: bucketConfig.privateBucket,
+        Key: `art/${key}`, // Assuming key passed is relative to art/
+        Expires: 3600, // 1 hour
+      });
+    }
+
+    // For other categories, if needed (though mostly public)
+    return s3Client.getSignedUrlPromise("getObject", {
+      Bucket: bucketConfig.bucket,
+      Key: key,
+      Expires: 3600,
+    });
+  }
 }
 
 function getCdnDomain(): string {

@@ -1,5 +1,5 @@
-export type FrontendImageType = "profileImage" | "bannerImage" | "backgroundImage";
-export type BackendImageCategory = "profile" | "banner" | "background";
+export type FrontendImageType = "profileImage" | "bannerImage" | "backgroundImage" | "chatImage";
+export type BackendImageCategory = "profile" | "banner" | "background" | "chat";
 
 /**
  * Maps the frontend image type (used in UI forms)
@@ -12,6 +12,7 @@ export function mapFrontendType(
     profileImage: "profile",
     bannerImage: "banner",
     backgroundImage: "background",
+    chatImage: "chat",
   };
 
   const frontendType = (type as FrontendImageType)
