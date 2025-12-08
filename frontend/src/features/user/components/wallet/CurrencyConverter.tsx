@@ -60,11 +60,16 @@ const CurrencyConverter: React.FC = () => {
         />
 
         {/* Result */}
-        {validNumber && (
-          <p className="text-green-400 font-semibold">
-            {inr} INR = {artDisplay} AC
-          </p>
-        )}
+        {/* Result Area - Fixed Height to prevent jumping */}
+        <div className="min-h-[1.5rem] mt-1">
+          {validNumber ? (
+             <p className="text-green-400 font-semibold text-sm">
+              {inr} INR = {artDisplay} AC
+            </p>
+          ) : (
+            <p className="text-transparent text-sm select-none">Placeholder</p>
+          )}
+        </div>
 
         <p className="text-gray-400 text-xs mt-1">
           Exchange rate: 1 AC = ₹{rate} INR

@@ -40,12 +40,14 @@ interface ArtActionsProps {
     onCloseFavorites: () => void;
     onReport: () => void;
     onCloseReport: () => void;
+    onDownload?: () => void;
   };
   modals: {
     showLikes: boolean;
     showFavorites: boolean;
     showReport: boolean;
   };
+  isDownloading?: boolean;
 }
 
 const ArtActions: React.FC<ArtActionsProps> = ({
@@ -54,6 +56,7 @@ const ArtActions: React.FC<ArtActionsProps> = ({
   user,
   handlers,
   modals,
+  isDownloading,
 }) => {
   return (
     <div className="flex flex-wrap justify-between sm:justify-between items-center w-full mt-3 gap-2 sm:gap-4 sm:px-20">
@@ -139,7 +142,9 @@ const ArtActions: React.FC<ArtActionsProps> = ({
 
         {/* Download */}
         {!art.downloadingDisabled && (
-          <ImageDown className="cursor-pointer hover:text-blue-400 transition-colors" />
+          <button onClick={handlers.onDownload} disabled={isDownloading} className="hover:text-blue-400 transition-colors disabled:opacity-50">
+             {isDownloading ? "..." : <ImageDown className="cursor-pointer" />}
+          </button>
         )}
 
         {/* Zoom */}

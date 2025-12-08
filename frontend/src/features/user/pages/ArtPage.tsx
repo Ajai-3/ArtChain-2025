@@ -8,6 +8,7 @@ import { useUnlikePost } from "../hooks/art/useUnlikePost";
 import { useFavoritePost } from "../hooks/art/useFavoritePost";
 import { useUnfavoritePost } from "../hooks/art/useUnfavoritePost";
 import { useRelatedArtworks } from "../hooks/art/useRelatedArtworks";
+import { useBuyArtMutation, useDownloadArtMutation } from "../../../api/user/art/mutations";
 import ArtPageSkeleton from "../components/skeletons/ArtPageSkeleton";
 import ArtImageSection from "../components/art/details/ArtImageSection";
 import ArtActions from "../components/art/details/ArtActions";
@@ -26,6 +27,8 @@ const ArtPage: React.FC = () => {
   const unlikePost = useUnlikePost();
   const favoritePost = useFavoritePost();
   const unfavoritePost = useUnfavoritePost();
+  const buyArtMutation = useBuyArtMutation();
+  const downloadArtMutation = useDownloadArtMutation();
 
   const { data, isLoading, isError, error } = useGetArtByName(artname!);
 
@@ -98,6 +101,16 @@ const ArtPage: React.FC = () => {
     setShowLikes(true);
   };
 
+  const handleBuy = () => {
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
+    buyArtMutation.mutate(art.id);
+  };
+
+  const handleDownload = () => {
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
+    downloadArtMutation.mutate(art.id);
+  };
+
   const handleImageClick = () => {
     setZoomed(true);
     setFullscreenZoom(false);
@@ -126,13 +139,23 @@ const ArtPage: React.FC = () => {
     year: "numeric",
   });
 
+  const isOwner = user.user?.id === (art.ownerId || art.userId);
+  const canBuy = art.isForSale && !isOwner;
+  const canDownload = isOwner;
+
   return (
     <div className="flex flex-col lg:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen max-w-[1600px] mx-auto">
       <div className="w-full lg:w-3/4 flex flex-col items-center relative">
         <ArtImageSection imageUrl={art.imageUrl} title={art.title} onImageClick={handleImageClick} />
 
         <ArtActions
-          art={{ id: art.id, artName: art.artName, isForSale: art.isForSale, downloadingDisabled: art.downloadingDisabled, price }}
+          art={{ 
+            id: art.id, 
+            artName: art.artName, 
+            isForSale: canBuy, 
+            downloadingDisabled: !canDownload, 
+            price 
+          }}
           stats={{ isLiked: data.data.isLiked, likeCount: data.data.likeCount || 0, isFavorited: data.data.isFavorited, favoriteCount: data.data.favoriteCount || 0, commentCount: data.data.commentCount || 0 }}
           user={{ isAuthenticated: user.isAuthenticated }}
           handlers={{ 
@@ -144,9 +167,11 @@ const ArtPage: React.FC = () => {
             onCloseLikes: () => setShowLikes(false), 
             onCloseFavorites: () => setShowFavorites(false),
             onReport: () => setShowReport(true),
-            onCloseReport: () => setShowReport(false)
+            onCloseReport: () => setShowReport(false),
+            onDownload: handleDownload
           }}
           modals={{ showLikes, showFavorites, showReport }}
+          isDownloading={downloadArtMutation.isPending}
         />
 
         <ArtInfo
@@ -159,12 +184,13 @@ const ArtPage: React.FC = () => {
       </div>
 
       <ArtSidebar
-        isForSale={art.isForSale}
+        isForSale={canBuy}
         price={price}
-        onBuy={() => console.log("Buy clicked")}
+        onBuy={() => handleBuy()}
         recommendedArts={recommendedArts}
         isRecLoading={isRecLoading}
         observerTarget={observerTarget as React.RefObject<HTMLDivElement>}
+        isBuying={buyArtMutation.isPending}
       />
 
       <ZoomOverlay

@@ -14,6 +14,9 @@ import {
 interface SendMessageParams {
   conversationId: string;
   content: string;
+  mediaType?: "TEXT" | "IMAGE";
+  tempId?: string;
+  mediaUrl?: string;
 }
 
 export const useSendMessage = () => {
@@ -22,7 +25,7 @@ export const useSendMessage = () => {
   const conversations = useSelector(selectConversations);
 
   const sendMessage = useCallback(
-    async ({ conversationId, content }: SendMessageParams) => {
+    async ({ conversationId, content, mediaType = "TEXT", tempId, mediaUrl }: SendMessageParams) => {
       if (!currentUserId) {
         console.error("No current user ID");
         return;
@@ -36,7 +39,7 @@ export const useSendMessage = () => {
         return;
       }
 
-      const id = `temp-${Date.now()}`;
+      const id = tempId || `temp-${Date.now()}`;
       const tempMessage: Message = {
         id,
         conversationId,
@@ -47,12 +50,15 @@ export const useSendMessage = () => {
         updatedAt: new Date().toISOString(),
         readBy: [],
         tempId: id,
+        mediaType,
+        mediaUrl: mediaUrl,
       };
 
       console.log("📤 Sending message via socket:", {
         conversationId,
         content: content.trim(),
-        id
+        id,
+        mediaType
       });
 
       dispatch(addMessage(tempMessage));
@@ -73,7 +79,8 @@ export const useSendMessage = () => {
         socket.emit("sendMessage", {
           conversationId,
           content: content.trim(),
-          id,
+          tempId: id,
+          mediaType,
         });
       } catch (error) {
         console.error("❌ Failed to send message via socket:", error);

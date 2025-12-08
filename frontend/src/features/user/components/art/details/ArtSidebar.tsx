@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import RecommendedArtCard from "../RecommendedArtCard";
 import BuyBox from "./BuyBox";
 
@@ -19,6 +19,7 @@ interface ArtSidebarProps {
   }>;
   isRecLoading: boolean;
   observerTarget: React.RefObject<HTMLDivElement>;
+  isBuying?: boolean;
 }
 
 const ArtSidebar: React.FC<ArtSidebarProps> = ({
@@ -28,10 +29,11 @@ const ArtSidebar: React.FC<ArtSidebarProps> = ({
   recommendedArts,
   isRecLoading,
   observerTarget,
+  isBuying,
 }) => {
   return (
     <div className="w-full lg:w-[340px] shrink-0 mt-4 lg:mt-0">
-      {isForSale && <BuyBox price={price} onBuy={onBuy} />}
+      {isForSale && <BuyBox price={price} onBuy={onBuy} isLoading={isBuying} />}
 
       <div className="bg-zinc-900/50 rounded-xl p-3 border border-zinc-800/50">
         <h3 className="text-base font-semibold mb-3 text-white">Recommended</h3>
@@ -53,7 +55,7 @@ const ArtSidebar: React.FC<ArtSidebarProps> = ({
               No recommendations found.
             </div>
           )}
-          <div ref={observerTarget} className="h-2 w-full col-span-full" />
+          <div className="h-2 w-full col-span-full" />
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Clock, Check, CheckCheck, MoreVertical } from "lucide-react";
 import type { Message } from "../../../../../types/chat/chat";
+import { MediaType } from "../../../../../types/chat/chat";
 
 const MessageBubble: React.FC<{
   message: Message;
@@ -50,10 +51,28 @@ const MessageBubble: React.FC<{
           </p>
         ) : (
           <>
-            {message.content && (
-              <p className="text-sm whitespace-pre-wrap break-words">
-                {message.content}
-              </p>
+            {message.mediaType === MediaType.IMAGE ? (
+              <div className="relative">
+                <img
+                  src={message.mediaUrl}
+                  alt="Shared image"
+                  className={`max-w-[240px] md:max-w-[320px] rounded-lg ${
+                    !message.mediaUrl ? "blur-sm" : ""
+                  }`}
+                  loading="lazy"
+                />
+                {!message.mediaUrl && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  </div>
+                )}
+              </div>
+            ) : (
+              message.content && (
+                <p className="text-sm whitespace-pre-wrap break-words">
+                  {message.content}
+                </p>
+              )
             )}
 
             <p

@@ -16,7 +16,6 @@ import {
 } from "../../../../components/ui/select";
 import { useState } from "react";
 import { useGetTransactions } from "../../hooks/wallet/useGetTransactions";
-import { Button } from "../../../../components/ui/button";
 import {
   CheckCircle,
   XCircle,
@@ -26,6 +25,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from "lucide-react";
+import { Pagination } from "./Pagination";
 
 export default function TransactionsTable() {
   const METHODS = ["stripe", "razorpay"] as const;
@@ -384,22 +384,12 @@ export default function TransactionsTable() {
         </TableBody>
       </Table>
 
-      <div className="flex justify-center gap-2 mt-4">
-        {Array.from({ length: totalPages }, (_, i) => (
-          <Button
-            key={i}
-            variant={i + 1 === page ? "default" : "outline"}
-            onClick={() => setPage(i + 1)}
-            className={
-              i + 1 === page
-                ? "!bg-main-color"
-                : "border-zinc-700 text-gray-400"
-            }
-          >
-            {i + 1}
-          </Button>
-        ))}
-      </div>
+      <Pagination 
+        page={page} 
+        totalPages={totalPages} 
+        isLoading={false} 
+        onPageChange={setPage} 
+      />
     </div>
   );
 }

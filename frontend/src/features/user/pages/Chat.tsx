@@ -82,9 +82,9 @@ const Chat: React.FC = () => {
   }, [navigate]);
 
   const handleSendMessage = useCallback(
-    (text: string) => {
+    (params: { content: string; mediaType?: "TEXT" | "IMAGE"; tempId?: string; mediaUrl?: string }) => {
       if (!conversationId) return;
-      sendMessage({ conversationId, content: text });
+      sendMessage({ conversationId, ...params });
     },
     [conversationId, sendMessage]
   );

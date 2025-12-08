@@ -47,3 +47,35 @@ export const useDeleteCommentMutation = (postId: string) => {
     },
   });
 };
+
+export const useBuyArtMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (artId: string) => apiClient.post(`/api/v1/art/buy/${artId}`),
+    onSuccess: (data, artId) => {
+      toast.success("Art purchased successfully!");
+      queryClient.invalidateQueries({ queryKey: ["art", artId] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
+    },
+    onError: (error: any) => {
+      console.error("Buy art failed:", error);
+      toast.error(error.response?.data?.message || "Failed to buy art");
+    },
+  });
+};
+
+export const useDownloadArtMutation = () => {
+  return useMutation({
+    mutationFn: (artId: string) => apiClient.get(`/api/v1/art/download/${artId}`),
+    onSuccess: (data) => {
+      const { downloadUrl } = data.data;
+      if (downloadUrl) {
+        window.open(downloadUrl, "_blank");
+      }
+    },
+    onError: (error: any) => {
+      console.error("Download art failed:", error);
+      toast.error(error.response?.data?.message || "Failed to download art");
+    },
+  });
+};

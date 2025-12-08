@@ -6,9 +6,10 @@ interface BuyBoxProps {
     fiat?: number;
   };
   onBuy: () => void;
+  isLoading?: boolean;
 }
 
-const BuyBox: React.FC<BuyBoxProps> = ({ price, onBuy }) => {
+const BuyBox: React.FC<BuyBoxProps> = ({ price, onBuy, isLoading }) => {
   return (
     <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4 shadow-lg">
       <h3 className="text-base font-semibold text-white mb-3">Purchase Artwork</h3>
@@ -22,9 +23,10 @@ const BuyBox: React.FC<BuyBoxProps> = ({ price, onBuy }) => {
 
       <button
         onClick={onBuy}
-        className="w-full bg-main-color hover:bg-main-color/90 text-white font-bold py-2.5 px-4 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-md"
+        disabled={isLoading}
+        className={`w-full bg-main-color hover:bg-main-color/90 text-white font-bold py-2.5 px-4 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-md ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
-        Buy Now
+        {isLoading ? 'Processing...' : 'Buy Now'}
       </button>
       
       <p className="text-xs text-zinc-500 mt-3 text-center">
