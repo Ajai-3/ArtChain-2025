@@ -28,6 +28,7 @@ router.patch(ROUTES.WALLET.UPDATE, walletController.updateWallet);
 // Trascation Controller Routes
 router.get(ROUTES.TRANSACTION.GET_TRANSACTIONS, transactionController.getTransactions);
 router.post(ROUTES.TRANSACTION.CREATE_TRANSACTION, transactionController.createTransaction);
+router.post(ROUTES.TRANSACTION.PURCHASE, transactionController.processPurchase);
 
 // Stripe Controller Routes
 router.post(

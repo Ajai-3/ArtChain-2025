@@ -23,6 +23,7 @@ export const ROUTES = {
   TRANSACTION: {
     GET_TRANSACTIONS: "/get-transactions",
     CREATE_TRANSACTION: "/create-transaction",
+    PURCHASE: "/transaction/purchase",
   },
 
   // Stripe routes

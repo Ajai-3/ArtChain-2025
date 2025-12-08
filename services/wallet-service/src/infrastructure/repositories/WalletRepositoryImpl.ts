@@ -54,4 +54,24 @@ export class WalletRepositoryImpl
 
     return { earned, spent, avgTransaction };
   }
+
+  async getRecentTransactions(walletId: string, limit: number) {
+    const txs = await prisma.transaction.findMany({
+      where: { walletId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+    
+    // Map to frontend expected format if needed, but for now return raw with mapped date
+    return txs.map(tx => ({
+      id: tx.id,
+      date: tx.createdAt.toISOString(), // Frontend expects string date
+      type: tx.type === "credited" ? "Earned" : "Spent", // Frontend expects "Earned" / "Spent"
+      amount: tx.amount,
+      category: tx.category,
+      status: tx.status,
+      method: tx.method,
+      description: tx.description
+    }));
+  }
 }

@@ -16,12 +16,14 @@ import { IGetWalletUseCase } from "../../application/interface/usecase/wallet/IG
 import { IGetStripeSessionUseCase } from "../../application/interface/usecase/IGetStripeSessionUseCase";
 import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/IHandleStripeWebhookUseCase";
 import { IGetTransactionsUseCase } from "../../application/interface/usecase/transaction/IGetTransactionsUseCase";
+import { IProcessPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessPurchaseUseCase";
 import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/ICreateStripeCheckoutSessionUseCase";
 
 import { GetWalletUseCase } from "../../application/usecases/wallet/GetWalletUseCase";
 import { GetStripeSessionUseCase } from "../../application/usecases/GetStripeSessionUseCase";
 import { HandleStripeWebhookUseCase } from "../../application/usecases/HandleStripeWebhookUseCase";
 import { GetTransactionsUseCase } from "../../application/usecases/transaction/GetTransactionsUseCase";
+import { ProcessPurchaseUseCase } from "../../application/usecases/transaction/ProcessPurchaseUseCase";
 import { CreateStripeCheckoutSessionUseCase } from "../../application/usecases/CreateStripeCheckoutSessionUseCase";
 
 // Controllers
@@ -57,6 +59,9 @@ container.bind<IGetWalletUseCase>(TYPES.IGetWalletUseCase).to(GetWalletUseCase);
 container
   .bind<IGetTransactionsUseCase>(TYPES.IGetTransactionsUseCase)
   .to(GetTransactionsUseCase);
+container
+  .bind<IProcessPurchaseUseCase>(TYPES.IProcessPurchaseUseCase)
+  .to(ProcessPurchaseUseCase);
 container
   .bind<ICreateStripeCheckoutSessionUseCase>(
     TYPES.ICreateStripeCheckoutSessionUseCase

@@ -13,6 +13,7 @@ export const TYPES = {
   ICreateStripeCheckoutSessionUseCase: Symbol.for(
     "ICreateStripeCheckoutSessionUseCase"
   ),
+  IProcessPurchaseUseCase: Symbol.for("IProcessPurchaseUseCase"),
 
   // Controller
   IStripeController: Symbol.for("IStripeController"),
