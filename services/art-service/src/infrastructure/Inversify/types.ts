@@ -21,6 +21,7 @@ export const TYPES = {
   IGetShopArtsByUserUseCase: Symbol.for("IGetShopArtsByUserUseCase"),
   IArtToElasticSearchUseCase: Symbol.for("IArtToElasticSearchUseCase"),
   IGetAllArtWithUserIdUseCase: Symbol.for("IGetAllArtWithUserIdUseCase"),
+  IBuyArtUseCase: Symbol.for("IBuyArtUseCase"),
 
   // Use Cases - Category
   IEditCategoryUseCase: Symbol.for("IEditCategoryUseCase"),
@@ -73,4 +74,7 @@ export const TYPES = {
   IUpdateArtStatusUseCase: Symbol.for("IUpdateArtStatusUseCase"),
   IAdminArtController: Symbol.for("IAdminArtController"),
   UserServiceClient: Symbol.for("UserServiceClient"),
+  IWalletService: Symbol.for("IWalletService"),
+  IS3Service: Symbol.for("IS3Service"),
+  IDownloadArtUseCase: Symbol.for("IDownloadArtUseCase"),
 };

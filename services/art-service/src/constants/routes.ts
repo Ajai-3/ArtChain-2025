@@ -23,6 +23,8 @@ export const ROUTES = {
     BY_ART_NAME: "/by-name/:artname",
     COUNT: "/count/:userId",
     RECOMMENDED: "/recommended",
+    BUY: "/buy/:id",
+    DOWNLOAD: "/download/:id",
   },
 
   // Comment routes

@@ -46,4 +46,14 @@ export interface IArtController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+  buyArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  downloadArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
 }

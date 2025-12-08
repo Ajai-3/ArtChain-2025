@@ -13,6 +13,8 @@ import { IFavoriteRepository } from "../../domain/repositories/IFavoriteReposito
 import { IAIGenerationRepository } from "../../domain/repositories/IAIGenerationRepository";
 import { IAIConfigRepository } from "../../domain/repositories/IAIConfigRepository";
 import { AIProviderService } from "../service/AIProviderService";
+import { IWalletService } from "../../domain/interfaces/IWalletService";
+import { WalletService } from "../service/WalletService";
 
 import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
 import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
@@ -42,6 +44,12 @@ import { GetAllShopArtsUseCase } from "../../application/usecase/shop/GetAllShop
 import { GetShopArtsByUserUseCase } from "../../application/usecase/shop/GetShopArtsByUserUseCase";
 import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToElasticSearchUseCase";
 import { GetAllArtWithUserIdUseCase } from "../../application/usecase/art/GetAllArtWithUserIdUseCase";
+import { IBuyArtUseCase } from "../../application/interface/usecase/art/IBuyArtUseCase";
+import { BuyArtUseCase } from "../../application/usecase/art/BuyArtUseCase";
+import { IDownloadArtUseCase } from "../../application/interface/usecase/art/IDownloadArtUseCase";
+import { DownloadArtUseCase } from "../../application/usecase/art/DownloadArtUseCase";
+import { IS3Service } from "../../domain/interfaces/IS3Service";
+import { S3Service } from "../../infrastructure/service/S3Service";
 
 // Use Cases - Category
 import { IEditCategoryUseCase } from "../../application/interface/usecase/category/IEditCategoryUseCase";
@@ -156,6 +164,7 @@ container.bind<IUpdateAIConfigUseCase>(TYPES.IUpdateAIConfigUseCase).to(UpdateAI
 container.bind<IGetAIConfigsUseCase>(TYPES.IGetAIConfigsUseCase).to(GetAIConfigsUseCase);
 container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAnalyticsUseCase);
 container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
+container.bind<IWalletService>(TYPES.IWalletService).to(WalletService);
 
 // AI Controllers
 container.bind<IAIController>(TYPES.IAIController).to(AIController);
@@ -187,6 +196,11 @@ container
 container
   .bind<IGetAllArtWithUserIdUseCase>(TYPES.IGetAllArtWithUserIdUseCase)
   .to(GetAllArtWithUserIdUseCase);
+container.bind<IBuyArtUseCase>(TYPES.IBuyArtUseCase).to(BuyArtUseCase);
+container.bind<IDownloadArtUseCase>(TYPES.IDownloadArtUseCase).to(DownloadArtUseCase);
+
+// Services
+container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
 
 // Use Cases - Category
 container
