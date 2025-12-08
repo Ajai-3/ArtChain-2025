@@ -11,4 +11,9 @@ export interface ITransactionController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+  processPurchase(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
 }
