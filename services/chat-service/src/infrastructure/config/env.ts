@@ -13,4 +13,5 @@ export const env = {
   jwt: {
     accessSecret: secrets.jwtAccessSecret,
   },
+  aws_cdn_domain: secrets.aws_cdn_domain,
 };

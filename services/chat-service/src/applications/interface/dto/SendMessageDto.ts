@@ -5,4 +5,5 @@ export interface SendMessageDto {
   senderId: string;
   receiverId?: string;
   conversationId: string;
+  mediaType?: string;
 }
