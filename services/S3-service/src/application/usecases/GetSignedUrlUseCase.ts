@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { IGetSignedUrlUseCase } from "../../interface/usecases/IGetSignedUrlUseCase";
-import { TYPES } from "../../../infrastructure/inversify/types";
+import { TYPES } from "../../infrastructure/inversify/types";
 import { IFileRepository } from "../../../domain/repositories/IFileRepository";
 import { FileCategory } from "../../../types/FileCategory";
 

@@ -14,6 +14,7 @@ export const config = {
     art_bucket_public: process.env.AWS_ART_BUCKET_PUBLIC!,
     art_acl: process.env.AWS_ART_ACL!,
     chat_bucket: process.env.AWS_CHAT_BUCKET!,
+    bidding_bucket: process.env.AWS_BIDDING_BUCKET!,
     cdn_domain: process.env.AWS_CDN_DOMAIN!,
   },
 };

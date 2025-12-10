@@ -1,4 +1,4 @@
-export type FileCategory = "profile" | "banner" | "art" | "background" | "chat";
+export type FileCategory = "profile" | "banner" | "art" | "background" | "chat" | "bidding";
 
 export const FILE_CATEGORIES: Record<FileCategory, FileCategory> = {
   profile: "profile",
