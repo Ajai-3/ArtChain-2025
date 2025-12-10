@@ -7,6 +7,7 @@ import {
 import { addConversation, addOrReplaceMessage, markMessagesAsRead } from "../redux/slices/chatSlice";
 import type { Message } from "../types/chat/chat";
 import { updateOnlineUsers, addTypingUser, removeTypingUser } from "../features/user/hooks/chat/presenceStore";
+import { addBid } from "../redux/slices/biddingSlice";
 
 
 export const registerChatSocketEvents = (socket: Socket) => {
@@ -100,5 +101,20 @@ export const registerNotificationSocketEvents = (socket: Socket) => {
 
   socket.on("connect_error", (err) =>
     console.error("❌ Notification socket error:", err.message)
+  );
+};
+
+export const registerBiddingSocketEvents = (socket: Socket) => {
+  socket.on("connect", () =>
+    console.log("✅ Bidding socket connected:", socket.id)
+  );
+
+  socket.on("bid_placed", (newBid: any) => {
+    console.log("🔨 New Bid Placed:", newBid);
+    store.dispatch(addBid(newBid));
+  });
+
+  socket.on("connect_error", (err) =>
+    console.error("❌ Bidding socket error:", err.message)
   );
 };
