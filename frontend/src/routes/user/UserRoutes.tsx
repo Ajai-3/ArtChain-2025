@@ -19,10 +19,13 @@ const SignupPassword = lazy(
 );
 const Chat = lazy(() => import("../../features/user/pages/Chat"));
 const Liora = lazy(() => import("../../features/user/pages/Liora"));
-const Bidding = lazy(() => import("../../features/user/pages/Bidding"));
+
 const Shop = lazy(() => import("../../features/user/pages/Shop"));
 const Wallet = lazy(() => import("../../features/user/pages/Wallet"));
 const ArtPage = lazy(() => import("../../features/user/pages/ArtPage"));
+const BiddingPage = lazy(() => import("../../features/user/pages/bidding/BiddingPage"));
+const BiddingListPage = lazy(() => import("../../features/user/pages/bidding/BiddingListPage"));
+const BiddingDetailPage = lazy(() => import("../../features/user/pages/bidding/BiddingDetailPage"));
 
 // Profile tabs
 const ProfileGallery = lazy(
@@ -87,12 +90,18 @@ const UserRoutes = (
     <Route path={ROUTES.HOME} element={<UserLayout />}>
       <Route index element={<Home />} />
       <Route path="liora.ai" element={<Liora />} />
-      <Route path="bidding" element={<Bidding />} />
+
       <Route path="shop" element={<Shop />} />
       <Route path="wallet" element={<Wallet />} />
       <Route path="test" element={<Test />} />
       <Route path="success" element={<SuccessPage />} />
+
       <Route path={ROUTE_PATTERNS.ART_PAGE} element={<ArtPage />} />
+
+      <Route path="bidding" element={<BiddingPage />}>
+        <Route index element={<BiddingListPage />} />
+        <Route path=":id" element={<BiddingDetailPage />} />
+      </Route>
 
       <Route path="chat" element={<Chat />} />
       <Route path={ROUTE_PATTERNS.CHAT_CONVERSATION} element={<Chat />} />

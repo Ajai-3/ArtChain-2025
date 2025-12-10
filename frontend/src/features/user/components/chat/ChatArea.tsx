@@ -10,7 +10,7 @@ import { useUserResolver } from "../../hooks/chat/useUserResolver";
 import { useInitialMessages } from "../../hooks/chat/useInitialMessages";
 import { getChatSocket } from "../../../../socket/socketManager";
 import { useMarkRead } from "../../hooks/chat/useMarkRead";
-import { uploadImage } from "../../../../api/user/upload";
+import { useChatUpload } from "../../hooks/chat/useChatUpload";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +50,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 
   const [showDetails, setShowDetails] = useState(false);
   const [previewImage, setPreviewImage] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
+  const { uploadImage, uploading: isUploading } = useChatUpload();
   const userCache = useSelector(selectUserCache);
 
   const senderIds = useMemo(
@@ -95,63 +95,15 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   const handleConfirmSend = async () => {
     if (!previewImage) return;
 
-    setIsUploading(true);
     const tempId = `temp-${Date.now()}`;
-
-    // Show temporary message immediately (handled by onSendMessage which calls sendMessage hook which adds to store)
-    // But we need the key first? 
-    // User wants: "shwo a simpel preview like in watsam and whe n user lik thn ormal sne message in th chat i need send okay so jest shwo th image as previ messag qith th temp i"
-    // So show temp message with BLURRED image (local preview) while uploading.
     
-    // To do this, we can call onSendMessage with a special "temp-image" content or handle it in the hook.
-    // But the hook expects `content` to be the message content.
-    // If we send the image, the `content` will be the key.
+    const result = await uploadImage(previewImage);
     
-    // Strategy:
-    // 1. Upload first.
-    // 2. Then send message.
-    // User said: "shwo a simpel preview like in watsam... show ablured top lare dn loader okay liek image is sendign okay then thsi actluy need to call th s3 servide to upload"
-    // This implies showing the message in the chat list BEFORE upload completes.
-    
-    // However, `useSendMessage` adds the message to the store immediately.
-    // If I pass the local object URL as content, it might work for display if I handle it in MessageBubble.
-    // But backend expects key.
-    
-    // Let's stick to: Upload -> Send. 
-    // Because `useSendMessage` emits socket event immediately too.
-    // If I emit socket event with local URL, other users won't see it.
-    
-    // Wait, `useSendMessage` does: dispatch(addMessage) AND socket.emit.
-    // I can modify `useSendMessage` to NOT emit if it's a temp image? No.
-    
-    // User said: "show ablured top lare dn loader okay liek image is sendign okay then thsi actluy need to call th s3 servide to upload... after thant cresaving image in s3 it call http to chat service"
-    
-    // Okay, the user wants a complex flow:
-    // 1. Show temp message in UI (local only).
-    // 2. Upload to S3.
-    // 3. Call backend (HTTP) to save message.
-    // 4. Backend broadcasts.
-    
-    // My current `useSendMessage` uses Socket to send.
-    // User asked for HTTP call? "call http to chat service through the gatway"
-    // But `useSendMessage` uses socket.
-    
-    // If I use socket, it's easier.
-    // I will Upload -> Send (Socket).
-    // The "sending" state will be the upload progress (modal loader).
-    // Once uploaded, it sends.
-    // This is simpler and robust.
-    
-    try {
-      const { key } = await uploadImage(previewImage);
-      const mediaUrl = URL.createObjectURL(previewImage);
-      onSendMessage({ content: key, mediaType: "IMAGE", tempId, mediaUrl });
-      setPreviewImage(null);
-    } catch (error) {
-      console.error("Failed to upload image", error);
-      alert("Failed to upload image");
-    } finally {
-      setIsUploading(false);
+    if (result) {
+        const { key } = result;
+        const mediaUrl = URL.createObjectURL(previewImage);
+        onSendMessage({ content: key, mediaType: "IMAGE", tempId, mediaUrl });
+        setPreviewImage(null);
     }
   };
 

@@ -1,9 +1,10 @@
 import { useEffect, type ReactNode } from "react";
 import { initSocket, disconnectSocket } from "../../socket";
-import { registerChatSocketEvents, registerNotificationSocketEvents } from "../../socket/socketEvents";
+import { registerChatSocketEvents, registerNotificationSocketEvents, registerBiddingSocketEvents } from "../../socket/socketEvents";
 import {
   setNotificationSocket,
   setChatSocket,
+  setBiddingSocket,
 } from "../../socket/socketManager";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
@@ -22,17 +23,21 @@ export const SocketProvider = ({ children }: Props) => {
 
     const notificationSocket = initSocket(accessToken, "http://localhost:4005");
     const chatSocket = initSocket(accessToken, "http://localhost:4007");
+    const biddingSocket = initSocket(accessToken, import.meta.env.VITE_ART_SERVICE_URL || "http://localhost:4002");
 
     // Save them in manager so they can be disconnected later
     setNotificationSocket(notificationSocket);
     setChatSocket(chatSocket);
+    setBiddingSocket(biddingSocket);
 
      registerNotificationSocketEvents(notificationSocket);
      registerChatSocketEvents(chatSocket);
+     registerBiddingSocketEvents(biddingSocket);
 
     return () => {
       disconnectSocket(notificationSocket);
       disconnectSocket(chatSocket);
+      disconnectSocket(biddingSocket);
     };
   }, [accessToken]);
 
