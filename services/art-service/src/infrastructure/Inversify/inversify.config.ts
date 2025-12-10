@@ -145,6 +145,26 @@ import { UpdateArtStatusUseCase } from "../../application/usecase/admin/UpdateAr
 import { IAdminArtController } from "../../presentation/interface/IAdminArtController";
 import { AdminArtController } from "../../presentation/controllers/AdminArtController";
 
+// Bidding Imports
+import { IAuctionRepository } from "../../domain/repositories/IAuctionRepository";
+import { IBidRepository } from "../../domain/repositories/IBidRepository";
+import { AuctionRepositoryImpl } from "../repositories/AuctionRepositoryImpl";
+import { BidRepositoryImpl } from "../repositories/BidRepositoryImpl";
+import { ICreateAuctionUseCase } from "../../application/interface/usecase/auction/ICreateAuctionUseCase";
+import { CreateAuctionUseCase } from "../../application/usecase/auction/CreateAuctionUseCase";
+import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction/IGetAuctionsUseCase";
+import { GetAuctionsUseCase } from "../../application/usecase/auction/GetAuctionsUseCase";
+import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
+import { GetAuctionByIdUseCase } from "../../application/usecase/auction/GetAuctionByIdUseCase";
+import { IPlaceBidUseCase } from "../../application/interface/usecase/bid/IPlaceBidUseCase";
+import { PlaceBidUseCase } from "../../application/usecase/bid/PlaceBidUseCase";
+import { IGetBidsUseCase } from "../../application/interface/usecase/bid/IGetBidsUseCase";
+import { GetBidsUseCase } from "../../application/usecase/bid/GetBidsUseCase";
+import { IAuctionController } from "../../presentation/interface/IAuctionController";
+import { AuctionController } from "../../presentation/controllers/AuctionController";
+import { IBidController } from "../../presentation/interface/IBidController";
+import { BidController } from "../../presentation/controllers/BidController";
+
 
 // AI Repositories
 container.bind<IArtPostRepository>(TYPES.IArtPostRepository).to(ArtPostRepositoryImpl);
@@ -200,7 +220,11 @@ container.bind<IBuyArtUseCase>(TYPES.IBuyArtUseCase).to(BuyArtUseCase);
 container.bind<IDownloadArtUseCase>(TYPES.IDownloadArtUseCase).to(DownloadArtUseCase);
 
 // Services
+import { ISocketService } from "../../domain/interfaces/ISocketService";
+import { SocketService } from "../service/SocketService";
+
 container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
+container.bind<ISocketService>(TYPES.ISocketService).to(SocketService).inSingletonScope();
 
 // Use Cases - Category
 container
@@ -278,5 +302,18 @@ container.bind<IGetAllArtsUseCase>(TYPES.IGetAllArtsUseCase).to(GetAllArtsUseCas
 container.bind<IGetArtStatsUseCase>(TYPES.IGetArtStatsUseCase).to(GetArtStatsUseCase);
 container.bind<IUpdateArtStatusUseCase>(TYPES.IUpdateArtStatusUseCase).to(UpdateArtStatusUseCase);
 container.bind<IAdminArtController>(TYPES.IAdminArtController).to(AdminArtController);
+
+// Bidding Bindings
+container.bind<IAuctionRepository>(TYPES.IAuctionRepository).to(AuctionRepositoryImpl);
+container.bind<IBidRepository>(TYPES.IBidRepository).to(BidRepositoryImpl);
+
+container.bind<ICreateAuctionUseCase>(TYPES.ICreateAuctionUseCase).to(CreateAuctionUseCase);
+container.bind<IGetAuctionsUseCase>(TYPES.IGetAuctionsUseCase).to(GetAuctionsUseCase);
+container.bind<IGetAuctionByIdUseCase>(TYPES.IGetAuctionByIdUseCase).to(GetAuctionByIdUseCase);
+container.bind<IPlaceBidUseCase>(TYPES.IPlaceBidUseCase).to(PlaceBidUseCase);
+container.bind<IGetBidsUseCase>(TYPES.IGetBidsUseCase).to(GetBidsUseCase);
+
+container.bind<IAuctionController>(TYPES.IAuctionController).to(AuctionController);
+container.bind<IBidController>(TYPES.IBidController).to(BidController);
 
 export { container };

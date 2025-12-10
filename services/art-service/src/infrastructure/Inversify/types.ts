@@ -5,6 +5,8 @@ export const TYPES = {
   ICommentRepository: Symbol.for("ICommentRepository"),
   ICategoryRepository: Symbol.for("ICategoryRepository"),
   IFavoriteRepository: Symbol.for("IFavoriteRepository"),
+  IAuctionRepository: Symbol.for("IAuctionRepository"),
+  IBidRepository: Symbol.for("IBidRepository"),
 
   // AI Repositories
   IAIGenerationRepository: Symbol.for("IAIGenerationRepository"),
@@ -57,7 +59,14 @@ export const TYPES = {
   IGetAIConfigsUseCase: Symbol.for("IGetAIConfigsUseCase"),
   IGetAIAnalyticsUseCase: Symbol.for("IGetAIAnalyticsUseCase"),
 
-  // Controllers
+
+  
+  // Use Cases - Bidding
+  ICreateAuctionUseCase: Symbol.for("ICreateAuctionUseCase"),
+  IGetAuctionsUseCase: Symbol.for("IGetAuctionsUseCase"),
+  IGetAuctionByIdUseCase: Symbol.for("IGetAuctionByIdUseCase"),
+  IPlaceBidUseCase: Symbol.for("IPlaceBidUseCase"),
+  IGetBidsUseCase: Symbol.for("IGetBidsUseCase"),
   IArtController: Symbol.for("IArtController"),
   IShopController: Symbol.for("IShopController"),
   ILikeController: Symbol.for("ILikeController"),
@@ -66,6 +75,8 @@ export const TYPES = {
   ICategoryController: Symbol.for("ICategoryController"),
   IAIController: Symbol.for("IAIController"),
   IAdminAIController: Symbol.for("IAdminAIController"),
+  IAuctionController: Symbol.for("IAuctionController"),
+  IBidController: Symbol.for("IBidController"),
 
   // Admin Art
   IAdminArtRepository: Symbol.for("IAdminArtRepository"),
@@ -77,4 +88,5 @@ export const TYPES = {
   IWalletService: Symbol.for("IWalletService"),
   IS3Service: Symbol.for("IS3Service"),
   IDownloadArtUseCase: Symbol.for("IDownloadArtUseCase"),
+  ISocketService: Symbol.for("ISocketService"),
 };

@@ -32,4 +32,24 @@ export class WalletService implements IWalletService {
       return false;
     }
   }
+
+  async lockFunds(userId: string, amount: number, auctionId: string): Promise<boolean> {
+    try {
+      const response = await axios.post(`${this.baseUrl}/wallet/lock`, { userId, amount, auctionId });
+      return response.status === 200 || response.status === 201;
+    } catch (error: any) {
+      console.error(`Failed to lock funds for user ${userId}: ${error.message}`);
+      return false;
+    }
+  }
+
+  async unlockFunds(userId: string, amount: number, auctionId: string): Promise<boolean> {
+    try {
+      const response = await axios.post(`${this.baseUrl}/wallet/unlock`, { userId, amount, auctionId });
+      return response.status === 200 || response.status === 201;
+    } catch (error: any) {
+      console.error(`Failed to unlock funds for user ${userId}: ${error.message}`);
+      return false;
+    }
+  }
 }

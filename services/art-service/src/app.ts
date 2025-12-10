@@ -23,6 +23,8 @@ app.use(ROUTES.BASE, artRouter);
 app.use(ROUTES.BASE, aiRouter);
 app.use(ROUTES.BASE, adminAIRouter);
 app.use(ROUTES.BASE, adminArtRouter);
+import biddingRouter from "./presentation/routes/bidding.routes";
+app.use(ROUTES.BASE, biddingRouter);
 
 app.use(createErrorHandler(false))
 

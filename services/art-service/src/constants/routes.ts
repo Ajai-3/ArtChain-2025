@@ -81,5 +81,13 @@ export const ROUTES = {
     STATS: "/stats",
     STATUS: "/:id/status",
   },
+  
+  // Auction routes
+  AUCTION: {
+    BASE: "/auctions",
+    BY_ID: "/auctions/:id",
+    BIDS: "/bids/:auctionId",
+    PLACE_BID: "/bids",
+  },
 } as const;
 
