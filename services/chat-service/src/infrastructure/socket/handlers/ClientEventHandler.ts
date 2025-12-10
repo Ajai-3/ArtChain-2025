@@ -38,7 +38,7 @@ export class ClientEventHandler implements IClientEventHandler {
 
     try {
       const dto: SendMessageDto = {
-        tempId: payload.id,
+        tempId: payload.tempId,
         conversationId: payload.conversationId,
         senderId: userId,
         receiverId: payload.receiverId,
@@ -81,7 +81,7 @@ export class ClientEventHandler implements IClientEventHandler {
     }
   };
 
-  convoOpened = (
+  convoOpened = async (
     socket: Socket,
     payload: { conversationId: string; time: Date }
   ) => {
@@ -90,6 +90,18 @@ export class ClientEventHandler implements IClientEventHandler {
     
     console.log(`User ${userId} opened conversation ${conversationId}`);
     socket.join(conversationId);
+
+    try {
+        // Mark all messages as read when conversation is opened
+        await this._markMessagesReadUseCase.execute([], userId, conversationId);
+        
+        // Notify others that messages have been read (optional, handled by case or here?)
+        // The use case invalidates cache. We might want to emit 'messagesRead' to sender?
+        // But we don't know WHICH messages were read easily without returning them.
+        // For now, just marking them read is the requirement.
+    } catch (error) {
+        console.error("Error marking messages read on open:", error);
+    }
 
     socket.to(conversationId).emit("userJoined", { userId });
   };
