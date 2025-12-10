@@ -85,4 +85,23 @@ export class MessageRepositoryImp
       count: Number(r.count),
     }));
   }
+
+  async markAllRead(conversationId: string, userId: string): Promise<void> {
+    try {
+      const result = await this.model.updateMany(
+        {
+           conversationId: conversationId,
+           senderId: { $ne: userId }, // Don't mark own messages as read (optional, but good practice)
+           readBy: { $ne: userId }
+        },
+        {
+          $addToSet: { readBy: userId }
+        }
+      );
+      console.log(`Marked ${result.modifiedCount} messages as read in conversation ${conversationId} for user ${userId}`);
+    } catch (error) {
+       console.error("Error marking all messages as read:", error);
+       throw error;
+    }
+  }
 }
