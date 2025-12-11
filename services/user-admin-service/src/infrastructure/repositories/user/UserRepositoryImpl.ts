@@ -18,8 +18,6 @@ export class UserRepositoryImpl
     return safe;
   }
 
-  // findById is inherited from BaseRepositoryImpl
-
   async findByEmail(email: string): Promise<SafeUser | null> {
     const user = await this.model.findUnique({ where: { email } });
     return user ? this.toSafe(user) : null;
@@ -130,6 +128,7 @@ export class UserRepositoryImpl
         name: true,
         email: true,
         profileImage: true,
+        isVerified: true,
         plan: true,
         role: true,
         status: true,
