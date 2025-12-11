@@ -23,30 +23,42 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
       limit = 10,
       filterStatus?: string,
       startDate?: Date,
-      endDate?: Date
-    ): Promise<Auction[]> {
+      endDate?: Date,
+      hostId?: string
+    ): Promise<{ auctions: Auction[]; total: number }> {
     
     const query: any = {};
     
-    // Status Filter
+    if (hostId) {
+        query.hostId = hostId;
+    }
+    
     if (filterStatus && filterStatus !== 'ALL') {
         query.status = filterStatus;
-    } else {
-        query.status = { $in: ['SCHEDULED', 'ACTIVE'] };
+    } else if (!hostId) {
+        query.status = { $in: ['SCHEDULED', 'ACTIVE', 'ENDED'] };
     }
 
-    // Date Filter (based on startTime)
+    if (!filterStatus && hostId) {
+         query.status = { $in: ['SCHEDULED', 'ACTIVE', 'ENDED'] };
+    }
+
     if (startDate || endDate) {
         query.startTime = {};
         if (startDate) query.startTime.$gte = startDate;
         if (endDate) query.startTime.$lte = endDate;
     }
 
-    return AuctionModel.find(query)
-      .sort({ status: 1, startTime: 1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean() as unknown as Auction[];
+    const [auctions, total] = await Promise.all([
+        AuctionModel.find(query)
+            .sort({ status: 1, startTime: 1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .lean() as unknown as Auction[],
+        AuctionModel.countDocuments(query)
+    ]);
+
+    return { auctions, total };
   }
 
   async updateStatus(id: string, status: string): Promise<void> {

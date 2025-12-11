@@ -9,7 +9,8 @@ export interface IAuctionRepository extends IBaseRepository<Auction> {
       limit?: number, 
       filterStatus?: string, 
       startDate?: Date,
-      endDate?: Date
-    ): Promise<Auction[]>;
+      endDate?: Date,
+      hostId?: string
+    ): Promise<{ auctions: Auction[]; total: number }>;
   updateStatus(id: string, status: string): Promise<void>;
 }

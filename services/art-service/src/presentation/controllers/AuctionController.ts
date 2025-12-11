@@ -11,6 +11,8 @@ import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
 
 import { createAuctionSchema } from "../validators/auction.schema";
 import { CreateAuctionDTO } from "../../application/interface/dto/auction/CreateAuctionDTO";
+import { GetAuctionsDTO } from "../../application/interface/dto/auction/GetAuctionsDTO";
+import { GetAuctionByIdDTO } from "../../application/interface/dto/auction/GetAuctionByIdDTO";
 
 @injectable()
 export class AuctionController implements IAuctionController {
@@ -95,17 +97,20 @@ export class AuctionController implements IAuctionController {
         `Fetching auctions page=${page} limit=${limit} status=${status}`
       );
 
-      const auctions = await this._getAuctionsUseCase.execute(
+      const dto: GetAuctionsDTO = {
         page,
         limit,
-        status,
+        filterStatus: status,
         startDate,
-        endDate
-      );
+        endDate,
+        hostId: req.query.hostId as string
+      };
+
+      const result = await this._getAuctionsUseCase.execute(dto);
 
       return res.status(HttpStatus.OK).json({
         message: AUCTION_MESSAGES.AUCTIONS_FETCHED,
-        data: auctions,
+        data: result,
       });
     } catch (error) {
       logger.error("Error in getAuctions", error);
@@ -129,7 +134,8 @@ export class AuctionController implements IAuctionController {
       const id = req.params.id;
       logger.info(`Fetching auction by id=${id}`);
 
-      const auction = await this._getAuctionByIdUseCase.execute(id);
+      const dto: GetAuctionByIdDTO = { id };
+      const auction = await this._getAuctionByIdUseCase.execute(dto);
 
       return res.status(HttpStatus.OK).json({
         message: AUCTION_MESSAGES.AUCTION_FETCHED,

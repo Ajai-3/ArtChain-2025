@@ -8,6 +8,7 @@ import { UserService } from "../../../infrastructure/service/UserService";
 import { AuctionMapper } from "../../mapper/AuctionMapper";
 import { NotFoundError } from "art-chain-shared";
 import { AUCTION_MESSAGES } from "../../../constants/AuctionMessages";
+import { GetAuctionByIdDTO } from "../../interface/dto/auction/GetAuctionByIdDTO";
 
 @injectable()
 export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
@@ -17,7 +18,8 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
     @inject(TYPES.IS3Service) private _s3Service: IS3Service
   ) {}
 
-  async execute(id: string): Promise<any | null> {
+  async execute(dto: GetAuctionByIdDTO): Promise<any | null> {
+    const { id } = dto;
     const auction = await this._repository.getById(id);
     if (!auction) {
         throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
@@ -30,6 +32,7 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
 
     const userIds = new Set<string>();
     userIds.add(auction.hostId);
+    if (auction.winnerId) userIds.add(auction.winnerId);
     bids.forEach(bid => userIds.add(bid.bidderId));
 
     const users = await UserService.getUsersByIds([...userIds]);

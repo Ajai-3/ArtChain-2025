@@ -20,13 +20,16 @@ export class AuctionMapper {
           ? {
               id: bidder.id,
               username: bidder.username,
-              name: bidder.name,
+            name: bidder.name,
               profileImage: bidder.profileImage, 
               isVerified: bidder.isVerified,
+              role: bidder.role
             }
           : null,
       };
     });
+
+    const winner = auction.winnerId ? bidderMap.get(auction.winnerId) : null;
 
     return {
       id: auction._id,
@@ -45,9 +48,20 @@ export class AuctionMapper {
             name: host.name,
             profileImage: host.profileImage,
             isVerified: host.isVerified,
+            role: host.role
           }
         : null,
       bids: enrichedBids,
+      winner: winner 
+        ? {
+            id: winner.id,
+            username: winner.username,
+            name: winner.name,
+            profileImage: winner.profileImage,
+            isVerified: winner.isVerified,
+            role: winner.role
+        }
+        : null,
       winnerId: auction.winnerId,
       createdAt: auction.createdAt,
       updatedAt: auction.updatedAt,

@@ -6,6 +6,7 @@ import { UserService } from "../../../infrastructure/service/UserService";
 import { IBidRepository } from "../../../domain/repositories/IBidRepository";
 import { IS3Service } from "../../../domain/interfaces/IS3Service";
 import { AuctionMapper } from "../../mapper/AuctionMapper";
+import { GetAuctionsDTO } from "../../interface/dto/auction/GetAuctionsDTO";
 
 @injectable()
 export class GetAuctionsUseCase implements IGetAuctionsUseCase {
@@ -15,23 +16,30 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     @inject(TYPES.IS3Service) private _s3Service: IS3Service
   ) {}
 
-  async execute(
-    page: number = 1, 
-    limit: number = 10,
-    filterStatus?: string,
-    startDate?: Date,
-    endDate?: Date
-    ): Promise<any[]> {
+  async execute(dto: GetAuctionsDTO): Promise<{ auctions: any[]; total: number }> {
+    const { 
+        page = 1, 
+        limit = 10, 
+        filterStatus, 
+        startDate, 
+        endDate, 
+        hostId 
+    } = dto;
     
-    const auctions = await this._repository.findActiveAuctions(page, limit, filterStatus, startDate, endDate);
+    // Destructure result from repository
+    const { auctions, total } = await this._repository.findActiveAuctions(page, limit, filterStatus, startDate, endDate, hostId);
 
-    if (!auctions.length) return [];
+    if (!auctions.length) return { auctions: [], total: 0 };
     
     const now = new Date();
     const updatedAuctions = await Promise.all(auctions.map(async (auction) => {
         if (auction.status === 'SCHEDULED' && new Date(auction.startTime) <= now) {
             await this._repository.updateStatus(auction._id!, 'ACTIVE');
             return { ...auction, status: 'ACTIVE' }; 
+        }
+        if (auction.status === 'ACTIVE' && new Date(auction.endTime) <= now) {
+            await this._repository.updateStatus(auction._id!, 'ENDED');
+            return { ...auction, status: 'ENDED' };
         }
         return auction;
     }));
@@ -40,6 +48,9 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
 
     const hostIds = finalAuctions.map((a) => a.hostId);
     let allUserIds = new Set<string>(hostIds);
+    finalAuctions.forEach(a => {
+        if(a.winnerId) allUserIds.add(a.winnerId);
+    });
 
     const auctionsData = await Promise.all(
       finalAuctions.map(async (auction) => {
@@ -53,11 +64,14 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     );
 
     const users = await UserService.getUsersByIds([...allUserIds]);
+    console.log(users)
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
-    return auctionsData.map(({ auction, bids, signedImageUrl }) => {
+    const mappedAuctions = auctionsData.map(({ auction, bids, signedImageUrl }) => {
       const host = userMap.get(auction.hostId);
       return AuctionMapper.toDTO(auction, signedImageUrl, host, bids, userMap);
     });
+
+    return { auctions: mappedAuctions, total };
   }
 }

@@ -1,11 +1,5 @@
-import { Auction } from "../../../../domain/entities/Auction";
+import { GetAuctionsDTO } from "../../dto/auction/GetAuctionsDTO";
 
 export interface IGetAuctionsUseCase {
-  execute(
-      page?: number, 
-      limit?: number, 
-      filterStatus?: string, 
-      startDate?: Date,
-      endDate?: Date
-   ): Promise<Auction[]>;
+  execute(dto: GetAuctionsDTO): Promise<{ auctions: any[]; total: number }>;
 }

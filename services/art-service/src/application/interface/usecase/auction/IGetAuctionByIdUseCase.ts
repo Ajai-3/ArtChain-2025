@@ -1,5 +1,5 @@
-import { Auction } from "../../../../domain/entities/Auction";
+import { GetAuctionByIdDTO } from "../../dto/auction/GetAuctionByIdDTO";
 
 export interface IGetAuctionByIdUseCase {
-  execute(id: string): Promise<Auction | null>;
+  execute(dto: GetAuctionByIdDTO): Promise<any | null>;
 }
