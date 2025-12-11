@@ -39,6 +39,9 @@ export const ROUTES = {
     FAVORITES_BY_POST_ID: "/api/v1/art/favorites/:postId",
     FAVORITES_BY_USER: "/api/v1/art/favorites/user/:userId",
     CATEGORY: "/api/v1/art/category",
+    AUCTIONS: "/api/v1/art/auctions",
+    AUCTION_BY_ID: "/api/v1/art/auctions/:id",
+    BIDS: "/api/v1/art/bids",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",

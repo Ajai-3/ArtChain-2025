@@ -67,6 +67,10 @@ export const authRoutesConfig = {
     { path: ROUTES.CHAT.MEMBER, methods: ["DELETE"] },
     { path: ROUTES.CHAT.ADMIN, methods: ["POST"] },
     { path: ROUTES.CHAT.DELETE_MESSAGE, methods: ["DELETE"] },
+    
+    { path: ROUTES.ART.AUCTIONS, methods: ["GET", "POST"] },
+    { path: ROUTES.ART.AUCTION_BY_ID, methods: ["GET"] },
+    { path: ROUTES.ART.BIDS, methods: ["POST"] },
   ],
   
   user_optional: [
