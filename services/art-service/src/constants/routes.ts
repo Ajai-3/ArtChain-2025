@@ -88,6 +88,7 @@ export const ROUTES = {
     BY_ID: "/auctions/:id",
     BIDS: "/bids/:auctionId",
     PLACE_BID: "/bids",
+    USER_BIDS: "/my-bids",
   },
 } as const;
 

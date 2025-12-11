@@ -6,6 +6,7 @@ import { IAuctionRepository } from "../../../domain/repositories/IAuctionReposit
 import { IWalletService } from "../../../domain/interfaces/IWalletService";
 import { ISocketService } from "../../../domain/interfaces/ISocketService";
 import { Bid } from "../../../domain/entities/Bid";
+import { UserService } from "../../../infrastructure/service/UserService";
 
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
@@ -25,7 +26,7 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         throw new Error("Auction is not active");
     }
 
-    // Check Start Time if SCHEDULED (Optional: Auto-start?)
+    // Check Start Time if SCHEDULED
     if (auction.status === "SCHEDULED" && new Date() < new Date(auction.startTime)) {
         throw new Error("Auction has not started yet");
     }
@@ -50,15 +51,13 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     }
 
     // Create Bid
-    // Note: passing undefined for createdAt and _id as they are optional/generated
     const bidEntity = new Bid(auctionId, bidderId, amount); 
     const bid = await this.bidRepository.create(bidEntity);
     
     // Update Auction
     const newBids = auction.bids ? [...auction.bids] : [];
-    if (bid._id) newBids.push(bid._id); // Ensure _id is present
+    if (bid._id) newBids.push(bid._id);
 
-    // Implicitly set status to ACTIVE if it was SCHEDULED and valid bid placed
     const newStatus = auction.status === "SCHEDULED" ? "ACTIVE" : auction.status;
 
     await this.auctionRepository.update(auctionId, { 
@@ -68,7 +67,27 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         status: newStatus
     });
 
-    this.socketService.publishBid({ ...bid, auctionId });
+    // Fetch user details for real-time update
+    let bidder = null;
+    try {
+        bidder = await UserService.getUserById(bidderId);
+    } catch (error) {
+        console.error("Failed to fetch user details for bid socket event", error);
+    }
+
+    const enrichedBid = {
+        ...bid,
+        id: bid._id,
+        bidder: bidder ? {
+            id: bidder.id,
+            username: bidder.username,
+            name: bidder.name,
+            profileImage: bidder.profileImage,
+            isVerified: bidder.isVerified
+        } : null
+    };
+
+    this.socketService.publishBid(enrichedBid);
 
     return bid;
   }

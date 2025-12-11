@@ -18,11 +18,38 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     return AuctionModel.find({ hostId }).sort({ createdAt: -1 }).lean() as unknown as Auction[];
   }
 
-  async findActiveAuctions(page = 1, limit = 10): Promise<Auction[]> {
-    return AuctionModel.find({ status: { $in: ['SCHEDULED', 'ACTIVE'] } })
-      .sort({ status: 1, startTime: 1 }) // Active/Scheduled first
+  async findActiveAuctions(
+      page = 1, 
+      limit = 10,
+      filterStatus?: string,
+      startDate?: Date,
+      endDate?: Date
+    ): Promise<Auction[]> {
+    
+    const query: any = {};
+    
+    // Status Filter
+    if (filterStatus && filterStatus !== 'ALL') {
+        query.status = filterStatus;
+    } else {
+        query.status = { $in: ['SCHEDULED', 'ACTIVE'] };
+    }
+
+    // Date Filter (based on startTime)
+    if (startDate || endDate) {
+        query.startTime = {};
+        if (startDate) query.startTime.$gte = startDate;
+        if (endDate) query.startTime.$lte = endDate;
+    }
+
+    return AuctionModel.find(query)
+      .sort({ status: 1, startTime: 1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean() as unknown as Auction[];
+  }
+
+  async updateStatus(id: string, status: string): Promise<void> {
+      await AuctionModel.updateOne({ _id: id }, { status });
   }
 }

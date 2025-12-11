@@ -164,6 +164,8 @@ import { IAuctionController } from "../../presentation/interface/IAuctionControl
 import { AuctionController } from "../../presentation/controllers/AuctionController";
 import { IBidController } from "../../presentation/interface/IBidController";
 import { BidController } from "../../presentation/controllers/BidController";
+import { IGetUserBidsUseCase } from "../../application/interface/usecase/bid/IGetUserBidsUseCase";
+import { GetUserBidsUseCase } from "../../application/usecase/bid/GetUserBidsUseCase";
 
 
 // AI Repositories
@@ -312,6 +314,7 @@ container.bind<IGetAuctionsUseCase>(TYPES.IGetAuctionsUseCase).to(GetAuctionsUse
 container.bind<IGetAuctionByIdUseCase>(TYPES.IGetAuctionByIdUseCase).to(GetAuctionByIdUseCase);
 container.bind<IPlaceBidUseCase>(TYPES.IPlaceBidUseCase).to(PlaceBidUseCase);
 container.bind<IGetBidsUseCase>(TYPES.IGetBidsUseCase).to(GetBidsUseCase);
+container.bind<IGetUserBidsUseCase>(TYPES.IGetUserBidsUseCase).to(GetUserBidsUseCase);
 
 container.bind<IAuctionController>(TYPES.IAuctionController).to(AuctionController);
 container.bind<IBidController>(TYPES.IBidController).to(BidController);

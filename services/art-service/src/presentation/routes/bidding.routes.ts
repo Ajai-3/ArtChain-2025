@@ -18,5 +18,6 @@ router.get(ROUTES.AUCTION.BY_ID, (req, res, next) => auctionController.getAuctio
 // Bid Routes
 router.post(ROUTES.AUCTION.PLACE_BID, (req, res, next) => bidController.placeBid(req, res, next));
 router.get(ROUTES.AUCTION.BIDS, (req, res, next) => bidController.getBids(req, res, next));
+router.get(ROUTES.AUCTION.USER_BIDS, (req, res, next) => bidController.getUserBids(req, res, next));
 
 export default router;

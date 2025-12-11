@@ -2,19 +2,41 @@ import { injectable, inject } from "inversify";
 import { IGetAuctionByIdUseCase } from "../../interface/usecase/auction/IGetAuctionByIdUseCase";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { IAuctionRepository } from "../../../domain/repositories/IAuctionRepository";
-import { Auction } from "../../../domain/entities/Auction";
+import { IBidRepository } from "../../../domain/repositories/IBidRepository";
+import { IS3Service } from "../../../domain/interfaces/IS3Service";
+import { UserService } from "../../../infrastructure/service/UserService";
+import { AuctionMapper } from "../../mapper/AuctionMapper";
 
 @injectable()
 export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
-  private repository: IAuctionRepository;
-
   constructor(
-    @inject(TYPES.IAuctionRepository) repository: IAuctionRepository
-  ) {
-    this.repository = repository;
-  }
+    @inject(TYPES.IAuctionRepository) private _repository: IAuctionRepository,
+    @inject(TYPES.IBidRepository) private _bidRepository: IBidRepository,
+    @inject(TYPES.IS3Service) private _s3Service: IS3Service
+  ) {}
 
-  async execute(id: string): Promise<Auction | null> {
-    return this.repository.getById(id);
+  async execute(id: string): Promise<any | null> {
+    const auction = await this._repository.getById(id);
+    if (!auction) return null;
+
+    // Fetch bids and signed URL in parallel
+    const [bids, signedImageUrl] = await Promise.all([
+      this._bidRepository.findByAuctionId(auction._id!),
+      this._s3Service.getSignedUrl(auction.imageKey, 'bidding') 
+    ]);
+
+    // Collect user IDs
+    const userIds = new Set<string>();
+    userIds.add(auction.hostId);
+    bids.forEach(bid => userIds.add(bid.bidderId));
+
+    // Fetch user details
+    const users = await UserService.getUsersByIds([...userIds]);
+    const userMap = new Map(users.map((u: any) => [u.id, u]));
+
+    const host = userMap.get(auction.hostId);
+    
+    // Use Mapper
+    return AuctionMapper.toDTO(auction, signedImageUrl, host, bids, userMap);
   }
 }

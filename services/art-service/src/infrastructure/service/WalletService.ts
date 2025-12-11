@@ -8,7 +8,7 @@ export class WalletService implements IWalletService {
   private readonly baseUrl: string;
 
   constructor() {
-    this.baseUrl = config.services.wallet_service_url;
+    this.baseUrl = config.api_gateway_url;
   }
 
   async processPurchase(

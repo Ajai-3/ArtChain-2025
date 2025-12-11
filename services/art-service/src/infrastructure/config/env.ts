@@ -1,14 +1,17 @@
+import { getArtChainSecrets } from 'art-chain-shared';
 import 'dotenv-flow/config';
+
+const secrets = await getArtChainSecrets("ArtChainCommonSecret");
 
 export const config = {
     port: process.env.PORT,
     mongo_url: process.env.MONGO_URL!,
     rabbitmq_url: process.env.RABBITMQ_URL!,
+    cdn_domain: secrets.aws_cdn_domain!,
     api_gateway_url: process.env.API_GATEWAY_URL!,
-    services: {
-        user_service_url: process.env.USER_SERVICE_URL!,
-        wallet_service_url: process.env.WALLET_SERVICE_URL!,
-        s3_service_url: process.env.S3_SERVICE_URL!,
-    },
     redis_url: process.env.REDIS_URL!,
+    aws: {
+        cloudfront_key_pair_id: process.env.CLOUDFRONT_KEY_PAIR_ID!,
+        cloudfront_private_key: process.env.CLOUDFRONT_PRIVATE_KEY!,
+    }
 }
