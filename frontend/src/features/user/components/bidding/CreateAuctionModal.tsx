@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from "../../../../components/ui/di
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Label } from "../../../../components/ui/label";
-import { useCreateAuction } from "../../hooks/bidding/useBidding";
+import { useCreateAuction } from "../../hooks/bidding/useCreateAuction";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { useBiddingUpload } from "../../hooks/bidding/useBiddingUpload";
@@ -25,14 +25,13 @@ interface CreateAuctionModalProps {
 
 export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: CreateAuctionModalProps) => {
   const user = useSelector((state: RootState) => state.user.user);
-  const { createAuction, loading: creating } = useCreateAuction();
+  const { mutateAsync: createAuction, isPending: creating } = useCreateAuction();
   const { uploadBiddingImage, uploading: uploadingImage } = useBiddingUpload();
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploadedImageKey, setUploadedImageKey] = useState<string | null>(null);
 
-  // Popover states to manually control closing on selection
   const [isStartOpen, setIsStartOpen] = useState(false);
   const [isEndOpen, setIsEndOpen] = useState(false);
 
@@ -40,14 +39,14 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
     control,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<CreateAuctionFormValues>({
     resolver: zodResolver(createAuctionSchema),
     defaultValues: {
       title: "",
       description: "",
       startTime: "12:00",
-      endTime: "12:00",
+      endTime: "13:00",
       startPrice: 0,
     },
     mode: "onChange"
@@ -76,9 +75,15 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
   const handleSaveImage = async () => {
     if (!imageFile) return;
     const result = await uploadBiddingImage(imageFile);
-    if (result) {
+    
+    if (result && result.key) {
       setUploadedImageKey(result.key);
       toast.success("Image saved successfully!");
+    } else {
+       if (result && (result as any).data && (result as any).data.key) {
+           setUploadedImageKey((result as any).data.key);
+           toast.success("Image saved successfully!");
+       }
     }
   };
 
@@ -102,27 +107,28 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
     const [endHours, endMinutes] = data.endTime.split(":").map(Number);
     end.setHours(endHours, endMinutes);
 
-    const success = await createAuction({
-      hostId: user?.id,
-      title: data.title,
-      description: data.description,
-      imageKey: uploadedImageKey,
-      startPrice: Number(data.startPrice),
-      startTime: start,
-      endTime: end,
-    });
+    try {
+      await createAuction({
+        hostId: user?.id,
+        title: data.title,
+        description: data.description,
+        imageKey: uploadedImageKey,
+        startPrice: Number(data.startPrice),
+        startTime: start,
+        endTime: end,
+      });
 
-    if (success) {
       onAuctionCreated();
       onClose();
+    } catch (error) {
+       // handled by hook
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={(val) => !creating && !uploadingImage && onClose()}>
-      <DialogContent className="w-screen h-screen sm:max-w-6xl sm:w-[50vw] sm:max-h-[70vh] overflow-y-auto overflow-x-hidden lg:overflow-hidden bg-white dark:bg-secondary-color p-0 gap-0 shadow-none sm:shadow-2xl rounded-none sm:rounded-2xl grid grid-cols-1 lg:grid-cols-5">
+      <DialogContent className="w-screen h-screen sm:max-w-6xl sm:w-[50vw] sm:max-h-[75vh] overflow-y-auto overflow-x-hidden lg:overflow-hidden bg-white dark:bg-secondary-color p-0 gap-0 shadow-none sm:shadow-2xl rounded-none sm:rounded-2xl grid grid-cols-1 lg:grid-cols-5">
         
-        {/* HEADER - ORDER 1 on mobile */}
         <div className="order-1 lg:col-span-5 border-b border-border/40 bg-white dark:bg-secondary-color">
            <div className="px-2 lg:px-3 py-1 lg:py-1 flex items-center justify-between">
               <div className="space-y-1">
@@ -132,7 +138,6 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
            </div>
         </div>
 
-        {/* IMAGE SECTION - ORDER 2 on mobile (after header, before form), RIGHT on desktop */}
         <div className="order-2 lg:order-1 lg:col-span-2 border-b lg:border-b-0 lg:border-r border-border bg-white dark:bg-secondary-color flex flex-col relative min-h-[200px] lg:min-h-[250px]">
              <div className="flex-1 p-2 lg:p-3 flex flex-col items-center justify-center text-center">
                 {previewUrl ? (
@@ -162,10 +167,19 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
                                 variant="main"
                                 onClick={handleSaveImage} 
                                 disabled={uploadingImage} 
-                                className="w-full shadow-lg h-10 lg:h-11 text-sm lg:text-base"
+                                className="w-full shadow-lg h-10 lg:h-11 text-sm lg:text-base relative"
                             >
-                                {uploadingImage ? <Loader2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2 animate-spin" /> : <Save className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />}
-                                Click to Save Image
+                                {uploadingImage ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 lg:w-5 lg:h-5 mr-2 animate-spin" />
+                                        <span>Saving...</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Save className="w-4 h-4 lg:w-5 lg:h-5 mr-2" />
+                                        <span>Click to Save Image</span>
+                                    </>
+                                )}
                             </Button>
                          </div>
                      )}
@@ -194,11 +208,9 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
              </div>
         </div>
 
-        {/* FORM SECTION - ORDER 3 on mobile, LEFT on desktop */}
         <div className="order-3 lg:order-2 lg:col-span-3 flex flex-col bg-white dark:bg-secondary-color relative">
            <div className="flex-1 px-2 lg:px-3 py-2 lg:py-2 flex flex-col gap-2 lg:gap-3 overflow-y-visible">
                
-               {/* Row 1: Title & Price */}
                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 lg:gap-3">
                    <div className="pb-2">
                        <Label className="text-sm font-semibold text-foreground pl-1 mb-1.5 block">Title</Label>
@@ -232,7 +244,6 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
                    </div>
                </div>
 
-               {/* Row 2: Description */}
                <div className="pb-2">
                    <Label className="text-sm font-semibold text-foreground pl-1 mb-1.5 block">Description</Label>
                    <Controller name="description" control={control} render={({ field }) => (
@@ -246,9 +257,7 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
                    {errors.description && <p className="text-destructive text-xs mt-1.5 pl-1 leading-tight absolute">{errors.description.message}</p>}
                </div>
 
-               {/* Row 3: Dates - Stack on mobile */}
                <div className="flex flex-col gap-3">
-                   {/* Start */}
                    <div>
                        <Label className="text-sm font-semibold text-foreground pl-1 mb-1.5 block">Start Date & Time</Label>
                        <div className="flex gap-2 lg:gap-3">
@@ -283,9 +292,13 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
                                <Input {...field} variant="green-focus" type="time" className={`w-[100px] lg:w-[110px] h-10 lg:h-10 px-1 lg:px-2 text-center text-sm lg:text-base cursor-pointer ${errors.startTime ? "border-destructive" : ""}`} />
                            )} />
                        </div>
+                       {(errors.startDate || errors.startTime) && (
+                           <p className="text-red-600 font-medium text-xs mt-1.5 pl-1 leading-tight">
+                               {errors.startDate?.message || errors.startTime?.message}
+                           </p>
+                       )}
                    </div>
 
-                   {/* End */}
                    <div>
                        <Label className="text-sm font-semibold text-foreground pl-1 mb-1.5 block">End Date & Time</Label>
                        <div className="flex gap-2 lg:gap-3">
@@ -320,19 +333,23 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
                                <Input {...field} variant="green-focus" type="time" className={`w-[100px] lg:w-[110px] h-10 lg:h-10 px-1 lg:px-2 text-center text-sm lg:text-base cursor-pointer ${errors.endTime ? "border-destructive" : ""}`} />
                            )} />
                        </div>
+                       {(errors.endDate || errors.endTime) && (
+                           <p className="text-red-600 font-medium text-xs mt-1.5 pl-1 leading-tight">
+                               {errors.endDate?.message || errors.endTime?.message}
+                           </p>
+                       )}
                    </div>
                </div>
            </div>
 
-           {/* FOOTER */}
-           <div className="px-2 lg:px-3 py-2 lg:py-2 border-t border-border/40 shrink-0 bg-white dark:bg-secondary-color flex justify-end gap-2 lg:gap-2">
+           <div className="px-2 lg:px-3 py-2 lg:py-2 lg:pb-4 border-t border-border/40 shrink-0 bg-white dark:bg-secondary-color flex justify-end gap-2 lg:gap-2">
                <Button variant="ghost" onClick={onClose} disabled={creating || uploadingImage} className="text-sm lg:text-base">
                   Cancel
                </Button>
                <Button 
                     variant="main"
                     onClick={handleSubmit(onSubmit)} 
-                    disabled={creating || !uploadedImageKey}
+                    disabled={creating || uploadingImage} 
                     className="min-w-[130px] lg:min-w-[180px] shadow-md text-sm lg:text-base font-semibold tracking-wide"
                 >
                     {creating && <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />}

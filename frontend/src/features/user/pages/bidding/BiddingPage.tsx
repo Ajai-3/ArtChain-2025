@@ -2,7 +2,7 @@ import { Outlet } from "react-router-dom";
 
 export default function BiddingPage() {
   return (
-    <div className="container mx-auto p-6">
+    <div className="w-full h-full p-4">
       <Outlet />
     </div>
   );

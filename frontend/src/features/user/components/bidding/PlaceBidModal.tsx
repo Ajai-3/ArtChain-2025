@@ -4,7 +4,7 @@ import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Label } from "../../../../components/ui/label";
 import { toast } from "react-hot-toast";
-import { usePlaceBid } from "../../hooks/bidding/useBidding";
+import { usePlaceBid } from "../../hooks/bidding/usePlaceBid";
 
 interface PlaceBidModalProps {
   isOpen: boolean;
@@ -15,7 +15,7 @@ interface PlaceBidModalProps {
 
 export const PlaceBidModal = ({ isOpen, onClose, auction, onBidPlaced }: PlaceBidModalProps) => {
   const [amount, setAmount] = useState<number>(auction.currentBid + 10);
-  const { placeBid, loading } = usePlaceBid();
+  const { mutateAsync: placeBid, isPending: loading } = usePlaceBid();
 
   const handleBid = async () => {
     if (amount <= auction.currentBid) {
@@ -27,10 +27,12 @@ export const PlaceBidModal = ({ isOpen, onClose, auction, onBidPlaced }: PlaceBi
         return;
     }
 
-    const success = await placeBid(auction._id, amount);
-    if (success) {
+    try {
+      await placeBid({ auctionId: auction._id, amount });
       onBidPlaced();
       onClose();
+    } catch (error) {
+      // Handled by hook
     }
   };
 

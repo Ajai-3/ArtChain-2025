@@ -12,11 +12,17 @@ export const useBiddingUpload = () => {
     formData.append("type", "biddingImage");
 
     try {
-      const response = await apiClient.post("/api/v1/upload/image", formData, {
+      const response = await apiClient.post("/api/v1/upload", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      console.log("Upload response:", response.data);
+      // The backend returns { data: { ... }, message: ... }
+      // We want the inner data object
+      if (response.data.data) {
+        return response.data.data;
+      }
       return response.data;
     } catch (error: any) {
       console.error("Upload failed", error);

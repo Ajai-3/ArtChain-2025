@@ -27,10 +27,20 @@ const BiddingPage = lazy(() => import("../../features/user/pages/bidding/Bidding
 const BiddingListPage = lazy(() => import("../../features/user/pages/bidding/BiddingListPage"));
 const BiddingDetailPage = lazy(() => import("../../features/user/pages/bidding/BiddingDetailPage"));
 
+const MyBidsPage = lazy(() => import("../../features/user/pages/bidding/MyBidsPage"));
+
 // Profile tabs
 const ProfileGallery = lazy(
   () => import("../../features/user/components/profile/GalleryTab")
 );
+
+// ... (rest of imports)
+
+      <Route path="bidding" element={<BiddingPage />}>
+        <Route index element={<BiddingListPage />} />
+        <Route path="my-bids" element={<MyBidsPage />} />
+        <Route path=":id" element={<BiddingDetailPage />} />
+      </Route>
 const ProfileFavorites = lazy(
   () => import("../../features/user/components/profile/FavoritesTab")
 );
@@ -100,6 +110,7 @@ const UserRoutes = (
 
       <Route path="bidding" element={<BiddingPage />}>
         <Route index element={<BiddingListPage />} />
+        <Route path="my-bids" element={<MyBidsPage />} />
         <Route path=":id" element={<BiddingDetailPage />} />
       </Route>
 

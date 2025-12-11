@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface Bid {
-  _id: string;
+  id: string;
   amount: number;
   bidderId: string;
   createdAt: string;
