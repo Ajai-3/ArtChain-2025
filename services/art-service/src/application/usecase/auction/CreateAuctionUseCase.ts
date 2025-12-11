@@ -4,6 +4,8 @@ import { TYPES } from "../../../infrastructure/Inversify/types";
 import { IAuctionRepository } from "../../../domain/repositories/IAuctionRepository";
 import { Auction } from "../../../domain/entities/Auction";
 
+import { CreateAuctionDTO } from "../../interface/dto/auction/CreateAuctionDTO";
+
 @injectable()
 export class CreateAuctionUseCase implements ICreateAuctionUseCase {
   private repository: IAuctionRepository;
@@ -14,7 +16,16 @@ export class CreateAuctionUseCase implements ICreateAuctionUseCase {
     this.repository = repository;
   }
 
-  async execute(data: any): Promise<Auction> {
-    return this.repository.create(data);
+  async execute(data: CreateAuctionDTO): Promise<Auction> {
+    const auction = new Auction(
+      data.hostId,
+      data.title,
+      data.description,
+      data.imageKey,
+      data.startPrice,
+      data.startTime,
+      data.endTime
+    );
+    return this.repository.create(auction);
   }
 }

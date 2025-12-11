@@ -7,6 +7,12 @@ import { IWalletService } from "../../../domain/interfaces/IWalletService";
 import { ISocketService } from "../../../domain/interfaces/ISocketService";
 import { Bid } from "../../../domain/entities/Bid";
 import { UserService } from "../../../infrastructure/service/UserService";
+import { PlaceBidDTO } from "../../interface/dto/bid/PlaceBidDTO";
+import { BidResponseDTO } from "../../interface/dto/bid/BidResponseDTO";
+import { BidMapper } from "../../mapper/BidMapper";
+import { NotFoundError, BadRequestError } from "art-chain-shared";
+import { AUCTION_MESSAGES } from "../../../constants/AuctionMessages";
+import { logger } from "../../../utils/logger";
 
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
@@ -17,44 +23,40 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
     @inject(TYPES.ISocketService) private socketService: ISocketService
   ) {}
 
-  async execute(auctionId: string, bidderId: string, amount: number): Promise<Bid> {
+  async execute({ auctionId, bidderId, amount }: PlaceBidDTO): Promise<BidResponseDTO> {
     const auction = await this.auctionRepository.getById(auctionId);
-    if (!auction) throw new Error("Auction not found");
+    if (!auction) {
+      throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
+    }
     
-    // Check Status
     if (auction.status === "ENDED" || auction.status === "CANCELLED") {
-        throw new Error("Auction is not active");
+        throw new BadRequestError(AUCTION_MESSAGES.AUCTION_NOT_ACTIVE);
     }
 
-    // Check Start Time if SCHEDULED
     if (auction.status === "SCHEDULED" && new Date() < new Date(auction.startTime)) {
-        throw new Error("Auction has not started yet");
+        throw new BadRequestError(AUCTION_MESSAGES.AUCTION_NOT_STARTED);
     }
 
     if (amount <= auction.currentBid && auction.bids.length > 0) {
-         throw new Error(`Bid amount must be higher than current bid ${auction.currentBid}`);
+         throw new BadRequestError(`${AUCTION_MESSAGES.BID_TOO_LOW} ${auction.currentBid}`);
     }
     if (amount < auction.startPrice) {
-         throw new Error(`Bid amount must be at least start price ${auction.startPrice}`);
+         throw new BadRequestError(`${AUCTION_MESSAGES.BID_BELOW_START_PRICE} ${auction.startPrice}`);
     }
     
-    // Lock funds
     const locked = await this.walletService.lockFunds(bidderId, amount, auctionId);
     if (!locked) {
-        throw new Error("Failed to lock funds. Insufficient balance or wallet service error.");
+        throw new BadRequestError(AUCTION_MESSAGES.FUNDS_LOCK_FAILED);
     }
 
-    // Refund previous highest bidder
     const currentHighest = await this.bidRepository.findHighestBid(auctionId);
     if (currentHighest) {
         await this.walletService.unlockFunds(currentHighest.bidderId, currentHighest.amount, auctionId);
     }
 
-    // Create Bid
     const bidEntity = new Bid(auctionId, bidderId, amount); 
     const bid = await this.bidRepository.create(bidEntity);
     
-    // Update Auction
     const newBids = auction.bids ? [...auction.bids] : [];
     if (bid._id) newBids.push(bid._id);
 
@@ -67,28 +69,17 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         status: newStatus
     });
 
-    // Fetch user details for real-time update
     let bidder = null;
     try {
         bidder = await UserService.getUserById(bidderId);
     } catch (error) {
-        console.error("Failed to fetch user details for bid socket event", error);
+        logger.error("Failed to fetch user details for bid socket event", error);
     }
 
-    const enrichedBid = {
-        ...bid,
-        id: bid._id,
-        bidder: bidder ? {
-            id: bidder.id,
-            username: bidder.username,
-            name: bidder.name,
-            profileImage: bidder.profileImage,
-            isVerified: bidder.isVerified
-        } : null
-    };
+    const bidDTO = BidMapper.toDTO(bid, bidder);
 
-    this.socketService.publishBid(enrichedBid);
+    this.socketService.publishBid(bidDTO);
 
-    return bid;
+    return bidDTO;
   }
 }

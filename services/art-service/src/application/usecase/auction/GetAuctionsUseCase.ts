@@ -23,12 +23,10 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     endDate?: Date
     ): Promise<any[]> {
     
-    // Fetch auctions with filters
     const auctions = await this._repository.findActiveAuctions(page, limit, filterStatus, startDate, endDate);
 
     if (!auctions.length) return [];
     
-    // Check for status updates (Lazy update)
     const now = new Date();
     const updatedAuctions = await Promise.all(auctions.map(async (auction) => {
         if (auction.status === 'SCHEDULED' && new Date(auction.startTime) <= now) {
@@ -40,11 +38,9 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
 
     const finalAuctions = updatedAuctions as any[];
 
-    // Collect all unique user IDs (hosts)
     const hostIds = finalAuctions.map((a) => a.hostId);
     let allUserIds = new Set<string>(hostIds);
 
-    // Prepare data for mapping
     const auctionsData = await Promise.all(
       finalAuctions.map(async (auction) => {
         const bids = await this._bidRepository.findByAuctionId(auction._id!);
@@ -56,11 +52,9 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
       })
     );
 
-    // Fetch all users
     const users = await UserService.getUsersByIds([...allUserIds]);
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
-    // Use Mapper
     return auctionsData.map(({ auction, bids, signedImageUrl }) => {
       const host = userMap.get(auction.hostId);
       return AuctionMapper.toDTO(auction, signedImageUrl, host, bids, userMap);

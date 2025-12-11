@@ -9,6 +9,9 @@ import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction
 import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
 import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
 
+import { createAuctionSchema } from "../validators/auction.schema";
+import { CreateAuctionDTO } from "../../application/interface/dto/auction/CreateAuctionDTO";
+
 @injectable()
 export class AuctionController implements IAuctionController {
   constructor(
@@ -36,11 +39,20 @@ export class AuctionController implements IAuctionController {
     try {
       const hostId = req.headers["x-user-id"] as string;
       logger.info(`Creating auction for host: ${hostId}`);
+
+      const validatedBody = createAuctionSchema.parse(req.body);
       
-      const auction = await this._createAuctionUseCase.execute({
-        ...req.body,
+      const dto: CreateAuctionDTO = {
         hostId,
-      });
+        title: validatedBody.title,
+        description: validatedBody.description,
+        startPrice: validatedBody.startPrice,
+        startTime: validatedBody.startTime,
+        endTime: validatedBody.endTime,
+        imageKey: validatedBody.imageKey
+      };
+
+      const auction = await this._createAuctionUseCase.execute(dto);
 
       return res.status(HttpStatus.CREATED).json({
         message: AUCTION_MESSAGES.AUCTION_CREATED,
@@ -118,13 +130,6 @@ export class AuctionController implements IAuctionController {
       logger.info(`Fetching auction by id=${id}`);
 
       const auction = await this._getAuctionByIdUseCase.execute(id);
-
-      if (!auction) {
-        logger.warn(`Auction not found: ${id}`);
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: AUCTION_MESSAGES.AUCTION_NOT_FOUND });
-      }
 
       return res.status(HttpStatus.OK).json({
         message: AUCTION_MESSAGES.AUCTION_FETCHED,

@@ -1,5 +1,5 @@
-import { Bid } from "../../../../domain/entities/Bid";
+import { BidResponseDTO } from "../../dto/bid/BidResponseDTO";
 
 export interface IGetBidsUseCase {
-  execute(auctionId: string): Promise<Bid[]>;
+  execute(auctionId: string): Promise<BidResponseDTO[]>;
 }

@@ -6,6 +6,8 @@ import { IBidRepository } from "../../../domain/repositories/IBidRepository";
 import { IS3Service } from "../../../domain/interfaces/IS3Service";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { AuctionMapper } from "../../mapper/AuctionMapper";
+import { NotFoundError } from "art-chain-shared";
+import { AUCTION_MESSAGES } from "../../../constants/AuctionMessages";
 
 @injectable()
 export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
@@ -17,26 +19,24 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
 
   async execute(id: string): Promise<any | null> {
     const auction = await this._repository.getById(id);
-    if (!auction) return null;
+    if (!auction) {
+        throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
+    };
 
-    // Fetch bids and signed URL in parallel
     const [bids, signedImageUrl] = await Promise.all([
       this._bidRepository.findByAuctionId(auction._id!),
       this._s3Service.getSignedUrl(auction.imageKey, 'bidding') 
     ]);
 
-    // Collect user IDs
     const userIds = new Set<string>();
     userIds.add(auction.hostId);
     bids.forEach(bid => userIds.add(bid.bidderId));
 
-    // Fetch user details
     const users = await UserService.getUsersByIds([...userIds]);
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
     const host = userMap.get(auction.hostId);
     
-    // Use Mapper
     return AuctionMapper.toDTO(auction, signedImageUrl, host, bids, userMap);
   }
 }

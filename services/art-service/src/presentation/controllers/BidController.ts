@@ -9,6 +9,9 @@ import { IGetBidsUseCase } from "../../application/interface/usecase/bid/IGetBid
 import { IGetUserBidsUseCase } from "../../application/interface/usecase/bid/IGetUserBidsUseCase";
 import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
 
+import { placeBidSchema } from "../validators/bid.schema";
+import { PlaceBidDTO } from "../../application/interface/dto/bid/PlaceBidDTO";
+
 @injectable()
 export class BidController implements IBidController {
   constructor(
@@ -35,13 +38,20 @@ export class BidController implements IBidController {
   ): Promise<Response | void> => {
     try {
       const bidderId = req.headers["x-user-id"] as string;
-      const { auctionId, amount } = req.body;
+      
+      const validatedBody = placeBidSchema.parse(req.body);
 
       logger.info(
-        `Placing bid on auction ${auctionId} by user ${bidderId} amount ${amount}`
+        `Placing bid on auction ${validatedBody.auctionId} by user ${bidderId} amount ${validatedBody.amount}`
       );
 
-      const bid = await this._placeBidUseCase.execute(auctionId, bidderId, amount);
+      const dto: PlaceBidDTO = {
+        auctionId: validatedBody.auctionId,
+        amount: validatedBody.amount,
+        bidderId
+      };
+
+      const bid = await this._placeBidUseCase.execute(dto);
 
       return res.status(HttpStatus.CREATED).json({
         message: AUCTION_MESSAGES.BID_PLACED,

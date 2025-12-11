@@ -1,5 +1,6 @@
-import { Bid } from "../../../../domain/entities/Bid";
+import { BidResponseDTO } from "../../dto/bid/BidResponseDTO";
+import { PlaceBidDTO } from "../../dto/bid/PlaceBidDTO";
 
 export interface IPlaceBidUseCase {
-  execute(auctionId: string, bidderId: string, amount: number): Promise<Bid>;
+  execute(data: PlaceBidDTO): Promise<BidResponseDTO>;
 }
