@@ -44,7 +44,7 @@ export const CountdownTimer = ({ targetDate, status, onTimerEnd }: CountdownTime
   const zeroPad = (num?: number) => String(num || 0).padStart(2, '0');
 
   return (
-    <div className="flex gap-2 items-center text-sm font-mono bg-muted/50 px-3 py-1.5 rounded-md border border-border/50">
+    <div className="flex gap-2 items-center justify-center text-sm font-mono bg-muted/50 rounded-md border border-border/50">
         <div className="flex flex-col items-center">
              <span className="text-xl font-bold tabular-nums">{zeroPad(duration.days)}</span>
              <span className="text-[10px] uppercase text-muted-foreground">Days</span>

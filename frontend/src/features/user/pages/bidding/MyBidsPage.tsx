@@ -15,7 +15,7 @@ export default function MyBidsPage() {
   if (error) return <div className="p-10 text-center text-destructive">Failed to load your bids.</div>;
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
+    <div className="container mx-auto space-y-6">
       <div className="flex items-center justify-between">
          <div className="flex items-center gap-3">
              <Button variant="ghost" size="icon" onClick={() => navigate("/bidding")} className="hover:bg-muted">

@@ -1,4 +1,5 @@
 import React from "react";
+import { VerifiedArtistBadge } from "../../../../components/shared/VerifiedArtistBadge";
 import { useOutletContext } from "react-router-dom";
 import type { User } from "../../../../types/users/user/user";
 import { Globe, CreditCard, Shield, Activity, CheckCircle2 } from "lucide-react";
@@ -44,7 +45,15 @@ const AboutTab: React.FC = () => {
         {/* Bio Section */}
         <div className="mb-10">
           <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-            About <span className="text-green-500">{profileUser.name || profileUser.username}</span>
+            About <span className="text-green-500 flex items-center gap-2">
+              {profileUser.name || profileUser.username}
+              <VerifiedArtistBadge 
+                  isVerified={profileUser.isVerified} 
+                  role={profileUser.role} 
+                  showTooltip={false}
+                  className="h-5 w-5 text-blue-500 fill-blue-500"
+              />
+            </span>
           </h3>
           <div className="bg-black/20 rounded-xl p-6 border border-white/5">
             <p className="text-gray-300 leading-relaxed text-lg">

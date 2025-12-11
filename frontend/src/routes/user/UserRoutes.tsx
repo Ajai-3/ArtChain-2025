@@ -28,6 +28,7 @@ const BiddingListPage = lazy(() => import("../../features/user/pages/bidding/Bid
 const BiddingDetailPage = lazy(() => import("../../features/user/pages/bidding/BiddingDetailPage"));
 
 const MyBidsPage = lazy(() => import("../../features/user/pages/bidding/MyBidsPage"));
+const MyAuctionsPage = lazy(() => import("../../features/user/pages/bidding/MyAuctionsPage"));
 
 // Profile tabs
 const ProfileGallery = lazy(
@@ -111,6 +112,7 @@ const UserRoutes = (
       <Route path="bidding" element={<BiddingPage />}>
         <Route index element={<BiddingListPage />} />
         <Route path="my-bids" element={<MyBidsPage />} />
+        <Route path="my-auctions" element={<MyAuctionsPage />} />
         <Route path=":id" element={<BiddingDetailPage />} />
       </Route>
 

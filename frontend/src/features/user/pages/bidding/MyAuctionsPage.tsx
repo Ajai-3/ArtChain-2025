@@ -3,7 +3,7 @@ import { useAuctions } from "../../hooks/bidding/useAuctions";
 import { AuctionCard } from "../../components/bidding/AuctionCard";
 import { AuctionCardSkeleton } from "../../components/bidding/AuctionCardSkeleton";
 import { Button } from "../../../../components/ui/button";
-import { Plus, Filter, Gavel, LayoutList } from "lucide-react";
+import { Plus, Filter, ArrowLeft } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,22 +21,22 @@ import { format } from "date-fns";
 import { useState, useEffect } from "react";
 import { CreateAuctionModal } from "../../components/bidding/CreateAuctionModal";
 import { Badge } from "../../../../components/ui/badge";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { setAuctions } from "../../../../redux/slices/biddingSlice";
 import type { RootState } from "../../../../redux/store";
 
-
-export default function BiddingListPage() {
+export default function MyAuctionsPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user.user);
   
   const formattedDate = date ? format(date, "yyyy-MM-dd") : "";
 
   // Fetch from API
   const { 
-      data,
+      data, 
       fetchNextPage, 
       hasNextPage, 
       isFetchingNextPage, 
@@ -44,27 +44,27 @@ export default function BiddingListPage() {
   } = useAuctions(
       statusFilter, 
       formattedDate, 
-      ""
+      "",
+      user?.id
   );
 
   // Sync to Redux
   useEffect(() => {
     if (data) {
-        // We accumulate all pages into one flat list for Redux
         const flatAuctions = data.pages.flatMap((page) => page.auctions);
         dispatch(setAuctions(flatAuctions));
     }
   }, [data, dispatch]);
 
-  // Read from Redux for display
-  const auctions = useSelector((state: RootState) => state.bidding.auctions);
-  
-  // Clean up on unmount
+  // Clean up redaction on unmount to avoid showing my auctions in general feed briefly
   useEffect(() => {
     return () => {
       dispatch(setAuctions([]));
     }
   }, [dispatch]);
+
+  // Read from Redux
+  const auctions = useSelector((state: RootState) => state.bidding.auctions);
 
   const [isVisiable, setIsVisiable] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -81,18 +81,16 @@ export default function BiddingListPage() {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border/40 pb-4">
         <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Auctions</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Place your bids on exclusive digital art.</p>
+           <div className="flex items-center gap-2 mb-1">
+                <Button variant="ghost" size="icon" className="h-8 w-8 -ml-2" onClick={() => navigate(-1)}>
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <h1 className="text-2xl font-bold tracking-tight text-foreground">My Auctions</h1>
+           </div>
+            <p className="text-sm text-muted-foreground mt-0.5 ml-8">Manage auctions you have created.</p>
         </div>
         
         <div className="flex flex-wrap items-center gap-2">
-             <Button variant="outline" size="sm" onClick={() => navigate("/bidding/my-bids")}>
-                 <Gavel className="mr-2 h-4 w-4" /> My Bids
-             </Button>
-             <Button variant="outline" size="sm" onClick={() => navigate("/bidding/my-auctions")}>
-                 <LayoutList className="mr-2 h-4 w-4" /> My Auctions
-             </Button>
-
              <Popover open={isVisiable} onOpenChange={setIsVisiable}>
                 <PopoverTrigger asChild>
                     <Button variant="outline" size="sm" className="h-9 relative border-dashed">
@@ -154,7 +152,7 @@ export default function BiddingListPage() {
       </div>
 
       {/* Grid */}
-      {(loading && (!auctions || auctions.length === 0)) ? ( // Show skeleton if loading AND no redux data yet
+      {(loading && (!auctions || auctions.length === 0)) ? ( 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(8)].map((_, i) => (
                   <AuctionCardSkeleton key={i} />
@@ -167,13 +165,16 @@ export default function BiddingListPage() {
             </div>
             <h3 className="text-lg font-semibold mb-1">No auctions found</h3>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
-                No auctions match your selected filters.
+                You haven't created any auctions matching these filters.
             </p>
             {activeFilters > 0 && (
                  <Button variant="outline" size="sm" onClick={clearFilters}>
                      Clear Filters
                  </Button>
             )}
+            <Button variant="main" size="sm" className="ml-2" onClick={() => setIsCreateModalOpen(true)}>
+                Create Auction
+            </Button>
         </div>
       ) : (
         <>
@@ -182,7 +183,7 @@ export default function BiddingListPage() {
                 <AuctionCard key={auction.id} auction={auction} />
             ))}
             </div>
-            
+
             {(hasNextPage || isFetchingNextPage) && (
                 <div className="flex justify-center mt-8">
                     <Button 
@@ -212,4 +213,4 @@ export default function BiddingListPage() {
       />
     </div>
   );
-};
+}
