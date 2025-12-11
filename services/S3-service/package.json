@@ -18,7 +18,7 @@
     "@aws-sdk/client-cloudfront": "^3.913.0",
     "@tensorflow/tfjs": "^4.22.0",
     "amqplib": "^0.10.9",
-    "art-chain-shared": "^1.0.22",
+    "art-chain-shared": "^1.0.26",
     "aws-sdk": "^2.1692.0",
     "canvas": "^3.2.0",
     "dotenv": "^17.2.1",

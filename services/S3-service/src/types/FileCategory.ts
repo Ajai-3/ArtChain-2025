@@ -6,4 +6,5 @@ export const FILE_CATEGORIES: Record<FileCategory, FileCategory> = {
   background: "background",
   art: "art",
   chat: "chat",
+  bidding: "bidding",
 } as const;

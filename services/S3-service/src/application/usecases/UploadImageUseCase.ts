@@ -56,6 +56,7 @@ export class UploadImageUseCase implements IUploadImageUseCase {
       url: uploadResult.publicUrl,
       userId,
       type: FILE_CATEGORIES[category as keyof typeof FILE_CATEGORIES],
+      key: uploadResult.key,
     };
   }
 }
