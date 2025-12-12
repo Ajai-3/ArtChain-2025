@@ -18,6 +18,7 @@ const AIConfigPage = lazy(() => import("../../features/admin/pages/AIConfigPage"
 const ContentModeration = lazy(() => import("../../features/admin/pages/ContentModeration"));
 const WalletManagement = lazy(() => import("../../features/admin/pages/WalletManagement"));
 const ArtManagement = lazy(() => import("../../features/admin/pages/ArtManagement"));
+const AuctionManagement = lazy(() => import("../../features/admin/pages/AuctionManagement"));
 
 const AdminRoutes = (
   <>
@@ -35,6 +36,7 @@ const AdminRoutes = (
         <Route path="content-moderation" element={<ContentModeration />} />
         <Route path="wallet-management" element={<WalletManagement />} />
         <Route path="art-management" element={<ArtManagement />} />
+        <Route path="auction-management" element={<AuctionManagement />} />
       </Route>
     </Route>
   </>

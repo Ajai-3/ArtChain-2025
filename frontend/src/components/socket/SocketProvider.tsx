@@ -25,7 +25,6 @@ export const SocketProvider = ({ children }: Props) => {
     const chatSocket = initSocket(accessToken, "http://localhost:4007");
     const biddingSocket = initSocket(accessToken, import.meta.env.VITE_ART_SERVICE_URL || "http://localhost:4002");
 
-    // Save them in manager so they can be disconnected later
     setNotificationSocket(notificationSocket);
     setChatSocket(chatSocket);
     setBiddingSocket(biddingSocket);
