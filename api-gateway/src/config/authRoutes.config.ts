@@ -71,6 +71,7 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.AUCTIONS, methods: ["GET", "POST"] },
     { path: ROUTES.ART.AUCTION_BY_ID, methods: ["GET"] },
     { path: ROUTES.ART.BIDS, methods: ["POST"] },
+    { path: ROUTES.ART.BIDS, methods: ["POST"] },
   ],
   
   user_optional: [
@@ -85,6 +86,7 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.COMMENTS, methods: ["GET"] },
     { path: ROUTES.ART.COMMENT, methods: ["GET"] },
     { path: ROUTES.ART.COMMENTS_BY_POST_ID, methods: ["GET"] },
+    { path: ROUTES.ART.BIDS_BY_AUCTION, methods: ["GET"] },
   ],
 
   admin: [
@@ -93,6 +95,7 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.CATEGORY, methods: ["POST", "PATCH", "DELETE"] },
     { path: ROUTES.AI.CONFIG, methods: ["POST", "PATCH", "DELETE"] },
     { path: ROUTES.AI.ANALYTICS, methods: ["GET"] },
+    { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
     { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
   ],
 };

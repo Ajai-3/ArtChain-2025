@@ -42,6 +42,7 @@ export const ROUTES = {
     AUCTIONS: "/api/v1/art/auctions",
     AUCTION_BY_ID: "/api/v1/art/auctions/:id",
     BIDS: "/api/v1/art/bids",
+    BIDS_BY_AUCTION: "/api/v1/art/bids/:auctionId",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",
