@@ -46,16 +46,12 @@ export class GetWalletUseCase implements IGetWalletUseCase {
       else grade = "C";
     }
 
-    
-    const transactions = await this._walletRepo.getRecentTransactions(wallet.id, 50);
-
     return {
       balance: wallet.balance,
       inrValue: wallet.balance * 10,
       lockedAmount: wallet.lockedAmount,
       quickStats: { earned, spent, avgTransaction, roi, grade },
       transactionSummary,
-      transactions,
     };
   }
 }

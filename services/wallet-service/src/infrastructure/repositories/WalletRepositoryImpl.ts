@@ -62,16 +62,42 @@ export class WalletRepositoryImpl
       take: limit,
     });
     
-    // Map to frontend expected format if needed, but for now return raw with mapped date
     return txs.map(tx => ({
       id: tx.id,
-      date: tx.createdAt.toISOString(), // Frontend expects string date
-      type: tx.type === "credited" ? "Earned" : "Spent", // Frontend expects "Earned" / "Spent"
+      date: tx.createdAt.toISOString(),
+      type: tx.type === "credited" ? "Earned" : "Spent", 
       amount: tx.amount,
       category: tx.category,
       status: tx.status,
       method: tx.method,
       description: tx.description
     }));
+  }
+  async lockAmount(userId: string, amount: number): Promise<boolean> {
+    const result = await this.model.updateMany({
+      where: {
+        userId,
+        balance: { gte: amount },
+      },
+      data: {
+        balance: { decrement: amount },
+        lockedAmount: { increment: amount },
+      },
+    });
+    return result.count > 0;
+  }
+
+  async unlockAmount(userId: string, amount: number): Promise<boolean> {
+    const result = await this.model.updateMany({
+      where: {
+        userId,
+        lockedAmount: { gte: amount },
+      },
+      data: {
+        balance: { increment: amount },
+        lockedAmount: { decrement: amount },
+      },
+    });
+    return result.count > 0;
   }
 }

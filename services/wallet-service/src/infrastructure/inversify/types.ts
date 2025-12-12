@@ -14,6 +14,8 @@ export const TYPES = {
     "ICreateStripeCheckoutSessionUseCase"
   ),
   IProcessPurchaseUseCase: Symbol.for("IProcessPurchaseUseCase"),
+  ILockFundsUseCase: Symbol.for("ILockFundsUseCase"),
+  IUnlockFundsUseCase: Symbol.for("IUnlockFundsUseCase"),
 
   // Controller
   IStripeController: Symbol.for("IStripeController"),

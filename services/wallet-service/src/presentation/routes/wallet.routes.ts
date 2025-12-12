@@ -24,6 +24,8 @@ const transactionController = container.get<ITransactionController>(
 router.get(ROUTES.WALLET.DETAILS, walletController.getWallet);
 router.post(ROUTES.WALLET.CREATE, walletController.createWallet);
 router.patch(ROUTES.WALLET.UPDATE, walletController.updateWallet);
+router.post(ROUTES.WALLET.LOCK, walletController.lockAmount);
+router.post(ROUTES.WALLET.UNLOCK, walletController.unlockAmount);
 
 // Trascation Controller Routes
 router.get(ROUTES.TRANSACTION.GET_TRANSACTIONS, transactionController.getTransactions);

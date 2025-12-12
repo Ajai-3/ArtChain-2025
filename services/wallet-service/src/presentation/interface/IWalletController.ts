@@ -4,4 +4,6 @@ export interface IWalletController {
   getWallet(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   createWallet(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   updateWallet(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  lockAmount(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
+  unlockAmount(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

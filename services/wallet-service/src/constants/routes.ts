@@ -17,6 +17,8 @@ export const ROUTES = {
     DETAILS: "/details",
     CREATE: "/create",
     UPDATE: "/update",
+    LOCK: "/lock",
+    UNLOCK: "/unlock",
   },
 
   // Transaction routes
