@@ -95,7 +95,7 @@ export const CreateAuctionModal = ({ isOpen, onClose, onAuctionCreated }: Create
 
   const onSubmit = async (data: CreateAuctionFormValues) => {
     if (!uploadedImageKey) {
-      toast.error("Please explicitly save the image first.");
+      toast.error("Please upload and save the image first.");
       return;
     }
 

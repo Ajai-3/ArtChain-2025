@@ -26,13 +26,13 @@ const TransactionsContent: React.FC<TransactionsContentProps> = ({
   const { summary, chartData } = useChartData(transactions, timeRange);
 
   return (
-    <div className="flex flex-col-reverse md:flex-row gap-6 items-start h-full">
-      <div className="flex-1 w-full">
-        <Card className="dark:bg-secondary-color rounded-lg shadow-md h-full min-h-[500px]">
+    <div className="flex flex-col md:flex-row gap-6 items-start h-full">
+      <div className="flex-1 w-full flex flex-col min-h-[500px]">
+        <Card className="dark:bg-secondary-color rounded-lg shadow-md flex-1 flex flex-col">
           <CardHeader>
             <CardTitle className="text-2xl">Transaction History</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1">
             <TransactionsTable />
           </CardContent>
         </Card>

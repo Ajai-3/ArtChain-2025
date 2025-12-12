@@ -41,8 +41,7 @@ export default function BiddingDetailPage() {
   const isUnsold = isEnded && (!auction.bids || auction.bids.length === 0);
 
   return (
-    <div className="h-[calc(100vh-80px)] flex flex-col md:flex-row gap-4 p-4 md:p-0 overflow-hidden max-w-[1600px] mx-auto">
-        {/* Left Panel: Image & Key Info - Takes remaining height */}
+    <div className="flex flex-col md:flex-row gap-4 w-full max-w-[1600px] mx-auto md:h-[calc(100vh-80px)] md:overflow-hidden">
         <div className="flex-1 flex flex-col gap-4 min-w-0 h-full">
             <DetailNavigation 
                 auction={auction} 
@@ -50,6 +49,7 @@ export default function BiddingDetailPage() {
                 isLive={isLive} 
                 isEnded={isEnded} 
                 isUnsold={isUnsold} 
+                onRefresh={refetch}
             />
             
             <DetailImageSection 

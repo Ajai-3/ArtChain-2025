@@ -37,9 +37,16 @@ const biddingSlice = createSlice({
       }
     },
     addBid: (state, action: PayloadAction<Bid>) => {
+      // Avoid duplicate bids (e.g., from re-renders or double socket events)
+      if (state.bids.some(b => b.id === action.payload.id)) {
+          return;
+      }
       state.bids.unshift(action.payload);
       if (action.payload.amount > state.currentHighestBid) {
         state.currentHighestBid = action.payload.amount;
+      }
+      if (state.activeAuction && action.payload.amount > state.activeAuction.currentBid) {
+          state.activeAuction.currentBid = action.payload.amount;
       }
     },
     updateHighestBid: (state, action: PayloadAction<number>) => {
@@ -51,9 +58,17 @@ const biddingSlice = createSlice({
     setActiveAuctionData: (state, action: PayloadAction<Auction>) => {
         state.activeAuction = action.payload;
         state.activeAuctionId = action.payload.id;
-        // Optionally sync bids if included
-        if (action.payload.bids) {
+        // Sync bids and highest bid if included
+        if (action.payload.bids && action.payload.bids.length > 0) {
             state.bids = action.payload.bids;
+            state.currentHighestBid = Math.max(...action.payload.bids.map(b => b.amount));
+        } else if (action.payload.bids) {
+            // connection payload has empty bids
+            state.bids = [];
+            state.currentHighestBid = 0;
+        } else {
+             // If bids not provided, use currentBid from auction object if available as fallback, or keep 0
+             state.currentHighestBid = action.payload.currentBid || 0;
         }
     },
     clearBiddingState: (state) => {

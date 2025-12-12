@@ -43,25 +43,38 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
               <div className="flex justify-between items-center">
                 <CardTitle>
                   Balance{" "}
-                  <span className="text-yellow-400 text-sm">★ Real-time</span>
+                  <span className="text-yellow-400 text-sm font-normal ml-2">★ Real-time</span>
                 </CardTitle>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowBalance(!showBalance)}
-                >
-                  {showBalance ? <EyeOff /> : <Eye />}
-                </Button>
+                <div className="flex flex-col items-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowBalance(!showBalance)}
+                      className="h-6 w-6"
+                    >
+                      {showBalance ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <p className="text-3xl font-bold">
-                {showBalance ? `${balance} AC` : "****"}
-              </p>
-              <p className="text-gray-400 text-sm">
-                {showBalance ? `≈ ₹${inrValue} INR` : "****"}
-              </p>
-              <div className="flex gap-2 mt-2">
+            <CardContent className="flex flex-col gap-4">
+              <div className="flex justify-between items-start">
+                  <div>
+                      <p className="text-3xl font-bold">
+                        {showBalance ? `${balance} AC` : "****"}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        {showBalance ? `≈ ₹${inrValue} INR` : "****"}
+                      </p>
+                  </div>
+                  <div className="text-right bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg">
+                      <p className="text-xs text-amber-500/80 uppercase font-semibold">Locked Amount</p>
+                      <p className="text-lg font-bold text-amber-500 tabular-nums">
+                        {showBalance ? wallet.lockedAmount : "****"} <span className="text-xs font-normal">AC</span>
+                      </p>
+                  </div>
+              </div>
+              <div className="flex gap-2">
                 <TopUpModal
                   trigger={
                     <Button variant="main" className="w-full">
@@ -118,7 +131,7 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
         </div>
 
         {/* Right Column: ALL CHARTS IN ONE BOX */}
-        <div className="w-full md:w-2/4 flex flex-col">
+        <div className="w-full md:w-2/4 flex flex-col min-h-[400px]">
           <Card className="dark:bg-secondary-color rounded-lg p-4 shadow-md flex-1 flex flex-col border border-zinc-600">
             <CardHeader className="p-0 pb-4">
               <div className="flex justify-between items-center mb-4">

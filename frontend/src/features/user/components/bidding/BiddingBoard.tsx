@@ -1,30 +1,23 @@
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import { VerifiedArtistBadge } from "../../../../components/shared/VerifiedArtistBadge";
-import { useBiddingSocket } from "../../hooks/bidding/useBiddingSocket";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
-import { useDispatch } from "react-redux";
-import { setBids } from "../../../../redux/slices/biddingSlice";
 import { Badge } from "../../../../components/ui/badge";
 
 interface BiddingBoardProps {
   auctionId: string;
-  initialBids?: any[];
+  bids: any[];
   isEnded?: boolean;
 }
 
-export const BiddingBoard = ({ auctionId, initialBids, isEnded = false }: BiddingBoardProps) => {
-  const dispatch = useDispatch();
-  const { bids } = useBiddingSocket(auctionId);
+export const BiddingBoard = ({ auctionId: _auctionId, bids, isEnded = false }: BiddingBoardProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Removed local socket hook usage, data is passed from parent
+  // const { bids } = useBiddingSocket(auctionId); -> Lifted to DetailBidFeed using it via props
 
   useEffect(() => {
-    if (initialBids && initialBids.length > 0) {
-      setTimeout(() => {
-          dispatch(setBids(initialBids));
-      }, 50);
-    }
-  }, [initialBids, dispatch]);
+    // Redux setBids dispatch removed as it's handled by parent's socket hook or page load events
+  }, []);
 
   useEffect(() => {
       if (scrollRef.current) {

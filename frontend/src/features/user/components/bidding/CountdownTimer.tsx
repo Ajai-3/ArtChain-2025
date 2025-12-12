@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { intervalToDuration, formatDuration, formatDistanceToNow, differenceInSeconds } from "date-fns";
+import { intervalToDuration, differenceInSeconds } from "date-fns";
 
 interface CountdownTimerProps {
   targetDate: string | Date;

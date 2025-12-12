@@ -1,7 +1,8 @@
 import { Badge } from "../../../../../components/ui/badge";
-import { Clock } from "lucide-react";
+import { Clock, Users } from "lucide-react";
 import { BiddingBoard } from "../BiddingBoard";
 import type { Auction } from "../../../../../types/auction";
+import { useBiddingSocket } from "../../../hooks/bidding/useBiddingSocket";
 
 interface DetailBidFeedProps {
     auction: Auction;
@@ -12,8 +13,10 @@ interface DetailBidFeedProps {
 }
 
 export const DetailBidFeed = ({ auction, isLive, isEnded, isScheduled, isUnsold }: DetailBidFeedProps) => {
+    const { bids, activeUsers } = useBiddingSocket(auction.id);
+
     return (
-        <div className={`flex-1 min-h-0 rounded-2xl overflow-hidden shadow-sm flex flex-col border-2 ${
+        <div className={`flex-1 min-h-[400px] md:min-h-0 rounded-2xl overflow-hidden shadow-sm flex flex-col border-2 ${
             isLive 
                 ? 'bg-card border-emerald-500/50' 
             : isEnded 
@@ -31,23 +34,32 @@ export const DetailBidFeed = ({ auction, isLive, isEnded, isScheduled, isUnsold 
                     {isLive ? 'Live Bidding Feed' : isEnded ? 'Final Bids Log' : 'Waiting Room'}
                     {isLive && <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>}
                 </h3>
-                <Badge variant="outline" className="bg-background/50">
-                    {auction.bids?.length || 0} Bids
-                </Badge>
+                <div className="flex items-center gap-2">
+                     {isLive && (
+                        <Badge variant="secondary" className="bg-background/50 gap-1 hidden sm:flex">
+                             <Users className="h-3 w-3" />
+                             {activeUsers}
+                        </Badge>
+                     )}
+                    <Badge variant="outline" className="bg-background/50">
+                        {bids?.length || 0} Bids
+                    </Badge>
+                </div>
             </div>
             
             <div className="flex-1 min-h-0 relative">
                  <div className="absolute inset-0 overflow-y-auto custom-scrollbar">
-                    {isScheduled && (!auction.bids || auction.bids.length === 0) ? (
+                    {isScheduled && (!bids || bids.length === 0) ? (
                         <div className="h-full flex flex-col items-center justify-center text-center p-6 text-muted-foreground opacity-60">
                             <Clock className="h-10 w-10 mb-3 text-indigo-400" />
                             <p className="font-medium text-sm">Auction hasn't started yet.</p>
                             <p className="text-xs mt-1">Be ready to place the first bid!</p>
+                            {activeUsers > 0 && <p className="text-[10px] mt-2 text-indigo-400">{activeUsers} users waiting</p>}
                         </div>
                     ) : (
                         <BiddingBoard 
                             auctionId={auction.id} 
-                            initialBids={auction.bids} 
+                            bids={bids}
                             isEnded={isEnded}
                         />
                     )}

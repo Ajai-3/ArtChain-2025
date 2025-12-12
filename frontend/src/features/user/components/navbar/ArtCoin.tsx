@@ -5,7 +5,11 @@ import type { RootState } from "../../../../redux/store";
 
 
 
+import { useGetWallet } from "../../hooks/wallet/useGetWallet";
+
 const ArtCoin: React.FC = () => {
+  // Ensure wallet data is fresh/synced
+  useGetWallet();
   const wallet = useSelector((state: RootState) => state.wallet)
 
   const formatBalance = (balance: number) => {

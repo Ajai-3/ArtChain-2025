@@ -11,7 +11,8 @@ export const usePlaceBid = () => {
     onSuccess: (data, variables) => {
       toast.success("Bid placed successfully!");
       queryClient.invalidateQueries({ queryKey: ["auction", variables.auctionId] });
-      queryClient.invalidateQueries({ queryKey: ["auctions"] });
+      // queryClient.invalidateQueries({ queryKey: ["auctions"] });
+      queryClient.invalidateQueries({ queryKey: ["wallet"] });
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Failed to place bid");
