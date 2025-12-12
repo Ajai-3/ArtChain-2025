@@ -3,6 +3,8 @@ import { Server } from "socket.io";
 import { ISocketService } from "../../domain/interfaces/ISocketService";
 import { redisPub, redisSub } from "../config/redis";
 import { logger } from "../../utils/logger";
+import { registerAuctionEvents } from "../socket/auctionHandler";
+import { authMiddleware } from "../../presentation/middleware/authMiddleware";
 
 @injectable()
 export class SocketService implements ISocketService {
@@ -16,47 +18,55 @@ export class SocketService implements ISocketService {
       }
     });
 
+    this.io.use(authMiddleware);
+
     this.io.on("connection", (socket) => {
-        logger.info(`Socket connected: ${socket.id}`);
-        socket.on("join_auction", (auctionId) => {
-            logger.info(`Socket ${socket.id} joined auction ${auctionId}`);
-            socket.join(`auction:${auctionId}`);
-        });
-        
-        socket.on("leave_auction", (auctionId) => {
-             socket.leave(`auction:${auctionId}`);
-        });
+        console.log(`🔌 [SocketService] Connection established: ${socket.id} (User: ${socket.data.userId})`);
+        registerAuctionEvents(this.io!, socket);
     });
 
-    // Subscribe to Redis
     if (redisSub) { 
         redisSub.subscribe("bid_placed", "auction_updated", (err) => {
-            if(err) logger.error("Failed to subscribe to Redis channels", err);
+            if(err) console.error("❌ [SocketService] Redis Subscribe Error:", err);
+            else console.log("✅ [SocketService] Subscribed to Redis channels: bid_placed, auction_updated");
         });
 
         redisSub.on("message", (channel, message) => {
             if (!this.io) return;
             try {
                 const data = JSON.parse(message);
+                console.log(`📨 [SocketService] Received Redis message on ${channel}:`, data);
                 
                 if (channel === "bid_placed") {
-                    // data is bid object with auctionId
-                    this.io.to(`auction:${data.auctionId}`).emit("bid_placed", data);
+                    // Broadcast globally as requested so all clients (list view etc) can update
+                    this.io.emit("bid_placed", data);
+                    console.log(`📢 [SocketService] Broadcasted 'bid_placed' to ALL clients`);
                 } else if (channel === "auction_updated") {
-                    this.io.to(`auction:${data._id}`).emit("auction_updated", data);
+                    this.io.emit("auction_updated", data);
+                    console.log(`📢 [SocketService] Broadcasted 'auction_updated' to ALL clients`);
                 }
             } catch (e) {
-                logger.error("Error parsing redis message", e);
+                console.error("❌ [SocketService] Error parsing redis message", e);
             }
         });
     }
   }
 
   publishBid(bid: any): void {
+      // Broadcast locally immediately
+      if (this.io) {
+          this.io.emit("bid_placed", bid);
+          console.log(`📢 [SocketService] Emitted 'bid_placed' locally`);
+      }
+      // Publish to Redis for other instances
       if (redisPub) redisPub.publish("bid_placed", JSON.stringify(bid));
   }
 
   publishAuctionUpdate(auction: any): void {
+      if (this.io) {
+          this.io.emit("auction_updated", auction);
+          console.log(`📢 [SocketService] Emitted 'auction_updated' locally`);
+      }
       if (redisPub) redisPub.publish("auction_updated", JSON.stringify(auction));
   }
 }

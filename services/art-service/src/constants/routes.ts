@@ -90,5 +90,12 @@ export const ROUTES = {
     PLACE_BID: "/bids",
     USER_BIDS: "/my-bids",
   },
+
+  // Admin Auction routes
+  ADMIN_AUCTION: {
+    BASE: "/admin/auctions",
+    BY_ID: "/admin/auctions/:id",
+    STATS: "/admin/auctions/stats",
+  },
 } as const;
 

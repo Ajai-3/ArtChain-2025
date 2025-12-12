@@ -1,3 +1,4 @@
+
 import { injectable, inject } from "inversify";
 import { IPlaceBidUseCase } from "../../interface/usecase/bid/IPlaceBidUseCase";
 import { TYPES } from "../../../infrastructure/Inversify/types";
@@ -17,69 +18,117 @@ import { logger } from "../../../utils/logger";
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
   constructor(
-    @inject(TYPES.IBidRepository) private bidRepository: IBidRepository,
-    @inject(TYPES.IAuctionRepository) private auctionRepository: IAuctionRepository,
-    @inject(TYPES.IWalletService) private walletService: IWalletService,
-    @inject(TYPES.ISocketService) private socketService: ISocketService
+    @inject(TYPES.IBidRepository) private readonly _bidRepository: IBidRepository,
+    @inject(TYPES.IAuctionRepository) private readonly _auctionRepository: IAuctionRepository,
+    @inject(TYPES.IWalletService) private readonly _walletService: IWalletService,
+    @inject(TYPES.ISocketService) private readonly _socketService: ISocketService
   ) {}
 
-  async execute({ auctionId, bidderId, amount }: PlaceBidDTO): Promise<BidResponseDTO> {
-    const auction = await this.auctionRepository.getById(auctionId);
+  async execute({ auctionId, bidderId, amount, bidderUserInfo }: PlaceBidDTO): Promise<BidResponseDTO> {
+    const auction = await this._auctionRepository.getById(auctionId);
     if (!auction) {
       throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
     }
     
-    if (auction.status === "ENDED" || auction.status === "CANCELLED") {
+    // 1. Validate Auction Status
+    const now = new Date();
+    if (auction.status === "ENDED" || auction.status === "CANCELLED" || 
+       (auction.status === "ACTIVE" && now > new Date(auction.endTime))) {
         throw new BadRequestError(AUCTION_MESSAGES.AUCTION_NOT_ACTIVE);
     }
 
-    if (auction.status === "SCHEDULED" && new Date() < new Date(auction.startTime)) {
+    if (auction.status === "SCHEDULED" && now < new Date(auction.startTime)) {
         throw new BadRequestError(AUCTION_MESSAGES.AUCTION_NOT_STARTED);
     }
 
-    if (amount <= auction.currentBid && auction.bids.length > 0) {
-         throw new BadRequestError(`${AUCTION_MESSAGES.BID_TOO_LOW} ${auction.currentBid}`);
-    }
-    if (amount < auction.startPrice) {
-         throw new BadRequestError(`${AUCTION_MESSAGES.BID_BELOW_START_PRICE} ${auction.startPrice}`);
+    const currentHighestBid = await this._bidRepository.findHighestBid(auctionId);
+    const currentMaxAmount = currentHighestBid ? currentHighestBid.amount : auction.startPrice;
+
+    // 2. Validate Bid Amount
+    // Must be strictly higher than current highest or >= startPrice if no bids
+    if (amount <= currentMaxAmount && (currentHighestBid || amount < auction.startPrice)) {
+       throw new BadRequestError("Bid must be higher than current highest bid.");
     }
     
-    const locked = await this.walletService.lockFunds(bidderId, amount, auctionId);
+    // 3. Determine Lock Amount & Previous Winner Handling
+    let amountToLock = amount;
+    let shouldUnlockPrevious = false;
+    let previousBidderId: string | null = null;
+    let previousAmount = 0;
+
+    if (currentHighestBid) {
+        if (currentHighestBid.bidderId === bidderId) {
+            // Self-Outbid: Only lock the difference
+            amountToLock = amount - currentHighestBid.amount;
+        } else {
+            // Outbidding someone else: Lock full new amount, unlock previous later
+            shouldUnlockPrevious = true;
+            previousBidderId = currentHighestBid.bidderId;
+            previousAmount = currentHighestBid.amount;
+        }
+    }
+
+    if (amountToLock <= 0) {
+        throw new BadRequestError("Invalid bid increment.");
+    }
+
+    // 4. Lock Funds (External Service)
+    const locked = await this._walletService.lockFunds(bidderId, amountToLock, auctionId);
     if (!locked) {
         throw new BadRequestError(AUCTION_MESSAGES.FUNDS_LOCK_FAILED);
     }
 
-    const currentHighest = await this.bidRepository.findHighestBid(auctionId);
-    if (currentHighest) {
-        await this.walletService.unlockFunds(currentHighest.bidderId, currentHighest.amount, auctionId);
-    }
-
-    const bidEntity = new Bid(auctionId, bidderId, amount); 
-    const bid = await this.bidRepository.create(bidEntity);
-    
-    const newBids = auction.bids ? [...auction.bids] : [];
-    if (bid._id) newBids.push(bid._id);
-
-    const newStatus = auction.status === "SCHEDULED" ? "ACTIVE" : auction.status;
-
-    await this.auctionRepository.update(auctionId, { 
-        currentBid: amount, 
-        winnerId: bidderId,
-        bids: newBids,
-        status: newStatus
-    });
-
-    let bidder = null;
     try {
-        bidder = await UserService.getUserById(bidderId);
-    } catch (error) {
-        logger.error("Failed to fetch user details for bid socket event", error);
+        // 5. Create Bid & Update Auction (DB Transaction scope ideally)
+        const bidEntity = new Bid(auctionId, bidderId, amount); 
+        const bid = await this._bidRepository.create(bidEntity);
+        
+        const newBids = auction.bids ? [...auction.bids] : [];
+        if (bid._id) newBids.push(bid._id);
+
+        const newStatus = auction.status === "SCHEDULED" ? "ACTIVE" : auction.status;
+
+        await this._auctionRepository.update(auctionId, { 
+            currentBid: amount, 
+            winnerId: bidderId,
+            bids: newBids,
+            status: newStatus
+        });
+
+        // 6. Unlock Previous Bidder (Compensation for outbid user)
+        if (shouldUnlockPrevious && previousBidderId) {
+            // We do not await this or let it fail the main request, but log reliable failure
+            this._walletService.unlockFunds(previousBidderId, previousAmount, auctionId)
+                .catch(err => logger.error(`Failed to unlock funds for outbid user ${previousBidderId}`, err));
+        }
+
+        // 7. Socket Broadcast
+        let bidder = bidderUserInfo || null;
+        
+        if (!bidder) {
+            try {
+                bidder = await UserService.getUserById(bidderId);
+            } catch (error) {
+                logger.error("Failed to fetch user details for bid socket event", error);
+            }
+        }
+
+        console.log(bidder, bid)
+
+        const bidDTO = BidMapper.toDTO(bid, bidder);
+
+        console.log(bidDTO)
+        
+        this._socketService.publishBid(bidDTO);
+        console.log(`📢 [PlaceBidUseCase] Published bid_placed event for auction ${auctionId}`);
+
+        return bidDTO;
+
+    } catch (dbError) {
+        // Compensation: Unlock the funds we just locked if DB fails
+        logger.error("DB Error during bid placement, rolling back funds lock", dbError);
+        await this._walletService.unlockFunds(bidderId, amountToLock, auctionId);
+        throw dbError;
     }
-
-    const bidDTO = BidMapper.toDTO(bid, bidder);
-
-    this.socketService.publishBid(bidDTO);
-
-    return bidDTO;
   }
 }

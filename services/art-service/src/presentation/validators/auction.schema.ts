@@ -24,9 +24,9 @@ export const createAuctionSchema = z.object({
   const end = new Date(endTime);
   const now = new Date();
   
-  const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60 * 1000);
+  // const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60 * 1000);
+  const thirtyMinutesFromNow = new Date(now.getTime() + 60000);
 
-  // 1. Start time must be at least 30 minutes in the future
   if (start < thirtyMinutesFromNow) {
      ctx.addIssue({
        code: z.ZodIssueCode.custom,
@@ -35,8 +35,8 @@ export const createAuctionSchema = z.object({
      });
   }
 
-  // 2. End time must be at least 30 minutes after start time
-  const thirtyMinutesAfterStart = new Date(start.getTime() + 30 * 60 * 1000);
+  // const thirtyMinutesAfterStart = new Date(start.getTime() + 30 * 60 * 1000);
+   const thirtyMinutesAfterStart = new Date(start.getTime() + 6000);
   if (end < thirtyMinutesAfterStart) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom, 

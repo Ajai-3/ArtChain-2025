@@ -11,6 +11,7 @@ import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
 
 import { placeBidSchema } from "../validators/bid.schema";
 import { PlaceBidDTO } from "../../application/interface/dto/bid/PlaceBidDTO";
+import { validateWithZod } from "../../utils/validateWithZod";
 
 @injectable()
 export class BidController implements IBidController {
@@ -39,7 +40,7 @@ export class BidController implements IBidController {
     try {
       const bidderId = req.headers["x-user-id"] as string;
       
-      const validatedBody = placeBidSchema.parse(req.body);
+      const validatedBody = validateWithZod(placeBidSchema, req.body);
 
       logger.info(
         `Placing bid on auction ${validatedBody.auctionId} by user ${bidderId} amount ${validatedBody.amount}`
@@ -48,7 +49,13 @@ export class BidController implements IBidController {
       const dto: PlaceBidDTO = {
         auctionId: validatedBody.auctionId,
         amount: validatedBody.amount,
-        bidderId
+        bidderId,
+        bidderUserInfo: (req as any).user ? {
+            id: (req as any).user.id || (req as any).user._id || bidderId, // reliable fallback
+            username: (req as any).user.username,
+            profileImage: (req as any).user.profileImage, // If available in token
+            name: (req as any).user.name
+        } : undefined
       };
 
       const bid = await this._placeBidUseCase.execute(dto);
@@ -77,13 +84,15 @@ export class BidController implements IBidController {
   ): Promise<Response | void> => {
     try {
       const auctionId = req.params.auctionId;
-      logger.info(`Fetching bids for auctionId=${auctionId}`);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      logger.info(`Fetching bids for auctionId=${auctionId} page=${page} limit=${limit}`);
 
-      const bids = await this._getBidsUseCase.execute(auctionId);
+      const result = await this._getBidsUseCase.execute(auctionId, page, limit);
 
       return res.status(HttpStatus.OK).json({
         message: AUCTION_MESSAGES.BIDS_FETCHED,
-        data: bids,
+        data: result,
       });
     } catch (error) {
       logger.error("Error in getBids", error);

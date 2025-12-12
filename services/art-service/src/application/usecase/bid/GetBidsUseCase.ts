@@ -12,16 +12,30 @@ export class GetBidsUseCase implements IGetBidsUseCase {
     @inject(TYPES.IBidRepository) private bidRepository: IBidRepository
   ) {}
 
-  async execute(auctionId: string): Promise<BidResponseDTO[]> {
-    const bids = await this.bidRepository.findByAuctionId(auctionId);
-    
-    const userIds = [...new Set(bids.map(b => b.bidderId))];
+  async execute(
+    auctionId: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{ bids: BidResponseDTO[]; total: number }> {
+    const { bids, total } = await this.bidRepository.findByAuctionId(
+      auctionId,
+      page,
+      limit
+    );
+
+    if (bids.length === 0) {
+      return { bids: [], total };
+    }
+
+    const userIds = [...new Set(bids.map((b) => b.bidderId))];
     const users = await UserService.getUsersByIds(userIds);
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
-    return bids.map(bid => {
+    const mappedBids = bids.map((bid) => {
       const bidder = userMap.get(bid.bidderId);
       return BidMapper.toDTO(bid, bidder);
     });
+
+    return { bids: mappedBids, total };
   }
 }

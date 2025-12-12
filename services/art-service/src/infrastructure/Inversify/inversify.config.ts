@@ -154,6 +154,8 @@ import { ICreateAuctionUseCase } from "../../application/interface/usecase/aucti
 import { CreateAuctionUseCase } from "../../application/usecase/auction/CreateAuctionUseCase";
 import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction/IGetAuctionsUseCase";
 import { GetAuctionsUseCase } from "../../application/usecase/auction/GetAuctionsUseCase";
+import { IGetAuctionStatsUseCase } from "../../application/interface/usecase/auction/IGetAuctionStatsUseCase";
+import { GetAuctionStatsUseCase } from "../../application/usecase/auction/GetAuctionStatsUseCase";
 import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
 import { GetAuctionByIdUseCase } from "../../application/usecase/auction/GetAuctionByIdUseCase";
 import { IPlaceBidUseCase } from "../../application/interface/usecase/bid/IPlaceBidUseCase";
@@ -311,6 +313,7 @@ container.bind<IBidRepository>(TYPES.IBidRepository).to(BidRepositoryImpl);
 
 container.bind<ICreateAuctionUseCase>(TYPES.ICreateAuctionUseCase).to(CreateAuctionUseCase);
 container.bind<IGetAuctionsUseCase>(TYPES.IGetAuctionsUseCase).to(GetAuctionsUseCase);
+container.bind<IGetAuctionStatsUseCase>(TYPES.IGetAuctionStatsUseCase).to(GetAuctionStatsUseCase);
 container.bind<IGetAuctionByIdUseCase>(TYPES.IGetAuctionByIdUseCase).to(GetAuctionByIdUseCase);
 container.bind<IPlaceBidUseCase>(TYPES.IPlaceBidUseCase).to(PlaceBidUseCase);
 container.bind<IGetBidsUseCase>(TYPES.IGetBidsUseCase).to(GetBidsUseCase);

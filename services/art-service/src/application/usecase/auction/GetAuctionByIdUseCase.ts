@@ -25,7 +25,7 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
         throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
     };
 
-    const [bids, signedImageUrl] = await Promise.all([
+    const [{ bids }, signedImageUrl] = await Promise.all([
       this._bidRepository.findByAuctionId(auction._id!),
       this._s3Service.getSignedUrl(auction.imageKey, 'bidding') 
     ]);

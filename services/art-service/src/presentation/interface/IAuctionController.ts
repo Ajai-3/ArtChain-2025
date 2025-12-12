@@ -16,4 +16,9 @@ export interface IAuctionController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+  getAuctionStats(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
 }

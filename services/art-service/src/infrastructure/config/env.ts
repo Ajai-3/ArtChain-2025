@@ -13,5 +13,6 @@ export const config = {
     aws: {
         cloudfront_key_pair_id: process.env.CLOUDFRONT_KEY_PAIR_ID!,
         cloudfront_private_key: process.env.CLOUDFRONT_PRIVATE_KEY!,
-    }
+    },
+    jwt_secret: secrets.jwtAccessSecret!
 }

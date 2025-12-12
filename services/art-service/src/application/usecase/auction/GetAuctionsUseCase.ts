@@ -54,7 +54,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
 
     const auctionsData = await Promise.all(
       finalAuctions.map(async (auction) => {
-        const bids = await this._bidRepository.findByAuctionId(auction._id!);
+        const { bids } = await this._bidRepository.findByAuctionId(auction._id!);
         const signedImageUrl = await this._s3Service.getSignedUrl(auction.imageKey, 'bidding');
 
         bids.forEach(bid => allUserIds.add(bid.bidderId));

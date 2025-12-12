@@ -35,7 +35,8 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     
     if (filterStatus && filterStatus !== 'ALL') {
         query.status = filterStatus;
-    } else if (!hostId) {
+    } else if (!hostId && filterStatus !== 'ALL') {
+        // Only default to excluding CANCELLED if 'ALL' wasn't explicitly requested
         query.status = { $in: ['SCHEDULED', 'ACTIVE', 'ENDED'] };
     }
 
@@ -63,5 +64,35 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
 
   async updateStatus(id: string, status: string): Promise<void> {
       await AuctionModel.updateOne({ _id: id }, { status });
+  }
+
+  async getStats(): Promise<{ total: number; active: number; scheduled: number; ended: number; cancelled: number }> {
+    const stats = await AuctionModel.aggregate([
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const result = {
+      total: 0,
+      active: 0,
+      scheduled: 0,
+      ended: 0,
+      cancelled: 0
+    };
+
+    stats.forEach((stat: any) => {
+      const count = stat.count;
+      result.total += count;
+      if (stat._id === 'ACTIVE') result.active = count;
+      if (stat._id === 'SCHEDULED') result.scheduled = count;
+      if (stat._id === 'ENDED') result.ended = count;
+      if (stat._id === 'CANCELLED') result.cancelled = count;
+    });
+
+    return result;
   }
 }

@@ -10,8 +10,25 @@ export class BidRepositoryImpl extends BaseRepositoryImpl<Bid> implements IBidRe
     super(BidModel);
   }
 
-  async findByAuctionId(auctionId: string): Promise<Bid[]> {
-    return BidModel.find({ auctionId }).sort({ amount: -1 }).lean() as unknown as Bid[];
+  async findByAuctionId(
+    auctionId: string,
+    page: number = 1,
+    limit: number = 10
+  ): Promise<{ bids: Bid[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const [bids, total] = await Promise.all([
+      BidModel.find({ auctionId })
+        .sort({ amount: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      BidModel.countDocuments({ auctionId }),
+    ]);
+
+    return {
+      bids: bids as unknown as Bid[],
+      total,
+    };
   }
 
   async findHighestBid(auctionId: string): Promise<Bid | null> {

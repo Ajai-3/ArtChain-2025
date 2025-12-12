@@ -13,7 +13,7 @@ export class UserService {
           },
         }
       );
-      return response.data;
+      return response.data.data;
     } catch (error: any) {
       if (error.response && error.response.status === 404) {
         return null;

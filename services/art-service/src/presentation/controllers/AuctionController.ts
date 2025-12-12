@@ -7,12 +7,14 @@ import { TYPES } from "../../infrastructure/Inversify/types";
 import { ICreateAuctionUseCase } from "../../application/interface/usecase/auction/ICreateAuctionUseCase";
 import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction/IGetAuctionsUseCase";
 import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
+import { IGetAuctionStatsUseCase } from "../../application/interface/usecase/auction/IGetAuctionStatsUseCase";
 import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
 
 import { createAuctionSchema } from "../validators/auction.schema";
 import { CreateAuctionDTO } from "../../application/interface/dto/auction/CreateAuctionDTO";
 import { GetAuctionsDTO } from "../../application/interface/dto/auction/GetAuctionsDTO";
 import { GetAuctionByIdDTO } from "../../application/interface/dto/auction/GetAuctionByIdDTO";
+import { validateWithZod } from "../../utils/validateWithZod";
 
 @injectable()
 export class AuctionController implements IAuctionController {
@@ -22,7 +24,9 @@ export class AuctionController implements IAuctionController {
     @inject(TYPES.IGetAuctionsUseCase)
     private readonly _getAuctionsUseCase: IGetAuctionsUseCase,
     @inject(TYPES.IGetAuctionByIdUseCase)
-    private readonly _getAuctionByIdUseCase: IGetAuctionByIdUseCase
+    private readonly _getAuctionByIdUseCase: IGetAuctionByIdUseCase,
+    @inject(TYPES.IGetAuctionStatsUseCase)
+    private readonly _getAuctionStatsUseCase: IGetAuctionStatsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -42,7 +46,7 @@ export class AuctionController implements IAuctionController {
       const hostId = req.headers["x-user-id"] as string;
       logger.info(`Creating auction for host: ${hostId}`);
 
-      const validatedBody = createAuctionSchema.parse(req.body);
+      const validatedBody = validateWithZod(createAuctionSchema, req.body);
       
       const dto: CreateAuctionDTO = {
         hostId,
@@ -143,6 +147,30 @@ export class AuctionController implements IAuctionController {
       });
     } catch (error) {
       logger.error("Error in getAuction", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET AUCTION STATS
+  //# ================================================================================================================
+  //# GET /api/v1/art/admin/auctions/stats
+  //# This controller fetches statistics for auctions.
+  //# ================================================================================================================
+  getAuctionStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      logger.info("Fetching auction stats");
+      const stats = await this._getAuctionStatsUseCase.execute();
+      return res.status(HttpStatus.OK).json({
+        message: AUCTION_MESSAGES.AUCTIONS_FETCHED,
+        data: stats,
+      });
+    } catch (error) {
+      logger.error("Error in getAuctionStats", error);
       next(error);
     }
   };

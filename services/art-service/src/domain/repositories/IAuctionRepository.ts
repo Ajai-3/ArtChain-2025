@@ -13,4 +13,11 @@ export interface IAuctionRepository extends IBaseRepository<Auction> {
       hostId?: string
     ): Promise<{ auctions: Auction[]; total: number }>;
   updateStatus(id: string, status: string): Promise<void>;
+  getStats(): Promise<{
+    total: number;
+    active: number;
+    scheduled: number;
+    ended: number;
+    cancelled: number;
+  }>;
 }

@@ -64,6 +64,7 @@ export const TYPES = {
   // Use Cases - Bidding
   ICreateAuctionUseCase: Symbol.for("ICreateAuctionUseCase"),
   IGetAuctionsUseCase: Symbol.for("IGetAuctionsUseCase"),
+  IGetAuctionStatsUseCase: Symbol.for("IGetAuctionStatsUseCase"),
   IGetAuctionByIdUseCase: Symbol.for("IGetAuctionByIdUseCase"),
   IPlaceBidUseCase: Symbol.for("IPlaceBidUseCase"),
   IGetBidsUseCase: Symbol.for("IGetBidsUseCase"),
