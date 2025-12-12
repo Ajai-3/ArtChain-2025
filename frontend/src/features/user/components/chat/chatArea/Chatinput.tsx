@@ -5,13 +5,15 @@ import EmojiPicker, { Theme, type EmojiClickData } from "emoji-picker-react";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
-  onSendImage: () => void;
+  onSendImage: (file: File) => void;
+  onTyping?: () => void;
   disabled?: boolean;
 }
 
 const ChatInput: React.FC<ChatInputProps> = ({
   onSendMessage,
   onSendImage,
+  onTyping,
   disabled = false,
 }) => {
   const [message, setMessage] = useState("");
@@ -39,6 +41,13 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const handleEmojiClick = (emojiData: EmojiClickData) => {
     setMessage((prev) => prev + emojiData.emoji);
     inputRef.current?.focus();
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+    if (onTyping) {
+      onTyping();
+    }
   };
 
   // close picker on outside click
@@ -77,11 +86,29 @@ const ChatInput: React.FC<ChatInputProps> = ({
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={onSendImage}
+            onClick={() => document.getElementById('chat-image-input')?.click()}
             disabled={disabled}
             className="p-2.5 hover:bg-muted rounded-xl transition-all disabled:opacity-40"
             title="Attach file"
           >
+            <input
+              type="file"
+              id="chat-image-input"
+              className="hidden"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  // Validate size (e.g. 5MB)
+                  if (file.size > 5 * 1024 * 1024) {
+                    alert("File too large (max 5MB)");
+                    return;
+                  }
+                  onSendImage(file);
+                  e.target.value = ''; // reset
+                }
+              }}
+            />
             <svg
               className="w-5 h-5 text-muted-foreground"
               fill="none"
@@ -127,7 +154,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
             ref={inputRef}
             type="text"
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleChange}
             onKeyDown={handleKeyPress}
             disabled={disabled}
             placeholder={

@@ -9,6 +9,8 @@ import {
   Settings,
   LogOut,
   Tags,
+  Sparkles,
+  Gavel,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import Logo from "../../../../components/logo/Logo";
@@ -20,10 +22,11 @@ const adminLinks = [
   { to: "/admin/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/admin/user-management", icon: Users, label: "User Management" },
   { to: "/admin/category-management", icon: Tags, label: "Category Mangement" },
-  { to: "/admin/content", icon: Shield, label: "Content Moderation" },
-  { to: "/admin/reports", icon: Flag, label: "Report & Abuse" },
-  { to: "/admin/wallet", icon: Wallet, label: "Wallet & Financial" },
-  { to: "/admin/posts", icon: FileEdit, label: "Post Control" },
+  { to: "/admin/ai-settings", icon: Sparkles, label: "AI Settings" },
+  { to: "/admin/content-moderation", icon: Shield, label: "Content Moderation" },
+  { to: "/admin/wallet-management", icon: Wallet, label: "Wallet & Financial" },
+  { to: "/admin/art-management", icon: FileEdit, label: "Art Management" },
+  { to: "/admin/auction-management", icon: Gavel, label: "Auction Management" },
   { to: "/admin/settings", icon: Settings, label: "Platform Settings" },
 ];
 

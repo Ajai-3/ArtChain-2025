@@ -1,19 +1,30 @@
 import { useSelector } from "react-redux";
 import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useMemo, useCallback, useRef } from "react";
 import ChatMessages from "./chatArea/ChatMessage";
 import { selectUserCache } from "../../../../redux/selectors/chatSelectors";
 import { type Conversation } from "../../../../types/chat/chat";
 import ConversationDetails from "./chatArea/ConversationDetails";
 import { useUserResolver } from "../../hooks/chat/useUserResolver";
 import { useInitialMessages } from "../../hooks/chat/useInitialMessages";
+import { getChatSocket } from "../../../../socket/socketManager";
+import { useMarkRead } from "../../hooks/chat/useMarkRead";
+import { useChatUpload } from "../../hooks/chat/useChatUpload";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../../../../components/ui/dialog";
+import { Button } from "../../../../components/ui/button";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
   onBack?: () => void;
   currentUserId: string;
-  onSendMessage: (text: string) => void;
+  onSendMessage: (params: { content: string; mediaType?: "TEXT" | "IMAGE"; tempId?: string; mediaUrl?: string }) => void;
   onSendImage: (mediaUrl?: string) => void;
   onDeleteMessage: (messageId: string, deleteForAll: boolean) => void;
 }
@@ -23,10 +34,11 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   onBack,
   currentUserId,
   onSendMessage,
-  onSendImage,
+  onSendImage, // unused now
   onDeleteMessage,
 }) => {
   const convId = selectedConversation?.id ?? "";
+  const lastTypingRef = useRef<number>(0);
 
   const {
     messages,
@@ -34,10 +46,11 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     hasMore,
     isLoading,
     isFetchingMore,
-    totalCount,
   } = useInitialMessages(convId);
 
   const [showDetails, setShowDetails] = useState(false);
+  const [previewImage, setPreviewImage] = useState<File | null>(null);
+  const { uploadImage, uploading: isUploading } = useChatUpload();
   const userCache = useSelector(selectUserCache);
 
   const senderIds = useMemo(
@@ -46,6 +59,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   );
 
   useUserResolver(senderIds);
+  useMarkRead(convId, currentUserId);
 
   const handleVideoCall = useCallback(() => {
     console.log("Video call with:", selectedConversation?.partner?.name);
@@ -62,6 +76,36 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   const handleCloseDetails = useCallback(() => {
     setShowDetails(false);
   }, []);
+
+  const handleTyping = useCallback(() => {
+    const now = Date.now();
+    if (now - lastTypingRef.current > 2000) {
+      const socket = getChatSocket();
+      if (socket && socket.connected && selectedConversation) {
+        socket.emit("typing", { conversationId: selectedConversation.id });
+        lastTypingRef.current = now;
+      }
+    }
+  }, [selectedConversation]);
+
+  const handleFileSelect = useCallback((file: File) => {
+    setPreviewImage(file);
+  }, []);
+
+  const handleConfirmSend = async () => {
+    if (!previewImage) return;
+
+    const tempId = `temp-${Date.now()}`;
+    
+    const result = await uploadImage(previewImage);
+    
+    if (result) {
+        const { key } = result;
+        const mediaUrl = URL.createObjectURL(previewImage);
+        onSendMessage({ content: key, mediaType: "IMAGE", tempId, mediaUrl });
+        setPreviewImage(null);
+    }
+  };
 
   if (!selectedConversation) {
     return (
@@ -134,8 +178,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
         />
 
         <ChatInput
-          onSendMessage={onSendMessage}
-          onSendImage={onSendImage}
+          onSendMessage={(text) => onSendMessage({ content: text, mediaType: "TEXT" })}
+          onSendImage={handleFileSelect}
+          onTyping={handleTyping}
           disabled={selectedConversation.locked}
         />
       </div>
@@ -147,6 +192,31 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           currentUserId={currentUserId}
         />
       )}
+
+      <Dialog open={!!previewImage} onOpenChange={(open) => !open && !isUploading && setPreviewImage(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Image</DialogTitle>
+          </DialogHeader>
+          <div className="flex justify-center p-4">
+            {previewImage && (
+              <img
+                src={URL.createObjectURL(previewImage)}
+                alt="Preview"
+                className="max-h-[300px] rounded-lg object-contain"
+              />
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPreviewImage(null)} disabled={isUploading}>
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmSend} disabled={isUploading}>
+              {isUploading ? "Sending..." : "Send"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

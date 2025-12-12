@@ -3,8 +3,9 @@ import React from "react";
 import {
   type Conversation,
   ConversationType,
-  MediaType,
 } from "../../../../../types/chat/chat";
+import { usePresence } from "../../../hooks/chat/usePresence";
+import { formatChatTime } from "../../../../../libs/dateFormatter";
 
 interface ConversationItemProps {
   conversation: Conversation;
@@ -17,6 +18,8 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   isSelected,
   onSelect,
 }) => {
+  const { isOnline } = usePresence(conversation.partner?.id);
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -97,11 +100,6 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     return conversation.partner?.name || "Unknown User";
   };
 
-  const handleClick = () => {
-    console.log(conversation);
-    onSelect(conversation.id);
-  };
-
   return (
     <div
       onClick={() => onSelect(conversation.id)}
@@ -133,15 +131,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           )}
         </div>
 
-        {conversation.partner?.id &&
-          conversation.partner?.id !== "" &&
-          conversation.partner?.id &&
-          !conversation.locked &&
-          conversation.partner?.id &&
-          conversation.partner?.id &&
-          conversation.partner?.id && (
-            <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background bg-green-500" />
-          )}
+        {conversation.type === ConversationType.PRIVATE && isOnline && (
+          <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background bg-green-500" />
+        )}
 
         {conversation.locked && (
           <div className="absolute top-0 right-0 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
@@ -168,9 +160,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           </h3>
           <span className="text-xs text-muted-foreground flex-shrink-0 ml-2">
             {conversation.lastMessage?.createdAt
-              ? new Date(
-                  conversation.lastMessage.createdAt
-                ).toLocaleTimeString()
+              ? formatChatTime(conversation.lastMessage.createdAt)
               : ""}
           </span>
         </div>

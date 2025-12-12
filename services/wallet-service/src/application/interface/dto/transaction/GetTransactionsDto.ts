@@ -3,7 +3,7 @@ import {
   TransactionMethod,
   TransactionStatus,
   TransactionType,
-} from "../../entities/Transaction";
+} from "../../../../domain/entities/Transaction";
 
 export interface GetTransactionsDto {
   userId?: string;

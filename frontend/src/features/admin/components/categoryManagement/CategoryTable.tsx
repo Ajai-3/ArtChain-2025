@@ -80,7 +80,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
           <TableHeader>
             <TableRow className="bg-gray-50 dark:bg-zinc-900">
               <TableHead>No</TableHead>
-              <TableHead>Id</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Use Count</TableHead>
               <TableHead>Status</TableHead>
@@ -104,7 +103,6 @@ const CategoryTable: React.FC<CategoryTableProps> = ({
               categories.map((cat, idx) => (
                 <TableRow key={cat._id}>
                   <TableCell>{(page - 1) * limit + idx + 1}</TableCell>
-                  <TableCell>{cat._id}</TableCell>
                   <TableCell>{cat.name || "No category"}</TableCell>
                   <TableCell>{cat.count}</TableCell>
                   <TableCell>

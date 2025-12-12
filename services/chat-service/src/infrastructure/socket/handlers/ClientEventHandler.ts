@@ -6,6 +6,7 @@ import { SendMessageDto } from "../../../applications/interface/dto/SendMessageD
 import { DeleteMessageDto } from "../../../applications/interface/dto/DeleteMessageDto";
 import { ISendMessageUseCase } from "../../../applications/interface/usecase/ISendMessageUseCase";
 import { IDeleteMessageUseCase } from "../../../applications/interface/usecase/IDeleteMessageUseCase";
+import { IMarkMessagesReadUseCase } from "../../../applications/interface/usecase/IMarkMessagesReadUseCase";
 
 @injectable()
 export class ClientEventHandler implements IClientEventHandler {
@@ -14,12 +15,18 @@ export class ClientEventHandler implements IClientEventHandler {
     @inject(TYPES.ISendMessageUseCase)
     private readonly _sendMessageUseCase: ISendMessageUseCase,
     @inject(TYPES.IDeleteMessageUseCase)
-    private readonly _deleteMessageUseCase: IDeleteMessageUseCase
+    private readonly _deleteMessageUseCase: IDeleteMessageUseCase,
+    @inject(TYPES.IMarkMessagesReadUseCase)
+    private readonly _markMessagesReadUseCase: IMarkMessagesReadUseCase
   ) {}
 
   typing = (socket: Socket, data: { conversationId: string }) => {
     const userId = socket.data.userId;
-    socket.to(data.conversationId).emit("userTyping", { userId });
+    console.log(`⌨️ User ${userId} typing in conversation ${data.conversationId}`);
+    socket.to(data.conversationId).emit("userTyping", { 
+      userId, 
+      conversationId: data.conversationId 
+    });
   };
 
   sendMessage = async (
@@ -31,7 +38,7 @@ export class ClientEventHandler implements IClientEventHandler {
 
     try {
       const dto: SendMessageDto = {
-        tempId: payload.id,
+        tempId: payload.tempId,
         conversationId: payload.conversationId,
         senderId: userId,
         receiverId: payload.receiverId,
@@ -74,7 +81,7 @@ export class ClientEventHandler implements IClientEventHandler {
     }
   };
 
-  convoOpened = (
+  convoOpened = async (
     socket: Socket,
     payload: { conversationId: string; time: Date }
   ) => {
@@ -84,6 +91,41 @@ export class ClientEventHandler implements IClientEventHandler {
     console.log(`User ${userId} opened conversation ${conversationId}`);
     socket.join(conversationId);
 
+    try {
+        // Mark all messages as read when conversation is opened
+        await this._markMessagesReadUseCase.execute([], userId, conversationId);
+        
+        // Notify others that messages have been read (optional, handled by case or here?)
+        // The use case invalidates cache. We might want to emit 'messagesRead' to sender?
+        // But we don't know WHICH messages were read easily without returning them.
+        // For now, just marking them read is the requirement.
+    } catch (error) {
+        console.error("Error marking messages read on open:", error);
+    }
+
     socket.to(conversationId).emit("userJoined", { userId });
+  };
+
+  markMessagesRead = async (
+    socket: Socket,
+    payload: { conversationId: string; messageIds: string[] }
+  ) => {
+    const userId = socket.data.userId;
+    console.log(`Received markMessagesRead event from user ${userId} for conversation ${payload.conversationId}, messages: ${payload.messageIds.length}`);
+    try {
+      await this._markMessagesReadUseCase.execute(
+        payload.messageIds,
+        userId,
+        payload.conversationId
+      );
+
+      socket.to(payload.conversationId).emit("messagesRead", {
+        conversationId: payload.conversationId,
+        messageIds: payload.messageIds,
+        readBy: userId,
+      });
+    } catch (err) {
+      console.error("Mark messages read error:", err);
+    }
   };
 }

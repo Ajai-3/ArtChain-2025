@@ -6,12 +6,20 @@ import { TYPES } from "../../infrastructure/inversify/types";
 import { WALLET_MESSAGES } from "../../constants/WalletMessages";
 import { IWalletController } from "../interface/IWalletController";
 import { IGetWalletUseCase } from "../../application/interface/usecase/wallet/IGetWalletUseCase";
+import { ILockFundsUseCase } from "../../application/interface/usecase/wallet/ILockFundsUseCase";
+import { IUnlockFundsUseCase } from "../../application/interface/usecase/wallet/IUnlockFundsUseCase";
+import { LockFundsDTO } from "../../application/interface/dto/wallet/LockFundsDTO";
+import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFundsDTO";
 
 @injectable()
 export class WalletController implements IWalletController {
   constructor(
     @inject(TYPES.IGetWalletUseCase)
-    private readonly _getWalletUseCase: IGetWalletUseCase
+    private readonly _getWalletUseCase: IGetWalletUseCase,
+    @inject(TYPES.ILockFundsUseCase)
+    private readonly _lockFundsUseCase: ILockFundsUseCase,
+    @inject(TYPES.IUnlockFundsUseCase)
+    private readonly _unlockFundsUseCase: IUnlockFundsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -113,6 +121,68 @@ export class WalletController implements IWalletController {
         .json({ message: WALLET_MESSAGES.UPDATE_SUCCESS });
     } catch (error) {
       logger.error(`[WalletController] Error updating wallet: ${error}`);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# LOCK FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/wallet/lock
+  //# Body: userId, amount, auctionId
+  //# This controller locks funds for a user during a bid or purchase.
+  //# ================================================================================================================
+  lockAmount = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { userId, amount, auctionId } = req.body;
+      logger.info(`[WalletController] Locking ${amount} for user ${userId}`);
+
+      const dto: LockFundsDTO = {
+        userId,
+        amount,
+        auctionId
+      };
+
+      const result = await this._lockFundsUseCase.execute(dto);
+      
+      return res.status(HttpStatus.OK).json({ success: result });
+    } catch (error) {
+      logger.error(`[WalletController] Error locking funds: ${error}`);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# UNLOCK FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/wallet/unlock
+  //# Body: userId, amount, auctionId
+  //# This controller unlocks previously locked funds.
+  //# ================================================================================================================
+  unlockAmount = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { userId, amount, auctionId } = req.body;
+      logger.info(`[WalletController] Unlocking ${amount} for user ${userId}`);
+
+      const dto: UnlockFundsDTO = {
+        userId,
+        amount,
+        auctionId
+      };
+
+      const result = await this._unlockFundsUseCase.execute(dto);
+      
+      return res.status(HttpStatus.OK).json({ success: result });
+    } catch (error) {
+      logger.error(`[WalletController] Error unlocking funds: ${error}`);
       next(error);
     }
   };

@@ -1,4 +1,5 @@
 import { injectable } from "inversify";
+import { Types } from "mongoose";
 import { Message } from "../../domain/entities/Message";
 import { BaseRepositoryImp } from "./BaseRepositoryImp";
 import { IMessageDocument, MessageModel } from "../models/MessageModel";
@@ -30,8 +31,25 @@ export class MessageRepositoryImp
     return this.mapDbArrayToDomain(messages);
   }
 
-  async markRead(messageIds: string[]): Promise<void> {
-    await this.model.updateMany({ _id: { $in: messageIds } }, { read: true });
+  async markRead(messageIds: string[], userId: string): Promise<void> {
+    try {
+      const validIds = messageIds.filter(id => Types.ObjectId.isValid(id));
+      if (validIds.length === 0) {
+        console.warn("No valid ObjectIds found in messageIds:", messageIds);
+        return;
+      }
+
+      const result = await this.model.updateMany(
+        { _id: { $in: validIds.map(id => new Types.ObjectId(id)) } },
+        { 
+          $addToSet: { readBy: userId }
+        }
+      );
+      console.log(`Marked ${result.modifiedCount} messages as read for user ${userId}`);
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+      throw error;
+    }
   }
 
   async getTotalCountByConversation(conversationId: string): Promise<number> {
@@ -66,5 +84,24 @@ export class MessageRepositoryImp
       conversationId: r._id,
       count: Number(r.count),
     }));
+  }
+
+  async markAllRead(conversationId: string, userId: string): Promise<void> {
+    try {
+      const result = await this.model.updateMany(
+        {
+           conversationId: conversationId,
+           senderId: { $ne: userId }, // Don't mark own messages as read (optional, but good practice)
+           readBy: { $ne: userId }
+        },
+        {
+          $addToSet: { readBy: userId }
+        }
+      );
+      console.log(`Marked ${result.modifiedCount} messages as read in conversation ${conversationId} for user ${userId}`);
+    } catch (error) {
+       console.error("Error marking all messages as read:", error);
+       throw error;
+    }
   }
 }

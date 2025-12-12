@@ -10,6 +10,11 @@ import { createCommentSchema } from "../validators/createCommentSchema";
 import { CreateCommentDTO } from "../../application/interface/dto/comment/CreateCommentDTO";
 import { ICreateCommentUseCase } from "../../application/interface/usecase/comment/ICreateCommentUseCase";
 import { IGetCommentsUseCase } from "../../application/interface/usecase/comment/IGetCommentsUseCase";
+import { IGetCommentByIdUseCase } from "../../application/interface/usecase/comment/IGetCommentByIdUseCase";
+import { IEditCommentUseCase } from "../../application/interface/usecase/comment/IEditCommentUseCase";
+import { IDeleteCommentUseCase } from "../../application/interface/usecase/comment/IDeleteCommentUseCase";
+import { EditCommentDTO } from "../../application/interface/dto/comment/EditCommentDTO";
+import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
 export class CommentController implements ICommentController {
@@ -17,7 +22,13 @@ export class CommentController implements ICommentController {
     @inject(TYPES.ICreateCommentUseCase)
     private readonly _createCommentUseCase: ICreateCommentUseCase,
     @inject(TYPES.IGetCommentsUseCase)
-    private readonly _getCommentsUseCase: IGetCommentsUseCase
+    private readonly _getCommentsUseCase: IGetCommentsUseCase,
+    @inject(TYPES.IGetCommentByIdUseCase)
+    private readonly _getCommentByIdUseCase: IGetCommentByIdUseCase,
+    @inject(TYPES.IEditCommentUseCase)
+    private readonly _editCommentUseCase: IEditCommentUseCase,
+    @inject(TYPES.IDeleteCommentUseCase)
+    private readonly _deleteCommentUseCase: IDeleteCommentUseCase
   ) {}
 
   //# ================================================================================================================
@@ -72,11 +83,12 @@ export class CommentController implements ICommentController {
 
       logger.info(`Editing comment id=${id} by userId=${userId}`);
 
-      // TODO: update comment in DB
+      const dto: EditCommentDTO = { id, userId, content };
+      const updatedComment = await this._editCommentUseCase.execute(dto);
 
       return res
         .status(HttpStatus.OK)
-        .json({ message: COMMENT_MESSAGES.EDIT_SUCCESS });
+        .json({ message: COMMENT_MESSAGES.EDIT_SUCCESS, comment: updatedComment });
     } catch (error) {
       logger.error("Error in editComment", error);
       next(error);
@@ -121,6 +133,40 @@ export class CommentController implements ICommentController {
   };
 
   //# ================================================================================================================
+  //# GET COMMENT BY ID
+  //# ================================================================================================================
+  //# GET /api/v1/art/comments/:id
+  //# Request params: id
+  //# This controller fetches a single comment by ID.
+  //# ================================================================================================================
+  getCommentById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { id } = req.params;
+
+      logger.info(`Fetching comment by id=${id}`);
+
+      const comment = await this._getCommentByIdUseCase.execute(id);
+
+      if (!comment) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: ERROR_MESSAGES.COMMENT_NOT_FOUND });
+      }
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: COMMENT_MESSAGES.FETCH_SUCCESS, comment });
+    } catch (error) {
+      logger.error("Error in getCommentById", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
   //# DELETE COMMENT
   //# ================================================================================================================
   //# DELETE /api/v1/art/comments/:id
@@ -138,7 +184,7 @@ export class CommentController implements ICommentController {
 
       logger.info(`Deleting comment id=${id} by userId=${userId}`);
 
-      // TODO: delete comment from DB
+      await this._deleteCommentUseCase.execute(id, userId);
 
       return res
         .status(HttpStatus.OK)

@@ -13,4 +13,5 @@ export interface IFileRepository {
   ): Promise<UploadResult>;
 
   delete(fileUrl: string, category: FileCategory): Promise<void>;
+  getSignedUrl(key: string, category: FileCategory): Promise<string>;
 }

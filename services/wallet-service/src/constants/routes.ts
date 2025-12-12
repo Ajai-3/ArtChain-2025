@@ -17,12 +17,15 @@ export const ROUTES = {
     DETAILS: "/details",
     CREATE: "/create",
     UPDATE: "/update",
+    LOCK: "/lock",
+    UNLOCK: "/unlock",
   },
 
   // Transaction routes
   TRANSACTION: {
     GET_TRANSACTIONS: "/get-transactions",
     CREATE_TRANSACTION: "/create-transaction",
+    PURCHASE: "/transaction/purchase",
   },
 
   // Stripe routes
@@ -42,6 +45,15 @@ export const ROUTES = {
     STRIPE_CREATE_CHECKOUT_SESSION: "/api/v1/wallet/stripe/create-checkout-session",
     STRIPE_SESSION_BY_ID: "/api/v1/wallet/stripe/session/:id",
     STRIPE_WEBHOOK: "/api/v1/wallet/stripe/webhook",
+  },
+
+  // Admin routes
+  ADMIN: {
+    BASE: "/admin",
+    WALLETS: "/admin/wallets",
+    SEARCH_WALLETS: "/admin/wallets/search",
+    UPDATE_STATUS: "/admin/wallets/:walletId/status",
+    GET_USER_TRANSACTIONS: "/admin/wallets/:walletId/transactions",
   },
 } as const;
 

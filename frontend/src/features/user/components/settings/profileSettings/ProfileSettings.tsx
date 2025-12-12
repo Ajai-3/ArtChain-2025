@@ -52,8 +52,8 @@ const ProfileSettings: React.FC = () => {
       { file, type: imageType },
       {
         onSuccess: (updatedUser) => {
-          if (cropType === "banner") setBannerImage(updatedUser.bannerImage || null);
-          else setBackgroundImage(updatedUser.backgroundImage || null);
+          if (cropType === "banner") setBannerImage(updatedUser.data.url);
+          else setBackgroundImage(updatedUser.data.url);
 
           setCropperOpen(false);
           setSelectedFile(null);

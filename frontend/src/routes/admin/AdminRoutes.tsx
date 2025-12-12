@@ -3,6 +3,7 @@ import { Route, Navigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import { AdminAuthRouteGuard } from "./AdminAuthRouteGuard";
 import { AdminGuestRouteGuard } from "./AdminGuestRouteGuard";
+import { ROUTES } from "../../constants/routes";
 
 const Login = lazy(() => import("../../features/admin/pages/Login"));
 const Dashboard = lazy(() => import("../../features/admin/pages/Dashboard"));
@@ -12,11 +13,17 @@ const UserManagement = lazy(
 const CategoryMangement = lazy(
   () => import("../../features/admin/pages/CategoryMangement")
 );
+const AIConfigPage = lazy(() => import("../../features/admin/pages/AIConfigPage"));
+
+const ContentModeration = lazy(() => import("../../features/admin/pages/ContentModeration"));
+const WalletManagement = lazy(() => import("../../features/admin/pages/WalletManagement"));
+const ArtManagement = lazy(() => import("../../features/admin/pages/ArtManagement"));
+const AuctionManagement = lazy(() => import("../../features/admin/pages/AuctionManagement"));
 
 const AdminRoutes = (
   <>
     <Route element={<AdminGuestRouteGuard />}>
-      <Route path="/admin/login" element={<Login />} />
+      <Route path={ROUTES.ADMIN_LOGIN} element={<Login />} />
     </Route>
 
     <Route element={<AdminAuthRouteGuard />}>
@@ -25,6 +32,11 @@ const AdminRoutes = (
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="user-management" element={<UserManagement />} />
         <Route path="category-management" element={<CategoryMangement />} />
+        <Route path="ai-settings" element={<AIConfigPage />} />
+        <Route path="content-moderation" element={<ContentModeration />} />
+        <Route path="wallet-management" element={<WalletManagement />} />
+        <Route path="art-management" element={<ArtManagement />} />
+        <Route path="auction-management" element={<AuctionManagement />} />
       </Route>
     </Route>
   </>

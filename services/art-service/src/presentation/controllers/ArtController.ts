@@ -17,6 +17,9 @@ import { ICountArtWorkUseCase } from "../../application/interface/usecase/art/IC
 import { ICreateArtPostUseCase } from "../../application/interface/usecase/art/ICreateArtPostUseCase";
 import { IArtToElasticSearchUseCase } from "../../application/interface/usecase/art/IArtToElasticSearchUseCase";
 import { IGetAllArtWithUserIdUseCase } from "../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase";
+import { IBuyArtUseCase } from "../../application/interface/usecase/art/IBuyArtUseCase";
+import { IDownloadArtUseCase } from "../../application/interface/usecase/art/IDownloadArtUseCase";
+import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
 export class ArtController implements IArtController {
@@ -34,7 +37,11 @@ export class ArtController implements IArtController {
     @inject(TYPES.ICountArtWorkUseCase)
     private readonly _countArtWorkUseCase: ICountArtWorkUseCase,
     @inject(TYPES.IGetAllArtWithUserIdUseCase)
-    private readonly _getAllArtWithUserIdUseCase: IGetAllArtWithUserIdUseCase
+    private readonly _getAllArtWithUserIdUseCase: IGetAllArtWithUserIdUseCase,
+    @inject(TYPES.IBuyArtUseCase)
+    private readonly _buyArtUseCase: IBuyArtUseCase,
+    @inject(TYPES.IDownloadArtUseCase)
+    private readonly _downloadArtUseCase: IDownloadArtUseCase
   ) {}
 
   //# ================================================================================================================
@@ -75,6 +82,38 @@ export class ArtController implements IArtController {
   //# This controller fetches all art items with pagination support.
   //# ================================================================================================================
   getAllArt = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const currentUserId = req.headers["x-user-id"] as string;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const categoryId = req.query.categoryId as string | undefined;
+
+      const result = await this._getAllArtUseCase.execute(
+        page,
+        limit,
+        currentUserId,
+        categoryId
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.ART_FETCH_SUCESSFULL,
+        page,
+        limit,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET RECOMENTED ART
+  //# ================================================================================================================
+  //# GET /api/v1/art/recommended
+  //# Query params: page (number), limit (number)
+  //# This controller fetches recommended art items with pagination support.
+  //# ================================================================================================================
+  getRecommendedArt = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const currentUserId = req.headers["x-user-id"] as string;
       const page = parseInt(req.query.page as string) || 1;
@@ -171,7 +210,7 @@ export class ArtController implements IArtController {
         logger.warn(`User not found: ${art?.userId}`);
         return res
           .status(HttpStatus.NOT_FOUND)
-          .json({ message: "User not found" });
+          .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
       }
 
       console.log(user, art);
@@ -311,6 +350,65 @@ export class ArtController implements IArtController {
         .json({ message: ART_MESSAGES.DELETE_SUCCESS });
     } catch (error) {
       logger.error("Error in deleteArt", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# BUY ART
+  //# ================================================================================================================
+  //# POST /api/v1/art/buy/:id
+  //# Request params: id
+  //# This controller handles art purchase.
+  //# ================================================================================================================
+  buyArt = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { id } = req.params;
+      const currentUserId = req.headers["x-user-id"] as string;
+
+      logger.info(`User ${currentUserId} buying art ${id}`);
+
+      await this._buyArtUseCase.execute(id, currentUserId);
+
+      return res.status(HttpStatus.OK).json({
+        message: "Art purchased successfully",
+      });
+    } catch (error) {
+      logger.error("Error in buyArt", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# DOWNLOAD ART
+  //# ================================================================================================================
+  //# GET /api/v1/art/download/:id
+  //# Request params: id
+  //# This controller handles art download.
+  //# ================================================================================================================
+  downloadArt = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { id } = req.params;
+      const currentUserId = req.headers["x-user-id"] as string;
+
+      logger.info(`User ${currentUserId} downloading art ${id}`);
+
+      const signedUrl = await this._downloadArtUseCase.execute(id, currentUserId);
+
+      return res.status(HttpStatus.OK).json({
+        message: "Download link generated successfully",
+        downloadUrl: signedUrl,
+      });
+    } catch (error) {
+      logger.error("Error in downloadArt", error);
       next(error);
     }
   };

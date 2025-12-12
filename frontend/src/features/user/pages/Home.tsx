@@ -1,9 +1,17 @@
-import React, { useRef, useCallback, useState, useMemo, useEffect } from "react";
+import React, {
+  useRef,
+  useCallback,
+  useState,
+  useMemo,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import { useGetAllArt } from "../hooks/art/useGetAllArt";
 import { useGetCategories, type Category } from "../hooks/art/useGetCategories";
 import ArtCard from "../components/art/ArtCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ArtCardSkeleton from "../components/skeletons/ArtCardSkeleton";
+import { useMasonryLayout } from "../../../hooks/useMasonryLayout";
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -13,28 +21,46 @@ const Home: React.FC = () => {
   const [categoryScrollPos, setCategoryScrollPos] = useState(0);
 
   const { data: categories } = useGetCategories();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, error } =
-    useGetAllArt(selectedCategory || undefined);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    status,
+    error,
+  } = useGetAllArt(selectedCategory || undefined);
 
   const observer = useRef<IntersectionObserver | null>(null);
 
+  // last item infinite-scroll ref
   const lastArtRef = useCallback(
     (node: HTMLDivElement | null) => {
       if (!node || isFetchingNextPage) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasNextPage) fetchNextPage();
+        if (entries[0]?.isIntersecting && hasNextPage) fetchNextPage();
       });
       if (node) observer.current.observe(node);
     },
     [isFetchingNextPage, fetchNextPage, hasNextPage]
   );
 
+  const allItems = useMemo(
+    () => data?.pages.flatMap((p) => p.data) || [],
+    [data]
+  );
+
+  const { containerRef, rows } = useMasonryLayout(
+    allItems,
+    (item) => item.art.id,
+    (item) => item.art.imageUrl
+  );
+
+  // categories scroll helpers (unchanged)
   const scrollCategories = (direction: "left" | "right") => {
     if (categoriesScrollRef.current) {
-      const scrollAmount = 200;
       categoriesScrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
+        left: direction === "left" ? -200 : 200,
         behavior: "smooth",
       });
     }
@@ -44,52 +70,75 @@ const Home: React.FC = () => {
     const el = categoriesScrollRef.current;
     if (!el) return;
     setShowLeft(el.scrollLeft > 0);
-    setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth);
+    setShowRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 1); // Added -1 for better boundary detection
   };
 
-  useEffect(() => {
+  // FIX: Use useLayoutEffect for initial scroll check and add timeout for safe measure
+  useLayoutEffect(() => {
     checkScroll();
+  }, [categories]); // Re-check when categories change
+
+  useEffect(() => {
     const el = categoriesScrollRef.current;
     if (el) el.addEventListener("scroll", checkScroll);
     window.addEventListener("resize", checkScroll);
+
     return () => {
       if (el) el.removeEventListener("scroll", checkScroll);
       window.removeEventListener("resize", checkScroll);
     };
   }, []);
 
+  // FIX: Add multiple timeouts to ensure scrollbar detection after render
   useEffect(() => {
-    const timer = setTimeout(() => {
-      checkScroll();
-    }, 100);
-    return () => clearTimeout(timer);
-  }, [categories]);
+    const timers = [
+      setTimeout(() => checkScroll(), 100),
+      setTimeout(() => checkScroll(), 300), // Additional check after render
+      setTimeout(() => checkScroll(), 500), // Final check to be sure
+    ];
 
-  const activeCategories = useMemo(() => {
-    return categories?.filter((cat) => cat.status === "active" && cat.count > 0) || [];
-  }, [categories]);
+    return () => timers.forEach(clearTimeout);
+  }, [categories, selectedCategory]); // Also check when selected category changes
 
-  const getCategoryId = (cat: Category): string => cat._id || cat.id;
+  const activeCategories = useMemo(
+    () => categories?.filter((c) => c.status === "active" && c.count > 0) || [],
+    [categories]
+  );
+
+  const getCategoryId = (cat: Category) => cat._id || cat.id;
 
   const handleCategoryClick = (id: string | null) => {
-    if (categoriesScrollRef.current) {
+    if (categoriesScrollRef.current)
       setCategoryScrollPos(categoriesScrollRef.current.scrollLeft);
-    }
     setSelectedCategory(id);
   };
 
   useEffect(() => {
-    if (categoriesScrollRef.current) {
+    if (categoriesScrollRef.current)
       categoriesScrollRef.current.scrollLeft = categoryScrollPos;
-    }
   }, [categoryScrollPos]);
 
-  if (status === "pending") return <div><ArtCardSkeleton /></div>;
-  if (status === "error")
-    return <div>Error: {(error as Error)?.message || "Something went wrong"}</div>;
+  // FIX: Also check scroll after category selection
+  useEffect(() => {
+    const timer = setTimeout(() => checkScroll(), 150);
+    return () => clearTimeout(timer);
+  }, [selectedCategory]);
 
+  // Loading/error UI same as before
+  if (status === "pending")
+    return (
+      <div>
+        <ArtCardSkeleton />
+      </div>
+    );
+  if (status === "error")
+    return (
+      <div>Error: {(error as Error)?.message || "Something went wrong"}</div>
+    );
+
+  // Final render: same layout and styles as you provided
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-full">
       <div className="sticky top-0 px-2 z-10 w-full bg-black/30 backdrop-blur-sm flex items-center h-12">
         {showLeft && (
           <button
@@ -102,12 +151,14 @@ const Home: React.FC = () => {
 
         <div
           ref={categoriesScrollRef}
-          className="flex gap-2 overflow-x-auto no-scrollbar w-[1416px]"
+          className="flex gap-2 overflow-x-auto w-full scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800" // ADDED: scrollbar styles
           style={{ scrollBehavior: "smooth" }}
         >
           <button
             className={`flex-shrink-0 px-3 rounded-sm whitespace-nowrap transition-colors ${
-              !selectedCategory ? "border border-main-color text-white" : " text-gray-300 border border-zinc-600"
+              !selectedCategory
+                ? "border border-main-color text-white"
+                : " text-gray-300 border border-zinc-600"
             }`}
             onClick={() => handleCategoryClick(null)}
           >
@@ -139,18 +190,34 @@ const Home: React.FC = () => {
         )}
       </div>
 
-      <div className="flex-1 p-2 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-        <div className="flex flex-wrap gap-2">
-          {data?.pages.map((page, pageIndex) =>
-            page.data.map((item, index) => {
-              const isLastItem = pageIndex === data.pages.length - 1 && index === page.data.length - 1;
-              return (
-                <div key={item.art.id} ref={isLastItem ? lastArtRef : null}>
-                  <ArtCard item={item} />
-                </div>
-              );
-            })
-          )}
+      <div className="p-2">
+        <div ref={containerRef} className="w-full">
+          {/* Render layout even when initial measurement was small, we use fallback width so it won't be blank */}
+          {rows.map((row, rowIndex) => (
+            <div
+              key={rowIndex}
+              className="flex"
+              style={{ gap: "4px", marginBottom: "4px" }}
+            >
+              {row.items.map((item: any, itemIndex: number) => {
+                const isLastItem =
+                  rowIndex === rows.length - 1 &&
+                  itemIndex === row.items.length - 1;
+                return (
+                  <div
+                    key={item.art.id}
+                    ref={isLastItem ? lastArtRef : null}
+                    style={{
+                      width: `${item.calculatedWidth}px`,
+                      height: `${item.calculatedHeight}px`,
+                    }}
+                  >
+                    <ArtCard item={item} />
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
     </div>

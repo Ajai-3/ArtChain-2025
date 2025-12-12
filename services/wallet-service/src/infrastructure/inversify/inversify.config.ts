@@ -16,13 +16,19 @@ import { IGetWalletUseCase } from "../../application/interface/usecase/wallet/IG
 import { IGetStripeSessionUseCase } from "../../application/interface/usecase/IGetStripeSessionUseCase";
 import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/IHandleStripeWebhookUseCase";
 import { IGetTransactionsUseCase } from "../../application/interface/usecase/transaction/IGetTransactionsUseCase";
+import { IProcessPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessPurchaseUseCase";
 import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/ICreateStripeCheckoutSessionUseCase";
 
 import { GetWalletUseCase } from "../../application/usecases/wallet/GetWalletUseCase";
 import { GetStripeSessionUseCase } from "../../application/usecases/GetStripeSessionUseCase";
 import { HandleStripeWebhookUseCase } from "../../application/usecases/HandleStripeWebhookUseCase";
 import { GetTransactionsUseCase } from "../../application/usecases/transaction/GetTransactionsUseCase";
+import { ProcessPurchaseUseCase } from "../../application/usecases/transaction/ProcessPurchaseUseCase";
 import { CreateStripeCheckoutSessionUseCase } from "../../application/usecases/CreateStripeCheckoutSessionUseCase";
+import { ILockFundsUseCase } from "../../application/interface/usecase/wallet/ILockFundsUseCase";
+import { IUnlockFundsUseCase } from "../../application/interface/usecase/wallet/IUnlockFundsUseCase";
+import { LockFundsUseCase } from "../../application/usecases/wallet/LockFundsUseCase";
+import { UnlockFundsUseCase } from "../../application/usecases/wallet/UnlockFundsUseCase";
 
 // Controllers
 import { IWalletController } from "../../presentation/interface/IWalletController";
@@ -58,6 +64,15 @@ container
   .bind<IGetTransactionsUseCase>(TYPES.IGetTransactionsUseCase)
   .to(GetTransactionsUseCase);
 container
+  .bind<IProcessPurchaseUseCase>(TYPES.IProcessPurchaseUseCase)
+  .to(ProcessPurchaseUseCase);
+container
+  .bind<ILockFundsUseCase>(TYPES.ILockFundsUseCase)
+  .to(LockFundsUseCase);
+container
+  .bind<IUnlockFundsUseCase>(TYPES.IUnlockFundsUseCase)
+  .to(UnlockFundsUseCase);
+container
   .bind<ICreateStripeCheckoutSessionUseCase>(
     TYPES.ICreateStripeCheckoutSessionUseCase
   )
@@ -75,5 +90,54 @@ container.bind<IWalletController>(TYPES.IWalletController).to(WalletController);
 container
   .bind<ITransactionController>(TYPES.ITransactionController)
   .to(TransactionController);
+
+// Admin Wallet Management
+import { IAdminWalletRepository } from "../../domain/repository/IAdminWalletRepository";
+import { AdminWalletRepositoryImpl } from "../repositories/AdminWalletRepositoryImpl";
+import { ElasticsearchClient } from "../clients/ElasticsearchClient";
+import { UserServiceClient } from "../clients/UserServiceClient";
+import { IGetAllWalletsUseCase } from "../../application/interface/usecases/admin/IGetAllWalletsUseCase";
+import { GetAllWalletsUseCase } from "../../application/usecases/admin/GetAllWalletsUseCase";
+import { ISearchWalletsUseCase } from "../../application/interface/usecases/admin/ISearchWalletsUseCase";
+import { SearchWalletsUseCase } from "../../application/usecases/admin/SearchWalletsUseCase";
+import { IUpdateWalletStatusUseCase } from "../../application/interface/usecases/admin/IUpdateWalletStatusUseCase";
+import { UpdateWalletStatusUseCase } from "../../application/usecases/admin/UpdateWalletStatusUseCase";
+import { IGetUserTransactionsUseCase } from "../../application/interface/usecases/admin/IGetUserTransactionsUseCase";
+import { GetUserTransactionsUseCase } from "../../application/usecases/admin/GetUserTransactionsUseCase";
+import { IAdminWalletController } from "../../presentation/interface/IAdminWalletController";
+import { AdminWalletController } from "../../presentation/controllers/AdminWalletController";
+
+// Admin Repositories & Clients
+container
+  .bind<IAdminWalletRepository>(TYPES.IAdminWalletRepository)
+  .to(AdminWalletRepositoryImpl)
+  .inSingletonScope();
+container
+  .bind<ElasticsearchClient>(TYPES.ElasticsearchClient)
+  .to(ElasticsearchClient)
+  .inSingletonScope();
+container
+  .bind<UserServiceClient>(TYPES.UserServiceClient)
+  .to(UserServiceClient)
+  .inSingletonScope();
+
+// Admin Use Cases
+container
+  .bind<IGetAllWalletsUseCase>(TYPES.IGetAllWalletsUseCase)
+  .to(GetAllWalletsUseCase);
+container
+  .bind<ISearchWalletsUseCase>(TYPES.ISearchWalletsUseCase)
+  .to(SearchWalletsUseCase);
+container
+  .bind<IUpdateWalletStatusUseCase>(TYPES.IUpdateWalletStatusUseCase)
+  .to(UpdateWalletStatusUseCase);
+container
+  .bind<IGetUserTransactionsUseCase>(TYPES.IGetUserTransactionsUseCase)
+  .to(GetUserTransactionsUseCase);
+
+// Admin Controller
+container
+  .bind<IAdminWalletController>(TYPES.IAdminWalletController)
+  .to(AdminWalletController);
 
 export { container };

@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import ConversationItem from "./chatUserList/ConversationItem";
 import type { Conversation } from "../../../../types/chat/chat";
 import { selectConversations } from "../../../../redux/selectors/chatSelectors";
+import CreateGroupModal from "./chatUserList/CreateGroupModal";
 
 interface ChatUserListProps {
   selectedConversation: string | null;
@@ -21,6 +22,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>("private");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
 
   const conversations = useSelector(selectConversations);
 
@@ -90,21 +92,32 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Messages</h2>
-          <button className="p-2 hover:bg-muted rounded-full transition-colors">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setIsCreateGroupModalOpen(true)}
+              className="p-2 hover:bg-muted rounded-full transition-colors"
+              title="Create Group"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
-              />
-            </svg>
-          </button>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+            <button className="p-2 hover:bg-muted rounded-full transition-colors">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className="relative mb-4">
@@ -168,6 +181,13 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
           </div>
         )}
       </div>
+
+      <CreateGroupModal
+        isOpen={isCreateGroupModalOpen}
+        onClose={() => setIsCreateGroupModalOpen(false)}
+        onGroupCreated={() => {
+        }}
+      />
     </div>
   );
 };

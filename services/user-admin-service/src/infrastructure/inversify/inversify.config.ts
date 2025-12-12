@@ -100,6 +100,22 @@ import { IUserManageMentController } from '../../presentation/interfaces/admin/I
 import { AdminAuthController } from '../../presentation/controllers/admin/AdminAuthController';
 import { UserManageMentController } from './../../presentation/controllers/admin/UserManagementController';
 
+// Report
+import { IReportRepository } from '../../domain/repositories/user/IReportRepository';
+import { ReportRepository } from '../repositories/user/ReportRepository';
+import { ICreateReportUseCase } from '../../application/interface/usecases/user/report/ICreateReportUseCase';
+import { CreateReportUseCase } from '../../application/usecases/user/report/CreateReportUseCase';
+import { IReportController } from '../../presentation/interfaces/user/IReportController';
+import { ReportController } from '../../presentation/controllers/user/ReportController';
+import { IGetAllReportsUseCase } from '../../application/interface/usecases/admin/report/IGetAllReportsUseCase';
+import { GetAllReportsUseCase } from '../../application/usecases/admin/report/GetAllReportsUseCase';
+import { IGetGroupedReportsUseCase } from '../../application/interface/usecases/admin/report/IGetGroupedReportsUseCase';
+import { GetGroupedReportsUseCase } from '../../application/usecases/admin/report/GetGroupedReportsUseCase';
+import { IUpdateReportStatusBulkUseCase } from '../../application/interface/usecases/admin/report/IUpdateReportStatusBulkUseCase';
+import { UpdateReportStatusBulkUseCase } from '../../application/usecases/admin/report/UpdateReportStatusBulkUseCase';
+import { IAdminReportController } from '../../presentation/interfaces/admin/IAdminReportController';
+import { AdminReportController } from '../../presentation/controllers/admin/AdminReportController';
+
 const container = new Container();
 
 // Repositories & Services
@@ -235,5 +251,14 @@ container
 container
   .bind<IUserManageMentController>(TYPES.IUserManageMentController)
   .to(UserManageMentController);
+
+// Report
+container.bind<IReportRepository>(TYPES.IReportRepository).to(ReportRepository).inSingletonScope();
+container.bind<ICreateReportUseCase>(TYPES.ICreateReportUseCase).to(CreateReportUseCase);
+container.bind<IGetAllReportsUseCase>(TYPES.IGetAllReportsUseCase).to(GetAllReportsUseCase);
+container.bind<IGetGroupedReportsUseCase>(TYPES.IGetGroupedReportsUseCase).to(GetGroupedReportsUseCase);
+container.bind<IUpdateReportStatusBulkUseCase>(TYPES.IUpdateReportStatusBulkUseCase).to(UpdateReportStatusBulkUseCase);
+container.bind<IReportController>(TYPES.IReportController).to(ReportController);
+container.bind<IAdminReportController>(TYPES.IAdminReportController).to(AdminReportController);
 
 export { container };

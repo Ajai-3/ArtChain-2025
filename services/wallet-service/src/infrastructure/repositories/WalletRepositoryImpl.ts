@@ -54,4 +54,50 @@ export class WalletRepositoryImpl
 
     return { earned, spent, avgTransaction };
   }
+
+  async getRecentTransactions(walletId: string, limit: number) {
+    const txs = await prisma.transaction.findMany({
+      where: { walletId },
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+    
+    return txs.map(tx => ({
+      id: tx.id,
+      date: tx.createdAt.toISOString(),
+      type: tx.type === "credited" ? "Earned" : "Spent", 
+      amount: tx.amount,
+      category: tx.category,
+      status: tx.status,
+      method: tx.method,
+      description: tx.description
+    }));
+  }
+  async lockAmount(userId: string, amount: number): Promise<boolean> {
+    const result = await this.model.updateMany({
+      where: {
+        userId,
+        balance: { gte: amount },
+      },
+      data: {
+        balance: { decrement: amount },
+        lockedAmount: { increment: amount },
+      },
+    });
+    return result.count > 0;
+  }
+
+  async unlockAmount(userId: string, amount: number): Promise<boolean> {
+    const result = await this.model.updateMany({
+      where: {
+        userId,
+        lockedAmount: { gte: amount },
+      },
+      data: {
+        balance: { increment: amount },
+        lockedAmount: { decrement: amount },
+      },
+    });
+    return result.count > 0;
+  }
 }

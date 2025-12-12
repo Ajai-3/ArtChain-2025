@@ -4,10 +4,11 @@ import { useDispatch } from "react-redux";
 import { setWalletData } from "../../../../redux/slices/walletSlice";
 
 interface Transaction {
-  id: number;
+  id: string | number;
   date: string;
   type: "Earned" | "Spent";
   amount: number;
+  category?: string;
 }
 
 export interface Wallet {

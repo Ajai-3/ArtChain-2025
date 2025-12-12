@@ -1,22 +1,40 @@
 import { injectable } from 'inversify';
-import { SafeUser } from '../../domain/repositories/IBaseRepository';
+import { IBaseRepository } from '../../domain/repositories/IBaseRepository';
+
 @injectable()
-export abstract class BaseRepositoryImpl {
+export abstract class BaseRepositoryImpl<T, S = T> implements IBaseRepository<T, S> {
   protected abstract model: any;
 
-  protected toSafeUser(user: any): SafeUser {
-    const { password, ...safe } = user;
-    return safe;
+  protected toSafe(entity: T): S {
+    return entity as unknown as S;
   }
 
-  async create(data: any): Promise<SafeUser> {
-    const { id, ...dataWithoutId } = data;
-    const user = await this.model.create({ data: dataWithoutId });
-    return this.toSafeUser(user);
+  async create(data: Partial<T>): Promise<S> {
+    const res = await this.model.create({ data });
+    return this.toSafe(res);
   }
 
-  async update(id: string, data: any): Promise<SafeUser | null> {
-    const updated = await this.model.update({ where: { id }, data });
-    return updated ? this.toSafeUser(updated) : null;
+  async update(id: string, data: Partial<T>): Promise<S | null> {
+    const res = await this.model.update({ where: { id }, data });
+    return res ? this.toSafe(res) : null;
+  }
+
+  async delete(id: string): Promise<boolean> {
+    try {
+      await this.model.delete({ where: { id } });
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  async findById(id: string): Promise<S | null> {
+    const res = await this.model.findUnique({ where: { id } });
+    return res ? this.toSafe(res) : null;
+  }
+
+  async findAll(): Promise<S[]> {
+    const res = await this.model.findMany();
+    return res.map((item: T) => this.toSafe(item));
   }
 }

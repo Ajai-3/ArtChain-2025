@@ -30,18 +30,27 @@ router.get(ROUTES.CATEGORY.BASE, categoryController.getCategory);
 router.post(ROUTES.CATEGORY.BASE, categoryController.createCategory);
 router.patch(ROUTES.CATEGORY.BY_ID, categoryController.editCategory);
 
+// Shop
+router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
+router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
+
 // Art
 router.get(ROUTES.ART.BASE, artController.getAllArt);
 router.post(ROUTES.ART.BASE, artController.createArt);
 router.get(ROUTES.ART.BY_USER_ID, artController.getArtWithUser);
 router.get(ROUTES.ART.COUNT, artController.countArtwork);
 router.get(ROUTES.ART.BY_ART_NAME, artController.getArtByArtName);
+router.get(ROUTES.ART.RECOMMENDED, artController.getRecommendedArt);
+router.get(ROUTES.ART.BY_ID, artController.getArtById);
+router.post(ROUTES.ART.BUY, artController.buyArt);
+router.get(ROUTES.ART.DOWNLOAD, artController.downloadArt);
 
 // Comment
-router.patch(ROUTES.COMMENT.BASE, commentController.editComment);
+router.put(ROUTES.COMMENT.EDIT, commentController.editComment);
 router.post(ROUTES.COMMENT.BASE, commentController.createComment);
-router.delete(ROUTES.COMMENT.BASE, commentController.deleteComment);
+router.delete(ROUTES.COMMENT.EDIT, commentController.deleteComment);
 router.get(ROUTES.COMMENT.COMMENTS_BY_POST_ID, commentController.getComments);
+router.get(ROUTES.COMMENT.BY_ID, commentController.getCommentById);
 
 // Likes
 router.post(ROUTES.LIKE.BASE, likeController.likePost);
@@ -55,9 +64,5 @@ router.delete(ROUTES.FAVORITE.UNFAVORITE, favoriteController.removeFavorite);
 router.get(ROUTES.FAVORITE.FAVORITES_BY_POST_ID, favoriteController.getFavoritedUsers);
 router.get(ROUTES.FAVORITE.FAVORITES_COUNT_BY_POST_ID, favoriteController.getFavoriteCount);
 router.get(ROUTES.FAVORITE.FAVORITES_BY_USER_ID, favoriteController.getUserFavoritedArts);
-
-// Shop
-router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
-router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
 
 export default router;

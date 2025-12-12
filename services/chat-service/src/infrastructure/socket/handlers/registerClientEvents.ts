@@ -17,4 +17,7 @@ export const registerClientEvents = (
     handler.deleteMessage(socket, payload, callback)
   );
   socket.on("convoOpened", (payload) => handler.convoOpened(socket, payload));
+  socket.on("markMessagesRead", (payload) =>
+    handler.markMessagesRead(socket, payload)
+  );
 };

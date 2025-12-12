@@ -4,6 +4,7 @@ import chatSlice from "./slices/chatSlice";
 import storage from "redux-persist/lib/storage";
 import adminSlice from "./slices/adminSlice";
 import notificationSlice from "./slices/notificationSlice";
+import biddingSlice from "./slices/biddingSlice";
 import { persistStore, persistReducer } from "redux-persist";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
@@ -18,6 +19,7 @@ const rootReducer = combineReducers({
   chat: chatSlice,
   admin: adminSlice,
   notification: notificationSlice,
+  bidding: biddingSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

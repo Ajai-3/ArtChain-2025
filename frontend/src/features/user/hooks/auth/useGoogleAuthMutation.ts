@@ -4,6 +4,7 @@ import apiClient from "../../../../api/axios";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { setUser } from "../../../../redux/slices/userSlice";
+import { ROUTES } from "../../../../constants/routes";
 
 export const useGoogleAuthMutation = () => {
   const dispatch = useDispatch();
@@ -15,7 +16,7 @@ export const useGoogleAuthMutation = () => {
       const { user, accessToken, message } = res.data;
       toast.success(message);
       dispatch(setUser({ user, accessToken }));
-      navigate("/");
+      navigate(ROUTES.HOME);
     },
     onError: (error: any) => {
       console.error("Login failed:", error);

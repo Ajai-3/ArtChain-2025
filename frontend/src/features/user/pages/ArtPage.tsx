@@ -1,30 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetArtByName } from "../hooks/art/useGetArtByName";
-import CommentInputSection from "../components/art/CommentInputSection";
-import CommentList from "../components/art/CommentList";
-import {
-  Star,
-  MoreVertical,
-  ZoomIn,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  MessageSquare,
-  ImageDown,
-  User,
-} from "lucide-react";
-import { useLikePost } from "../hooks/art/useLikePost";
-import { useUnlikePost } from "../hooks/art/useUnlikePost";
-import { LikeButton } from "../components/art/LikeButton";
-import { useFavoritePost } from "../hooks/art/useFavoritePost";
-import { useUnfavoritePost } from "../hooks/art/useUnfavoritePost";
-import FavoriteUsersModal from "../components/art/FavoriteUsersModal";
-import LikeUsersModal from "../components/art/LikeUsersModal";
-import { formatNumber } from "../../../libs/formatNumber";
-import ArtPageSkeleton from "../components/skeletons/ArtPageSkeleton";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
+import { useGetArtByName } from "../hooks/art/useGetArtByName";
+import { useLikePost } from "../hooks/art/useLikePost";
+import { useUnlikePost } from "../hooks/art/useUnlikePost";
+import { useFavoritePost } from "../hooks/art/useFavoritePost";
+import { useUnfavoritePost } from "../hooks/art/useUnfavoritePost";
+import { useRelatedArtworks } from "../hooks/art/useRelatedArtworks";
+import { useBuyArtMutation, useDownloadArtMutation } from "../../../api/user/art/mutations";
+import ArtPageSkeleton from "../components/skeletons/ArtPageSkeleton";
+import ArtImageSection from "../components/art/details/ArtImageSection";
+import ArtActions from "../components/art/details/ArtActions";
+import ArtInfo from "../components/art/details/ArtInfo";
+import Comments from "../components/art/details/Comments";
+import ArtSidebar from "../components/art/details/ArtSidebar";
+import ZoomOverlay from "../components/art/details/ZoomOverlay";
+import { ROUTES } from "../../../constants/routes";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
@@ -35,6 +27,8 @@ const ArtPage: React.FC = () => {
   const unlikePost = useUnlikePost();
   const favoritePost = useFavoritePost();
   const unfavoritePost = useUnfavoritePost();
+  const buyArtMutation = useBuyArtMutation();
+  const downloadArtMutation = useDownloadArtMutation();
 
   const { data, isLoading, isError, error } = useGetArtByName(artname!);
 
@@ -42,64 +36,79 @@ const ArtPage: React.FC = () => {
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  if (isLoading)
-    return (
-      <div className="text-center mt-10">
-        <ArtPageSkeleton />
-      </div>
+  const {
+    data: recommendedArts,
+    fetchNextPage,
+    hasNextPage,
+    isLoading: isRecLoading,
+  } = useRelatedArtworks(data?.data?.art?.artType, data?.data?.art?.id || "");
+
+  const observerTarget = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 1.0 }
     );
-  if (isError)
-    return <div className="text-center mt-10">Error: {error?.message}</div>;
-  if (!data?.data?.art)
-    return <div className="text-center mt-10">Art not found</div>;
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [observerTarget, hasNextPage, fetchNextPage]);
+
+  if (isLoading) return <div className="text-center mt-10"><ArtPageSkeleton /></div>;
+  if (isError) return <div className="text-center mt-10">Error: {error?.message}</div>;
+  if (!data?.data?.art) return <div className="text-center mt-10">Art not found</div>;
 
   const art = data.data.art;
   const actualUser = data.data.user;
   const price = data.data.price;
-  const commentCount = data.data.commentCount;
-  const isLiked = data.data.isLiked;
-  const isFavorited = data.data.isFavorited;
-  const favoriteCount = data.data.favoriteCount;
 
   const handleFavorite = () => {
-    if (!user.isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-    if (isFavorited) {
-      unfavoritePost.mutate({ postId: art.id, artname: art.artName });
-    } else {
-      favoritePost.mutate({ postId: art.id, artname: art.artName });
-    }
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
+    data.data.isFavorited
+      ? unfavoritePost.mutate({ postId: art.id, artname: art.artName })
+      : favoritePost.mutate({ postId: art.id, artname: art.artName });
   };
 
   const handleLike = () => {
-    if (!user.isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-    if (isLiked) {
-      unlikePost.mutate({ postId: art.id, artname: art.artName });
-    } else {
-      likePost.mutate({ postId: art.id, artname: art.artName });
-    }
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
+    data.data.isLiked
+      ? unlikePost.mutate({ postId: art.id, artname: art.artName })
+      : likePost.mutate({ postId: art.id, artname: art.artName });
   };
 
   const handleShowFavorites = () => {
-    if (!user.isAuthenticated) {
-      navigate("/login");
-      return;
-    }
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
     setShowFavorites(true);
   };
 
   const handleShowLikes = () => {
-    if (!user.isAuthenticated) {
-      navigate("/login");
-      return;
-    }
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
     setShowLikes(true);
+  };
+
+  const handleBuy = () => {
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
+    buyArtMutation.mutate(art.id);
+  };
+
+  const handleDownload = () => {
+    if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
+    downloadArtMutation.mutate(art.id);
   };
 
   const handleImageClick = () => {
@@ -116,245 +125,85 @@ const ArtPage: React.FC = () => {
   const handleCloseZoom = () => {
     setZoomed(false);
     setFullscreenZoom(false);
+    setCurrentImageIndex(0);
     document.fullscreenElement && document.exitFullscreen();
   };
 
-  const formattedDate = (date: string) =>
-    new Date(date).toLocaleDateString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+  const currentZoomedArt = currentImageIndex === 0 
+    ? { art, user: actualUser }
+    : recommendedArts[currentImageIndex - 1];
+
+  const formattedDate = new Date(art.createdAt).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  const isOwner = user.user?.id === (art.ownerId || art.userId);
+  const canBuy = art.isForSale && !isOwner;
+  const canDownload = isOwner;
 
   return (
-    <div className="flex flex-col md:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen">
-      {/* Main content */}
-      <div className="w-full md:w-3/4 flex flex-col items-center relative">
-        {/* Art image */}
-        <div className="relative w-full flex justify-center items-center">
-          <div className="absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-900 dark:text-zinc-400 z-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-full">
-            <ChevronLeft size={50} />
-          </div>
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-900 dark:text-zinc-400 z-10 hover:bg-black/10 dark:hover:bg-white/10 rounded-full">
-            <ChevronRight size={50} />
-          </div>
-          <img
-            src={art.imageUrl || "/placeholder.png"}
-            alt={art.title}
-            className="w-full max-h-[500px] sm:max-h-[400px] md:max-h-[500px] object-contain rounded cursor-zoom-in"
-            onClick={handleImageClick}
-          />
-        </div>
+    <div className="flex flex-col lg:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen max-w-[1600px] mx-auto">
+      <div className="w-full lg:w-3/4 flex flex-col items-center relative">
+        <ArtImageSection imageUrl={art.imageUrl} title={art.title} onImageClick={handleImageClick} />
 
-        {/* Action buttons */}
-        <div className="flex flex-wrap justify-between sm:justify-between items-center w-full mt-4 gap-3 sm:gap-6 sm:px-20">
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-1">
-              <span
-                className="cursor-pointer block sm:hidden"
-                onClick={handleShowFavorites}
-              >
-                {formatNumber(favoriteCount || 0)}
-              </span>
-              <Star
-                size={22}
-                className={`transition-transform duration-300 cursor-pointer ${
-                  isFavorited
-                    ? "text-yellow-500 fill-yellow-500"
-                    : "text-white/60"
-                }`}
-                onClick={handleFavorite}
-              />
-              <span
-                className="hidden sm:inline cursor-pointer hover:text-yellow-400"
-                onClick={handleShowFavorites}
-              >
-                {formatNumber(favoriteCount || 0)} Favorites
-              </span>
-            </div>
+        <ArtActions
+          art={{ 
+            id: art.id, 
+            artName: art.artName, 
+            isForSale: canBuy, 
+            downloadingDisabled: !canDownload, 
+            price 
+          }}
+          stats={{ isLiked: data.data.isLiked, likeCount: data.data.likeCount || 0, isFavorited: data.data.isFavorited, favoriteCount: data.data.favoriteCount || 0, commentCount: data.data.commentCount || 0 }}
+          user={{ isAuthenticated: user.isAuthenticated }}
+          handlers={{ 
+            onLike: handleLike, 
+            onFavorite: handleFavorite, 
+            onShowLikes: handleShowLikes, 
+            onShowFavorites: handleShowFavorites, 
+            onZoom: handleZoomIconClick, 
+            onCloseLikes: () => setShowLikes(false), 
+            onCloseFavorites: () => setShowFavorites(false),
+            onReport: () => setShowReport(true),
+            onCloseReport: () => setShowReport(false),
+            onDownload: handleDownload
+          }}
+          modals={{ showLikes, showFavorites, showReport }}
+          isDownloading={downloadArtMutation.isPending}
+        />
 
-            {user.isAuthenticated && (
-              <FavoriteUsersModal
-                postId={art.id}
-                isOpen={showFavorites}
-                onClose={() => setShowFavorites(false)}
-              />
-            )}
+        <ArtInfo
+          art={{ title: art.title, createdAt: art.createdAt, hashtags: art.hashtags, description: art.description }}
+          artist={{ username: actualUser?.username || "", name: actualUser?.name || "", profileImage: actualUser?.profileImage }}
+          formattedDate={formattedDate}
+        />
 
-            <div className="flex items-center gap-1 cursor-pointer hover:text-green-400">
-              <span className="block sm:hidden">
-                {formatNumber(commentCount || 0)}
-              </span>
-              <MessageSquare size={22} />
-              <span className="hidden sm:inline">
-                {formatNumber(commentCount || 0)} Comments
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-1">
-            <span
-              className="cursor-pointer block sm:hidden"
-              onClick={handleShowLikes}
-            >
-              {formatNumber(data?.data.likeCount || 0)}
-            </span>
-            <LikeButton
-              isLiked={isLiked}
-              likeCount={data?.data.likeCount || 0}
-              onClick={handleLike}
-            />
-            <div className="flex items-center gap-2 cursor-pointer hover:text-pink-500">
-              <span className="hidden sm:inline" onClick={handleShowLikes}>
-                {formatNumber(data?.data.likeCount || 0)} Likes
-              </span>
-            </div>
-
-            {user.isAuthenticated && (
-              <LikeUsersModal
-                postId={art.id}
-                isOpen={showLikes}
-                onClose={() => setShowLikes(false)}
-              />
-            )}
-
-            {art.isForSale && (
-              <div className="bg-main-color/20 hover:bg-main-color/40 py-[.2rem] text-main-color px-3 rounded-full cursor-pointer text-sm sm:text-base">
-                Buy {price?.artcoins} AC
-              </div>
-            )}
-            {!art.downloadingDisabled && (
-              <ImageDown className="cursor-pointer" />
-            )}
-            <button
-              onClick={handleZoomIconClick}
-              className="bg-main-color/20 hover:bg-main-color/40 p-2 rounded-full flex items-center justify-center"
-            >
-              <ZoomIn size={20} className="dark:text-gray-300" />
-            </button>
-            <MoreVertical
-              className="cursor-pointer hover:text-gray-400"
-              size={22}
-            />
-          </div>
-        </div>
-
-        {/* Artist info */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full mt-4 sm:px-20 gap-4">
-          <div className="flex gap-4 items-center">
-            {actualUser?.profileImage ? (
-              <img
-                src={actualUser.profileImage}
-                alt={actualUser.username}
-                className="w-12 h-12 rounded-full"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
-                {actualUser?.name?.charAt(0).toUpperCase() || (
-                  <User className="w-4 h-4" />
-                )}
-              </div>
-            )}
-            <div>
-              <h1 className="text-xl font-bold">{art.title}</h1>
-              <p className="text-md font-medium">
-                by{" "}
-                <span
-                  className="text-zinc-500 font-semibold cursor-pointer hover:text-main-color"
-                  onClick={() => navigate(`/${actualUser?.username}`)}
-                >
-                  {actualUser?.username}
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className="text-gray-400 font-medium">
-            Published At: {formattedDate(art.createdAt)}
-          </div>
-        </div>
-
-        {/* Tags */}
-        {art.hashtags?.length > 0 && (
-          <div className="w-full mt-6 sm:px-20 flex flex-wrap gap-2">
-            {art.hashtags.map((tag) => (
-              <span
-                key={tag}
-                className="bg-main-color/20 hover:bg-main-color/40 text-main-color px-3 py-1 rounded-full cursor-pointer text-sm"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {/* Description */}
-        <div className="w-full mt-6 sm:px-20 text-gray-400">
-          <h2 className="text-lg font-semibold mb-2">Description</h2>
-          <p>{art.description || "No description available."}</p>
-        </div>
-
-        {/* Comments section */}
-        <div className="w-full mt-6 sm:px-20">
-          <h2 className="text-lg font-semibold mb-2">Comments</h2>
-          <CommentInputSection postId={art.id} artname={art.artName} />
-          <CommentList postId={art.id} />
-        </div>
+        <Comments artId={art.id} artName={art.artName} commentingDisabled={art.commentingDisabled} />
       </div>
 
-      {/* Recommendations sidebar */}
-      <div className="w-full md:w-1/4 bg-zinc-900 rounded p-4 text-white mt-6 md:mt-0">
-        <p className="font-semibold mb-2">Recommendations</p>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-          Recommendations go here.
-        </p>
-      </div>
+      <ArtSidebar
+        isForSale={canBuy}
+        price={price}
+        onBuy={() => handleBuy()}
+        recommendedArts={recommendedArts}
+        isRecLoading={isRecLoading}
+        observerTarget={observerTarget as React.RefObject<HTMLDivElement>}
+        isBuying={buyArtMutation.isPending}
+      />
 
-      {/* Zoom overlay */}
-      {zoomed && (
-        <div className="fixed inset-0 bg-black/95 flex flex-col items-center justify-center z-50 p-6 overflow-auto">
-          <div className="relative w-full flex justify-center items-center">
-            <div className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full z-10">
-              <ChevronLeft size={50} />
-            </div>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 p-2 rounded-full z-10">
-              <ChevronRight size={50} />
-            </div>
-            <img
-              src={art.imageUrl || "/placeholder.png"}
-              alt={art.title}
-              className="max-h-[80vh] w-auto object-contain"
-            />
-          </div>
-
-          {fullscreenZoom && actualUser && (
-            <div className="mt-4 text-center text-white">
-              <h3 className="text-2xl font-bold">{art.title}</h3>
-              <p className="text-lg">by {actualUser.name}</p>
-            </div>
-          )}
-
-          <button
-            onClick={handleCloseZoom}
-            className="absolute top-6 right-6 text-white hover:text-gray-400"
-          >
-            <X size={28} />
-          </button>
-
-          {fullscreenZoom && (
-            <button
-              onClick={() => {
-                handleCloseZoom();
-                navigate("/");
-              }}
-              className="absolute top-6 left-6 text-white hover:text-gray-400 flex items-center gap-1"
-            >
-              <ChevronLeft size={24} /> Home
-            </button>
-          )}
-        </div>
-      )}
+      <ZoomOverlay
+        isOpen={zoomed}
+        currentImageIndex={currentImageIndex}
+        totalImages={recommendedArts.length}
+        currentArt={currentZoomedArt}
+        isFullscreen={fullscreenZoom}
+        onClose={handleCloseZoom}
+        onPrev={() => currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1)}
+        onNext={() => currentImageIndex < recommendedArts.length && setCurrentImageIndex(currentImageIndex + 1)}
+        onGoHome={() => { handleCloseZoom(); navigate(ROUTES.HOME); }}
+      />
     </div>
   );
 };

@@ -12,7 +12,8 @@ import { ICreatePrivateConversationUseCase } from "../interface/usecase/ICreateP
 import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePrivateConversationResponseDto";
 import { UserDto } from "../interface/dto/MessageResponseDto";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { ERROR_MESSAGES, DEFAULT_MESSAGES } from "../../constants/messages";
+import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
 
 @injectable()
 export class CreatePrivateConversationUseCase
@@ -23,7 +24,9 @@ export class CreatePrivateConversationUseCase
     @inject(TYPES.IMessageRepository)
     private readonly _messageRepo: IMessageRepository,
     @inject(TYPES.IConversationRepository)
-    private readonly _conversationRepo: IConversationRepository
+    private readonly _conversationRepo: IConversationRepository,
+    @inject(TYPES.IMessageBroadcastService)
+    private readonly _broadcastService: IMessageBroadcastService
   ) {}
 
   async execute(
@@ -67,7 +70,7 @@ export class CreatePrivateConversationUseCase
       lastMessage = await this._messageRepo.create({
         conversationId: conversation.id,
         senderId: userId,
-        content: "Hello! Looking forward to chatting with you!",
+        content: DEFAULT_MESSAGES.WELCOME_MESSAGE,
         readBy: [userId],
         mediaType: MediaType.TEXT,
         deleteMode: DeleteMode.NONE,
@@ -88,14 +91,13 @@ export class CreatePrivateConversationUseCase
       0;
 
     const lastMap = new Map<string, Message>();
-    // const unreadMap = new Map<string, number>();
+
     const partnersMap = new Map<string, UserDto>();
 
     if (lastMessage) {
       lastMap.set(conversation.id, lastMessage);
     }
 
-    // unreadMap.set(conversation.id, unreadCount);
     partnersMap.set(otherUserId, partnerUser);
 
     const enrichedConversation = mapConversation({
@@ -111,6 +113,15 @@ export class CreatePrivateConversationUseCase
         conversation.id
       }`
     );
+
+    // Notify the recipient via socket if this is a new conversation
+    if (isNewConvo) {
+      await this._broadcastService.publishNewPrivateConversation(
+        enrichedConversation,
+        otherUserId
+      );
+      logger.info(`Notified user ${otherUserId} of new private conversation`);
+    }
 
     return {
       isNewConvo,

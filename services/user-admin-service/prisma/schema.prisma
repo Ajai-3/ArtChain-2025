@@ -30,6 +30,7 @@ model User {
   supporting     Supporter[] @relation("supportedRelation")
 
   artistRequests ArtistRequest[]
+  reports        Report[] @relation("reporterRelation")
 }
 
 model Supporter {
@@ -78,4 +79,39 @@ enum Status {
   banned
   suspended
   deleted
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  reporterId  String
+  targetId    String
+  targetType  ReportTargetType
+  reason      ReportReason
+  description String?
+  status      ReportStatus @default(pending)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  reporter    User     @relation("reporterRelation", fields: [reporterId], references: [id])
+}
+
+enum ReportTargetType {
+  ART
+  COMMENT
+  USER
+}
+
+enum ReportReason {
+  inappropriate
+  spam
+  harassment
+  hate_speech
+  other
+}
+
+enum ReportStatus {
+  pending
+  reviewed
+  resolved
+  dismissed
 }

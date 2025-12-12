@@ -6,7 +6,7 @@ import { IArtistRequestRepository } from '../../../domain/repositories/user/IArt
 
 @injectable()
 export class ArtistRequestRepositoryImpl
-  extends BaseRepositoryImpl
+  extends BaseRepositoryImpl<ArtistRequest>
   implements IArtistRequestRepository
 {
   protected model = prisma.artistRequest;

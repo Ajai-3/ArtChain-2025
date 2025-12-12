@@ -1,25 +1,24 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 import { useGetAllShopItems } from "../hooks/shop/useGetAllShopItems";
 import { useGetCategories } from "../hooks/art/useGetCategories";
-import { Star, User, IndianRupee, Coins } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Filter } from "lucide-react";
+import ShopItemCard from "../components/shop/ShopItemCard";
+import ShopFilters from "../components/shop/ShopFilters";
 
 // Skeleton Loader
 const SkeletonCard = () => (
-  <div className="rounded-sm flex flex-col bg-zinc-800 animate-pulse h-72">
-    <div className="w-full h-48 bg-zinc-700 rounded-t-sm mb-1" />
-    <div className="px-2 pb-2 flex-1 flex flex-col justify-between">
-      <div className="flex justify-between items-center mb-2">
-        <div className="h-4 w-12 bg-zinc-700 rounded" />
-        <div className="h-4 w-16 bg-zinc-700 rounded" />
+  <div className="rounded-xl flex flex-col bg-zinc-900/50 animate-pulse h-[320px] border border-white/5">
+    <div className="w-full h-48 bg-zinc-800 rounded-t-xl mb-1" />
+    <div className="p-4 flex-1 flex flex-col gap-3">
+      <div className="flex justify-between items-center">
+        <div className="h-5 w-2/3 bg-zinc-800 rounded" />
+        <div className="h-5 w-16 bg-zinc-800 rounded" />
       </div>
-      <div className="flex items-center gap-2">
-        <div className="w-12 h-12 rounded-full bg-zinc-700" />
-        <div className="flex flex-col gap-1">
-          <div className="h-4 w-24 bg-zinc-700 rounded" />
-          <div className="h-3 w-16 bg-zinc-700 rounded" />
+      <div className="flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
+        <div className="w-8 h-8 rounded-full bg-zinc-800" />
+        <div className="flex flex-col gap-1.5">
+          <div className="h-3 w-16 bg-zinc-800 rounded" />
+          <div className="h-2 w-12 bg-zinc-800 rounded" />
         </div>
       </div>
     </div>
@@ -33,7 +32,6 @@ type FilterType = {
   minPrice?: number;
   maxPrice?: number;
 };
-
 
 interface ShopItem {
   id: string;
@@ -53,7 +51,7 @@ interface ShopItem {
 const Shop: React.FC = () => {
   const [filters, setFilters] = useState<FilterType>({});
   const [draftFilters, setDraftFilters] = useState<FilterType>({});
-  const navigate = useNavigate()
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetAllShopItems(filters);
@@ -84,241 +82,66 @@ const Shop: React.FC = () => {
   // Apply filters
   const applyFilters = () => {
     setFilters(draftFilters);
+    setIsMobileFilterOpen(false);
   };
 
-  // Toggle single category
-  const toggleCategory = (id: string) => {
-    setDraftFilters((prev: FilterType) => {
-      const selected = prev.category || [];
-      if (selected.includes(id)) {
-        return { ...prev, category: selected.filter((c) => c !== id) };
-      }
-      return { ...prev, category: [...selected, id] };
-    });
-  };
-
-  // Select / Deselect all categories
-  const toggleAllCategories = () => {
-    if (!categories) return;
-    const allCategoryIds = categories.map((c: any) => c._id);
-    setDraftFilters((prev: FilterType) => ({
-      ...prev,
-      category:
-        prev.category?.length === categories.length
-          ? []
-          : allCategoryIds,
-    }));
-  };
-
-  const allArts: ShopItem[] = data?.pages.flatMap((page: any) => page.data) || [];
+  const allArts: ShopItem[] =
+    data?.pages.flatMap((page: any) => page.data) || [];
 
   return (
-    <div className="flex h-[calc(100vh-64px)] overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-60 border-r border-zinc-800 text-white p-4 flex-shrink-0 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-6">Filters</h2>
+    <div className="flex h-[calc(100vh-64px)] overflow-hidden relative">
+      {/* Mobile Filter Toggle */}
+      <button
+        className="md:hidden fixed bottom-20 right-4 z-50 bg-main-color text-black p-3 rounded-full shadow-lg hover:bg-main-color-dark transition-colors"
+        onClick={() => setIsMobileFilterOpen(true)}
+      >
+        <Filter size={24} />
+      </button>
 
-        {/* Categories */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Categories</label>
-          <div className="max-h-40 overflow-y-auto flex flex-col gap-2 pr-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={draftFilters.category?.length === categories?.length}
-                onChange={toggleAllCategories}
-              />
-              <span>All Categories</span>
-            </label>
-            {categories
-              ?.filter((cat: any) => cat.count > 0)
-              .map((cat: any) => (
-                <label key={cat._id} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    value={cat._id}
-                    checked={draftFilters.category?.includes(cat._id) || false}
-                    onChange={() => toggleCategory(cat._id)}
-                  />
-                  <span>
-                    {cat.name}{" "}
-                    <span className="text-gray-400">({cat.count})</span>
-                  </span>
-                </label>
-              ))}
-          </div>
-        </div>
-
-        {/* Price Order */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Price Order</label>
-          <div className="flex flex-col gap-2">
-            {["asc", "desc"].map((order) => (
-              <label key={order} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="priceOrder"
-                  value={order}
-                  checked={draftFilters.priceOrder === order}
-                  onChange={() =>
-                    setDraftFilters((prev: FilterType) => ({
-                      ...prev,
-                      priceOrder:
-                        prev.priceOrder === order
-                          ? undefined
-                          : (order as "asc" | "desc"),
-                    }))
-                  }
-                />
-                <span>{order === "asc" ? "Low → High" : "High → Low"}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Title Order */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium mb-2">Title Order</label>
-          <div className="flex flex-col gap-2">
-            {["asc", "desc"].map((order) => (
-              <label key={order} className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name="titleOrder"
-                  value={order}
-                  checked={draftFilters.titleOrder === order}
-                  onChange={() =>
-                    setDraftFilters((prev: FilterType) => ({
-                      ...prev,
-                      titleOrder:
-                        prev.titleOrder === order
-                          ? undefined
-                          : (order as "asc" | "desc"),
-                    }))
-                  }
-                />
-                <span>{order === "asc" ? "A → Z" : "Z → A"}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {/* Price Range */}
-        <div className="mb-6 flex gap-2">
-          <Input
-            type="number"
-            placeholder="Min"
-            value={draftFilters.minPrice || ""}
-            onChange={(e) =>
-              setDraftFilters((prev: FilterType) => ({
-                ...prev,
-                minPrice: e.target.value ? Number(e.target.value) : undefined,
-              }))
-            }
-            className="w-full"
-          />
-          <Input
-            type="number"
-            placeholder="Max"
-            value={draftFilters.maxPrice || ""}
-            onChange={(e) =>
-              setDraftFilters((prev: FilterType) => ({
-                ...prev,
-                maxPrice: e.target.value ? Number(e.target.value) : undefined,
-              }))
-            }
-            className="w-full"
-          />
-        </div>
-
-        {/* Buttons */}
-        <div className="flex flex-col gap-2">
-          <Button variant="default" className="w-full" onClick={applyFilters}>
-            Apply Filters
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={clearAllFilters}
-          >
-            Clear All Filters
-          </Button>
-        </div>
-      </aside>
+      {/* Filters Sidebar */}
+      <ShopFilters
+        filters={filters}
+        draftFilters={draftFilters}
+        setDraftFilters={setDraftFilters}
+        categories={categories || []}
+        isMobileFilterOpen={isMobileFilterOpen}
+        setIsMobileFilterOpen={setIsMobileFilterOpen}
+        onApplyFilters={applyFilters}
+        onClearFilters={clearAllFilters}
+      />
 
       {/* Art Grid */}
       <div
         ref={containerRef}
-        className="flex-1 overflow-y-auto bg-transparent p-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2"
+        className="flex-1 overflow-y-auto bg-transparent p-2 md:p-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent"
       >
         {isLoading &&
           Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
 
         {!isLoading && allArts.length === 0 && (
-          <div className="col-span-full text-center py-10 text-white text-lg">
-            No shop items found.
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
+            <div className="w-20 h-20 bg-zinc-800/50 rounded-full flex items-center justify-center mb-6">
+              <span className="text-4xl">🔍</span>
+            </div>
+            <h3 className="text-xl font-medium text-white mb-2">
+              No items found
+            </h3>
+            <p className="text-base">
+              Try adjusting your filters to find what you're looking for.
+            </p>
           </div>
         )}
 
         {!isLoading &&
           allArts.map((item: ShopItem) => (
-            <div
-              key={item.id}
-              className="rounded-sm flex flex-col bg-zinc-900 hover:shadow-xl h-72"
-              onClick={() => navigate(`/${item.user?.username}/art/${item?.artName}`)}
-            >
-              <img
-                src={item.previewUrl}
-                alt={item.title}
-                className="w-full h-48 object-cover rounded-t-sm mb-1"
-              />
-              <div className="px-2 pb-2 flex-1 flex flex-col justify-between">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="text-white text-sm flex items-center gap-1">
-                    <Star size={16} /> {item.favoriteCount}
-                  </span>
-                  <div className="flex items-center gap-1 text-white font-semibold">
-                    {item.priceType === "artcoin" ? (
-                      <Coins className="w-4 h-4 text-yellow-500" />
-                    ) : (
-                      <IndianRupee className="w-4 h-4 text-green-500" />
-                    )}
-                    <span className="text-white text-sm font-medium">
-                      {item.priceType === "artcoin"
-                        ? item.artcoins
-                        : item.fiatPrice}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {item.user?.profileImage ? (
-                    <img
-                      src={item.user.profileImage}
-                      alt={item.user.username}
-                      className="w-12 h-12 rounded-full"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full flex items-center justify-center bg-zinc-700">
-                      <User className="w-4 h-4 text-white" />
-                    </div>
-                  )}
-                  <div className="flex flex-col">
-                    <span className="text-white text-md font-medium">
-                      {item.title}
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      by {item.user?.username}
-                    </span>
-                  </div>
-                </div>
-              </div>
+            <div key={item.id} className="h-full">
+              <ShopItemCard item={item} />
             </div>
           ))}
 
         {isFetchingNextPage && (
-          <div className="col-span-full text-center py-6">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-main-color"></div>
-            <p className="text-white mt-2">Loading more artworks...</p>
+          <div className="col-span-full text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-2 border-main-color border-t-transparent"></div>
           </div>
         )}
       </div>

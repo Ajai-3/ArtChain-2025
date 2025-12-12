@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import { ROUTES } from "../../../../constants/routes";
 
 export const useResetPasswordMutation = () => {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export const useResetPasswordMutation = () => {
     onSuccess: (res) => {
       console.log("Password reset successful:", res.data);
       toast.success("Password reset successful, Login now.");
-      navigate("/login");
+      navigate(ROUTES.LOGIN);
     },
     onError: (error) => {
       console.error("Password reset failed:", error);

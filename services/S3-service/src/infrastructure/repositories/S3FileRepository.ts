@@ -7,6 +7,8 @@ import { generateFileName } from "../utils/generateFileName";
 import { IFileRepository } from "../../domain/repositories/IFileRepository";
 import { config } from "../config/env";
 
+import { createSignedUrl } from "../utils/createSignedUrl";
+
 @injectable()
 export class S3FileRepository implements IFileRepository {
   async upload(
@@ -93,7 +95,12 @@ export class S3FileRepository implements IFileRepository {
         })
         .promise();
 
-      const publicUrl = `${config.aws.cdn_domain}/${keyBase}`;
+      let publicUrl = `${config.aws.cdn_domain}/${keyBase}`;
+      
+      if (category === "bidding") {
+         publicUrl = createSignedUrl(publicUrl);
+      }
+
       logger.info(
         `✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`
       );
@@ -145,6 +152,30 @@ export class S3FileRepository implements IFileRepository {
       logger.error(`❌ Error deleting file ${fileUrl}:`, err);
       throw err;
     }
+  }
+
+  async getSignedUrl(key: string, category: FileCategory): Promise<string> {
+    const bucketConfig = getBucketConfig(category);
+    
+    if (category === "art") {
+      return s3Client.getSignedUrlPromise("getObject", {
+        Bucket: bucketConfig.privateBucket,
+        Key: `art/${key}`, // Assuming key passed is relative to art/
+        Expires: 3600, // 1 hour
+      });
+    }
+
+    if (category === "bidding") {
+       const url = `${config.aws.cdn_domain}/${key}`;
+       return createSignedUrl(url);
+    }
+
+    // For other categories, if needed (though mostly public)
+    return s3Client.getSignedUrlPromise("getObject", {
+      Bucket: bucketConfig.bucket,
+      Key: key,
+      Expires: 3600,
+    });
   }
 }
 

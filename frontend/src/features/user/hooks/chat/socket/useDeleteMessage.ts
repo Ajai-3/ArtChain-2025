@@ -1,57 +1,39 @@
-// import { useCallback } from "react";
-// import { useDispatch, useSelector } from "react-redux";
-// import type { RootState } from "../../../../../redux/store";
-// import { updateMessage } from "../../../../../redux/slices/chatSlice";
+import { useCallback } from "react";
+import apiClient from "../../../../../api/axios";
+import { useDispatch } from "react-redux";
+import { removeMessage, updateMessage } from "../../../../../redux/slices/chatSlice";
 
-// interface DeleteMessageParams {
-//   messageId: string;
-//   conversationId: string;
-//   deleteForAll: boolean;
-// }
+export const useDeleteMessage = (currentUserId: string) => {
+  const dispatch = useDispatch();
 
-// export const useDeleteMessage = () => {
-//   const dispatch = useDispatch();
-//   const socket = useSelector((s: RootState) => s.socket.chatSocket);
+  const deleteMessage = useCallback(
+    async (messageId: string, conversationId: string, deleteForAll: boolean) => {
+      try {
+        const mode = deleteForAll ? "EVERYONE" : "ME";
+        
+        // Optimistic update
+        if (!deleteForAll) {
+             dispatch(removeMessage({ conversationId, messageId }));
+        } else {
+             dispatch(updateMessage({ 
+               id: messageId, 
+               conversationId, 
+               deleteMode: "ALL",
+               isDeleted: true,
+               content: "",
+             }));
+        }
 
-//   const deleteMessage = useCallback(
-//     async ({
-//       messageId,
-//       conversationId,
-//       deleteForAll,
-//     }: DeleteMessageParams) => {
-//       if (!messageId || !conversationId || !socket) {
-//         console.error("Cannot delete message: missing required parameters");
-//         return;
-//       }
+        await apiClient.delete(`/api/v1/chat/message/${messageId}`, {
+          data: { userId: currentUserId, mode },
+        });
 
-//       console.log("🗑️ Deleting message via socket:", {
-//         messageId,
-//         conversationId,
-//         deleteForAll,
-//       });
+      } catch (error) {
+        console.error("Failed to delete message", error);
+      }
+    },
+    [currentUserId, dispatch]
+  );
 
-//       dispatch(
-//         updateMessage({
-//           id: messageId,
-//           conversationId,
-//           isDeleted: true,
-//           content: "This message was deleted",
-//           deletedAt: new Date().toISOString(),
-//         })
-//       );
-
-//       try {
-//         socket.emit("deleteMessage", {
-//           messageId,
-//           conversationId,
-//           deleteForAll,
-//         });
-//       } catch (error) {
-//         console.error("❌ Failed to delete message via socket:", error);
-//       }
-//     },
-//     [dispatch, socket]
-//   );
-
-//   return { deleteMessage };
-// };
+  return { deleteMessage };
+};

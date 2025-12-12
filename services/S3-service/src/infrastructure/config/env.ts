@@ -1,5 +1,8 @@
+import { getArtChainSecrets } from "art-chain-shared";
 import dontenv from "dotenv";
 dontenv.config();
+
+const secrets = await getArtChainSecrets("ArtChainCommonSecret");
 
 export const config = {
   port: process.env.PORT,
@@ -13,6 +16,10 @@ export const config = {
     art_bucket_private: process.env.AWS_ART_BUCKET_PRIVATE!,
     art_bucket_public: process.env.AWS_ART_BUCKET_PUBLIC!,
     art_acl: process.env.AWS_ART_ACL!,
-    cdn_domain: process.env.AWS_CDN_DOMAIN!,
+    chat_bucket: process.env.AWS_CHAT_BUCKET!,
+    bidding_bucket: process.env.AWS_BIDDING_BUCKET!,
+    cdn_domain: secrets.aws_cdn_domain!,
+    cloudfront_key_pair_id: process.env.CLOUDFRONT_KEY_PAIR_ID!,
+    cloudfront_private_key: process.env.CLOUDFRONT_PRIVATE_KEY!,
   },
 };

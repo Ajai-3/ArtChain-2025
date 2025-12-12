@@ -15,10 +15,10 @@ import { IVerifyEmailTokenUserUseCase } from '../../../application/interface/use
 @injectable()
 export class SecurityController implements ISecurityController {
   constructor(
-    @inject(TYPES.IChangePasswordUserUseCase)
-    private readonly _changePasswordUserUseCase: IChangePasswordUserUseCase,
     @inject(TYPES.IChangeEmailUserUseCase)
     private readonly _changeEmailUserUseCase: IChangeEmailUserUseCase,
+    @inject(TYPES.IChangePasswordUserUseCase)
+    private readonly _changePasswordUserUseCase: IChangePasswordUserUseCase,
     @inject(TYPES.IVerifyEmailTokenUserUseCase)
     private readonly _verifyEmailTokenUserUseCase: IVerifyEmailTokenUserUseCase
   ) {}

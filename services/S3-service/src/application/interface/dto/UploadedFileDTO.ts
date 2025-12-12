@@ -10,4 +10,5 @@ export interface UploadedFileDTO {
   originalUrl?: string;
   downloadUrl?: string;
   watermarkedUrl?: string;
+  key?: string;
 }

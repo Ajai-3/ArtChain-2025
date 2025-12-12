@@ -1,0 +1,38 @@
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../../infrastructure/Inversify/types";
+import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
+import { IEditCommentUseCase } from "../../interface/usecase/comment/IEditCommentUseCase";
+import { EditCommentDTO } from "../../interface/dto/comment/EditCommentDTO";
+import { Comment, CommentStatus } from "../../../domain/entities/Comment";
+import { BadRequestError } from "art-chain-shared";
+import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
+
+@injectable()
+export class EditCommentUseCase implements IEditCommentUseCase {
+  constructor(
+    @inject(TYPES.ICommentRepository)
+    private readonly _commentRepository: ICommentRepository
+  ) {}
+
+  async execute(dto: EditCommentDTO): Promise<Comment> {
+    const { id, userId, content } = dto;
+
+    const comment = await this._commentRepository.getById(id);
+
+    if (!comment) {
+      throw new BadRequestError(ERROR_MESSAGES.COMMENT_NOT_FOUND);
+    }
+
+    if (comment.userId !== userId) {
+      throw new BadRequestError(ERROR_MESSAGES.UNAUTHORIZED_EDIT_COMMENT);
+    }
+
+    const updatedComment = await this._commentRepository.update(id, {
+      content,
+      status: "edited" as CommentStatus,
+      updatedAt: new Date(),
+    });
+
+    return updatedComment;
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { LayoutDashboard } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import AdminPageLayout from "../components/common/AdminPageLayout";
 import { useDebounce } from "../../../hooks/useDebounce";
 import UserTable from "../components/userManagement/UserTable";
 import UserFilters from "../components/userManagement/UserFilters";
@@ -100,17 +100,10 @@ const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-4">
-        <div className="flex gap-2 items-center">
-          <LayoutDashboard />
-          <h1 className="text-2xl font-bold "> User Management</h1>
-        </div>
-        <p className="text-zinc-500">
-          Control user access, plans, verifications, and account settings
-        </p>
-      </div>
-
+    <AdminPageLayout
+      title="User Management"
+      description="Control user access, plans, verifications, and account settings"
+    >
       <UserFilters
         search={rawSearch}
         onSearchChange={(value) => {
@@ -139,7 +132,7 @@ const UserManagement: React.FC = () => {
           toggleBanMutation.variables?.userId === userId
         }
       />
-    </div>
+    </AdminPageLayout>
   );
 };
 

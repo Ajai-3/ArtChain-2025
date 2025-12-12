@@ -24,6 +24,7 @@ export class ArtPost {
     public readonly originalPostId?: string,
     public readonly status: PostStatus = "active",
     public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly updatedAt?: Date,
+    public readonly ownerId?: string
   ) {}
 }

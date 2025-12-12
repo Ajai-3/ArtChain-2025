@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 import { setUser } from "../../../../redux/slices/userSlice";
 import apiClient from "../../../../api/axios";
 import type { ApiError } from "../../../../types/apiError";
+import { ROUTES } from "../../../../constants/routes";
 
 export const useLoginMutation = (
   setFormError: (msg: string | null) => void
@@ -19,7 +20,7 @@ export const useLoginMutation = (
       const { user, accessToken } = res.data;
       toast.success("Login successful");
       dispatch(setUser({ user, accessToken }));
-      navigate("/");
+      navigate(ROUTES.HOME);
     },
     onError: (error: ApiError) => {
       setFormError(error.message);

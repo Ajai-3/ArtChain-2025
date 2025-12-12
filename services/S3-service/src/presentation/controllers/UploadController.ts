@@ -12,6 +12,7 @@ import { IUploadArtImage } from "../../application/interface/usecases/IUploadArt
 import { DeleteImageRequestDTO } from "../../application/interface/dto/DeleteImageRequestDTO";
 import { IDeleteImageUseCase } from "../../application/interface/usecases/IDeleteImageUseCase";
 import { IUploadImageUseCase } from "../../application/interface/usecases/IUploadImageUseCase";
+import { IGetSignedUrlUseCase } from "../../application/interface/usecases/IGetSignedUrlUseCase";
 
 @injectable()
 export class UploadController implements IUploadController {
@@ -21,7 +22,9 @@ export class UploadController implements IUploadController {
     @inject(TYPES.IUploadImageUseCase)
     private readonly _uploadImageUseCase: IUploadImageUseCase,
     @inject(TYPES.IDeleteImageUseCase)
-    private readonly _deleteImageUseCase: IDeleteImageUseCase
+    private readonly _deleteImageUseCase: IDeleteImageUseCase,
+    @inject(TYPES.IGetSignedUrlUseCase)
+    private readonly _getSignedUrlUseCase: IGetSignedUrlUseCase
   ) {}
 
   //# =============================================================================================================
@@ -132,6 +135,35 @@ export class UploadController implements IUploadController {
         .json({ message: UPLOAD_MESSAGES.IMAGE_DELETED_SUCCESSFULLY });
     } catch (error) {
       logger.error(`Error deleting the image ${error}`);
+      next(error);
+    }
+  };
+
+  //# =============================================================================================================
+  //# GET SIGNED URL
+  //# =============================================================================================================
+  //# GET /api/v1/upload/signed-url
+  //# Request query: key, type
+  //# This controller returns a signed URL for the given key.
+  //# =============================================================================================================
+  getSignedUrl = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { key, type } = req.query;
+      const fileType = mapFrontendType(type as string);
+
+      if (!key) {
+        throw new Error("Key is required");
+      }
+
+      const signedUrl = await this._getSignedUrlUseCase.execute(key as string, fileType);
+
+      return res.status(HttpStatus.OK).json({ signedUrl });
+    } catch (error) {
+      logger.error(`Error getting signed URL ${error}`);
       next(error);
     }
   };

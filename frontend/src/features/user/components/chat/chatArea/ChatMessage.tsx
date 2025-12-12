@@ -35,7 +35,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
   hasMore,
   isLoading,
   isFetchingMore,
-  isVirtualPagination = false,
+  // isVirtualPagination = false,
   userMap,
 }) => {
   const [showOptions, setShowOptions] = useState<{
@@ -123,11 +123,14 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
     return senderId === currentUserId;
   };
 
-  const handleMessageRightClick = (e: React.MouseEvent, messageId: string) => {
-    e.preventDefault();
+  const handleMessageOptionsClick = (e: React.MouseEvent, messageId: string) => {
+    e.stopPropagation();
+    const target = e.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    
     setShowOptions({
       messageId,
-      position: { x: e.clientX, y: e.clientY },
+      position: { x: rect.left, y: rect.bottom + 5 },
     });
   };
 
@@ -197,7 +200,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
               </div>
             )}
 
-            {messages.map((message, index) => {
+            {messages.map((message) => {
               const sender = resolveSender(message);
               const hydratedMessage =
                 sender && sender !== message.sender
@@ -205,7 +208,7 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                   : message;
 
               return (
-                <div key={message.id}>
+                <div key={message.id} className="group">
                   <div
                     className={`flex ${
                       isCurrentUser(hydratedMessage.senderId)
@@ -216,10 +219,18 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                     {conversation.type === "GROUP" &&
                       !isCurrentUser(hydratedMessage.senderId) && (
                         <div className="flex items-end space-x-2 max-w-[70%]">
-                          <div className="w-10 h-10 rounded-full bg-zinc-800 text-white dark:bg-blue-600 flex items-center justify-center flex-shrink-0">
-                            <span className="text-md font-medium">
-                              {sender?.name?.charAt(0) || "U"}
-                            </span>
+                          <div className="w-10 h-10 rounded-full bg-zinc-800 text-white dark:bg-blue-600 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            {sender?.profileImage ? (
+                              <img
+                                src={sender.profileImage}
+                                alt={sender.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-md font-medium">
+                                {sender?.name?.charAt(0) || "U"}
+                              </span>
+                            )}
                           </div>
                           <div className="flex-1">
                             <MessageBubble
@@ -227,9 +238,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                               isCurrentUser={isCurrentUser(
                                 hydratedMessage.senderId
                               )}
-                              onRightClick={(e) =>
-                                handleMessageRightClick(e, hydratedMessage.id)
-                              }
+                              onOptionsClick={(e) => handleMessageOptionsClick(e, hydratedMessage.id)}
+                              showOptions={isUserAdmin()}
                             />
                           </div>
                         </div>
@@ -243,9 +253,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                           isCurrentUser={isCurrentUser(
                             hydratedMessage.senderId
                           )}
-                          onRightClick={(e) =>
-                            handleMessageRightClick(e, hydratedMessage.id)
-                          }
+                          onOptionsClick={(e) => handleMessageOptionsClick(e, hydratedMessage.id)}
+                          showOptions={isCurrentUser(hydratedMessage.senderId) || (conversation.type === "GROUP" && isUserAdmin())}
                         />
                       </div>
                     )}
@@ -271,6 +280,9 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
           onDeleteForAll={() => onDeleteMessage(showOptions.messageId, true)}
           position={showOptions.position}
           onClose={() => setShowOptions(null)}
+          isCurrentUser={isCurrentUser(
+            messages.find((m) => m.id === showOptions.messageId)?.senderId || ""
+          )}
         />
       )}
     </div>

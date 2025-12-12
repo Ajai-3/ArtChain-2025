@@ -10,6 +10,8 @@ import { UploadController } from "../../presentation/controllers/UploadControlle
 import { IUploadController } from "./../../presentation/interface/IUploadController";
 import { IDeleteImageUseCase } from "../../application/interface/usecases/IDeleteImageUseCase";
 import { IUploadImageUseCase } from "../../application/interface/usecases/IUploadImageUseCase";
+import { IGetSignedUrlUseCase } from "../../application/interface/usecases/IGetSignedUrlUseCase";
+import { GetSignedUrlUseCase } from "../../application/usecases/GetSignedUrlUseCase";
 
 const container = new Container();
 
@@ -27,6 +29,9 @@ container
 container
   .bind<IUploadImageUseCase>(TYPES.IUploadImageUseCase)
   .to(UploadImageUseCase);
+container
+  .bind<IGetSignedUrlUseCase>(TYPES.IGetSignedUrlUseCase)
+  .to(GetSignedUrlUseCase);
 
 // Controllers
 container.bind<IUploadController>(TYPES.IUploadController).to(UploadController);

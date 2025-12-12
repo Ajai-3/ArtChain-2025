@@ -41,6 +41,7 @@ export const ROUTES = {
     CHANGE_PASSWORD: '/change-password',
     VERIFY_EMAIL_TOKEN: '/verify-email-token',
     DEACTIVATE: '/deactivate',
+    REPORT: '/report',
   },
 
   // Admin routes
@@ -52,6 +53,7 @@ export const ROUTES = {
     GET_ARTIST_REQUESTS: '/get-artist-requests',
     ARTIST_REQUEST_APPROVE: '/artist-request/:id/approve',
     ARTIST_REQUEST_REJECT: '/artist-request/:id/reject',
+    REPORTS: '/reports',
   },
 
   // External service routes

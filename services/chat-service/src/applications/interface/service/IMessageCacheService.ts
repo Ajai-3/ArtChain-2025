@@ -12,4 +12,5 @@ export interface IMessageCacheService {
     updates: Partial<Message>
   ): Promise<void>;
   cacheMessageList(conversationId: string, messages: Message[]): Promise<void>;
+  invalidateConversationCache(conversationId: string): Promise<void>;
 }

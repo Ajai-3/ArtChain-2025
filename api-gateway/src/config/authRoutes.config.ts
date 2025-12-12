@@ -1,77 +1,101 @@
+import { ROUTES } from "../constants/routes";
+
 export const authRoutesConfig = {
   user: [
-    { path: "/api/v1/auth/logout", methods: ["POST"] },
+    { path: ROUTES.AUTH.LOGOUT, methods: ["POST"] },
 
-    { path: "/api/v1/user/support/:userId", methods: ["POST"] },
-    { path: "/api/v1/user/un-support/:userId", methods: ["DELETE"] },
-    { path: "/api/v1/user/remove/:supporterId", methods: ["DELETE"] },
+    { path: ROUTES.USER.SUPPORT, methods: ["POST"] },
+    { path: ROUTES.USER.UN_SUPPORT, methods: ["DELETE"] },
+    { path: ROUTES.USER.REMOVE_SUPPORTER, methods: ["DELETE"] },
 
-    { path: "/api/v1/user/artist-request", methods: ["POST"] },
-    { path: "/api/v1/user/artist-request/status", methods: ["GET"] },
+    { path: ROUTES.USER.ARTIST_REQUEST, methods: ["POST"] },
+    { path: ROUTES.USER.ARTIST_REQUEST_STATUS, methods: ["GET"] },
 
-    { path: "/api/v1/user/change-password", methods: ["POST"] },
-    { path: "/api/v1/user/change-email", methods: ["POST"] },
-    { path: "/api/v1/user/verify-email-token", methods: ["POST"] },
-    { path: "/api/v1/user/deactivate", methods: ["POST"] },
+    { path: ROUTES.USER.CHANGE_PASSWORD, methods: ["POST"] },
+    { path: ROUTES.USER.CHANGE_EMAIL, methods: ["POST"] },
+    { path: ROUTES.USER.VERIFY_EMAIL_TOKEN, methods: ["POST"] },
+    { path: ROUTES.USER.DEACTIVATE, methods: ["POST"] },
 
-    { path: "/api/v1/user/profile", methods: ["PATCH"] },
-    { path: "/api/v1/user/:id/supporters", methods: ["GET"] },
-    { path: "/api/v1/user/:id/supporting", methods: ["GET"] },
+    { path: ROUTES.USER.PROFILE, methods: ["PATCH"] },
+    { path: ROUTES.USER.SUPPORTERS, methods: ["GET"] },
+    { path: ROUTES.USER.SUPPORTING, methods: ["GET"] },
 
-    { path: "/api/v1/user/batch", methods: ["POST"] },
+    { path: ROUTES.NOTIFICATIONS.BASE, methods: ["GET"] },
+    { path: ROUTES.NOTIFICATIONS.MARK_ALL_READ, methods: ["PATCH"] },
 
-    { path: "/api/v1/notifications", methods: ["GET"] },
-    { path: "/api/v1/notifications/mark-all-read", methods: ["PATCH"] },
+    { path: ROUTES.ART.BASE, methods: ["POST", "PATCH", "DELETE"] },
+    { path: ROUTES.ART.COMMENT, methods: ["POST"] },
+    { path: ROUTES.ART.COMMENTS_BY_ID, methods: ["PUT", "DELETE"] },
 
-    { path: "/api/v1/art", methods: ["POST", "PATCH", "DELETE"] },
-    { path: "/api/v1/art/comment", methods: ["POST", "PATCH", "DELETE"] },
+    { path: ROUTES.ART.LIKE, methods: ["POST"] },
+    { path: ROUTES.ART.DISLIKE, methods: ["DELETE"] },
 
-    { path: "/api/v1/art/like", methods: ["POST"] },
-    { path: "/api/v1/art/disLike", methods: ["DELETE"] },
+    { path: ROUTES.UPLOAD.BASE, methods: ["POST", "PATCH"] },
+    { path: ROUTES.UPLOAD.ART, methods: ["POST", "PATCH"] },
+    { path: ROUTES.UPLOAD.DELETE, methods: ["POST"] },
 
-    { path: "/api/v1/upload", methods: ["POST", "PATCH"] },
-    { path: "/api/v1/upload/art", methods: ["POST", "PATCH"] },
-    { path: "/api/v1/upload/delete", methods: ["POST"] },
-
-    { path: "/api/v1/wallet", methods: ["POST", "GET", "PATCH"] },
-    { path: "/api/v1/wallet/details", methods: ["GET"] },
+    { path: ROUTES.WALLET.BASE, methods: ["POST", "GET", "PATCH"] },
+    { path: ROUTES.WALLET.DETAILS, methods: ["GET"] },
     {
-      path: "/api/v1/wallet/stripe/create-checkout-session",
+      path: ROUTES.WALLET.CREATE_CHECKOUT_SESSION,
       methods: ["POST", "GET", "PATCH"],
     },
-    { path: "/api/v1/wallet/get-transactions", methods: ["GET"] },
-    { path: "/api/v1/wallet/create-transactions", methods: ["POST"] },
+    { path: ROUTES.WALLET.GET_TRANSACTIONS, methods: ["GET"] },
+    { path: ROUTES.WALLET.CREATE_TRANSACTIONS, methods: ["POST"] },
 
-    { path: "/api/v1/art/like", methods: ["POST"] },
-    { path: "/api/v1/art/unlike", methods: ["DELETE"] },
-    { path: "/api/v1/art/likes/:postId", methods: ["GET"] },
+    { path: ROUTES.ART.LIKE, methods: ["POST"] },
+    { path: ROUTES.ART.UNLIKE, methods: ["DELETE"] },
+    { path: ROUTES.ART.LIKES_BY_POST_ID, methods: ["GET"] },
 
-    { path: "/api/v1/art/favorite", methods: ["POST"] },
-    { path: "/api/v1/art/unfavorite", methods: ["DELETE"] },
-    { path: "/api/v1/art/favorites/:postId", methods: ["GET"] },
+    { path: ROUTES.ART.FAVORITE, methods: ["POST"] },
+    { path: ROUTES.ART.UNFAVORITE, methods: ["DELETE"] },
+    { path: ROUTES.ART.FAVORITES_BY_POST_ID, methods: ["GET"] },
 
-    { path: "/api/v1/chat/conversation/private", methods: ["POST"] },
-    { path: "/api/v1/chat/conversation/recent", methods: ["GET"] },
-    { path: "/api/v1/chat/message/:conversationId", methods: ["GET"] },
+    { path: ROUTES.CHAT.PRIVATE, methods: ["POST"] },
+    { path: ROUTES.CHAT.RECENT, methods: ["GET"] },
+    { path: ROUTES.CHAT.MESSAGE, methods: ["GET"] },
+
+    { path: ROUTES.AI.GENERATE, methods: ["POST"] },
+    { path: ROUTES.AI.QUOTA, methods: ["GET"] },
+    { path: ROUTES.AI.GENERATIONS, methods: ["GET"] },
+
+    { path: ROUTES.USER.REPORT, methods: ["POST"] },
+
+    { path: ROUTES.CHAT.GROUP, methods: ["POST"] },
+    { path: ROUTES.CHAT.GROUP_BY_ID, methods: ["GET", "PATCH", "DELETE"] },
+    { path: ROUTES.CHAT.MEMBERS, methods: ["GET"] },
+    { path: ROUTES.CHAT.MEMBER, methods: ["DELETE"] },
+    { path: ROUTES.CHAT.ADMIN, methods: ["POST"] },
+    { path: ROUTES.CHAT.DELETE_MESSAGE, methods: ["DELETE"] },
+    
+    { path: ROUTES.ART.AUCTIONS, methods: ["GET", "POST"] },
+    { path: ROUTES.ART.AUCTION_BY_ID, methods: ["GET"] },
+    { path: ROUTES.ART.BIDS, methods: ["POST"] },
+    { path: ROUTES.ART.BIDS, methods: ["POST"] },
   ],
-
+  
   user_optional: [
-    { path: "/api/v1/user/profile/:username", methods: ["GET"] },
-
-    { path: "/api/v1/art/favorites/user/:userId", methods: ["GET"] },
-
-    { path: "/api/v1/art", methods: ["GET"] },
-    { path: "/api/v1/art/by-name/:artname", methods: ["GET"] },
-    { path: "/api/v1/art/user/:userId", methods: ["GET"] },
-    { path: "/api/v1/art/comments", methods: ["GET"] },
-    { path: "/api/v1/art/comment", methods: ["GET"] },
-    { path: "/api/v1/art/comment", methods: ["GET"] },
-    { path: "/api/v1/art/comments/:postId", methods: ["GET"] },
+    { path: ROUTES.AI.CONFIG, methods: ["GET"] },
+    { path: ROUTES.USER.PROFILE_BY_USERNAME, methods: ["GET"] },
+    
+    { path: ROUTES.ART.FAVORITES_BY_USER, methods: ["GET"] },
+    
+    { path: ROUTES.ART.BASE, methods: ["GET"] },
+    { path: ROUTES.ART.BY_NAME, methods: ["GET"] },
+    { path: ROUTES.ART.BY_USER, methods: ["GET"] },
+    { path: ROUTES.ART.COMMENTS, methods: ["GET"] },
+    { path: ROUTES.ART.COMMENT, methods: ["GET"] },
+    { path: ROUTES.ART.COMMENTS_BY_POST_ID, methods: ["GET"] },
+    { path: ROUTES.ART.BIDS_BY_AUCTION, methods: ["GET"] },
   ],
 
   admin: [
-    { path: "/api/v1/admin/dashboard", methods: ["GET"] },
-    { path: "/api/v1/admin/users", methods: ["GET", "PATCH", "DELETE"] },
-    { path: "/api/v1/art/category", methods: ["POST", "PATCH", "DELETE"] },
+    { path: ROUTES.ADMIN.DASHBOARD, methods: ["GET"] },
+    { path: ROUTES.ADMIN.USERS, methods: ["GET", "PATCH", "DELETE"] },
+    { path: ROUTES.ART.CATEGORY, methods: ["POST", "PATCH", "DELETE"] },
+    { path: ROUTES.AI.CONFIG, methods: ["POST", "PATCH", "DELETE"] },
+    { path: ROUTES.AI.ANALYTICS, methods: ["GET"] },
+    { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
+    { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
   ],
 };

@@ -8,7 +8,9 @@ export const ROUTES = {
   UPLOAD_ART: "/art",
   UPLOAD_DELETE: "/delete",
   UPLOAD_PROFILE: "/profile",
+  UPLOAD_PROFILE: "/profile",
   UPLOAD_BANNER: "/banner",
+  SIGNED_URL: "/signed-url",
 
   // Full paths
   UPLOAD: "/api/v1/upload",

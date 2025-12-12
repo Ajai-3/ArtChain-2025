@@ -48,7 +48,7 @@ const SearchBar: React.FC = () => {
         <Input
           type="text"
           variant="search"
-          className="pl-9 pr-3 text-zinc-400 bg-transparent border-zinc-700 focus:border-main-color w-full"
+          className="pl-9 pr-3 text-zinc-400 bg-transparent border-zinc-700 focus:border-main-color w-full max-w-3xl"
           placeholder="Search..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}

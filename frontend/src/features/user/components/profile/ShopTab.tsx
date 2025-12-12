@@ -1,18 +1,21 @@
 import React, { useRef, useEffect } from "react";
 import { useGetShopItemsByUser } from "../../hooks/shop/useGetShopItemsByUser";
-import { Star, User, IndianRupee, Coins } from "lucide-react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
+import ShopItemCard from "../shop/ShopItemCard";
 
 const SkeletonCard = () => (
-  <div className="rounded-sm flex flex-col bg-zinc-800 animate-pulse h-72">
-    <div className="w-full h-48 bg-zinc-700 rounded-t-sm mb-1" />
-    <div className="px-2 pb-2 flex-1 flex flex-col justify-between">
-      <div className="h-4 w-12 bg-zinc-700 rounded mb-2" />
-      <div className="flex items-center gap-2 mt-auto">
-        <div className="w-12 h-12 rounded-full bg-zinc-700" />
-        <div className="flex flex-col gap-1">
-          <div className="h-4 w-24 bg-zinc-700 rounded" />
-          <div className="h-3 w-16 bg-zinc-700 rounded" />
+  <div className="rounded-xl flex flex-col bg-zinc-900/50 animate-pulse h-[320px] border border-white/5">
+    <div className="w-full h-48 bg-zinc-800 rounded-t-xl mb-1" />
+    <div className="p-4 flex-1 flex flex-col gap-3">
+      <div className="flex justify-between items-center">
+        <div className="h-5 w-2/3 bg-zinc-800 rounded" />
+        <div className="h-5 w-16 bg-zinc-800 rounded" />
+      </div>
+      <div className="flex items-center gap-3 mt-auto pt-3 border-t border-white/5">
+        <div className="w-8 h-8 rounded-full bg-zinc-800" />
+        <div className="flex flex-col gap-1.5">
+          <div className="h-3 w-16 bg-zinc-800 rounded" />
+          <div className="h-2 w-12 bg-zinc-800 rounded" />
         </div>
       </div>
     </div>
@@ -23,13 +26,17 @@ interface ShopTabProps {
   profileUser: { id: string; username: string };
 }
 
-
 const ShopUser: React.FC = () => {
   const { profileUser } = useOutletContext<ShopTabProps>();
   const targetUserId = profileUser.id;
   const containerRef = useRef<HTMLDivElement>(null);
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useGetShopItemsByUser(targetUserId);
-  const navigate = useNavigate()
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useGetShopItemsByUser(targetUserId);
 
   const allArts = data?.pages?.flatMap((page: any) => page.data) || [];
 
@@ -49,70 +56,31 @@ const ShopUser: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="flex-1 overflow-y-auto p-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 h-[calc(100vh-64px)]"
+      className="flex-1 overflow-y-auto p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 h-[calc(100vh-64px)] scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent"
     >
       {isLoading &&
         Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
 
       {!isLoading && allArts.length === 0 && (
-        <div className="col-span-full text-center py-10 text-white text-lg">
-          No shop items found.
+        <div className="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
+          <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+            <span className="text-3xl">🛍️</span>
+          </div>
+          <h3 className="text-lg font-medium text-white mb-1">No items yet</h3>
+          <p className="text-sm">This user hasn't listed any items for sale.</p>
         </div>
       )}
 
       {!isLoading &&
         allArts.map((item: any) => (
-          <div
-            key={item.id}
-            className="rounded-sm flex flex-col bg-zinc-900 hover:shadow-xl hover:scale-105 transition-transform duration-300 h-72"
-            onClick={() => navigate(`/${profileUser.username}/art/${item.artName}`)}
-          >
-            <img
-              src={item.previewUrl}
-              alt={item.title}
-              className="w-full h-44 object-cover rounded-t-sm mb-1"
-            />
-            <div className="px-2 pb-2 flex-1 flex flex-col justify-between">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-white text-sm flex items-center gap-1">
-                  <Star size={16} /> {item.favoriteCount}
-                </span>
-                <div className="flex items-center gap-1 text-white font-semibold">
-                  {item.priceType === "artcoin" ? (
-                    <Coins className="w-4 h-4 text-yellow-500" />
-                  ) : (
-                    <IndianRupee className="w-4 h-4 text-green-500" />
-                  )}
-                  <span className="text-white text-sm font-medium">
-                    {item.priceType === "artcoin" ? item.artcoins : item.fiatPrice}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {item.user?.profileImage ? (
-                  <img
-                    src={item.user.profileImage}
-                    alt={item.user.username}
-                    className="w-12 h-12 rounded-full"
-                  />
-                ) : (
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center bg-zinc-700">
-                    <User className="w-4 h-4 text-white" />
-                  </div>
-                )}
-                <div className="flex flex-col">
-                  <span className="text-white text-md font-medium">{item.title}</span>
-                  <span className="text-gray-400 text-sm">by {item.user?.username}</span>
-                </div>
-              </div>
-            </div>
+          <div key={item.id} className="h-full">
+            <ShopItemCard item={item} />
           </div>
         ))}
 
       {isFetchingNextPage && (
-        <div className="col-span-full text-center py-6">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-main-color"></div>
-          <p className="text-white mt-2">Loading more artworks...</p>
+        <div className="col-span-full text-center py-8">
+          <div className="inline-block animate-spin rounded-full h-6 w-6 border-2 border-green-500 border-t-transparent"></div>
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
-import { LayoutDashboard } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import AdminPageLayout from "../components/common/AdminPageLayout";
 import CategoryFilters from "../components/categoryManagement/CategoryFilters";
 import CategoryTable from "../components/categoryManagement/CategoryTable";
 import { useGetAllCategory } from "../hooks/category-management/useGetAllCategory";
@@ -36,17 +36,10 @@ const CategoryManagement: React.FC = () => {
   useEffect(() => setPage(1), [debouncedSearch, statusFilter, useCountFilter]);
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="mb-4">
-        <div className="flex gap-2 items-center">
-          <LayoutDashboard />
-          <h1 className="text-2xl font-bold "> Category Management</h1>
-        </div>
-        <p className="text-zinc-500">
-          Create, edit, and control categories easily.
-        </p>
-      </div>
-
+    <AdminPageLayout
+      title="Category Management"
+      description="Create, edit, and control categories easily."
+    >
       <CategoryFilters
         search={searchQuery}
         onSearchChange={setSearchQuery}
@@ -66,7 +59,8 @@ const CategoryManagement: React.FC = () => {
         totalPages={totalPages}
         onPageChange={setPage}
       />
-    </div>
+    </AdminPageLayout>
+
   );
 };
 

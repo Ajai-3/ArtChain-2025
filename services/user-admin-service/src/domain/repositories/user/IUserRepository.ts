@@ -1,10 +1,10 @@
 import { ArtUser } from '../../../types/ArtUser';
-import { User } from '../../entities/User';
-import { SafeUser } from '../IBaseRepository';
+import { User, SafeUser } from '../../entities/User';
 import { IBaseRepository } from '../IBaseRepository';
 
 export interface IUserRepository<U = User, S = SafeUser>
-  extends IBaseRepository {
+  extends IBaseRepository<U, S> {
+
   findById(id: string): Promise<S | null>;
   findByUsernameRaw(username: string): Promise<U | null>;
   findByEmailRaw(email: string): Promise<U | null>;

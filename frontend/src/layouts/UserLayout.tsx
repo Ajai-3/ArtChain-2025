@@ -4,37 +4,46 @@ import Navbar from "../features/user/components/navbar/Navbar";
 import CreatePost from "../features/user/components/post/CreatePost";
 import UserSideBar from "../features/user/components/sidebar/UserSideBar";
 import BecomeArtistModal from "../features/user/components/auth/BecomeAnArtist";
+import NotificationSidebar from "../features/user/components/notification/NotificationSidebar";
 
 const UserLayout: React.FC = () => {
   const [showCreatePostModal, setShowCreatePostModal] = useState(false);
   const [showBecomeArtistModal, setShowBecomeArtistModal] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const location = useLocation();
 
   // Define pages where bottom sidebar should be HIDDEN on mobile
-  const hideBottomSidebarPages = ["/chat", "/notifications", "/bidding"];
+  const hideBottomSidebarPages = ["/chat", "/bidding"];
   const shouldHideBottomSidebar = hideBottomSidebarPages.some((path) =>
     location.pathname.startsWith(path)
   );
   return (
-    <div className="h-screen overflow-hidden">
-      <Navbar onBecomeArtist={() => setShowBecomeArtistModal(true)} />
+    <div className="flex flex-col h-screen overflow-hidden bg-background">
+      <Navbar 
+        onBecomeArtist={() => setShowBecomeArtistModal(true)} 
+        onShowNotifications={() => setShowNotifications(true)}
+      />
 
-      <div className="flex flex-col sm:flex-row">
+      <div className="flex flex-1 overflow-hidden">
         <div className="hidden sm:block">
-          <UserSideBar createPostClick={() => setShowCreatePostModal(true)} />
+          <UserSideBar 
+            createPostClick={() => setShowCreatePostModal(true)} 
+            onShowNotifications={() => setShowNotifications(true)}
+          />
         </div>
-        <div className="w-full flex flex-col h-[calc(100vh-62px)]">
-          <div className="flex-1 overflow-y-auto scrollbar relative sm:pb-0">
+        <div className="flex-1 flex flex-col min-w-0 relative">
+          <div className="flex-1 overflow-y-auto scrollbar pb-20 sm:pb-0">
             <Outlet />
-            {!shouldHideBottomSidebar && (
-              <div className="block sm:hidden w-full fixed bottom-0 left-0">
-                <UserSideBar
-                  createPostClick={() => setShowCreatePostModal(true)}
-                />
-              </div>
-            )}
           </div>
+          {!shouldHideBottomSidebar && (
+            <div className="block sm:hidden w-full absolute bottom-0 left-0 z-50">
+              <UserSideBar
+                createPostClick={() => setShowCreatePostModal(true)}
+                onShowNotifications={() => setShowNotifications(true)}
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -46,6 +55,11 @@ const UserLayout: React.FC = () => {
       <BecomeArtistModal
         isOpen={showBecomeArtistModal}
         onClose={() => setShowBecomeArtistModal(false)}
+      />
+      
+      <NotificationSidebar 
+        isOpen={showNotifications} 
+        onClose={() => setShowNotifications(false)} 
       />
     </div>
   );

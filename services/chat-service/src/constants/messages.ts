@@ -28,6 +28,14 @@ export const ERROR_MESSAGES = {
   LIMIT_MUST_BE_POSITIVE_INTEGER: "limit must be a positive integer",
   CONVERSATION_ID_REQUIRED: "conversationId is required",
   X_USER_ID_HEADER_REQUIRED: "x-user-id header is required",
+  NOT_A_GROUP_CONVERSATION: "Not a group conversation",
+  ONLY_ADMIN_OWNER_CAN_REMOVE: "Only admins and owners can remove members",
+  CANNOT_REMOVE_OWNER: "Cannot remove the owner",
+  ADMIN_CANNOT_REMOVE_ADMIN: "Admins cannot remove other admins",
+  ONLY_OWNER_CAN_ADD_ADMIN: "Only owner can add admins",
+  USER_NOT_MEMBER: "User is not a member of this group",
+  ONLY_ADMIN_CAN_ADD_MEMBER: "Only admins and owners can add members",
+  ONLY_OWNER_CAN_REMOVE_ADMIN: "Only owner can remove admins",
 } as const;
 
 export const SUCCESS_MESSAGES = {
@@ -37,5 +45,10 @@ export const SUCCESS_MESSAGES = {
   // Conversation related success messages
   CONVERSATION_CREATED_SUCCESSFULLY: "Conversation created successfully",
   RESEND_CONVERSATIONS_RETRIEVED_SUCCESSFULLY: "Resend conversations retrieved successfully",
+} as const;
+
+export const DEFAULT_MESSAGES = {
+  WELCOME_MESSAGE: "Hello! Looking forward to chatting with you!",
+  GROUP_MESSAGE: "Hey new group created"
 } as const;
 

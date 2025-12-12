@@ -27,6 +27,7 @@ export interface User {
 export interface Art {
   id: string;
   userId: string;
+  ownerId?: string;
   title: string;
   artName: string;
   description?: string;

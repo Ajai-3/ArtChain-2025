@@ -1,6 +1,7 @@
-import { Message } from "../../domain/entities/Message";
+import { Message, MediaType } from "../../domain/entities/Message";
 import { DeleteMode } from "../../domain/entities/Message";
 import { MessageResponseDto } from "../interface/dto/MessageResponseDto";
+import { mapCdnUrl } from "../../utils/mapCdnUrl";
 
 export class MessageMapper {
   static toResponse(
@@ -34,7 +35,10 @@ export class MessageMapper {
       senderId: message.senderId,
       content: message.content,
       mediaType: message.mediaType ?? null,
-      mediaUrl: message.mediaUrl ?? null,
+      mediaUrl:
+        message.mediaType === MediaType.IMAGE
+          ? mapCdnUrl(message.content) ?? null
+          : message.mediaUrl ?? null,
       isDeleted: false,
       readBy: message.readBy,
       deletedAt: message.deletedAt ?? null,

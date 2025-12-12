@@ -13,12 +13,15 @@ import {
   TransactionStatus,
 } from "./../../domain/entities/Transaction";
 import { IGetTransactionsUseCase } from "../../application/interface/usecase/transaction/IGetTransactionsUseCase";
+import { IProcessPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessPurchaseUseCase";
 
 @injectable()
 export class TransactionController implements ITransactionController {
   constructor(
     @inject(TYPES.IGetTransactionsUseCase)
-    private readonly _getTransactionsUseCase: IGetTransactionsUseCase
+    private readonly _getTransactionsUseCase: IGetTransactionsUseCase,
+    @inject(TYPES.IProcessPurchaseUseCase)
+    private readonly _processPurchaseUseCase: IProcessPurchaseUseCase
   ) {}
 
   //# ================================================================================================================
@@ -110,6 +113,52 @@ export class TransactionController implements ITransactionController {
     } catch (error) {
       logger.error(
         `[TransactionController] Error creating transaction: ${error}`
+      );
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# PROCESS PURCHASE
+  //# ================================================================================================================
+  //# POST /api/v1/transaction/purchase
+  //# Request body: { buyerId, sellerId, amount, artId }
+  //# This controller handles art purchase transactions
+  //# ================================================================================================================
+  processPurchase = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { buyerId, sellerId, amount, artId } = req.body;
+
+      logger.info(
+        `[TransactionController] Processing purchase for art: ${artId} | buyer: ${buyerId} | seller: ${sellerId}`
+      );
+
+      const success = await this._processPurchaseUseCase.execute(
+        buyerId,
+        sellerId,
+        amount,
+        artId
+      );
+
+      if (success) {
+        logger.info(
+          `[TransactionController] Purchase processed successfully for art: ${artId}`
+        );
+        return res
+          .status(HttpStatus.OK)
+          .json({ message: "Purchase successful" });
+      } else {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: "Purchase failed" });
+      }
+    } catch (error) {
+      logger.error(
+        `[TransactionController] Error processing purchase: ${error}`
       );
       next(error);
     }

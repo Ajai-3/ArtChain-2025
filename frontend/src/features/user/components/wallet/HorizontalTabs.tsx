@@ -39,9 +39,6 @@ const HorizontalTabs: React.FC<HorizontalTabsProps> = ({
           </TabsTrigger>
         </TabsList>
         <div className="flex gap-2 ml-4">
-          <Button className="bg-yellow-500 hover:bg-yellow-600 text-sm px-4 py-2 rounded font-semibold">
-            Premium
-          </Button>
           <Button className="bg-blue-600 hover:bg-blue-700 text-sm px-4 py-2 rounded font-semibold">
             Export
           </Button>

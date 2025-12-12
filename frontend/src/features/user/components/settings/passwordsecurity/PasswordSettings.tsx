@@ -11,11 +11,10 @@ import DeactivateAccount from "./DeactivateAccount";
 
 const PasswordSettings: React.FC = () => {
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6 dark:text-gray-300">
-        Account Settings
-      </h2>
-
+     <div className="max-w-2xl mx-auto">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+        Password & Security
+      </h1>
       <Tabs defaultValue="password" className="w-full">
         {/* Tabs Navigation */}
         <TabsList className="grid w-full grid-cols-3 rounded-xl bg-muted p-1 mb-6">
