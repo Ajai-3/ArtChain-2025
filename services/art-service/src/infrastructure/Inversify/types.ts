@@ -69,6 +69,7 @@ export const TYPES = {
   IPlaceBidUseCase: Symbol.for("IPlaceBidUseCase"),
   IGetBidsUseCase: Symbol.for("IGetBidsUseCase"),
   IGetUserBidsUseCase: Symbol.for("IGetUserBidsUseCase"),
+  ICancelAuctionUseCase: Symbol.for("ICancelAuctionUseCase"),
   IArtController: Symbol.for("IArtController"),
   IShopController: Symbol.for("IShopController"),
   ILikeController: Symbol.for("ILikeController"),

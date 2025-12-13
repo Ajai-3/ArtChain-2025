@@ -11,5 +11,6 @@ const auctionController = container.get<IAuctionController>(TYPES.IAuctionContro
 adminAuctionRouter.get(ROUTES.ADMIN_AUCTION.BASE, (req, res, next) => auctionController.getAuctions(req, res, next));
 adminAuctionRouter.get(ROUTES.ADMIN_AUCTION.STATS, (req, res, next) => auctionController.getAuctionStats(req, res, next));
 adminAuctionRouter.get(ROUTES.ADMIN_AUCTION.BY_ID, (req, res, next) => auctionController.getAuction(req, res, next));
+adminAuctionRouter.patch(ROUTES.ADMIN_AUCTION.CANCEL, (req, res, next) => auctionController.cancelAuction(req, res, next));
 
 export default adminAuctionRouter;

@@ -162,6 +162,8 @@ import { IPlaceBidUseCase } from "../../application/interface/usecase/bid/IPlace
 import { PlaceBidUseCase } from "../../application/usecase/bid/PlaceBidUseCase";
 import { IGetBidsUseCase } from "../../application/interface/usecase/bid/IGetBidsUseCase";
 import { GetBidsUseCase } from "../../application/usecase/bid/GetBidsUseCase";
+import { ICancelAuctionUseCase } from "../../application/interface/usecase/auction/ICancelAuctionUseCase";
+import { CancelAuctionUseCase } from "../../application/usecase/auction/CancelAuctionUseCase";
 import { IAuctionController } from "../../presentation/interface/IAuctionController";
 import { AuctionController } from "../../presentation/controllers/AuctionController";
 import { IBidController } from "../../presentation/interface/IBidController";
@@ -318,6 +320,7 @@ container.bind<IGetAuctionByIdUseCase>(TYPES.IGetAuctionByIdUseCase).to(GetAucti
 container.bind<IPlaceBidUseCase>(TYPES.IPlaceBidUseCase).to(PlaceBidUseCase);
 container.bind<IGetBidsUseCase>(TYPES.IGetBidsUseCase).to(GetBidsUseCase);
 container.bind<IGetUserBidsUseCase>(TYPES.IGetUserBidsUseCase).to(GetUserBidsUseCase);
+container.bind<ICancelAuctionUseCase>(TYPES.ICancelAuctionUseCase).to(CancelAuctionUseCase);
 
 container.bind<IAuctionController>(TYPES.IAuctionController).to(AuctionController);
 container.bind<IBidController>(TYPES.IBidController).to(BidController);

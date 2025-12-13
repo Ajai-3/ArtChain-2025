@@ -96,6 +96,7 @@ export const ROUTES = {
     BASE: "/admin/auctions",
     BY_ID: "/admin/auctions/:id",
     STATS: "/admin/auctions/stats",
+    CANCEL: "/admin/auctions/:id/cancel",
   },
 } as const;
 
