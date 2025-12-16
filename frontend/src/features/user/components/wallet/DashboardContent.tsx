@@ -21,7 +21,7 @@ interface DashboardContentProps {
 
 const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
   const [showBalance, setShowBalance] = useState(true);
-  const [timeRange, setTimeRange] = useState<"7d" | "1m" | "all">("1m");
+  const [timeRange, setTimeRange] = useState<"7d" | "1m" | "all">("all");
   const [activeTab, setActiveTab] = useState<"trend" | "breakdown" | "stats">("trend"); 
 
   const { balance, inrValue, quickStats } = wallet;

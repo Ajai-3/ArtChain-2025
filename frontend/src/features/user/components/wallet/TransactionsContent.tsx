@@ -18,7 +18,7 @@ interface TransactionsContentProps {
 const TransactionsContent: React.FC<TransactionsContentProps> = ({
   transactions,
 }) => {
-  const [timeRange, setTimeRange] = React.useState<"7d" | "1m" | "all">("1m");
+  const [timeRange, setTimeRange] = React.useState<"7d" | "1m" | "all">("all");
   const [activeTab, setActiveTab] = React.useState<
     "overview" | "earned" | "spent"
   >("overview");

@@ -38,7 +38,7 @@ export const useGetWallet = () => {
     queryFn: async () => {
       const { data } = await apiClient.get("/api/v1/wallet/details");
       dispatch(setWalletData(data.wallet));
-      return data;
+      return data.wallet;
     },
   });
 };
