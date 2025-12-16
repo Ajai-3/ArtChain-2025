@@ -27,7 +27,7 @@ const adminLinks = [
   { to: "/admin/wallet-management", icon: Wallet, label: "Wallet & Financial" },
   { to: "/admin/art-management", icon: FileEdit, label: "Art Management" },
   { to: "/admin/auction-management", icon: Gavel, label: "Auction Management" },
-  { to: "/admin/settings", icon: Settings, label: "Platform Settings" },
+  { to: "/admin/commission-management", icon: Settings, label: "Commission Management" },
 ];
 
 const AdminSideBar: React.FC = () => {
