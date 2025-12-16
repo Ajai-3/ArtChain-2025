@@ -1,4 +1,4 @@
-export type AuctionStatus = "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED";
+export type AuctionStatus = "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED" | "UNSOLD";
 
 export class Auction {
   constructor(

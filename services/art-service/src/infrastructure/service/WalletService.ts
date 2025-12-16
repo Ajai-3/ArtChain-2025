@@ -52,4 +52,28 @@ export class WalletService implements IWalletService {
       return false;
     }
   }
+
+  async settleAuction(
+    winnerId: string,
+    sellerId: string,
+    adminId: string,
+    totalAmount: number,
+    commissionAmount: number,
+    auctionId: string
+  ): Promise<boolean> {
+    try {
+      const response = await axios.post(`${this.baseUrl}/api/v1/wallet/settle-auction`, {
+        winnerId,
+        sellerId,
+        adminId,
+        totalAmount,
+        commissionAmount,
+        auctionId
+      });
+      return response.status === 200 || response.status === 201;
+    } catch (error: any) {
+      console.error(`Failed to settle auction ${auctionId}: ${error.message}`);
+      return false;
+    }
+  }
 }

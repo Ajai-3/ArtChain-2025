@@ -6,6 +6,7 @@ import aiRouter from "./presentation/routes/ai.routes";
 import adminAIRouter from "./presentation/routes/admin-ai.routes";
 import adminArtRouter from "./presentation/routes/admin-art.routes";
 import adminAuctionRouter from "./presentation/routes/admin-auction.routes";
+import adminConfigRouter from "./presentation/routes/admin-config.routes";
 import { logger } from "./utils/logger";
 import { ROUTES } from "./constants/routes";
 
@@ -28,6 +29,7 @@ app.use(ROUTES.BASE, aiRouter);
 app.use(ROUTES.BASE, adminAIRouter);
 app.use(ROUTES.BASE, adminArtRouter);
 app.use(ROUTES.BASE, adminAuctionRouter);
+app.use(ROUTES.BASE, adminConfigRouter);
 
 app.use(createErrorHandler(false))
 

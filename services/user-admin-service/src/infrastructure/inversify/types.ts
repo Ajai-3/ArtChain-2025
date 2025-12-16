@@ -9,6 +9,7 @@ export const TYPES = {
   // Services
   IArtService: Symbol.for('IArtService'),
   IUserService: Symbol.for('IUserService'),
+  IWalletService: Symbol.for('IWalletService'),
   
   // Use cases - Artist Request
   ICreateArtistRequestUseCase: Symbol.for('ICreateArtistRequestUseCase'),
@@ -53,6 +54,7 @@ export const TYPES = {
   IGetAllReportsUseCase: Symbol.for('IGetAllReportsUseCase'),
   IGetGroupedReportsUseCase: Symbol.for('IGetGroupedReportsUseCase'),
   IUpdateReportStatusBulkUseCase: Symbol.for('IUpdateReportStatusBulkUseCase'),
+  IGetPlatformRevenueStatsUseCase: Symbol.for('IGetPlatformRevenueStatsUseCase'),
 
   // Controllers
   IUserController: Symbol.for('IUserController'),
@@ -65,4 +67,5 @@ export const TYPES = {
   IAdminAuthController: Symbol.for('IAdminAuthController'),
   IUserManageMentController: Symbol.for('IUserManageMentController'),
   IAdminReportController: Symbol.for('IAdminReportController'),
+  IAdminDashboardController: Symbol.for('IAdminDashboardController'),
 };

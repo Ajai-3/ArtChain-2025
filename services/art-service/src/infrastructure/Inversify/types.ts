@@ -11,6 +11,7 @@ export const TYPES = {
   // AI Repositories
   IAIGenerationRepository: Symbol.for("IAIGenerationRepository"),
   IAIConfigRepository: Symbol.for("IAIConfigRepository"),
+  IPlatformConfigRepository: Symbol.for("IPlatformConfigRepository"),
   AIProviderService: Symbol.for("AIProviderService"),
 
   // Use Cases - Art
@@ -92,4 +93,12 @@ export const TYPES = {
   IS3Service: Symbol.for("IS3Service"),
   IDownloadArtUseCase: Symbol.for("IDownloadArtUseCase"),
   ISocketService: Symbol.for("ISocketService"),
+
+  // Platform Config
+  IGetPlatformConfigUseCase: Symbol.for("IGetPlatformConfigUseCase"),
+  IUpdatePlatformConfigUseCase: Symbol.for("IUpdatePlatformConfigUseCase"),
+  IAdminPlatformConfigController: Symbol.for("IAdminPlatformConfigController"),
+  RabbitMQService: Symbol.for("RabbitMQService"),
+  IEndAuctionUseCase: Symbol.for("IEndAuctionUseCase"),
+  AuctionEndedConsumer: Symbol.for("AuctionEndedConsumer"),
 };

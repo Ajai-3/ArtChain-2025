@@ -1,4 +1,4 @@
-import { Comment } from "../../../../../domain/entities/Comment";
+import { Comment } from "../../../../domain/entities/Comment";
 import { EditCommentDTO } from "../../dto/comment/EditCommentDTO";
 
 export interface IEditCommentUseCase {

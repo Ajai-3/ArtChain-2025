@@ -116,6 +116,15 @@ import { UpdateReportStatusBulkUseCase } from '../../application/usecases/admin/
 import { IAdminReportController } from '../../presentation/interfaces/admin/IAdminReportController';
 import { AdminReportController } from '../../presentation/controllers/admin/AdminReportController';
 
+// Dashboard
+import { IWalletService } from '../../application/interface/http/IWalletService';
+import { WalletService } from '../http/WalletService';
+import { IGetPlatformRevenueStatsUseCase } from '../../application/interface/usecase/admin/IGetPlatformRevenueStatsUseCase';
+import { GetPlatformRevenueStatsUseCase } from '../../application/usecases/admin/dashboard/GetPlatformRevenueStatsUseCase';
+import { IAdminDashboardController } from '../../presentation/interfaces/admin/IAdminDashboardController';
+import { AdminDashboardController } from '../../presentation/controllers/admin/AdminDashboardController';
+
+
 const container = new Container();
 
 // Repositories & Services
@@ -260,5 +269,10 @@ container.bind<IGetGroupedReportsUseCase>(TYPES.IGetGroupedReportsUseCase).to(Ge
 container.bind<IUpdateReportStatusBulkUseCase>(TYPES.IUpdateReportStatusBulkUseCase).to(UpdateReportStatusBulkUseCase);
 container.bind<IReportController>(TYPES.IReportController).to(ReportController);
 container.bind<IAdminReportController>(TYPES.IAdminReportController).to(AdminReportController);
+
+// Dashboard
+container.bind<IWalletService>(TYPES.IWalletService).to(WalletService).inSingletonScope();
+container.bind<IGetPlatformRevenueStatsUseCase>(TYPES.IGetPlatformRevenueStatsUseCase).to(GetPlatformRevenueStatsUseCase);
+container.bind<IAdminDashboardController>(TYPES.IAdminDashboardController).to(AdminDashboardController);
 
 export { container };

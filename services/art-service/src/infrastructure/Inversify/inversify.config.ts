@@ -23,6 +23,14 @@ import { CategoryRepositoryImpl } from "../repositories/CategoryRepositoryImpl";
 import { FavoriteRepositoryImpl } from "../repositories/FavoriteRepositoryImpl";
 import { AIGenerationRepositoryImpl } from "../repositories/AIGenerationRepositoryImpl";
 import { AIConfigRepositoryImpl } from "../repositories/AIConfigRepositoryImpl";
+import { IPlatformConfigRepository } from "../../domain/repositories/IPlatformConfigRepository";
+import { PlatformConfigRepositoryImpl } from "../repositories/PlatformConfigRepositoryImpl";
+import { IGetPlatformConfigUseCase } from "../../application/interface/usecase/admin/IGetPlatformConfigUseCase";
+import { GetPlatformConfigUseCase } from "../../application/usecase/admin/GetPlatformConfigUseCase";
+import { IUpdatePlatformConfigUseCase } from "../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase";
+import { UpdatePlatformConfigUseCase } from "../../application/usecase/admin/UpdatePlatformConfigUseCase";
+import { IAdminPlatformConfigController } from "../../presentation/interface/IAdminPlatformConfigController";
+import { AdminPlatformConfigController } from "../../presentation/controllers/AdminPlatformConfigController";
 
 // Use Cases - Art
 import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
@@ -324,5 +332,21 @@ container.bind<ICancelAuctionUseCase>(TYPES.ICancelAuctionUseCase).to(CancelAuct
 
 container.bind<IAuctionController>(TYPES.IAuctionController).to(AuctionController);
 container.bind<IBidController>(TYPES.IBidController).to(BidController);
+
+// Platform Config
+container.bind<IPlatformConfigRepository>(TYPES.IPlatformConfigRepository).to(PlatformConfigRepositoryImpl);
+container.bind<IGetPlatformConfigUseCase>(TYPES.IGetPlatformConfigUseCase).to(GetPlatformConfigUseCase);
+container.bind<IUpdatePlatformConfigUseCase>(TYPES.IUpdatePlatformConfigUseCase).to(UpdatePlatformConfigUseCase);
+container.bind<IAdminPlatformConfigController>(TYPES.IAdminPlatformConfigController).to(AdminPlatformConfigController);
+
+// RabbitMQ & Auction Ending
+import { RabbitMQService } from "../messaging/RabbitMQService";
+import { IEndAuctionUseCase } from "../../application/interface/usecase/auction/IEndAuctionUseCase";
+import { EndAuctionUseCase } from "../../application/usecase/auction/EndAuctionUseCase";
+import { AuctionEndedConsumer } from "../messaging/consumers/AuctionEndedConsumer";
+
+container.bind<RabbitMQService>(TYPES.RabbitMQService).to(RabbitMQService).inSingletonScope();
+container.bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase).to(EndAuctionUseCase);
+container.bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer).to(AuctionEndedConsumer).inSingletonScope();
 
 export { container };

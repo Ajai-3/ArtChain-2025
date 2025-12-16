@@ -69,4 +69,13 @@ export class SocketService implements ISocketService {
       }
       if (redisPub) redisPub.publish("auction_updated", JSON.stringify(auction));
   }
+
+  publishAuctionEnded(data: any): void {
+      if (this.io) {
+          this.io.emit("auction_ended", data);
+          console.log(`📢 [SocketService] Emitted 'auction_ended' locally`);
+      }
+      // Assuming we want to sync this across instances too
+      if (redisPub) redisPub.publish("auction_ended", JSON.stringify(data));
+  }
 }

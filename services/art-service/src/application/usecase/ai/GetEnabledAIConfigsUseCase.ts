@@ -9,7 +9,7 @@ export class GetEnabledAIConfigsUseCase implements IGetEnabledAIConfigsUseCase {
     @inject(TYPES.IAIConfigRepository) private readonly _aiConfigRepo: IAIConfigRepository
   ) {}
 
-  async execute() {
+  async execute(): Promise<any[]> {
     const configs = await this._aiConfigRepo.findAllEnabled();
     
     // Sanitize configs (remove api keys)

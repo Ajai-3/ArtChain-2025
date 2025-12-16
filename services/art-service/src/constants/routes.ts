@@ -98,5 +98,10 @@ export const ROUTES = {
     STATS: "/admin/auctions/stats",
     CANCEL: "/admin/auctions/:id/cancel",
   },
+
+  // Admin Config routes
+  ADMIN_CONFIG: {
+    BASE: "/admin/platform-config",
+  },
 } as const;
 

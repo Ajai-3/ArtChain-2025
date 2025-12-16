@@ -7,4 +7,12 @@ export interface IWalletService {
   ): Promise<boolean>;
   lockFunds(userId: string, amount: number, auctionId: string): Promise<boolean>;
   unlockFunds(userId: string, amount: number, auctionId: string): Promise<boolean>;
+  settleAuction(
+    winnerId: string,
+    sellerId: string,
+    adminId: string,
+    totalAmount: number,
+    commissionAmount: number,
+    auctionId: string
+  ): Promise<boolean>;
 }
