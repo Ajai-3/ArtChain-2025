@@ -240,6 +240,41 @@ export class WalletRepositoryImpl
       description: tx.description
     }));
   }
+
+  async getTransactionsWithFilter(walletId: string, timeRange?: "7d" | "1m" | "all") {
+    const now = new Date();
+    let startDate: Date | undefined;
+
+    if (timeRange === "7d") {
+      startDate = new Date();
+      startDate.setDate(now.getDate() - 7);
+    } else if (timeRange === "1m") {
+      startDate = new Date();
+      startDate.setMonth(now.getMonth() - 1);
+    }
+    // If timeRange is "all" or undefined, startDate remains undefined (no filter)
+
+    const whereClause: any = { walletId };
+    if (startDate) {
+      whereClause.createdAt = { gte: startDate };
+    }
+
+    const txs = await prisma.transaction.findMany({
+      where: whereClause,
+      orderBy: { createdAt: "desc" },
+    });
+
+    return txs.map(tx => ({
+      id: tx.id,
+      date: tx.createdAt.toISOString(),
+      type: tx.type === "credited" ? "Earned" : "Spent",
+      amount: tx.amount,
+      category: tx.category,
+      status: tx.status,
+      method: tx.method,
+      description: tx.description
+    }));
+  }
   async lockAmount(userId: string, amount: number): Promise<boolean> {
     const result = await this.model.updateMany({
       where: {
