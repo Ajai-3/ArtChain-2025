@@ -5,4 +5,5 @@ export interface IAIController {
   getMyGenerations: (req: Request, res: Response, next: NextFunction) => Promise<void>;
   checkQuota: (req: Request, res: Response, next: NextFunction) => Promise<void>;
   getEnabledConfigs(req: Request, res: Response, next: NextFunction): Promise<void>;
+  deleteGeneration(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

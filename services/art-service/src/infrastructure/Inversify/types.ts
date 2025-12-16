@@ -59,6 +59,7 @@ export const TYPES = {
   IUpdateAIConfigUseCase: Symbol.for("IUpdateAIConfigUseCase"),
   IGetAIConfigsUseCase: Symbol.for("IGetAIConfigsUseCase"),
   IGetAIAnalyticsUseCase: Symbol.for("IGetAIAnalyticsUseCase"),
+  IDeleteAIGenerationUseCase: Symbol.for("IDeleteAIGenerationUseCase"),
 
 
   

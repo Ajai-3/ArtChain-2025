@@ -15,4 +15,13 @@ export interface IWalletService {
     commissionAmount: number,
     auctionId: string
   ): Promise<boolean>;
+
+  processPayment(
+    payerId: string,
+    payeeId: string,
+    amount: number,
+    description: string,
+    referenceId: string,
+    category: string
+  ): Promise<boolean>;
 }

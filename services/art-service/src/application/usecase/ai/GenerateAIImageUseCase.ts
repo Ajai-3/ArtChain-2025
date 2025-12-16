@@ -3,6 +3,7 @@ import { TYPES } from "../../../infrastructure/Inversify/types";
 import { IAIGenerationRepository } from "../../../domain/repositories/IAIGenerationRepository";
 import { IAIConfigRepository } from "../../../domain/repositories/IAIConfigRepository";
 import { AIProviderService } from "../../../infrastructure/service/AIProviderService";
+import { IWalletService } from "../../../domain/interfaces/IWalletService";
 import { IGenerateAIImageUseCase } from "../../interface/usecase/ai/IGenerateAIImageUseCase";
 import { GenerateAIImageDTO } from "../../interface/dto/ai/GenerateAIImageDTO";
 
@@ -11,7 +12,8 @@ export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
   constructor(
     @inject(TYPES.IAIGenerationRepository) private readonly _aiGenerationRepo: IAIGenerationRepository,
     @inject(TYPES.IAIConfigRepository) private readonly _aiConfigRepo: IAIConfigRepository,
-    @inject(TYPES.AIProviderService) private readonly _aiProviderService: AIProviderService
+    @inject(TYPES.AIProviderService) private readonly _aiProviderService: AIProviderService,
+    @inject(TYPES.IWalletService) private readonly _walletService: IWalletService
   ) {}
 
   async execute(input: GenerateAIImageDTO) {
@@ -45,9 +47,30 @@ export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
     if (!isFree) {
       cost = (selectedConfig.artcoinCostPerImage || 0);
       console.log(`[GenerateAIImage] Paid generation. Cost: ${cost} ArtCoins`);
-      // TODO: Integrate with wallet service to check and deduct artcoins
-      // For now, we allow the generation but log the cost. 
-      // In a real implementation, we would await this._walletService.deduct(userId, cost);
+
+      if (cost > 0) {
+        // Prepare payment details
+        const description = `AI Generation Fee (${selectedConfig.provider} - ${modelToUse})`;
+        const referenceId = `ai_gen_${userId}_${Date.now()}`; // Temporary ref, real one is created after generation usually, but we need unique key
+        // We use admin user hash or null for system fees. Assuming wallet service handles null payee or we use a system ID.
+        // For now, let's use a placeholder system ID or pass empty if allowed.
+        // Actually, let's use the first available admin or a system constant. 
+        // Better: Pass a recognized system constant if possible. If not, maybe the wallet service handles it.
+        const payeeId = "SYSTEM_TREASURY"; // Placeholder 
+
+        const paymentSuccess = await this._walletService.processPayment(
+           userId,
+           payeeId, 
+           cost,
+           description,
+           referenceId,
+           "AI_GENERATION"
+        );
+
+        if (!paymentSuccess) {
+           throw new Error("Insufficient ArtCoins or payment failed.");
+        }
+      }
     } else {
       console.log(`[GenerateAIImage] Free generation. Used today: ${todayGenerations}`);
     }

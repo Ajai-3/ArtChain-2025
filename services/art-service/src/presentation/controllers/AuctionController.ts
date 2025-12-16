@@ -56,8 +56,8 @@ export class AuctionController implements IAuctionController {
         title: validatedBody.title,
         description: validatedBody.description,
         startPrice: validatedBody.startPrice,
-        startTime: validatedBody.startTime,
-        endTime: validatedBody.endTime,
+        startTime: new Date(validatedBody.startTime),
+        endTime: new Date(validatedBody.endTime),
         imageKey: validatedBody.imageKey
       };
 

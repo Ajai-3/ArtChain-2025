@@ -112,6 +112,7 @@ import { ICheckAIQuotaUseCase } from "../../application/interface/usecase/ai/ICh
 import { IUpdateAIConfigUseCase } from "../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase";
 import { IGetAIConfigsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase";
 import { IGetAIAnalyticsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase";
+import { IDeleteAIGenerationUseCase } from "../../application/interface/usecase/ai/IDeleteAIGenerationUseCase"; // Added
 
 import { GenerateAIImageUseCase } from "../../application/usecase/ai/GenerateAIImageUseCase";
 import { GetMyAIGenerationsUseCase } from "../../application/usecase/ai/GetMyAIGenerationsUseCase";
@@ -121,6 +122,7 @@ import { GetAIConfigsUseCase } from "../../application/usecase/ai/admin/GetAICon
 import { GetAIAnalyticsUseCase } from "../../application/usecase/ai/admin/GetAIAnalyticsUseCase";
 import { GetEnabledAIConfigsUseCase } from "../../application/usecase/ai/GetEnabledAIConfigsUseCase";
 import { IGetEnabledAIConfigsUseCase } from "../../application/interface/usecase/ai/IGetEnabledAIConfigsUseCase";
+import { DeleteAIGenerationUseCase } from "../../application/usecase/ai/DeleteAIGenerationUseCase"; // Added
 
 // Controllers
 import { IAIController } from "../../presentation/interface/IAIController";
@@ -197,6 +199,7 @@ container.bind<IGetEnabledAIConfigsUseCase>(TYPES.IGetEnabledAIConfigsUseCase).t
 container.bind<IUpdateAIConfigUseCase>(TYPES.IUpdateAIConfigUseCase).to(UpdateAIConfigUseCase);
 container.bind<IGetAIConfigsUseCase>(TYPES.IGetAIConfigsUseCase).to(GetAIConfigsUseCase);
 container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAnalyticsUseCase);
+container.bind<IDeleteAIGenerationUseCase>(TYPES.IDeleteAIGenerationUseCase).to(DeleteAIGenerationUseCase);
 container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
 container.bind<IWalletService>(TYPES.IWalletService).to(WalletService);
 

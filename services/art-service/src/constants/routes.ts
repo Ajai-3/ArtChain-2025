@@ -65,6 +65,7 @@ export const ROUTES = {
     CONFIG: "/ai/config",
     GENERATE: "/ai/generate",
     GENERATIONS: "/ai/generations",
+    DELETE_GENERATION: "/ai/generations/:id",
   },
 
   // Admin AI routes
