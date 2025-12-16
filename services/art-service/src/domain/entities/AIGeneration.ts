@@ -17,6 +17,7 @@ export class AIGeneration {
     public readonly seed?: number,
     public readonly generationTime?: number,
     public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly updatedAt?: Date,
+    public readonly isDeleted: boolean = false
   ) {}
 }

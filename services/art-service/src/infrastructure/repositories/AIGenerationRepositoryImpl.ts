@@ -18,7 +18,7 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
 
   async getAll(page: number = 1, limit: number = 20): Promise<AIGeneration[]> {
     const skip = (page - 1) * limit;
-    const generations = await AIGenerationModel.find()
+    const generations = await AIGenerationModel.find({ isDeleted: { $ne: true } })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -36,7 +36,7 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await AIGenerationModel.findByIdAndDelete(id);
+    await AIGenerationModel.findByIdAndUpdate(id, { isDeleted: true });
   }
 
   async findById(id: string): Promise<AIGeneration | null> {
@@ -45,7 +45,7 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
 
   async findByUserId(userId: string, page: number = 1, limit: number = 20): Promise<AIGeneration[]> {
     const skip = (page - 1) * limit;
-    const generations = await AIGenerationModel.find({ userId })
+    const generations = await AIGenerationModel.find({ userId, isDeleted: { $ne: true } })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -80,7 +80,8 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
       doc.seed,
       doc.generationTime,
       doc.createdAt,
-      doc.updatedAt
+      doc.updatedAt,
+      doc.isDeleted
     );
   }
 }
