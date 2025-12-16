@@ -72,6 +72,8 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.AUCTION_BY_ID, methods: ["GET"] },
     { path: ROUTES.ART.BIDS, methods: ["POST"] },
     { path: ROUTES.ART.BIDS, methods: ["POST"] },
+
+    { path: ROUTES.AI.DELETE_GENERATION, methods: ["DELETE"] },
   ],
   
   user_optional: [

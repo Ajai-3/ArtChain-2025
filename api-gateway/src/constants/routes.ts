@@ -74,6 +74,7 @@ export const ROUTES = {
     CONFIG: "/api/v1/art/ai/config",
     ANALYTICS: "/api/v1/art/ai/analytics",
     TEST_PROVIDER: "/api/v1/art/ai/test-provider",
+    DELETE_GENERATION: "/api/v1/art/ai/generations/:id",
   },
   ADMIN: {
     DASHBOARD: "/api/v1/admin/dashboard",
