@@ -6,6 +6,9 @@ import { IGetAllWalletsUseCase } from '../../application/interface/usecases/admi
 import { ISearchWalletsUseCase } from '../../application/interface/usecases/admin/ISearchWalletsUseCase';
 import { IUpdateWalletStatusUseCase } from '../../application/interface/usecases/admin/IUpdateWalletStatusUseCase';
 import { IGetUserTransactionsUseCase } from '../../application/interface/usecases/admin/IGetUserTransactionsUseCase';
+import { HttpStatus } from "art-chain-shared";
+import { GetRevenueStatsDTO } from "../../application/interface/dto/wallet/GetRevenueStatsDTO";
+import { IGetRevenueStatsUseCase } from '../../application/interface/usecase/wallet/IGetRevenueStatsUseCase';
 
 @injectable()
 export class AdminWalletController implements IAdminWalletController {
@@ -17,7 +20,9 @@ export class AdminWalletController implements IAdminWalletController {
     @inject(TYPES.IUpdateWalletStatusUseCase)
     private readonly _updateWalletStatusUseCase: IUpdateWalletStatusUseCase,
     @inject(TYPES.IGetUserTransactionsUseCase)
-    private readonly _getUserTransactionsUseCase: IGetUserTransactionsUseCase
+    private readonly _getUserTransactionsUseCase: IGetUserTransactionsUseCase,
+    @inject(TYPES.IGetRevenueStatsUseCase)
+    private readonly _getRevenueStatsUseCase: IGetRevenueStatsUseCase
   ) {}
 
   getAllWallets = async (req: Request, res: Response): Promise<void> => {
@@ -138,6 +143,39 @@ export class AdminWalletController implements IAdminWalletController {
       res.status(500).json({
         success: false,
         message: error.message || 'Failed to fetch transactions',
+      });
+    }
+  };
+
+  getRevenueStats = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const adminId = req.headers["x-admin-id"] as string;
+      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+
+      if (!adminId) {
+        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Admin ID is required in headers" });
+        return;
+      }
+
+      const dto: GetRevenueStatsDTO = {
+        adminId,
+        startDate,
+        endDate
+      };
+
+      const stats = await this._getRevenueStatsUseCase.execute(dto);
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: stats,
+        body: stats // Add body for frontend consistency
+      });
+    } catch (error: any) {
+      console.error('Error in getRevenueStats:', error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: error.message || 'Failed to fetch revenue stats',
       });
     }
   };

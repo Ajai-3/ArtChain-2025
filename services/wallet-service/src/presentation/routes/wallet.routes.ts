@@ -26,11 +26,14 @@ router.post(ROUTES.WALLET.CREATE, walletController.createWallet);
 router.patch(ROUTES.WALLET.UPDATE, walletController.updateWallet);
 router.post(ROUTES.WALLET.LOCK, walletController.lockAmount);
 router.post(ROUTES.WALLET.UNLOCK, walletController.unlockAmount);
+router.post(ROUTES.WALLET.SETTLE_AUCTION, walletController.settleAuction);
 
 // Trascation Controller Routes
 router.get(ROUTES.TRANSACTION.GET_TRANSACTIONS, transactionController.getTransactions);
 router.post(ROUTES.TRANSACTION.CREATE_TRANSACTION, transactionController.createTransaction);
 router.post(ROUTES.TRANSACTION.PURCHASE, transactionController.processPurchase);
+router.post(ROUTES.TRANSACTION.SPLIT_PURCHASE, transactionController.processSplitPurchase);
+router.post(ROUTES.TRANSACTION.PAYMENT, transactionController.processPayment);
 
 // Stripe Controller Routes
 router.post(

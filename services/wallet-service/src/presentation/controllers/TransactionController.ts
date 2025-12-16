@@ -14,6 +14,10 @@ import {
 } from "./../../domain/entities/Transaction";
 import { IGetTransactionsUseCase } from "../../application/interface/usecase/transaction/IGetTransactionsUseCase";
 import { IProcessPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessPurchaseUseCase";
+import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase";
+import { ProcessSplitPurchaseDTO } from "../../application/interface/dto/transaction/ProcessSplitPurchaseDTO";
+import { IProcessPaymentUseCase } from "../../application/interface/usecase/transaction/IProcessPaymentUseCase";
+import { ProcessPaymentDTO } from "../../application/interface/dto/transaction/ProcessPaymentDTO";
 
 @injectable()
 export class TransactionController implements ITransactionController {
@@ -21,7 +25,11 @@ export class TransactionController implements ITransactionController {
     @inject(TYPES.IGetTransactionsUseCase)
     private readonly _getTransactionsUseCase: IGetTransactionsUseCase,
     @inject(TYPES.IProcessPurchaseUseCase)
-    private readonly _processPurchaseUseCase: IProcessPurchaseUseCase
+    private readonly _processPurchaseUseCase: IProcessPurchaseUseCase,
+    @inject(TYPES.IProcessSplitPurchaseUseCase)
+    private readonly _processSplitPurchaseUseCase: IProcessSplitPurchaseUseCase,
+    @inject(TYPES.IProcessPaymentUseCase)
+    private readonly _processPaymentUseCase: IProcessPaymentUseCase
   ) {}
 
   //# ================================================================================================================
@@ -159,6 +167,106 @@ export class TransactionController implements ITransactionController {
     } catch (error) {
       logger.error(
         `[TransactionController] Error processing purchase: ${error}`
+      );
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# PROCESS SPLIT PURCHASE
+  //# ================================================================================================================
+  //# POST /api/v1/transaction/split-purchase
+  //# Request body: { buyerId, sellerId, adminId, totalAmount, commissionAmount, artId }
+  //# This controller handles art purchase transactions with commission split
+  //# ================================================================================================================
+  processSplitPurchase = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { buyerId, sellerId, adminId, totalAmount, commissionAmount, artId } = req.body;
+
+      logger.info(
+        `[TransactionController] Processing split purchase for art: ${artId} | buyer: ${buyerId} | seller: ${sellerId}`
+      );
+      
+      const dto: ProcessSplitPurchaseDTO = {
+        buyerId, 
+        sellerId, 
+        adminId, 
+        totalAmount, 
+        commissionAmount, 
+        artId
+      };
+
+      const success = await this._processSplitPurchaseUseCase.execute(dto);
+
+      if (success) {
+        logger.info(
+          `[TransactionController] Split purchase processed successfully for art: ${artId}`
+        );
+        return res
+          .status(HttpStatus.OK)
+          .json({ message: "Purchase successful" });
+      } else {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: "Purchase failed" });
+      }
+    } catch (error) {
+      logger.error(
+        `[TransactionController] Error processing split purchase: ${error}`
+      );
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# PROCESS PAYMENT
+  //# ================================================================================================================
+  //# POST /api/v1/transaction/payment
+  //# Request body: { payerId, payeeId, amount, description, referenceId, category }
+  //# This controller handles generic payments (e.g. AI Generation costs)
+  //# ================================================================================================================
+  processPayment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { payerId, payeeId, amount, description, referenceId, category } = req.body;
+
+      logger.info(
+        `[TransactionController] Processing payment: From ${payerId} to ${payeeId} | Amount: ${amount}`
+      );
+      
+      const dto: ProcessPaymentDTO = {
+        payerId, 
+        payeeId, 
+        amount, 
+        description, 
+        referenceId, 
+        category
+      };
+
+      const success = await this._processPaymentUseCase.execute(dto);
+
+      if (success) {
+        logger.info(
+          `[TransactionController] Payment processed successfully for reference: ${referenceId}`
+        );
+        return res
+          .status(HttpStatus.OK)
+          .json({ message: "Payment successful" });
+      } else {
+        return res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: "Payment failed" });
+      }
+    } catch (error) {
+      logger.error(
+        `[TransactionController] Error processing payment: ${error}`
       );
       next(error);
     }

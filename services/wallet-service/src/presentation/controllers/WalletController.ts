@@ -10,6 +10,8 @@ import { ILockFundsUseCase } from "../../application/interface/usecase/wallet/IL
 import { IUnlockFundsUseCase } from "../../application/interface/usecase/wallet/IUnlockFundsUseCase";
 import { LockFundsDTO } from "../../application/interface/dto/wallet/LockFundsDTO";
 import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFundsDTO";
+import { SettleAuctionDTO } from "../../application/interface/dto/wallet/SettleAuctionDTO";
+import { ISettleAuctionUseCase } from "../../application/interface/usecase/wallet/ISettleAuctionUseCase";
 
 @injectable()
 export class WalletController implements IWalletController {
@@ -19,7 +21,9 @@ export class WalletController implements IWalletController {
     @inject(TYPES.ILockFundsUseCase)
     private readonly _lockFundsUseCase: ILockFundsUseCase,
     @inject(TYPES.IUnlockFundsUseCase)
-    private readonly _unlockFundsUseCase: IUnlockFundsUseCase
+    private readonly _unlockFundsUseCase: IUnlockFundsUseCase,
+    @inject(TYPES.ISettleAuctionUseCase)
+    private readonly _settleAuctionUseCase: ISettleAuctionUseCase
   ) {}
 
   //# ================================================================================================================
@@ -184,6 +188,45 @@ export class WalletController implements IWalletController {
     } catch (error) {
       logger.error(`[WalletController] Error unlocking funds: ${error}`);
       next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# SETTLE AUCTION FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/wallet/settle-auction
+  //# Request body: winnerId, sellerId, adminId, totalAmount, commissionAmount, auctionId
+  //# This controller settles funds after an auction ends (Split payment).
+  //# ================================================================================================================
+  settleAuction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { winnerId, sellerId, adminId, totalAmount, commissionAmount, auctionId } = req.body;
+      
+      logger.info(`[WalletController] Settling auction ${auctionId}`);
+
+      const dto: SettleAuctionDTO = {
+        winnerId,
+        sellerId,
+        adminId, // Recipient for commission
+        totalAmount,
+        commissionAmount,
+        auctionId
+      };
+
+      const result = await this._settleAuctionUseCase.execute(dto);
+
+      if (!result) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to settle auction funds" });
+      }
+
+      return res.status(HttpStatus.OK).json({ message: "Auction funds settled successfully" });
+    } catch (error) {
+       logger.error(`[WalletController] Error settling auction: ${error}`);
+       next(error);
     }
   };
 }

@@ -1,19 +1,29 @@
 import { Request, Response, NextFunction } from "express";
 
 export interface ITransactionController {
-  getTransactions(
+  getTransactions: (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void>;
-  createTransaction(
+  ) => Promise<Response | void>;
+  createTransaction:(
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void>;
-  processPurchase(
+  ) => Promise<Response | void>;
+  processPurchase: (
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<Response | void>;
+  ) => Promise<Response | void>;
+  processSplitPurchase: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => Promise<Response | void>;
+  processPayment: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => Promise<Response | void>;
 }

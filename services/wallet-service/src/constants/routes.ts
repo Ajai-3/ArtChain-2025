@@ -19,6 +19,7 @@ export const ROUTES = {
     UPDATE: "/update",
     LOCK: "/lock",
     UNLOCK: "/unlock",
+    SETTLE_AUCTION: "/settle-auction",
   },
 
   // Transaction routes
@@ -26,6 +27,8 @@ export const ROUTES = {
     GET_TRANSACTIONS: "/get-transactions",
     CREATE_TRANSACTION: "/create-transaction",
     PURCHASE: "/transaction/purchase",
+    SPLIT_PURCHASE: "/transaction/split-purchase",
+    PAYMENT: "/transaction/payment",
   },
 
   // Stripe routes
@@ -54,6 +57,8 @@ export const ROUTES = {
     SEARCH_WALLETS: "/admin/wallets/search",
     UPDATE_STATUS: "/admin/wallets/:walletId/status",
     GET_USER_TRANSACTIONS: "/admin/wallets/:walletId/transactions",
+    REVENUE_STATS: "/admin/revenue-stats",
+    ADMIN_TRANSACTIONS: "/admin/:adminId/transactions",
   },
 } as const;
 

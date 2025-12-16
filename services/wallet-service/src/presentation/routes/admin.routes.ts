@@ -22,4 +22,7 @@ router.patch(ROUTES.ADMIN.UPDATE_STATUS, adminWalletController.updateWalletStatu
 // Get user transactions
 router.get(ROUTES.ADMIN.GET_USER_TRANSACTIONS, adminWalletController.getUserTransactions);
 
+// Get revenue stats
+router.get(ROUTES.ADMIN.REVENUE_STATS, adminWalletController.getRevenueStats);
+
 export default router;
