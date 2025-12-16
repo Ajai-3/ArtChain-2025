@@ -78,5 +78,6 @@ export const ROUTES = {
   ADMIN: {
     DASHBOARD: "/api/v1/admin/dashboard",
     USERS: "/api/v1/admin/users",
+    REVENUE: "/api/v1/admin/revenue-stats",
   },
 };

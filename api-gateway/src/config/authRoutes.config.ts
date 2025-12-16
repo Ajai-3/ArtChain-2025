@@ -97,5 +97,7 @@ export const authRoutesConfig = {
     { path: ROUTES.AI.ANALYTICS, methods: ["GET"] },
     { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
     { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
+
+    { path: ROUTES.ADMIN.REVENUE, methods: ["GET"] },
   ],
 };
