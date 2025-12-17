@@ -55,6 +55,16 @@ export const ROUTES = {
     CREATE_CHECKOUT_SESSION: "/api/v1/wallet/stripe/create-checkout-session",
     GET_TRANSACTIONS: "/api/v1/wallet/get-transactions",
     CREATE_TRANSACTIONS: "/api/v1/wallet/create-transactions",
+    STATS_CHART: "/api/v1/wallet/stats/chart",
+    
+    // Withdrawal routes
+    WITHDRAWAL_CREATE: "/api/v1/wallet/withdrawal/create",
+    WITHDRAWAL_REQUESTS: "/api/v1/wallet/withdrawal/requests",
+    WITHDRAWAL_REQUEST_BY_ID: "/api/v1/wallet/withdrawal/requests/:id",
+    
+    // Admin withdrawal routes
+    ADMIN_WITHDRAWAL_REQUESTS: "/api/v1/wallet/admin/withdrawal/requests",
+    ADMIN_WITHDRAWAL_UPDATE_STATUS: "/api/v1/wallet/admin/withdrawal/requests/:withdrawalId/status",
   },
   CHAT: {
     PRIVATE: "/api/v1/chat/conversation/private",
@@ -80,5 +90,10 @@ export const ROUTES = {
     DASHBOARD: "/api/v1/admin/dashboard",
     USERS: "/api/v1/admin/users",
     REVENUE: "/api/v1/admin/revenue-stats",
+    WALLETS: "/api/v1/wallet/admin/wallets",
+    SEARCH_WALLETS: "/api/v1/wallet/admin/wallets/search",
+    UPDATE_STATUS: "/api/v1/wallet/admin/wallets/:walletId/status",
+    GET_USER_TRANSACTIONS: "/api/v1/wallet/admin/wallets/:walletId/transactions",
+    REVENUE_STATS: "/api/v1/wallet/admin/revenue-stats",
   },
 };

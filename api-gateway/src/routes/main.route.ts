@@ -18,12 +18,7 @@ router.use("/api/v1/auth", authProxy);
 router.use("/api/v1/admin", adminProxy);
 
 // wallet-service
-router.use("/api/v1/wallet", (req, res, next) => {
-  if (req.path.startsWith('/admin')) {
-    return adminAuth(req, res, next);
-  }
-  next();
-}, walletProxy);
+router.use("/api/v1/wallet", walletProxy);
 
 // art-service
 router.use("/api/v1/art", artProxy);
