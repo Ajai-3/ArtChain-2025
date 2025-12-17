@@ -25,6 +25,7 @@ export class PlatformConfigRepositoryImpl implements IPlatformConfigRepository {
     // Only update fields that are present in data
     if (data.auctionCommissionPercentage !== undefined) config.auctionCommissionPercentage = data.auctionCommissionPercentage;
     if (data.artSaleCommissionPercentage !== undefined) config.artSaleCommissionPercentage = data.artSaleCommissionPercentage;
+    if (data.commissionArtPercentage !== undefined) config.commissionArtPercentage = data.commissionArtPercentage;
     if (data.welcomeBonus !== undefined) config.welcomeBonus = data.welcomeBonus;
     if (data.referralBonus !== undefined) config.referralBonus = data.referralBonus;
     if (data.artCoinRate !== undefined) config.artCoinRate = data.artCoinRate;
@@ -37,6 +38,7 @@ export class PlatformConfigRepositoryImpl implements IPlatformConfigRepository {
     return new PlatformConfig(
       doc.auctionCommissionPercentage,
       doc.artSaleCommissionPercentage,
+      doc.commissionArtPercentage,
       doc.welcomeBonus,
       doc.referralBonus,
       doc.artCoinRate,

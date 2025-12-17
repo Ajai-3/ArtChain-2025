@@ -104,5 +104,9 @@ export const ROUTES = {
   ADMIN_CONFIG: {
     BASE: "/admin/platform-config",
   },
+  
+  CONFIG: {
+    BASE: "/platform-config",
+  },
 } as const;
 

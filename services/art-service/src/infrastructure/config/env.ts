@@ -1,7 +1,14 @@
-import { getArtChainSecrets } from 'art-chain-shared';
+// import { getArtChainSecrets } from 'art-chain-shared';
 import 'dotenv-flow/config';
 
-const secrets = await getArtChainSecrets("ArtChainCommonSecret");
+// COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
+// const secrets = await getArtChainSecrets("ArtChainCommonSecret");
+
+// Using hardcoded values from .env file instead
+const secrets = {
+    aws_cdn_domain: process.env.AWS_CDN_DOMAIN || "your-cdn-domain-here.cloudfront.net",
+    jwtAccessSecret: process.env.JWT_ACCESS_SECRET || "your-access-secret-key-here",
+};
 
 export const config = {
     port: process.env.PORT,
