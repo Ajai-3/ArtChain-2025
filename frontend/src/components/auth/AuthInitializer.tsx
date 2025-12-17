@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import apiClient from "../../api/axios";
 import { setUser } from "../../redux/slices/userSlice";
+import { setAdmin } from "../../redux/slices/adminSlice";
 import { useGetPlatformConfig } from "../../features/user/hooks/platform/useGetPlatformConfig";
 
 interface AuthInitializerProps {
@@ -23,13 +24,23 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
 
         const { accessToken, user } = initialAuthResponse.data;
 
-        console.log(initialAuthResponse, initialAuthResponse.data)
+        console.log("🔐 Auth Initialize:", { accessToken: !!accessToken, user });
 
         if (accessToken && user) {
-          dispatch(setUser({ 
-             accessToken, 
-             user 
-          }));
+          // Check if user is an admin
+          if (user.role === "admin") {
+            console.log("✅ Admin user detected, dispatching to adminSlice");
+            dispatch(setAdmin({ 
+              accessToken, 
+              admin: user 
+            }));
+          } else {
+            console.log("✅ Regular user detected, dispatching to userSlice");
+            dispatch(setUser({ 
+              accessToken, 
+              user 
+            }));
+          }
         }
       } catch (error) {
         console.log("No active session found or session expired.");
