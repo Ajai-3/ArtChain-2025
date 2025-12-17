@@ -1,4 +1,4 @@
-import { SafeUser } from '../../../../../domain/repositories/IBaseRepository';
+import { SafeUser } from '../../../../../domain/entities/User';
 
 export interface AuthResultDto {
   user: SafeUser;

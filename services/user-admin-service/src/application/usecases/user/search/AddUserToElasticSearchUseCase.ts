@@ -1,6 +1,6 @@
 import { logger } from '../../../../utils/logger';
 import { IndexedUser } from '../../../../types/IndexedUser';
-import { SafeUser } from '../../../../domain/repositories/IBaseRepository';
+import { SafeUser } from '../../../../domain/entities/User';
 import { IAddUserToElasticSearchUseCase } from '../../../interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 
 export class AddUserToElasticSearchUseCase implements IAddUserToElasticSearchUseCase {

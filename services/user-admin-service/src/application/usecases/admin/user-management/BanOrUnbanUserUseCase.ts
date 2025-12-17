@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { NotFoundError } from 'art-chain-shared';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { TYPES } from './../../../../infrastructure/inversify/types';
-import { SafeUser } from '../../../../domain/repositories/IBaseRepository';
+import { SafeUser } from '../../../../domain/entities/User';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { IBanOrUnbanUserUseCase } from '../../../interface/usecases/admin/user-management/IBanOrUnbanUserUseCase';
 

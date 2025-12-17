@@ -1,4 +1,4 @@
-import { GetPlatformRevenueStatsDTO } from "../dto/admin/GetPlatformRevenueStatsDTO";
+import { GetPlatformRevenueStatsDTO } from "../../../interface/dto/admin/GetPlatformRevenueStatsDTO";
 
 export interface PlatformRevenueStats {
   totalRevenue: number;

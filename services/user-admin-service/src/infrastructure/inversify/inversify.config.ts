@@ -38,6 +38,7 @@ import { IResetPasswordUserUseCase } from '../../application/interface/usecases/
 import { IStartRegisterUserUseCase } from '../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { IForgotPasswordUserUseCase } from '../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
 import { IAddUserToElasticSearchUseCase } from '../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
+import { IInitializeAuthUseCase } from '../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 
 import { LoginUserUseCase } from '../../application/usecases/user/auth/LoginUserUseCase';
 import { RegisterUserUseCase } from '../../application/usecases/user/auth/RegisterUserUseCase';
@@ -47,6 +48,7 @@ import { ResetPasswordUserUseCase } from '../../application/usecases/user/auth/R
 import { StartRegisterUserUseCase } from '../../application/usecases/user/auth/StartRegisterUserUseCase';
 import { ForgotPasswordUserUseCase } from '../../application/usecases/user/auth/ForgotPasswordUserUseCase';
 import { AddUserToElasticSearchUseCase } from '../../application/usecases/user/search/AddUserToElasticSearchUseCase';
+import { InitializeAuthUseCase } from '../../application/usecases/user/auth/InitializeAuthUseCase';
 
 // Use cases - User Profile & Interaction
 import { IGetUserProfileUseCase } from '../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
@@ -191,6 +193,9 @@ container
 container
   .bind<IAddUserToElasticSearchUseCase>(TYPES.IAddUserToElasticSearchUseCase)
   .to(AddUserToElasticSearchUseCase);
+container
+  .bind<IInitializeAuthUseCase>(TYPES.IInitializeAuthUseCase)
+  .to(InitializeAuthUseCase);
 
 // Use cases - User Profile & Interaction
 container

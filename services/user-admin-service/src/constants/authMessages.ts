@@ -54,5 +54,8 @@ export const AUTH_MESSAGES = {
 
 
   INVALID_CHANGE_EMAIL_TOKEN: 'Invalid change email token',
-  EMAIL_UPDATE_FAILED: 'Email updation failed'
+  EMAIL_UPDATE_FAILED: 'Email updation failed',
+
+  USER_BANNED: 'Your account has been banned.',
+  USER_SUSPENDED: 'Your account has been suspended.',
 } as const;

@@ -29,6 +29,7 @@ export const TYPES = {
   IStartRegisterUserUseCase: Symbol.for('IStartRegisterUserUseCase'),
   IForgotPasswordUserUseCase: Symbol.for('IForgotPasswordUserUseCase'),
   IAddUserToElasticSearchUseCase: Symbol.for('IAddUserToElasticSearchUseCase'),
+  IInitializeAuthUseCase: Symbol.for('IInitializeAuthUseCase'),
 
   // Use cases - User Profile & Interaction
   ISupportUserUseCase: Symbol.for('ISupportUserUseCase'),

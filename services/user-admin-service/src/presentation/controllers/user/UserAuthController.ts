@@ -32,6 +32,7 @@ import { IResetPasswordUserUseCase } from '../../../application/interface/usecas
 import { IStartRegisterUserUseCase } from '../../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { IForgotPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
 import { IAddUserToElasticSearchUseCase } from '../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
+import { IInitializeAuthUseCase } from '../../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 
 
 @injectable()
@@ -52,8 +53,46 @@ export class UserAuthController implements IUserAuthController {
     @inject(TYPES.IRefreshTokenUseCase)
     private readonly _refreshTokenUserUseCase: IRefreshTokenUseCase,
     @inject(TYPES.IAddUserToElasticSearchUseCase)
-    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
+    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase,
+    @inject(TYPES.IInitializeAuthUseCase)
+    private readonly _initializeAuthUseCase: IInitializeAuthUseCase
   ) {}
+
+// ... (existing methods until refreshToken)
+
+  //#=================================================================================================================
+  //# INITIALIZE USER AUTH
+  //#=================================================================================================================
+  //# GET /api/v1/auth/initialize
+  //# Request headers: { authorization: Bearer refreshToken }
+  //# This controller helps to initialize user authentication by verifying the refresh token and returning new tokens and user data.
+  //#=================================================================================================================
+  initializeAuth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const refreshToken =
+        req.cookies.adminRefreshToken || req.cookies.userRefreshToken;
+
+      const { accessToken, user } = await this._initializeAuthUseCase.execute(
+        refreshToken
+      );
+
+      logger.info(
+        `Auth initialized for user: ${user.email}`
+      );
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: 'Auth initialized successfully', accessToken, user });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+
 
   //# ================================================================================================================
   //# START REGISTER USER

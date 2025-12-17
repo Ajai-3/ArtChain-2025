@@ -20,6 +20,7 @@ router.post(ROUTES.AUTH.FORGOT_PASSWORD, userAuthController.forgotPassword);
 router.patch(ROUTES.AUTH.RESET_PASSWORD, userAuthController.resetPassword);
 
 router.get(ROUTES.AUTH.REFRESH_TOKEN, userAuthController.refreshToken);
+router.get(ROUTES.AUTH.INITIALIZE, userAuthController.initializeAuth);
 router.post(ROUTES.AUTH.LOGOUT, userAuthController.logoutUser);
 
 export default router;
