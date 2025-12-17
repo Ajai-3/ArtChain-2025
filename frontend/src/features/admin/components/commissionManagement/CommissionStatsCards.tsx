@@ -1,10 +1,11 @@
 import React from 'react';
 import StatsCard from '../common/StatsCard';
-import { Gavel, ShoppingCart, Gift, Coins, Users } from 'lucide-react';
+import { Gavel, ShoppingCart, Gift, Coins, Users, Brush } from 'lucide-react';
 
 interface PlatformConfig {
     auctionCommissionPercentage: number;
     artSaleCommissionPercentage: number;
+    commissionArtPercentage: number;
     welcomeBonus: number;
     referralBonus: number;
     artCoinRate: number;
@@ -31,6 +32,13 @@ const CommissionStatsCards: React.FC<CommissionStatsCardsProps> = ({ config }) =
             iconBgColor: 'bg-blue-500/10',
         },
         {
+            title: 'Commission Art',
+            value: `${config?.commissionArtPercentage || 0}%`,
+            icon: Brush,
+            iconColor: 'text-cyan-500',
+            iconBgColor: 'bg-cyan-500/10',
+        },
+        {
             title: 'Welcome Bonus',
             value: `${config?.welcomeBonus || 0} AC`,
             icon: Gift,
@@ -46,7 +54,7 @@ const CommissionStatsCards: React.FC<CommissionStatsCardsProps> = ({ config }) =
         },
         {
             title: 'Art Coin Rate',
-            value: `₹${config?.artCoinRate || 10}/AC`,
+            value: `₹${config?.artCoinRate || 10}`,
             icon: Coins,
             iconColor: 'text-yellow-500',
             iconBgColor: 'bg-yellow-500/10',
@@ -54,7 +62,7 @@ const CommissionStatsCards: React.FC<CommissionStatsCardsProps> = ({ config }) =
     ];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
             {stats.map((stat) => (
                 <StatsCard key={stat.title} {...stat} />
             ))}

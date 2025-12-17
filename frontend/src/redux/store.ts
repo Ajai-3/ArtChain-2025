@@ -4,6 +4,7 @@ import chatSlice from "./slices/chatSlice";
 import adminSlice from "./slices/adminSlice";
 import notificationSlice from "./slices/notificationSlice";
 import biddingSlice from "./slices/biddingSlice";
+import platformSlice from "./slices/platformSlice";
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   admin: adminSlice,
   notification: notificationSlice,
   bidding: biddingSlice,
+  platform: platformSlice,
 });
 
 export const store = configureStore({

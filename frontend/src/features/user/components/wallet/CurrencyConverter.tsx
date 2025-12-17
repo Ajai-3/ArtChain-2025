@@ -7,9 +7,12 @@ import {
 } from "../../../../components/ui/card";
 import { Input } from "../../../../components/ui/input";
 
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+
 const CurrencyConverter: React.FC = () => {
   const [inr, setInr] = useState<string>("");
-  const rate = 10;
+  const rate = useSelector((state: RootState) => state.platform.artCoinRate);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

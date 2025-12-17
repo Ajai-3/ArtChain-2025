@@ -11,6 +11,7 @@ import { type PlatformConfigFormValues } from '../../schema/platformConfigSchema
 interface PlatformConfig {
     auctionCommissionPercentage: number;
     artSaleCommissionPercentage: number;
+    commissionArtPercentage: number;
     welcomeBonus: number;
     referralBonus: number;
     artCoinRate: number;
@@ -27,7 +28,7 @@ interface CommissionFormProps {
     errors: ReturnType<typeof useForm<PlatformConfigFormValues>>['formState']['errors'];
 }
 
-type SettingType = 'auctionCommission' | 'artSaleCommission' | 'welcomeBonus' | 'referralBonus' | 'artCoinRate';
+type SettingType = 'auctionCommission' | 'artSaleCommission' | 'commissionArtPercentage' | 'welcomeBonus' | 'referralBonus' | 'artCoinRate';
 
 const CommissionForm: React.FC<CommissionFormProps> = ({
     config,
@@ -47,6 +48,7 @@ const CommissionForm: React.FC<CommissionFormProps> = ({
     const settings = [
         { id: 'auctionCommission' as SettingType, label: 'Auction Commission', unit: '%' },
         { id: 'artSaleCommission' as SettingType, label: 'Art Sale Commission', unit: '%' },
+        { id: 'commissionArtPercentage' as SettingType, label: 'Commission Art', unit: '%' },
         { id: 'welcomeBonus' as SettingType, label: 'Welcome Bonus', unit: 'AC' },
         { id: 'referralBonus' as SettingType, label: 'Referral Bonus', unit: 'AC' },
         { id: 'artCoinRate' as SettingType, label: 'Art Coin Rate', unit: '₹/AC' },
@@ -56,6 +58,7 @@ const CommissionForm: React.FC<CommissionFormProps> = ({
         const map: Record<SettingType, keyof PlatformConfigFormValues> = {
             auctionCommission: 'auctionCommissionPercentage',
             artSaleCommission: 'artSaleCommissionPercentage',
+            commissionArtPercentage: 'commissionArtPercentage',
             welcomeBonus: 'welcomeBonus',
             referralBonus: 'referralBonus',
             artCoinRate: 'artCoinRate',

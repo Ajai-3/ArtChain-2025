@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import apiClient from "../../api/axios";
 import { setUser } from "../../redux/slices/userSlice";
+import { useGetPlatformConfig } from "../../features/user/hooks/platform/useGetPlatformConfig";
 
 interface AuthInitializerProps {
   children: React.ReactNode;
@@ -10,6 +11,8 @@ interface AuthInitializerProps {
 export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
+  
+  useGetPlatformConfig();
 
   useEffect(() => {
     const initializeAuth = async () => {

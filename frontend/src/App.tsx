@@ -7,7 +7,11 @@ import CustomToaster from "./components/CustomToaster";
 
 import { Routes, Route } from "react-router-dom";
 
+import { useGetPlatformConfig } from "./features/user/hooks/platform/useGetPlatformConfig";
+
 const App: React.FC = () => {
+  useGetPlatformConfig();
+  
   return (
     <>
       <CustomToaster /> 

@@ -43,6 +43,11 @@ const walletSlice = createSlice({
     setWalletData: (state, action: PayloadAction<WalletState>) => {
       return { ...state, ...action.payload };
     },
+    updateBalanceAndLocked: (state, action: PayloadAction<{ balance: number; lockedAmount: number }>) => {
+      state.balance = action.payload.balance;
+      state.lockedAmount = action.payload.lockedAmount;
+      state.inrValue = action.payload.balance * 10; // Update INR value as well
+    },
     addTransaction: (state, action: PayloadAction<Transaction>) => {
       state.transactions.push(action.payload);
     },
@@ -52,5 +57,5 @@ const walletSlice = createSlice({
    },
 });
 
-export const { setWalletData, addTransaction } = walletSlice.actions;
+export const { setWalletData, updateBalanceAndLocked, addTransaction } = walletSlice.actions;
 export default walletSlice.reducer;

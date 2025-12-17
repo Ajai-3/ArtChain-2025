@@ -25,6 +25,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
     'bg-red-500/10': 'border-red-500/30',
     'bg-indigo-500/10': 'border-indigo-500/30',
     'bg-orange-500/10': 'border-orange-500/30',
+    'bg-cyan-500/10': 'border-cyan-500/30',
   };
   
   const borderColor = colorMap[iconBgColor] || 'border-border/50';

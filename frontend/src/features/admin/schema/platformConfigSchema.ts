@@ -11,6 +11,11 @@ export const platformConfigSchema = z.object({
         .min(0, "Must be at least 0")
         .max(50, "Must be at most 50%")
         .optional(),
+    commissionArtPercentage: z.coerce
+        .number({ invalid_type_error: "Must be a number" })
+        .min(0, "Must be at least 0")
+        .max(50, "Must be at most 50%")
+        .optional(),
     welcomeBonus: z.coerce
         .number({ invalid_type_error: "Must be a number" })
         .min(0, "Must be at least 0")

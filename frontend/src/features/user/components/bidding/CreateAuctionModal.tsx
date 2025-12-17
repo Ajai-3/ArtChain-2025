@@ -14,7 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/
 import { format } from "date-fns";
 import { CalendarIcon, Loader2, UploadCloud, X, Check, Save } from "lucide-react";
 import { Textarea } from "../../../../components/ui/textarea";
-import { createAuctionSchema, type CreateAuctionFormValues } from "../../validations/auction.schema";
+import { createAuctionSchema, type CreateAuctionFormValues } from "../../schemas/auction.schema";
 import { toast } from "react-hot-toast";
 
 interface CreateAuctionModalProps {

@@ -11,6 +11,7 @@ import {
   Tags,
   Sparkles,
   Gavel,
+  ArrowRightLeft,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import Logo from "../../../../components/logo/Logo";
@@ -25,6 +26,7 @@ const adminLinks = [
   { to: "/admin/ai-settings", icon: Sparkles, label: "AI Settings" },
   { to: "/admin/content-moderation", icon: Shield, label: "Content Moderation" },
   { to: "/admin/wallet-management", icon: Wallet, label: "Wallet & Financial" },
+  { to: "/admin/withdrawal-management", icon: ArrowRightLeft, label: "Withdrawal Requests" },
   { to: "/admin/art-management", icon: FileEdit, label: "Art Management" },
   { to: "/admin/auction-management", icon: Gavel, label: "Auction Management" },
   { to: "/admin/commission-management", icon: Settings, label: "Commission Management" },

@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from "../../../../components/ui/card";
 import WalletChart from "./WalletChart";
+import { formatNumber } from "../../../../libs/formatNumber";
 
 interface WalletSummaryStatsProps {
   summary: { 
@@ -75,10 +76,10 @@ const WalletSummaryStats: React.FC<WalletSummaryStatsProps> = ({
               onClick={() => setActiveTab("earned")}
             >
               <span className="text-green-400 font-semibold text-lg">
-                {summary.businessEarned} AC
+                {formatNumber(summary.businessEarned)} AC
               </span>
               <span className="text-zinc-400 text-xs">
-                ₹{summary.businessEarned * 10}
+                ₹{formatNumber(summary.businessEarned * 10)}
               </span>
               <span className="text-xs font-semibold mt-1 text-zinc-500">
                 Earned
@@ -94,10 +95,10 @@ const WalletSummaryStats: React.FC<WalletSummaryStatsProps> = ({
               onClick={() => setActiveTab("spent")}
             >
               <span className="text-red-500 font-semibold text-lg">
-                {summary.businessSpent} AC
+                {formatNumber(summary.businessSpent)} AC
               </span>
               <span className="text-zinc-400 text-xs">
-                ₹{summary.businessSpent * 10}
+                ₹{formatNumber(summary.businessSpent * 10)}
               </span>
               <span className="text-xs font-semibold mt-1 text-zinc-500">
                 Spent
@@ -114,10 +115,10 @@ const WalletSummaryStats: React.FC<WalletSummaryStatsProps> = ({
             onClick={() => setActiveTab("overview")}
           >
             <span className="text-blue-400 font-semibold text-lg">
-              {summary.netGain} AC
+              {formatNumber(summary.netGain)} AC
             </span>
             <span className="text-zinc-400 text-xs">
-              ₹{summary.netGain * 10}
+              ₹{formatNumber(summary.netGain * 10)}
             </span>
             <span className="text-xs font-semibold mt-1 text-zinc-500">
               Net Gain
