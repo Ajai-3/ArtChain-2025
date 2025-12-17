@@ -1,8 +1,14 @@
 import dotenv from "dotenv";
-import { getArtChainSecrets } from "art-chain-shared";
+// import { getArtChainSecrets } from "art-chain-shared";
 dotenv.config();
 
-const secrets = await getArtChainSecrets();
+// COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
+// const secrets = await getArtChainSecrets();
+
+// Using hardcoded values from .env file instead
+const secrets = {
+  jwtAccessSecret: process.env.JWT_ACCESS_SECRET || "your-access-secret-key-here",
+};
 
 export const config = {
   port: process.env.PORT,
