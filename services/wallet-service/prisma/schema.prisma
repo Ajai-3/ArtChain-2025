@@ -69,5 +69,45 @@ enum TransactionStatus {
   failed
 }
 
+model WithdrawalRequest {
+  id              String                @id @default(uuid())
+  userId          String
+  walletId        String
+  amount          Float
+  method          WithdrawalMethod
+  status          WithdrawalStatus      @default(PENDING)
+  
+  // Bank Transfer Details
+  accountHolderName String?
+  accountNumber     String?
+  ifscCode          String?
+  
+  // UPI Details
+  upiId           String?
+  
+  // Metadata
+  transactionId   String?               @unique  // Reference to Transaction after processing
+  rejectionReason String?
+  processedAt     DateTime?
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  
+  @@index([userId])
+  @@index([walletId])
+  @@index([status])
+}
 
+enum WithdrawalMethod {
+  BANK_TRANSFER
+  UPI
+}
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  PROCESSING
+  COMPLETED
+  REJECTED
+  FAILED
+}
 

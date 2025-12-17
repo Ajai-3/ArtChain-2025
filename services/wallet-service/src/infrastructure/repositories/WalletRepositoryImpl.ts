@@ -14,8 +14,7 @@ export class WalletRepositoryImpl
 
   getByUserId(userId: string) {
     return this.model.findUnique({ where: { userId } });
-  }
-// ... [Retaining existing methods up to transferFunds] ... 
+  } 
 
   async transferFunds(
     fromId: string,
@@ -274,6 +273,47 @@ export class WalletRepositoryImpl
       method: tx.method,
       description: tx.description
     }));
+
+  }
+
+  async getDailyStats(walletId: string, startDate?: Date): Promise<any[]> {
+    // Efficient aggregation using Raw SQL for Postgres
+    // Groups by date and type to get daily sums
+    const dateFilter = startDate ? `AND "createdAt" >= ${startDate.toISOString() ? `'${startDate.toISOString()}'` : 'NOW()'}` : '';
+    
+    // Note: Prisma QueryRaw requires careful table name usage. 
+    // Assuming table name is "Transaction" based on standard Prisma mapping.
+    // Using CAST("createdAt" as DATE) for grouping.
+    
+    return await prisma.$queryRawUnsafe(`
+      SELECT 
+        DATE("createdAt") as date,
+        "type",
+        SUM("amount") as total_amount,
+        COUNT(*) as count_tx
+      FROM "Transaction"
+      WHERE "walletId" = '${walletId}'
+      ${startDate ? `AND "createdAt" >= '${startDate.toISOString()}'` : ''}
+      GROUP BY DATE("createdAt"), "type"
+      ORDER BY date ASC
+    `);
+  }
+
+  async getCategoryStats(walletId: string, startDate?: Date): Promise<any[]> {
+    const where: any = { walletId };
+    if (startDate) {
+        where.createdAt = { gte: startDate };
+    }
+
+    const stats = await prisma.transaction.groupBy({
+        by: ['category', 'type'],
+        where,
+        _sum: {
+            amount: true
+        }
+    });
+    
+    return stats;
   }
   async lockAmount(userId: string, amount: number): Promise<boolean> {
     const result = await this.model.updateMany({

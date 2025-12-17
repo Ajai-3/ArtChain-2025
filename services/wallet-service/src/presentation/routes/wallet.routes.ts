@@ -6,6 +6,7 @@ import { IWalletController } from "../interface/IWalletController";
 import { IStripeController } from "./../interface/IStripeController";
 import { container } from "../../infrastructure/inversify/inversify.config";
 import { ITransactionController } from "../interface/ITransactionController";
+import { IWithdrawalController } from "../interface/IWithdrawalController";
 import { ROUTES } from "../../constants/routes";
 
 const router = express.Router();
@@ -22,6 +23,7 @@ const transactionController = container.get<ITransactionController>(
 
 // Wallet Controller Routes
 router.get(ROUTES.WALLET.DETAILS, walletController.getWallet);
+router.get(ROUTES.WALLET.STATS_CHART, walletController.getChartData);
 router.post(ROUTES.WALLET.CREATE, walletController.createWallet);
 router.patch(ROUTES.WALLET.UPDATE, walletController.updateWallet);
 router.post(ROUTES.WALLET.LOCK, walletController.lockAmount);
@@ -46,5 +48,12 @@ router.post(
   bodyParser.raw({ type: "application/json" }),
   stripeController.handleWebhook
 );
+
+// Withdrawal Controller Routes
+const withdrawalController = container.get<IWithdrawalController>(
+  TYPES.IWithdrawalController
+);
+router.post(ROUTES.WITHDRAWAL.CREATE_REQUEST, withdrawalController.createWithdrawalRequest);
+router.get(ROUTES.WITHDRAWAL.GET_REQUESTS, withdrawalController.getWithdrawalRequests);
 
 export default router;

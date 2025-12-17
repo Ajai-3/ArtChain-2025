@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../infrastructure/inversify/types';
 import { IAdminWalletController } from '../interface/IAdminWalletController';
@@ -25,7 +25,7 @@ export class AdminWalletController implements IAdminWalletController {
     private readonly _getRevenueStatsUseCase: IGetRevenueStatsUseCase
   ) {}
 
-  getAllWallets = async (req: Request, res: Response): Promise<void> => {
+  getAllWallets = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -41,21 +41,16 @@ export class AdminWalletController implements IAdminWalletController {
         maxBalance,
       }, token);
 
-      res.status(200).json({
-        success: true,
+      res.status(HttpStatus.OK).json({
         data: result.data,
         meta: result.meta,
       });
-    } catch (error: any) {
-      console.error('Error in getAllWallets:', error);
-      res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to fetch wallets',
-      });
+    } catch (error) {
+     next(error);
     }
   };
 
-  searchWallets = async (req: Request, res: Response): Promise<void> => {
+  searchWallets = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const query = (req.query.query as string) || '';
       const page = parseInt(req.query.page as string) || 1;
@@ -70,21 +65,16 @@ export class AdminWalletController implements IAdminWalletController {
         maxBalance,
       });
 
-      res.status(200).json({
-        success: true,
+      res.status(HttpStatus.OK).json({
         data: result.data,
         meta: result.meta,
       });
-    } catch (error: any) {
-      console.error('Error in searchWallets:', error);
-      res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to search wallets',
-      });
+    } catch (error) {
+      next(error);
     }
   };
 
-  updateWalletStatus = async (req: Request, res: Response): Promise<void> => {
+  updateWalletStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { walletId } = req.params;
       const { status } = req.body;
@@ -99,21 +89,16 @@ export class AdminWalletController implements IAdminWalletController {
 
       const wallet = await this._updateWalletStatusUseCase.execute(walletId, status);
 
-      res.status(200).json({
-        success: true,
+      res.status(HttpStatus.OK).json({
         data: wallet,
         message: `Wallet status updated to ${status}`,
       });
-    } catch (error: any) {
-      console.error('Error in updateWalletStatus:', error);
-      res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to update wallet status',
-      });
+    } catch (error) {
+      next(error);
     }
   };
 
-  getUserTransactions = async (req: Request, res: Response): Promise<void> => {
+  getUserTransactions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { walletId } = req.params;
       const page = parseInt(req.query.page as string) || 1;
@@ -133,30 +118,20 @@ export class AdminWalletController implements IAdminWalletController {
         filters
       );
 
-      res.status(200).json({
-        success: true,
+      res.status(HttpStatus.OK).json({
         data: result.data,
         meta: result.meta,
       });
-    } catch (error: any) {
-      console.error('Error in getUserTransactions:', error);
-      res.status(500).json({
-        success: false,
-        message: error.message || 'Failed to fetch transactions',
-      });
+    } catch (error) {
+      next(error);
     }
   };
 
-  getRevenueStats = async (req: Request, res: Response): Promise<void> => {
+  getRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const adminId = req.headers["x-admin-id"] as string;
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
-
-      if (!adminId) {
-        res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: "Admin ID is required in headers" });
-        return;
-      }
 
       const dto: GetRevenueStatsDTO = {
         adminId,
@@ -167,16 +142,11 @@ export class AdminWalletController implements IAdminWalletController {
       const stats = await this._getRevenueStatsUseCase.execute(dto);
 
       res.status(HttpStatus.OK).json({
-        success: true,
         data: stats,
-        body: stats // Add body for frontend consistency
+        body: stats 
       });
-    } catch (error: any) {
-      console.error('Error in getRevenueStats:', error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: error.message || 'Failed to fetch revenue stats',
-      });
+    } catch (error) {
+      next(error);
     }
   };
 }

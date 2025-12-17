@@ -12,6 +12,7 @@ import { LockFundsDTO } from "../../application/interface/dto/wallet/LockFundsDT
 import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFundsDTO";
 import { SettleAuctionDTO } from "../../application/interface/dto/wallet/SettleAuctionDTO";
 import { ISettleAuctionUseCase } from "../../application/interface/usecase/wallet/ISettleAuctionUseCase";
+import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
 
 @injectable()
 export class WalletController implements IWalletController {
@@ -23,8 +24,43 @@ export class WalletController implements IWalletController {
     @inject(TYPES.IUnlockFundsUseCase)
     private readonly _unlockFundsUseCase: IUnlockFundsUseCase,
     @inject(TYPES.ISettleAuctionUseCase)
-    private readonly _settleAuctionUseCase: ISettleAuctionUseCase
+    private readonly _settleAuctionUseCase: ISettleAuctionUseCase,
+    @inject(TYPES.IGetWalletChartDataUseCase)
+    private readonly _getWalletChartDataUseCase: IGetWalletChartDataUseCase
   ) {}
+
+  // ... (existing methods)
+
+  //# ================================================================================================================
+  //# GET CHART DATA
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/stats/chart
+  //# Query: timeRange (7d, 1m, all)
+  //# Headers: x-user-id
+  //# ================================================================================================================
+  getChartData = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      const timeRange = (req.query.timeRange as "7d" | "1m" | "all") || "7d";
+      
+      logger.info(`[WalletController] Fetching chart data for userId: ${userId}, range: ${timeRange}`);
+
+      const chartData = await this._getWalletChartDataUseCase.execute(userId, timeRange);
+
+      return res.status(HttpStatus.OK).json({
+        message: "Chart data fetched successfully",
+        data: chartData
+      });
+    } catch (error) {
+      logger.error(`[WalletController] Error fetching chart data: ${error}`);
+      next(error);
+    }
+  };
+
 
   //# ================================================================================================================
   //# GET WALLET

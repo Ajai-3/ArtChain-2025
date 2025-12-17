@@ -56,6 +56,15 @@ container
   .bind<ITransactionRepository>(TYPES.ITransactionRepository)
   .to(TransactionRepositoryImpl)
   .inSingletonScope();
+
+// Withdrawal Repository
+import { IWithdrawalRepository } from "../../domain/repository/IWithdrawalRepository";
+import { WithdrawalRepositoryImpl } from "../repositories/WithdrawalRepositoryImpl";
+container
+  .bind<IWithdrawalRepository>(TYPES.IWithdrawalRepository)
+  .to(WithdrawalRepositoryImpl)
+  .inSingletonScope();
+
 container
   .bind<Stripe>(TYPES.StripeClient)
   .toDynamicValue(
@@ -92,6 +101,25 @@ container
 container
   .bind<IGetRevenueStatsUseCase>(TYPES.IGetRevenueStatsUseCase)
   .to(GetRevenueStatsUseCase);
+
+import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
+import { GetWalletChartDataUseCase } from "../../application/usecases/wallet/GetWalletChartDataUseCase";
+container
+  .bind<IGetWalletChartDataUseCase>(TYPES.IGetWalletChartDataUseCase)
+  .to(GetWalletChartDataUseCase);
+
+// Withdrawal Use Cases
+import { ICreateWithdrawalRequestUseCase } from "../../application/interface/usecases/withdrawal/ICreateWithdrawalRequestUseCase";
+import { CreateWithdrawalRequestUseCase } from "../../application/usecases/withdrawal/CreateWithdrawalRequestUseCase";
+import { IGetWithdrawalRequestsUseCase } from "../../application/interface/usecases/withdrawal/IGetWithdrawalRequestsUseCase";
+import { GetWithdrawalRequestsUseCase } from "../../application/usecases/withdrawal/GetWithdrawalRequestsUseCase";
+container
+  .bind<ICreateWithdrawalRequestUseCase>(TYPES.ICreateWithdrawalRequestUseCase)
+  .to(CreateWithdrawalRequestUseCase);
+container
+  .bind<IGetWithdrawalRequestsUseCase>(TYPES.IGetWithdrawalRequestsUseCase)
+  .to(GetWithdrawalRequestsUseCase);
+
 container
   .bind<ICreateStripeCheckoutSessionUseCase>(
     TYPES.ICreateStripeCheckoutSessionUseCase
@@ -110,6 +138,33 @@ container.bind<IWalletController>(TYPES.IWalletController).to(WalletController);
 container
   .bind<ITransactionController>(TYPES.ITransactionController)
   .to(TransactionController);
+
+// Withdrawal Controller
+import { IWithdrawalController } from "../../presentation/interface/IWithdrawalController";
+import { WithdrawalController } from "../../presentation/controllers/WithdrawalController";
+container
+  .bind<IWithdrawalController>(TYPES.IWithdrawalController)
+  .to(WithdrawalController);
+
+// Admin Withdrawal Use Cases
+import { IGetAllWithdrawalRequestsUseCase } from "../../application/interface/usecases/withdrawal/IGetAllWithdrawalRequestsUseCase";
+import { GetAllWithdrawalRequestsUseCase } from "../../application/usecases/withdrawal/GetAllWithdrawalRequestsUseCase";
+import { IUpdateWithdrawalStatusUseCase } from "../../application/interface/usecases/withdrawal/IUpdateWithdrawalStatusUseCase";
+import { UpdateWithdrawalStatusUseCase } from "../../application/usecases/withdrawal/UpdateWithdrawalStatusUseCase";
+container
+  .bind<IGetAllWithdrawalRequestsUseCase>(TYPES.IGetAllWithdrawalRequestsUseCase)
+  .to(GetAllWithdrawalRequestsUseCase);
+container
+  .bind<IUpdateWithdrawalStatusUseCase>(TYPES.IUpdateWithdrawalStatusUseCase)
+  .to(UpdateWithdrawalStatusUseCase);
+
+// Admin Withdrawal Controller
+import { IAdminWithdrawalController } from "../../presentation/interface/IAdminWithdrawalController";
+import { AdminWithdrawalController } from "../../presentation/controllers/AdminWithdrawalController";
+container
+  .bind<IAdminWithdrawalController>(TYPES.IAdminWithdrawalController)
+  .to(AdminWithdrawalController);
+
 
 // Admin Wallet Management
 import { IAdminWalletRepository } from "../../domain/repository/IAdminWalletRepository";

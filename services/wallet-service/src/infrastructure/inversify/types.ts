@@ -2,6 +2,7 @@ export const TYPES = {
   // Repositories
   IWalletRepository: Symbol.for("IWalletRepository"),
   ITransactionRepository: Symbol.for("ITransactionRepository"),
+  IWithdrawalRepository: Symbol.for("IWithdrawalRepository"),
 
   StripeClient: Symbol.for("StripeClient"),
 
@@ -20,12 +21,19 @@ export const TYPES = {
   IUnlockFundsUseCase: Symbol.for("IUnlockFundsUseCase"),
   ISettleAuctionUseCase: Symbol.for("ISettleAuctionUseCase"),
   IGetRevenueStatsUseCase: Symbol.for("IGetRevenueStatsUseCase"),
+  ICreateWithdrawalRequestUseCase: Symbol.for("ICreateWithdrawalRequestUseCase"),
+  IGetWithdrawalRequestsUseCase: Symbol.for("IGetWithdrawalRequestsUseCase"),
+  IGetAllWithdrawalRequestsUseCase: Symbol.for("IGetAllWithdrawalRequestsUseCase"),
+  IUpdateWithdrawalStatusUseCase: Symbol.for("IUpdateWithdrawalStatusUseCase"),
+  IGetWalletChartDataUseCase: Symbol.for("IGetWalletChartDataUseCase"),
 
   // Controller
   IStripeController: Symbol.for("IStripeController"),
   IWalletController: Symbol.for("IWalletController"),
   ITransactionController: Symbol.for("ITransactionController"),
   IAdminWalletController: Symbol.for("IAdminWalletController"),
+  IWithdrawalController: Symbol.for("IWithdrawalController"),
+  IAdminWithdrawalController: Symbol.for("IAdminWithdrawalController"),
 
   // Admin Wallet
   IAdminWalletRepository: Symbol.for("IAdminWalletRepository"),
