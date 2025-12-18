@@ -7,11 +7,14 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { Button } from "../../../../components/ui/button";
 
+import { GiftArtCoinModal } from "../wallet/GiftArtCoinModal";
+
 const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile }) => {
   const { username } = useParams<{ username?: string }>();
   const basePath = `/${username}`;
   
   const [isCommissionModalOpen, setIsCommissionModalOpen] = useState(false);
+  const [isGiftModalOpen, setIsGiftModalOpen] = useState(false);
   const currentUser = useSelector((state: RootState) => state.user);
 
   const tabs = [
@@ -51,12 +54,15 @@ const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile 
       <div className="flex-shrink-0">
         <div className="hidden sm:flex items-center gap-3">
           {/* Gift Icon Button */}
-          <button
-            className="p-2 rounded-full bg-main-color text-white shadow-md hover:bg-main-color/90 active:scale-95 transition"
-            title="Gifts"
-          >
-            <Gift size={20} />
-          </button>
+          {!isOwnProfile && currentUser.isAuthenticated && (
+            <button
+                className="p-2 rounded-full bg-main-color text-white shadow-md hover:bg-main-color/90 active:scale-95 transition"
+                title="Send a Gift"
+                onClick={() => setIsGiftModalOpen(true)}
+            >
+                <Gift size={20} />
+            </button>
+          )}
 
           {/* Request Commission Button */}
           {!isOwnProfile && user.role === "artist" && currentUser.isAuthenticated && (
@@ -79,6 +85,17 @@ const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile 
             artistId={user.id}
             artistName={user.name || user.username || "Artist"}
           />
+      )}
+
+      {/* Gift Modal */}
+      {user?.id && (
+        <GiftArtCoinModal
+            isOpen={isGiftModalOpen}
+            onClose={() => setIsGiftModalOpen(false)}
+            receiverId={user.id}
+            receiverName={user.name || user.username || "User"}
+            receiverImage={user.profileImage}
+        />
       )}
     </div>
   );
