@@ -25,6 +25,7 @@ export const TransactionCategory = {
   WITHDRAWAL: "WITHDRAWAL",
   COMMISSION: "COMMISSION",
   REFUND: "REFUND",
+  GIFT: "GIFT",
   OTHER: "OTHER",
 } as const;
 export type TransactionCategory = typeof TransactionCategory[keyof typeof TransactionCategory];

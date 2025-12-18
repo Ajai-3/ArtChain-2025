@@ -13,6 +13,7 @@ import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFun
 import { SettleAuctionDTO } from "../../application/interface/dto/wallet/SettleAuctionDTO";
 import { ISettleAuctionUseCase } from "../../application/interface/usecase/wallet/ISettleAuctionUseCase";
 import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
+import { IGiftArtCoinsUseCase } from "../../application/interface/usecases/wallet/IGiftArtCoinsUseCase";
 
 @injectable()
 export class WalletController implements IWalletController {
@@ -26,7 +27,9 @@ export class WalletController implements IWalletController {
     @inject(TYPES.ISettleAuctionUseCase)
     private readonly _settleAuctionUseCase: ISettleAuctionUseCase,
     @inject(TYPES.IGetWalletChartDataUseCase)
-    private readonly _getWalletChartDataUseCase: IGetWalletChartDataUseCase
+    private readonly _getWalletChartDataUseCase: IGetWalletChartDataUseCase,
+    @inject(TYPES.IGiftArtCoinsUseCase)
+    private readonly _giftArtCoinsUseCase: IGiftArtCoinsUseCase
   ) {}
 
   // ... (existing methods)
@@ -263,6 +266,38 @@ export class WalletController implements IWalletController {
     } catch (error) {
        logger.error(`[WalletController] Error settling auction: ${error}`);
        next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GIFT ART COINS
+  //# ================================================================================================================
+  //# POST /api/v1/wallet/gift
+  //# Request headers: x-user-id
+  //# Body: receiverId, amount, message
+  //# ================================================================================================================
+  giftArtCoins = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const senderId = req.headers["x-user-id"] as string;
+      const { receiverId, amount, message } = req.body;
+      
+      logger.info(`[WalletController] Gifting ${amount} from ${senderId} to ${receiverId}`);
+
+      const result = await this._giftArtCoinsUseCase.execute({
+        senderId,
+        receiverId,
+        amount,
+        message,
+      });
+
+      return res.status(HttpStatus.OK).json({message: "Art coins gifted successfully", data:result});
+    } catch (error) {
+      logger.error(`[WalletController] Error gifting art coins: ${error}`);
+      next(error);
     }
   };
 }

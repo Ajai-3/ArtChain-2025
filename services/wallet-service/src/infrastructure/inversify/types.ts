@@ -29,6 +29,7 @@ export const TYPES = {
   ILockCommissionFundsUseCase: Symbol.for("ILockCommissionFundsUseCase"),
   IDistributeCommissionFundsUseCase: Symbol.for("IDistributeCommissionFundsUseCase"),
   IRefundCommissionFundsUseCase: Symbol.for("IRefundCommissionFundsUseCase"),
+  IGiftArtCoinsUseCase: Symbol.for("IGiftArtCoinsUseCase"),
 
   // Controller
   IStripeController: Symbol.for("IStripeController"),

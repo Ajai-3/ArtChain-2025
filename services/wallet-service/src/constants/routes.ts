@@ -14,6 +14,7 @@ export const ROUTES = {
     UNLOCK: "/unlock",
     SETTLE_AUCTION: "/settle-auction",
     STATS_CHART: "/stats-chart",
+    GIFT: "/gift",
   },
 
   // Transaction routes

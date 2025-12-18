@@ -117,6 +117,12 @@ container
   .bind<IRefundCommissionFundsUseCase>(TYPES.IRefundCommissionFundsUseCase)
   .to(RefundCommissionFundsUseCase);
 
+import { IGiftArtCoinsUseCase } from "../../application/interface/usecase/wallet/IGiftArtCoinsUseCase";
+import { GiftArtCoinsUseCase } from "../../application/usecases/wallet/GiftArtCoinsUseCase";
+container
+  .bind<IGiftArtCoinsUseCase>(TYPES.IGiftArtCoinsUseCase)
+  .to(GiftArtCoinsUseCase);
+
 import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
 import { GetWalletChartDataUseCase } from "../../application/usecases/wallet/GetWalletChartDataUseCase";
 container

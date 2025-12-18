@@ -54,6 +54,7 @@ enum TransactionCategory {
   WITHDRAWAL   // Taking money out
   COMMISSION   // Platform earnings
   REFUND       // Money returned
+  GIFT         // Gift from another user
   OTHER        // Miscellaneous
 }
 

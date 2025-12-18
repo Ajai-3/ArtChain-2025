@@ -29,6 +29,7 @@ router.patch(ROUTES.WALLET.UPDATE, walletController.updateWallet);
 router.post(ROUTES.WALLET.LOCK, walletController.lockAmount);
 router.post(ROUTES.WALLET.UNLOCK, walletController.unlockAmount);
 router.post(ROUTES.WALLET.SETTLE_AUCTION, walletController.settleAuction);
+router.post(ROUTES.WALLET.GIFT, walletController.giftArtCoins);
 
 // Trascation Controller Routes
 router.get(ROUTES.TRANSACTION.GET_TRANSACTIONS, transactionController.getTransactions);
