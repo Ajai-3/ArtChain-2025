@@ -44,6 +44,33 @@ container
   .bind<IGetUserNotificationsUseCase>(TYPES.IGetUserNotificationsUseCase)
   .to(GetUserNotificationsUseCase);
 
+// Clients
+import { IUserServiceClient } from "../../application/interfaces/clients/IUserServiceClient";
+import { UserServiceClient } from "../clients/UserServiceClient";
+container
+  .bind<IUserServiceClient>(TYPES.IUserServiceClient)
+  .to(UserServiceClient)
+  .inSingletonScope();
+
+// Handlers
+import { IGiftEventHandler } from "../../application/interfaces/handlers/IGiftEventHandler";
+import { GiftEventHandler } from "../../application/handlers/GiftEventHandler";
+container
+  .bind<IGiftEventHandler>(TYPES.IGiftEventHandler)
+  .to(GiftEventHandler);
+
+import { ILikeEventHandler } from "../../application/interfaces/handlers/ILikeEventHandler";
+import { LikeEventHandler } from "../../application/handlers/LikeEventHandler";
+container
+  .bind<ILikeEventHandler>(TYPES.ILikeEventHandler)
+  .to(LikeEventHandler);
+
+import { ISupportEventHandler } from "../../application/interfaces/handlers/ISupportEventHandler";
+import { SupportEventHandler } from "../../application/handlers/SupportEventHandler";
+container
+  .bind<ISupportEventHandler>(TYPES.ISupportEventHandler)
+  .to(SupportEventHandler);
+
 // Controllers
 container
   .bind<INotificationController>(TYPES.INotificationController)
