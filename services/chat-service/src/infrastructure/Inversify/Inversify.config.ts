@@ -14,12 +14,14 @@ import { IListMessagesUseCase } from "../../applications/interface/usecase/IList
 import { IDeleteMessageUseCase } from "../../applications/interface/usecase/IDeleteMessageUseCase";
 import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
+import { ICreateRequestConversationUseCase } from "../../applications/interface/usecase/ICreateRequestConversationUseCase";
 
 import { SendMessageUseCase } from "../../applications/usecase/SendMessageUseCase";
 import { ListMessagesUseCase } from "../../applications/usecase/ListMessagesUseCase";
 import { DeleteMessageUseCase } from "../../applications/usecase/DeleteMessageUseCase";
 import { GetAllResendConversationUseCase } from "../../applications/usecase/GetAllResendConversationUseCase";
 import { CreatePrivateConversationUseCase } from "../../applications/usecase/CreatePrivateConversationUseCase";
+import { CreateRequestConversationUseCase } from "../../applications/usecase/CreateRequestConversationUseCase";
 import { IMarkMessagesReadUseCase } from "../../applications/interface/usecase/IMarkMessagesReadUseCase";
 import { MarkMessagesReadUseCase } from "../../applications/usecase/MarkMessagesReadUseCase";
 import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
@@ -89,6 +91,9 @@ container
     TYPES.ICreatePrivateConversationUseCase
   )
   .to(CreatePrivateConversationUseCase);
+container
+  .bind<ICreateRequestConversationUseCase>(TYPES.ICreateRequestConversationUseCase)
+  .to(CreateRequestConversationUseCase);
 container
   .bind<IGetAllResendConversationUseCase>(
     TYPES.IGetAllResendConversationUseCase

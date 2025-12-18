@@ -16,6 +16,7 @@ export const TYPES = {
   IDeleteMessageUseCase: Symbol.for("IDeleteMessageUseCase"),
   IGetAllResendConversationUseCase: Symbol.for("IGetAllResendConversationUseCase"),
   ICreatePrivateConversationUseCase: Symbol.for("ICreatePrivateConversationUseCase"),
+  ICreateRequestConversationUseCase: Symbol.for("ICreateRequestConversationUseCase"),
   ICreateGroupConversationUseCase: Symbol.for("ICreateGroupConversationUseCase"),
   IMarkMessagesReadUseCase: Symbol.for("IMarkMessagesReadUseCase"),
   IGetGroupMembersUseCase: Symbol.for("IGetGroupMembersUseCase"),

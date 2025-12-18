@@ -8,6 +8,7 @@ import { createPrivateConversationSchema } from "../validators/createPrivateConv
 import { CreatePrivateConversationDto } from "../../applications/interface/dto/CreatePrivateConversationDto";
 import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
+import { ICreateRequestConversationUseCase } from "../../applications/interface/usecase/ICreateRequestConversationUseCase";
 import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
 import { createGroupConversationSchema } from "../validators/createGroupConversationSchema";
 import { CreateGroupConversationDto } from "../../applications/interface/dto/CreateGroupConversationDto";
@@ -26,6 +27,8 @@ export class ConversationController {
     private readonly _getAllResendConversationUseCase: IGetAllResendConversationUseCase,
     @inject(TYPES.ICreatePrivateConversationUseCase)
     private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase,
+    @inject(TYPES.ICreateRequestConversationUseCase)
+    private readonly _createRequestConversationUseCase: ICreateRequestConversationUseCase,
     @inject(TYPES.ICreateGroupConversationUseCase)
     private readonly _createGroupConversationUseCase: ICreateGroupConversationUseCase,
     @inject(TYPES.IGetGroupMembersUseCase)
@@ -78,6 +81,36 @@ export class ConversationController {
 
       return res.status(HttpStatus.CREATED).json({
         message: SUCCESS_MESSAGES.CONVERSATION_CREATED_SUCCESSFULLY,
+        data: { conversation, isNewConvo },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  createRequestConversation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { artistId } = req.body; // Expecting artistId for request
+      const userId = req.headers["x-user-id"] as string;
+
+      // Reuse private schema if it's just userId + otherId, or strict separate schema?
+      // Using private schema for MVP as 'otherUserId' map to 'artistId' or just manual check
+      if (!artistId) throw new Error("Artist ID is required");
+
+      const dto = {
+        userId,
+        artistId,
+      };
+
+      const { isNewConvo, conversation } =
+        await this._createRequestConversationUseCase.execute(dto);
+
+      return res.status(HttpStatus.CREATED).json({
+        message: "Request conversation created",
         data: { conversation, isNewConvo },
       });
     } catch (error) {
