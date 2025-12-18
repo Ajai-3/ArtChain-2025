@@ -54,6 +54,14 @@ export const ROUTES = {
   PROFILE_ABOUT: (username: string) => `/${username}/about`,
   ART_PAGE: (username: string, artname: string) => `/${username}/art/${artname}`,
   CHAT_CONVERSATION: (conversationId: string) => `/chat/${conversationId}`,
+
+  // Admin API Routes
+  ADMIN: {
+    ADMIN_COMMISSIONS: "/api/v1/art/admin/commissions/all",
+    ADMIN_COMMISSION_STATS: "/api/v1/art/admin/commissions/stats",
+    ADMIN_RESOLVE_COMMISSION: "/api/v1/art/admin/commissions/resolve/:id",
+    PLATFORM_CONFIG: "/api/v1/art/admin/platform-config",
+  },
 } as const;
 
 // Route Patterns (for route definitions in React Router)

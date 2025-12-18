@@ -12,6 +12,7 @@ import {
   Sparkles,
   Gavel,
   ArrowRightLeft,
+  Briefcase,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import Logo from "../../../../components/logo/Logo";
@@ -29,7 +30,8 @@ const adminLinks = [
   { to: "/admin/withdrawal-management", icon: ArrowRightLeft, label: "Withdrawal Requests" },
   { to: "/admin/art-management", icon: FileEdit, label: "Art Management" },
   { to: "/admin/auction-management", icon: Gavel, label: "Auction Management" },
-  { to: "/admin/commission-management", icon: Settings, label: "Commission Management" },
+  { to: "/admin/commission-requests", icon: Briefcase, label: "Commission Requests" },
+  { to: "/admin/commission-settings", icon: Settings, label: "Commission Settings" },
 ];
 
 const AdminSideBar: React.FC = () => {

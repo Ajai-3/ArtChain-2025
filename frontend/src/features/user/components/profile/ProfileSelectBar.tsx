@@ -1,13 +1,18 @@
 import { Gift } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import type { ProfileSelectBarProps } from "../../../../types/users/profile/ProfileSelectBarProps";
-
-
+import { CommissionRequestModal } from "../commission/CommissionRequestModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+import { Button } from "../../../../components/ui/button";
 
 const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile }) => {
   const { username } = useParams<{ username?: string }>();
   const basePath = `/${username}`;
+  
+  const [isCommissionModalOpen, setIsCommissionModalOpen] = useState(false);
+  const currentUser = useSelector((state: RootState) => state.user);
 
   const tabs = [
     { id: "gallery", label: "Gallery" },
@@ -54,12 +59,27 @@ const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile 
           </button>
 
           {/* Request Commission Button */}
-          {!isOwnProfile && user.role === "artist" ? <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-600 active:scale-95 transition-transform">
-            Request Commission
-          </button> : ""}
+          {!isOwnProfile && user.role === "artist" && currentUser.isAuthenticated && (
+            <Button 
+                onClick={() => setIsCommissionModalOpen(true)}
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-600 active:scale-95 transition-transform border-none"
+            >
+                Request Commission
+            </Button>
+          )}
           
         </div>
       </div>
+      
+      {/* Commission Modal */}
+      {user?.id && user.role === "artist" && (
+          <CommissionRequestModal 
+            isOpen={isCommissionModalOpen} 
+            onClose={() => setIsCommissionModalOpen(false)} 
+            artistId={user.id}
+            artistName={user.name || user.username || "Artist"}
+          />
+      )}
     </div>
   );
 };

@@ -10,7 +10,8 @@ interface MessageOptionsProps {
   onDeleteForAll: () => void;
   position: { x: number; y: number };
   onClose: () => void;
-  isCurrentUser: boolean; // To determine which side the message is on
+  isCurrentUser: boolean;
+  locked?: boolean;
 }
 
 const MessageOptions: React.FC<MessageOptionsProps> = ({
@@ -23,8 +24,10 @@ const MessageOptions: React.FC<MessageOptionsProps> = ({
   position,
   onClose,
   isCurrentUser,
+  locked,
 }) => {
   const handleOptionClick = (action: () => void) => {
+    if (locked) return;
     action();
     onClose();
   };

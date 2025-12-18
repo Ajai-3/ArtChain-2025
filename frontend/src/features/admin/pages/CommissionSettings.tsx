@@ -6,11 +6,11 @@ import CustomLoader from '../../../components/CustomLoader';
 import CommissionWarning from '../components/commissionManagement/CommissionWarning';
 import CommissionStatsCards from '../components/commissionManagement/CommissionStatsCards';
 import CommissionForm from '../components/commissionManagement/CommissionForm';
-import { platformConfigSchema,type  PlatformConfigFormValues } from '../schema/platformConfigSchema';
+import { platformConfigSchema, type PlatformConfigFormValues } from '../schema/platformConfigSchema';
 import { useCommissionConfigQuery } from '../hooks/commissionManagement/useCommissionConfigQuery';
 import { useUpdateCommissionConfigMutation } from '../hooks/commissionManagement/useUpdateCommissionConfigMutation';
 
-const CommissionManagement: React.FC = () => {
+const CommissionSettings: React.FC = () => {
     const { data: config, isLoading } = useCommissionConfigQuery();
     const updateMutation = useUpdateCommissionConfigMutation();
 
@@ -29,6 +29,7 @@ const CommissionManagement: React.FC = () => {
             reset({
                 auctionCommissionPercentage: config.auctionCommissionPercentage,
                 artSaleCommissionPercentage: config.artSaleCommissionPercentage,
+                commissionArtPercentage: config.commissionArtPercentage,
                 welcomeBonus: config.welcomeBonus,
                 referralBonus: config.referralBonus,
                 artCoinRate: config.artCoinRate,
@@ -44,10 +45,10 @@ const CommissionManagement: React.FC = () => {
 
     return (
         <AdminPageLayout
-            title="Commission Management"
-            description="Configure platform commission rates and settings"
+            title="Commission Settings"
+            description="Configure platform commission rates and general platform settings"
         >
-                <CommissionStatsCards config={config || null} />
+            <CommissionStatsCards config={config || null} />
 
             <CommissionForm
                 config={config || null}
@@ -60,11 +61,11 @@ const CommissionManagement: React.FC = () => {
                 errors={errors}
             />
 
-            <div className="mt-4">
+            <div className="mt-8">
                 <CommissionWarning />
             </div>
         </AdminPageLayout>
     );
 };
 
-export default CommissionManagement;
+export default CommissionSettings;

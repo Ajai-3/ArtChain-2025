@@ -20,6 +20,8 @@ import {
   DialogFooter,
 } from "../../../../components/ui/dialog";
 import { Button } from "../../../../components/ui/button";
+import { ConversationType } from "../../../../types/chat/chat";
+import { CommissionChatCard } from "./chatArea/CommissionChatCard";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
@@ -76,9 +78,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     }
   }, [selectedConversation, startCall]);
 
-  const handleVoiceCall = useCallback(() => {
-    console.log("Voice call with:", selectedConversation?.partner?.name);
-  }, [selectedConversation]);
 
   const handleToggleDetails = useCallback(() => {
     setShowDetails((prev) => !prev);
@@ -173,8 +172,14 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           onToggleDetails={handleToggleDetails}
           showDetails={showDetails}
           onVideoCall={handleVideoCall}
-          onVoiceCall={handleVoiceCall}
         />
+
+        {selectedConversation.type === ConversationType.REQUEST && (
+          <CommissionChatCard 
+            conversationId={selectedConversation.id} 
+            currentUserId={currentUserId} 
+          />
+        )}
 
         <ChatMessages
           messages={messages}
@@ -192,7 +197,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           onSendMessage={(text) => onSendMessage({ content: text, mediaType: "TEXT" })}
           onSendImage={handleFileSelect}
           onTyping={handleTyping}
-          disabled={selectedConversation.locked}
+          disabled={false}
         />
       </div>
 
