@@ -18,6 +18,9 @@ import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecas
 import { ProcessSplitPurchaseDTO } from "../../application/interface/dto/transaction/ProcessSplitPurchaseDTO";
 import { IProcessPaymentUseCase } from "../../application/interface/usecase/transaction/IProcessPaymentUseCase";
 import { ProcessPaymentDTO } from "../../application/interface/dto/transaction/ProcessPaymentDTO";
+import { ILockCommissionFundsUseCase } from "../../application/interface/usecase/transaction/ILockCommissionFundsUseCase";
+import { IDistributeCommissionFundsUseCase } from "../../application/interface/usecase/transaction/IDistributeCommissionFundsUseCase";
+import { IRefundCommissionFundsUseCase } from "../../application/interface/usecase/transaction/IRefundCommissionFundsUseCase";
 
 @injectable()
 export class TransactionController implements ITransactionController {
@@ -29,7 +32,13 @@ export class TransactionController implements ITransactionController {
     @inject(TYPES.IProcessSplitPurchaseUseCase)
     private readonly _processSplitPurchaseUseCase: IProcessSplitPurchaseUseCase,
     @inject(TYPES.IProcessPaymentUseCase)
-    private readonly _processPaymentUseCase: IProcessPaymentUseCase
+    private readonly _processPaymentUseCase: IProcessPaymentUseCase,
+    @inject(TYPES.ILockCommissionFundsUseCase)
+    private readonly _lockCommissionFundsUseCase: ILockCommissionFundsUseCase,
+    @inject(TYPES.IDistributeCommissionFundsUseCase)
+    private readonly _distributeCommissionFundsUseCase: IDistributeCommissionFundsUseCase,
+    @inject(TYPES.IRefundCommissionFundsUseCase)
+    private readonly _refundCommissionFundsUseCase: IRefundCommissionFundsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -268,6 +277,74 @@ export class TransactionController implements ITransactionController {
       logger.error(
         `[TransactionController] Error processing payment: ${error}`
       );
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# LOCK COMMISSION FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/transaction/commission/lock
+  //# Request body: { userId, commissionId, amount }
+  //# ================================================================================================================
+  lockCommissionFunds = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { userId, commissionId, amount } = req.body;
+      const success = await this._lockCommissionFundsUseCase.execute(userId, commissionId, amount);
+      if (success) {
+        return res.status(HttpStatus.OK).json({ message: "Funds locked successfully" });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to lock funds" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# DISTRIBUTE COMMISSION FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/transaction/commission/distribute
+  //# Request body: { userId, artistId, commissionId, totalAmount, artistAmount, platformFee }
+  //# ================================================================================================================
+  distributeCommissionFunds = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const success = await this._distributeCommissionFundsUseCase.execute(req.body);
+      if (success) {
+        return res.status(HttpStatus.OK).json({ message: "Funds distributed successfully" });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to distribute funds" });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# REFUND COMMISSION FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/transaction/commission/refund
+  //# Request body: { userId, commissionId, amount }
+  //# ================================================================================================================
+  refundCommissionFunds = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { userId, commissionId, amount } = req.body;
+      const success = await this._refundCommissionFundsUseCase.execute(userId, commissionId, amount);
+      if (success) {
+        return res.status(HttpStatus.OK).json({ message: "Funds refunded successfully" });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to refund funds" });
+    } catch (error) {
       next(error);
     }
   };

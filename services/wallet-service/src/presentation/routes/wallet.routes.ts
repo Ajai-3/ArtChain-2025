@@ -36,6 +36,9 @@ router.post(ROUTES.TRANSACTION.CREATE_TRANSACTION, transactionController.createT
 router.post(ROUTES.TRANSACTION.PURCHASE, transactionController.processPurchase);
 router.post(ROUTES.TRANSACTION.SPLIT_PURCHASE, transactionController.processSplitPurchase);
 router.post(ROUTES.TRANSACTION.PAYMENT, transactionController.processPayment);
+router.post(ROUTES.TRANSACTION.COMMISSION_LOCK, transactionController.lockCommissionFunds);
+router.post(ROUTES.TRANSACTION.COMMISSION_DISTRIBUTE, transactionController.distributeCommissionFunds);
+router.post(ROUTES.TRANSACTION.COMMISSION_REFUND, transactionController.refundCommissionFunds);
 
 // Stripe Controller Routes
 router.post(

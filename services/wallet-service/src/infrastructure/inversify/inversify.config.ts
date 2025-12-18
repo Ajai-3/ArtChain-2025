@@ -37,6 +37,12 @@ import { ISettleAuctionUseCase } from "../../application/interface/usecase/walle
 import { SettleAuctionUseCase } from "../../application/usecases/wallet/SettleAuctionUseCase";
 import { IGetRevenueStatsUseCase } from "../../application/interface/usecase/wallet/IGetRevenueStatsUseCase";
 import { GetRevenueStatsUseCase } from "../../application/usecases/wallet/GetRevenueStatsUseCase";
+import { ILockCommissionFundsUseCase } from "../../application/interface/usecase/transaction/ILockCommissionFundsUseCase";
+import { LockCommissionFundsUseCase } from "../../application/usecases/transaction/LockCommissionFundsUseCase";
+import { IDistributeCommissionFundsUseCase } from "../../application/interface/usecase/transaction/IDistributeCommissionFundsUseCase";
+import { DistributeCommissionFundsUseCase } from "../../application/usecases/transaction/DistributeCommissionFundsUseCase";
+import { IRefundCommissionFundsUseCase } from "../../application/interface/usecase/transaction/IRefundCommissionFundsUseCase";
+import { RefundCommissionFundsUseCase } from "../../application/usecases/transaction/RefundCommissionFundsUseCase";
 
 // Controllers
 import { IWalletController } from "../../presentation/interface/IWalletController";
@@ -101,6 +107,15 @@ container
 container
   .bind<IGetRevenueStatsUseCase>(TYPES.IGetRevenueStatsUseCase)
   .to(GetRevenueStatsUseCase);
+container
+  .bind<ILockCommissionFundsUseCase>(TYPES.ILockCommissionFundsUseCase)
+  .to(LockCommissionFundsUseCase);
+container
+  .bind<IDistributeCommissionFundsUseCase>(TYPES.IDistributeCommissionFundsUseCase)
+  .to(DistributeCommissionFundsUseCase);
+container
+  .bind<IRefundCommissionFundsUseCase>(TYPES.IRefundCommissionFundsUseCase)
+  .to(RefundCommissionFundsUseCase);
 
 import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
 import { GetWalletChartDataUseCase } from "../../application/usecases/wallet/GetWalletChartDataUseCase";

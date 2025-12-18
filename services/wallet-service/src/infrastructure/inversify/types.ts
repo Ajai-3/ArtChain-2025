@@ -26,6 +26,9 @@ export const TYPES = {
   IGetAllWithdrawalRequestsUseCase: Symbol.for("IGetAllWithdrawalRequestsUseCase"),
   IUpdateWithdrawalStatusUseCase: Symbol.for("IUpdateWithdrawalStatusUseCase"),
   IGetWalletChartDataUseCase: Symbol.for("IGetWalletChartDataUseCase"),
+  ILockCommissionFundsUseCase: Symbol.for("ILockCommissionFundsUseCase"),
+  IDistributeCommissionFundsUseCase: Symbol.for("IDistributeCommissionFundsUseCase"),
+  IRefundCommissionFundsUseCase: Symbol.for("IRefundCommissionFundsUseCase"),
 
   // Controller
   IStripeController: Symbol.for("IStripeController"),
