@@ -9,6 +9,8 @@ export const ROUTES = {
   // Base API route
   BASE: "/api/v1/art",
 
+  
+
   // Category routes
   CATEGORY: {
     BASE: "/category",
@@ -108,5 +110,19 @@ export const ROUTES = {
   CONFIG: {
     BASE: "/platform-config",
   },
+
+  COMMISSION: {
+    BASE: "/commission",
+    REQUEST: "/request",
+    BY_CONVERSATION: "/conversation/:conversationId",
+    BY_ID: "/:id",
+  },
+
+  ADMIN_COMMISSION: {
+    BASE: "/admin/commissions",
+    ALL: "/all",
+    STATS: "/stats",
+    RESOLVE: "/resolve/:id",
+  }
 } as const;
 

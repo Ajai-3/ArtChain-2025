@@ -24,4 +24,17 @@ export interface IWalletService {
     referenceId: string,
     category: string
   ): Promise<boolean>;
+  distributeCommissionFunds(params: {
+    userId: string;
+    artistId: string;
+    commissionId: string;
+    totalAmount: number;
+    artistAmount: number;
+    platformFee: number;
+  }): Promise<boolean>;
+  refundCommissionFunds(params: {
+    userId: string;
+    commissionId: string;
+    amount: number;
+  }): Promise<boolean>;
 }

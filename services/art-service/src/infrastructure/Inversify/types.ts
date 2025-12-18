@@ -13,6 +13,7 @@ export const TYPES = {
   IAIConfigRepository: Symbol.for("IAIConfigRepository"),
   IPlatformConfigRepository: Symbol.for("IPlatformConfigRepository"),
   AIProviderService: Symbol.for("AIProviderService"),
+  ICommissionRepository: Symbol.for("ICommissionRepository"),
 
   // Use Cases - Art
   IGetAllArtUseCase: Symbol.for("IGetAllArtUseCase"),
@@ -63,6 +64,14 @@ export const TYPES = {
 
 
   
+  // Use Cases - Commission
+  ICreateCommissionUseCase: Symbol.for("ICreateCommissionUseCase"),
+  IGetCommissionByConversationUseCase: Symbol.for("IGetCommissionByConversationUseCase"),
+  IUpdateCommissionUseCase: Symbol.for("IUpdateCommissionUseCase"),
+  IGetCommissionStatsUseCase: Symbol.for("IGetCommissionStatsUseCase"),
+  IResolveCommissionDisputeUseCase: Symbol.for("IResolveCommissionDisputeUseCase"),
+  IGetAllCommissionsUseCase: Symbol.for("IGetAllCommissionsUseCase"),
+
   // Use Cases - Bidding
   ICreateAuctionUseCase: Symbol.for("ICreateAuctionUseCase"),
   IGetAuctionsUseCase: Symbol.for("IGetAuctionsUseCase"),
@@ -81,6 +90,7 @@ export const TYPES = {
   IAIController: Symbol.for("IAIController"),
   IAdminAIController: Symbol.for("IAdminAIController"),
   IAuctionController: Symbol.for("IAuctionController"),
+  IAdminPlatformConfigController: Symbol.for("IAdminPlatformConfigController"),
   IBidController: Symbol.for("IBidController"),
 
   // Admin Art
@@ -94,12 +104,14 @@ export const TYPES = {
   IS3Service: Symbol.for("IS3Service"),
   IDownloadArtUseCase: Symbol.for("IDownloadArtUseCase"),
   ISocketService: Symbol.for("ISocketService"),
+  IChatService: Symbol.for("IChatService"),
 
   // Platform Config
   IGetPlatformConfigUseCase: Symbol.for("IGetPlatformConfigUseCase"),
   IUpdatePlatformConfigUseCase: Symbol.for("IUpdatePlatformConfigUseCase"),
-  IAdminPlatformConfigController: Symbol.for("IAdminPlatformConfigController"),
+
   RabbitMQService: Symbol.for("RabbitMQService"),
   IEndAuctionUseCase: Symbol.for("IEndAuctionUseCase"),
   AuctionEndedConsumer: Symbol.for("AuctionEndedConsumer"),
+  ICommissionController: Symbol.for("ICommissionController"),
 };

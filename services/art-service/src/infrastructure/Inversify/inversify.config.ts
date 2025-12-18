@@ -16,6 +16,8 @@ import { AIProviderService } from "../service/AIProviderService";
 import { IWalletService } from "../../domain/interfaces/IWalletService";
 import { WalletService } from "../service/WalletService";
 
+import { GetCommissionStatsUseCase } from "../../application/usecase/commission/GetCommissionStatsUseCase";
+
 import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
 import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
 import { CommentRepositoryImpl } from "../repositories/CommentRepositoryImpl";
@@ -239,9 +241,12 @@ container.bind<IDownloadArtUseCase>(TYPES.IDownloadArtUseCase).to(DownloadArtUse
 // Services
 import { ISocketService } from "../../domain/interfaces/ISocketService";
 import { SocketService } from "../service/SocketService";
+import { IChatService } from "../../domain/interfaces/IChatService";
+import { ChatService } from "../service/ChatService";
 
 container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
 container.bind<ISocketService>(TYPES.ISocketService).to(SocketService).inSingletonScope();
+container.bind<IChatService>(TYPES.IChatService).to(ChatService);
 
 // Use Cases - Category
 container
@@ -342,6 +347,31 @@ container.bind<IGetPlatformConfigUseCase>(TYPES.IGetPlatformConfigUseCase).to(Ge
 container.bind<IUpdatePlatformConfigUseCase>(TYPES.IUpdatePlatformConfigUseCase).to(UpdatePlatformConfigUseCase);
 container.bind<IAdminPlatformConfigController>(TYPES.IAdminPlatformConfigController).to(AdminPlatformConfigController);
 
+// Commission
+import { ICommissionRepository } from "../../domain/repositories/ICommissionRepository";
+import { CommissionRepositoryImpl } from "../repositories/CommissionRepositoryImpl";
+import { ICreateCommissionUseCase } from "../../application/interface/usecase/commission/ICreateCommissionUseCase";
+import { CreateCommissionUseCase } from "../../application/usecase/commission/CreateCommissionUseCase";
+import { IGetCommissionByConversationUseCase } from "../../application/interface/usecase/commission/IGetCommissionByConversationUseCase";
+import { GetCommissionByConversationUseCase } from "../../application/usecase/commission/GetCommissionByConversationUseCase";
+import { IUpdateCommissionUseCase } from "../../application/interface/usecase/commission/IUpdateCommissionUseCase";
+import { UpdateCommissionUseCase } from "../../application/usecase/commission/UpdateCommissionUseCase";
+
+import { ICommissionController } from "../../presentation/interface/ICommissionController";
+import { CommissionController } from "../../presentation/controllers/CommissionController";
+import { GetAllCommissionsUseCase } from "../../application/usecase/commission/GetAllCommissionsUseCase";
+import { ResolveCommissionDisputeUseCase } from "../../application/usecase/commission/ResolveCommissionDisputeUseCase";
+import { AdminCommissionController } from "../../presentation/controllers/AdminCommissionController";
+
+container.bind<ICommissionRepository>(TYPES.ICommissionRepository).to(CommissionRepositoryImpl);
+container.bind<ICreateCommissionUseCase>(TYPES.ICreateCommissionUseCase).to(CreateCommissionUseCase);
+container.bind<IGetCommissionByConversationUseCase>(TYPES.IGetCommissionByConversationUseCase).to(GetCommissionByConversationUseCase);
+container.bind<IUpdateCommissionUseCase>(TYPES.IUpdateCommissionUseCase).to(UpdateCommissionUseCase);
+container.bind<ICommissionController>(TYPES.ICommissionController).to(CommissionController);
+container.bind<GetAllCommissionsUseCase>(GetAllCommissionsUseCase).to(GetAllCommissionsUseCase);
+container.bind<ResolveCommissionDisputeUseCase>(ResolveCommissionDisputeUseCase).to(ResolveCommissionDisputeUseCase);
+container.bind<AdminCommissionController>(AdminCommissionController).to(AdminCommissionController);
+
 // RabbitMQ & Auction Ending
 import { RabbitMQService } from "../messaging/RabbitMQService";
 import { IEndAuctionUseCase } from "../../application/interface/usecase/auction/IEndAuctionUseCase";
@@ -351,5 +381,6 @@ import { AuctionEndedConsumer } from "../messaging/consumers/AuctionEndedConsume
 container.bind<RabbitMQService>(TYPES.RabbitMQService).to(RabbitMQService).inSingletonScope();
 container.bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase).to(EndAuctionUseCase);
 container.bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer).to(AuctionEndedConsumer).inSingletonScope();
+container.bind<GetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
 
 export { container };
