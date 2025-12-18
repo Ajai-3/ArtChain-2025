@@ -77,9 +77,14 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.AUCTIONS, methods: ["GET", "POST"] },
     { path: ROUTES.ART.AUCTION_BY_ID, methods: ["GET"] },
     { path: ROUTES.ART.BIDS, methods: ["POST"] },
-    { path: ROUTES.ART.BIDS, methods: ["POST"] },
+    
+    { path: ROUTES.ART.COMMISSION_REQUEST, methods: ["POST"] },
+    { path: ROUTES.ART.COMMISSION_BY_CONVERSATION, methods: ["GET"] },
+    { path: ROUTES.ART.COMMISSION_UPDATE, methods: ["PATCH"] },
 
     { path: ROUTES.AI.DELETE_GENERATION, methods: ["DELETE"] },
+    { path: ROUTES.WALLET.COMMISSION_LOCK, methods: ["POST"] },
+    { path: ROUTES.WALLET.COMMISSION_DISTRIBUTE, methods: ["POST"] },
   ],
   
   user_optional: [
@@ -118,5 +123,10 @@ export const authRoutesConfig = {
     // Admin withdrawal routes
     { path: ROUTES.WALLET.ADMIN_WITHDRAWAL_REQUESTS, methods: ["GET"] },
     { path: ROUTES.WALLET.ADMIN_WITHDRAWAL_UPDATE_STATUS, methods: ["PATCH"] },
+
+    // Admin Commission routes
+    { path: ROUTES.ADMIN.ADMIN_COMMISSIONS, methods: ["GET"] },
+    { path: ROUTES.ADMIN.ADMIN_COMMISSION_STATS, methods: ["GET"] },
+    { path: ROUTES.ADMIN.ADMIN_RESOLVE_COMMISSION, methods: ["POST"] },
   ],
 };
