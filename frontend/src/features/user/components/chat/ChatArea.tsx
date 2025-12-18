@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { useVideoCall } from "../../../../context/VideoCallContext";
 import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
 import React, { useState, useMemo, useCallback, useRef } from "react";
@@ -34,7 +35,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   onBack,
   currentUserId,
   onSendMessage,
-  onSendImage, // unused now
+  onSendImage,
   onDeleteMessage,
 }) => {
   const convId = selectedConversation?.id ?? "";
@@ -61,9 +62,19 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   useUserResolver(senderIds);
   useMarkRead(convId, currentUserId);
 
+  const { startCall } = useVideoCall();
+
   const handleVideoCall = useCallback(() => {
-    console.log("Video call with:", selectedConversation?.partner?.name);
-  }, [selectedConversation]);
+    if (selectedConversation && selectedConversation.partner) {
+        startCall(
+          selectedConversation.id, 
+          selectedConversation.partner.id, 
+          false,
+          selectedConversation.partner.name,
+          selectedConversation.partner.profileImage || undefined
+        );
+    }
+  }, [selectedConversation, startCall]);
 
   const handleVoiceCall = useCallback(() => {
     console.log("Voice call with:", selectedConversation?.partner?.name);

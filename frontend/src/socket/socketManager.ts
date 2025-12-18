@@ -5,9 +5,28 @@ let notificationSocket: Socket | null = null;
 let chatSocket: Socket | null = null;
 let biddingSocket: Socket | null = null;
 
+type SocketListener = (socket: Socket) => void;
+const chatSocketListeners: SocketListener[] = [];
+
 export const setNotificationSocket = (s: Socket) => { notificationSocket = s; };
-export const setChatSocket = (s: Socket) => { chatSocket = s; };
+
+export const setChatSocket = (s: Socket) => { 
+    chatSocket = s; 
+    chatSocketListeners.forEach(listener => listener(s));
+};
+
 export const setBiddingSocket = (s: Socket) => { biddingSocket = s; };
+
+export const onChatSocketAvailable = (listener: SocketListener) => {
+    if (chatSocket) {
+        listener(chatSocket);
+    }
+    chatSocketListeners.push(listener);
+    return () => {
+        const index = chatSocketListeners.indexOf(listener);
+        if (index > -1) chatSocketListeners.splice(index, 1);
+    };
+};
 
 export const disconnectSockets = () => {
   if (notificationSocket) disconnectSocket(notificationSocket);

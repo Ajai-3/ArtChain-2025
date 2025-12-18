@@ -151,10 +151,12 @@ const chatSlice = createSlice({
         }
       } else {
         console.log("🟠 Incoming has NO tempId, normal message");
-        const exists = list.some((m) => m.id === incoming.id);
-        console.log("🔍 Already exists:", exists);
-
-        if (!exists) {
+        const idx = list.findIndex((m) => m.id === incoming.id);
+        
+        if (idx !== -1) {
+          console.log("🔄 Message exists, updating:", incoming.id);
+          list[idx] = incoming;
+        } else {
           console.log("➕ Adding real message to list");
           list.push(incoming);
         }

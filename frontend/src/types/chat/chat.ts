@@ -12,6 +12,7 @@ export const MediaType = {
   IMAGE: "IMAGE",
   AUDIO: "AUDIO",
   VIDEO: "VIDEO",
+  CALL_LOG: "CALL_LOG",
 } as const;
 
 export type MediaType = (typeof MediaType)[keyof typeof MediaType];
@@ -48,6 +49,9 @@ export interface Message {
   content: string;
   mediaType?: MediaType;
   mediaUrl?: string;
+  callId?: string;
+  callStatus?: "MISSED" | "ENDED" | "STARTED" | "DECLINED";
+  callDuration?: number;
   readBy: string[];
   isDeleted?: boolean;
   deleteMode: DeleteMode;
