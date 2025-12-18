@@ -16,7 +16,7 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: GetUserProfileRequestDto): Promise<any> {
+  async execute(data: GetUserProfileRequestDto) {
     const { userId, currentUserId } = data;
 
     if (!userId) {
@@ -47,6 +47,7 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
       bannerImage: mapCdnUrl(fullUser.bannerImage),
       status: fullUser.status,
       isVerified: fullUser.isVerified,
+      role: fullUser.role,
       plan: fullUser.plan,
       supportersCount,
       supportingCount,
