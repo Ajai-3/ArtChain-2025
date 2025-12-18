@@ -34,6 +34,8 @@ import { IRemoveGroupAdminUseCase } from "../../applications/interface/usecase/I
 import { RemoveGroupAdminUseCase } from "../../applications/usecase/RemoveGroupAdminUseCase";
 import { IAddGroupMemberUseCase } from "../../applications/interface/usecase/IAddGroupMemberUseCase";
 import { AddGroupMemberUseCase } from "../../applications/usecase/AddGroupMemberUseCase";
+import { IUpdateCallMessageUseCase } from "../../applications/interface/usecase/IUpdateCallMessageUseCase";
+import { UpdateCallMessageUseCase } from "../../applications/usecase/UpdateCallMessageUseCase";
 
 // Services
 import { UserService } from "../http/UserService";
@@ -113,6 +115,9 @@ container
 container
   .bind<IAddGroupMemberUseCase>(TYPES.IAddGroupMemberUseCase)
   .to(AddGroupMemberUseCase);
+container
+  .bind<IUpdateCallMessageUseCase>(TYPES.IUpdateCallMessageUseCase)
+  .to(UpdateCallMessageUseCase);
 
 // Srevice
 container.bind<IUserService>(TYPES.IUserService).to(UserService);

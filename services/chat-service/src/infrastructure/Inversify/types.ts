@@ -23,6 +23,7 @@ export const TYPES = {
   IAddGroupAdminUseCase: Symbol.for("IAddGroupAdminUseCase"),
   IRemoveGroupAdminUseCase: Symbol.for("IRemoveGroupAdminUseCase"),
   IAddGroupMemberUseCase: Symbol.for("IAddGroupMemberUseCase"),
+  IUpdateCallMessageUseCase: Symbol.for("IUpdateCallMessageUseCase"),
 
   // Handlers
   IClientEventHandler: Symbol.for("IClientEventHandler"),

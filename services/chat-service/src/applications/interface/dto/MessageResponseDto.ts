@@ -20,4 +20,7 @@ export interface MessageResponseDto {
   deletedAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
+  callId?: string;
+  callStatus?: string;
+  callDuration?: number;
 }

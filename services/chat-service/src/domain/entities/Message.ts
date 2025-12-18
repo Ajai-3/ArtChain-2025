@@ -3,6 +3,7 @@ export const MediaType = {
   IMAGE: "IMAGE",
   AUDIO: "AUDIO",
   VIDEO: "VIDEO",
+  CALL_LOG: "CALL_LOG",
 } as const;
 
 export const DeleteMode = {
@@ -11,8 +12,16 @@ export const DeleteMode = {
   ALL: "ALL",
 } as const;
 
+export const CallStatus = {
+  MISSED: "MISSED",
+  ENDED: "ENDED",
+  STARTED: "STARTED",
+  DECLINED: "DECLINED",
+} as const;
+
 export type DeleteMode = (typeof DeleteMode)[keyof typeof DeleteMode];
 export type MediaType = (typeof MediaType)[keyof typeof MediaType];
+export type CallStatus = (typeof CallStatus)[keyof typeof CallStatus];
 
 export class Message {
   constructor(
@@ -26,6 +35,9 @@ export class Message {
     public readonly deleteMode: DeleteMode = DeleteMode.NONE,
     public readonly deletedAt?: Date,
     public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly updatedAt?: Date,
+    public readonly callId?: string,
+    public readonly callStatus?: CallStatus,
+    public readonly callDuration?: number
   ) {}
 }

@@ -44,6 +44,9 @@ export class MessageMapper {
       deletedAt: message.deletedAt ?? null,
       createdAt: message.createdAt,
       updatedAt: message.updatedAt,
+      callId: message.callId,
+      callStatus: message.callStatus,
+      callDuration: message.callDuration,
     };
   }
 }
