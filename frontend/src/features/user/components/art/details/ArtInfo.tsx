@@ -15,9 +15,14 @@ interface ArtInfoProps {
     profileImage?: string;
   };
   formattedDate: string;
+  purchaser?: {
+    name: string;
+    username: string;
+    profileImage?: string;
+  } | null;
 }
 
-const ArtInfo: React.FC<ArtInfoProps> = ({ art, artist, formattedDate }) => {
+const ArtInfo: React.FC<ArtInfoProps> = ({ art, artist, formattedDate, purchaser }) => {
   const navigate = useNavigate();
 
   return (
@@ -56,6 +61,33 @@ const ArtInfo: React.FC<ArtInfoProps> = ({ art, artist, formattedDate }) => {
           {formattedDate}
         </div>
       </div>
+
+      {/* Purchaser Info - Only if sold */}
+      {purchaser && (
+        <div className="flex items-center gap-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/50 w-fit">
+          <span className="text-xs text-zinc-400 font-medium">Sold to</span>
+          <div 
+            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate(`/${purchaser.username}`)}
+          >
+            {purchaser.profileImage ? (
+              <img
+                src={purchaser.profileImage}
+                alt={purchaser.username}
+                className="w-6 h-6 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-xs text-zinc-300">
+                {purchaser.username.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="flex flex-col">
+              <span className="text-xs font-semibold text-zinc-200">{purchaser.name}</span>
+            <span className="text-xs font-semibold text-zinc-200">@{purchaser.username}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tags */}
       {art.hashtags?.length > 0 && (

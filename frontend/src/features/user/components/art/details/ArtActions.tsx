@@ -16,9 +16,16 @@ interface ArtActionsProps {
   art: {
     id: string;
     artName: string;
+    artType: string;
     isForSale: boolean;
+    isSold: boolean;
     downloadingDisabled: boolean;
     price?: { artcoins?: number };
+    userId?: string;
+    purchaser?: {
+      id: string;
+      username: string;
+    } | null;
   };
   stats: {
     isLiked: boolean;
@@ -41,6 +48,7 @@ interface ArtActionsProps {
     onReport: () => void;
     onCloseReport: () => void;
     onDownload?: () => void;
+    onBuy?: () => void;
   };
   modals: {
     showLikes: boolean;
@@ -133,12 +141,19 @@ const ArtActions: React.FC<ArtActionsProps> = ({
           />
         )}
 
-        {/* Buy Button */}
-        {art.isForSale && art.price?.artcoins && (
-          <div className="bg-main-color/20 hover:bg-main-color/40 py-1 px-3 text-main-color rounded-full cursor-pointer text-sm font-medium transition-colors">
+        {/* Buy / Sold Status */}
+        {art.isSold ? (
+          <div className="bg-red-500/20 text-red-500 py-1 px-3 rounded-full text-sm font-medium cursor-default border border-red-500/20">
+            Sold
+          </div>
+        ) : art.isForSale && art.price?.artcoins ? (
+          <div 
+            onClick={handlers.onBuy}
+            className="bg-main-color/20 hover:bg-main-color/40 py-1 px-3 text-main-color rounded-full cursor-pointer text-sm font-medium transition-colors"
+          >
             Buy {art.price.artcoins} AC
           </div>
-        )}
+        ) : null}
 
         {/* Download */}
         {!art.downloadingDisabled && (
