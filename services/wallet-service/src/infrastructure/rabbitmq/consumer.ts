@@ -1,7 +1,7 @@
 import { Channel } from "amqplib";
 import { logger } from "../../utils/logger";
 import { startAllConsumers } from "./consumers/index";
-import { getRabbitChannel } from "../rabbitmq";
+import { getRabbitChannel } from "./rabbitmq";
 
 export async function startConsumers() {
   try {

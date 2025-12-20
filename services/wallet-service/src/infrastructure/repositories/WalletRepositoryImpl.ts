@@ -287,14 +287,14 @@ export class WalletRepositoryImpl
     
     return await prisma.$queryRawUnsafe(`
       SELECT 
-        DATE("createdAt") as date,
+        "createdAt"::DATE as date,
         "type",
         SUM("amount") as total_amount,
         COUNT(*) as count_tx
       FROM "Transaction"
       WHERE "walletId" = '${walletId}'
       ${startDate ? `AND "createdAt" >= '${startDate.toISOString()}'` : ''}
-      GROUP BY DATE("createdAt"), "type"
+      GROUP BY "createdAt"::DATE, "type"
       ORDER BY date ASC
     `);
   }

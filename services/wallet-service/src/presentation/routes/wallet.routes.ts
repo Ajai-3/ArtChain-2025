@@ -40,6 +40,7 @@ router.post(ROUTES.TRANSACTION.PAYMENT, transactionController.processPayment);
 router.post(ROUTES.TRANSACTION.COMMISSION_LOCK, transactionController.lockCommissionFunds);
 router.post(ROUTES.TRANSACTION.COMMISSION_DISTRIBUTE, transactionController.distributeCommissionFunds);
 router.post(ROUTES.TRANSACTION.COMMISSION_REFUND, transactionController.refundCommissionFunds);
+router.post(ROUTES.TRANSACTION.TRANSACTION_LOCK, walletController.lockAmount);
 
 // Stripe Controller Routes
 router.post(

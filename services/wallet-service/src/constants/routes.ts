@@ -13,7 +13,7 @@ export const ROUTES = {
     LOCK: "/lock",
     UNLOCK: "/unlock",
     SETTLE_AUCTION: "/settle-auction",
-    STATS_CHART: "/stats-chart",
+    STATS_CHART: "/stats/chart",
     GIFT: "/gift",
   },
 
@@ -27,6 +27,7 @@ export const ROUTES = {
     COMMISSION_LOCK: "/transaction/commission/lock",
     COMMISSION_DISTRIBUTE: "/transaction/commission/distribute",
     COMMISSION_REFUND: "/transaction/commission/refund",
+    TRANSACTION_LOCK: "/transaction/lock",
   },
 
   // Withdrawal routes
