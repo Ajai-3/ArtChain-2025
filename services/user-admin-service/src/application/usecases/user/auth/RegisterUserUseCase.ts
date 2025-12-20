@@ -34,7 +34,6 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await this._userRepo.create({
-      id: null,
       name,
       email,
       username,

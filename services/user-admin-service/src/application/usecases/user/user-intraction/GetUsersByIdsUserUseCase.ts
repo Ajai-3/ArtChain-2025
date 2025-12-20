@@ -36,7 +36,7 @@
         role: user.role,
         status: user.status,
         isVerified: user.isVerified,
-        profileImage: mapCdnUrl(user.profileImage) ?? null,
+        profileImage: mapCdnUrl(user.profileImage) ?? "",
         ...(currentUserId && { isSupporting: supportingMap[user.id] ?? false }),
       }));
     }

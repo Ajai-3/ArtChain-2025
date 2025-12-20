@@ -24,6 +24,10 @@ export class SupportUserUseCase implements ISupportUserUseCase {
       throw new BadRequestError(USER_MESSAGES.INVALID_SUPPORT_REQUEST);
     }
 
+    if (currentUserId === userId) {
+      throw new BadRequestError(USER_MESSAGES.CANNOT_SUPPORT_YOURSELF);
+    }
+
     const supporter = await this._userRepo.findById(currentUserId);
     if (!supporter) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);

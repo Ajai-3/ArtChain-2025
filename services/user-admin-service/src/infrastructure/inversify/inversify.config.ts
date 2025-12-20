@@ -142,6 +142,7 @@ container
   .bind<IUserSearchRepository>(TYPES.IUserSearchRepository)
   .to(ElasticUserSearchRepositoryImpl)
   .inSingletonScope();
+
 container
   .bind<ISupporterRepository>(TYPES.ISupporterRepository)
   .to(SupporterRepositoryImpl)

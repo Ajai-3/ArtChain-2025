@@ -19,6 +19,7 @@ export const USER_MESSAGES = {
   SUPPORTER_REMOVED: 'User remved the supporter.',
   SUPPORT_SUCCESS: 'User is now supporting this account..',
   UNSUPPORT_SUCCESS: 'User stopped supporting this account.',
+  CANNOT_SUPPORT_YOURSELF: 'You cannot support yourself.',
 
   // Account & Status
   ACCOUNT_DEACTIVATED: 'Your account has been deactivated.',

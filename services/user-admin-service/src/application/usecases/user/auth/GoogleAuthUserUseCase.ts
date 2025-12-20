@@ -36,7 +36,6 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
 
     if (!existingUser) {
       const newUser = await this._userRepo.create({
-        id: null,
         name,
         email,
         username: normalizedUsername,

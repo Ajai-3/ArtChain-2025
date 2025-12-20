@@ -18,6 +18,7 @@ import { SupportUnSupportRequestDto } from '../../../application/interface/dtos/
 import { IGetUserSupportersUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase';
 import { IGetUsersByIdsUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
 import { IGetUserSupportingUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
+import { getUsersBatchSchema } from '../../../application/validations/user/getUsersBatchSchema';
 
 @injectable()
 export class UserController implements IUserController {
@@ -56,8 +57,6 @@ export class UserController implements IUserController {
     try {
       const { username } = req.params;
       const currentUserId = req.headers['x-user-id'] as string | undefined;
-
-      console.log(currentUserId);
 
       const dto: GetUserProfileRequestDto = { username, currentUserId };
       const result = await this._getUserProfileUseCase.execute(dto);
@@ -334,13 +333,7 @@ export class UserController implements IUserController {
     next: NextFunction
   ): Promise<Response | any> => {
     try {
-      const { ids, currentUserId } = req.body;
-
-      if (!ids || !Array.isArray(ids) || !ids.length) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'ids array is required' });
-      }
+      const { ids, currentUserId } = validateWithZod(getUsersBatchSchema, req.body);
 
       const users = await this._getUsersByIdsUserUseCase.execute(ids, currentUserId);
 
