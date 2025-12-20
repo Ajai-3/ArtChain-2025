@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { BadRequestError } from 'art-chain-shared';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { tokenService } from '../../../../presentation/service/token.service';
+import { ITokenGenerator } from '../../../interface/auth/ITokenGenerator';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ForgotPasswordResultDto } from '../../../interface/dtos/user/auth/ForgotPasswordResultDto';
 import { IForgotPasswordUserUseCase } from '../../../interface/usecases/user/auth/IForgotPasswordUserUseCase';
@@ -10,7 +10,8 @@ import { IForgotPasswordUserUseCase } from '../../../interface/usecases/user/aut
 @injectable()
 export class ForgotPasswordUserUseCase implements IForgotPasswordUserUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
   ) {}
 
   async execute(identifier: string): Promise<ForgotPasswordResultDto> {
@@ -28,7 +29,7 @@ export class ForgotPasswordUserUseCase implements IForgotPasswordUserUseCase {
       );
     }
 
-    const token = tokenService.generateEmailVerificationToken({
+    const token = this._tokenGenerator.generateEmailVerification({
       name: user.name,
       username: user.username,
       email: user.email,

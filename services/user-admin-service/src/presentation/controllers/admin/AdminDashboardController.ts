@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
-import { IGetPlatformRevenueStatsUseCase } from '../../../application/interface/usecase/admin/IGetPlatformRevenueStatsUseCase';
-import { GetPlatformRevenueStatsDTO } from '../../../application/interface/dto/admin/GetPlatformRevenueStatsDTO';
+import { IGetPlatformRevenueStatsUseCase } from '../../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
+import { GetPlatformRevenueStatsDTO } from '../../../application/interface/dtos/admin/GetPlatformRevenueStatsDTO';
 import { HttpStatus } from 'art-chain-shared';
 
 @injectable()

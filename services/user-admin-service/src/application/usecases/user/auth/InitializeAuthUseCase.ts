@@ -16,7 +16,7 @@ import {
 
 @injectable()
 export class InitializeAuthUseCase implements IInitializeAuthUseCase {
-  constructor(@inject(TYPES.IUserRepository) private _userRepo: IUserRepository) {}
+  constructor(@inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository) {}
 
   async execute(refreshToken: string): Promise<InitializeAuthResultDto> {
     if (!refreshToken) {
@@ -52,7 +52,6 @@ export class InitializeAuthUseCase implements IInitializeAuthUseCase {
       role: user.role,
     });
 
-    // Attach CDN URL to profile image - create a copy to avoid readonly error
     const userWithCdn = { ...user };
     if (userWithCdn.profileImage) {
         userWithCdn.profileImage = mapCdnUrl(userWithCdn.profileImage) ?? null;

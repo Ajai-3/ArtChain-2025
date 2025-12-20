@@ -2,6 +2,16 @@ import 'reflect-metadata';
 import { TYPES } from './types';
 import { Container } from 'inversify';
 
+// Auth
+import { ITokenGenerator } from '../../application/interface/auth/ITokenGenerator';
+import { IEmailTokenVerifier } from '../../application/interface/auth/IEmailTokenVerifier';
+import { IAccessTokenVerifier } from '../../application/interface/auth/IAccessTokenVerifier';
+import { IRefreshTokenVerifier } from '../../application/interface/auth/IRefreshTokenVerifier';
+import { IGoogleTokenVerifier } from '../../application/interface/auth/IGoogleTokenVerifier';
+
+import { JwtTokenAdapter } from '../auth/JwtTokenAdapter';
+import { FirebaseGoogleTokenVerifier } from '../auth/FirebaseGoogleTokenVerifier';
+
 // Repositories & Services
 import { IArtService } from '../../application/interface/http/IArtService';
 import { IUserRepository } from '../../domain/repositories/user/IUserRepository';
@@ -31,6 +41,7 @@ import { IVerifyEmailTokenUserUseCase } from '../../application/interface/usecas
 
 // Use cases - Auth
 import { ILoginUserUseCase } from '../../application/interface/usecases/user/auth/ILoginUserUseCase';
+import { ILogoutUserUseCase } from '../../application/interface/usecases/user/auth/ILogoutUserUseCase';
 import { IRefreshTokenUseCase } from '../../application/interface/usecases/user/auth/IRefreshTokenUseCase';
 import { IRegisterUserUseCase } from '../../application/interface/usecases/user/auth/IRegisterUserUseCase';
 import { IGoogleAuthUserUseCase } from '../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase';
@@ -40,6 +51,7 @@ import { IForgotPasswordUserUseCase } from '../../application/interface/usecases
 import { IAddUserToElasticSearchUseCase } from '../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 import { IInitializeAuthUseCase } from '../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 
+import { LogoutUserUseCase } from '../../application/usecases/user/auth/LogoutUserUseCase';
 import { LoginUserUseCase } from '../../application/usecases/user/auth/LoginUserUseCase';
 import { RegisterUserUseCase } from '../../application/usecases/user/auth/RegisterUserUseCase';
 import { GoogleAuthUserUseCase } from '../../application/usecases/user/auth/GoogleAuthUserUseCase';
@@ -102,6 +114,10 @@ import { IUserManageMentController } from '../../presentation/interfaces/admin/I
 import { AdminAuthController } from '../../presentation/controllers/admin/AdminAuthController';
 import { UserManageMentController } from './../../presentation/controllers/admin/UserManagementController';
 
+// Logger
+import { AppLogger } from '../../infrastructure/logger/AppLogger';
+import { ILogger } from '../../application/interface/ILogger';
+
 // Report
 import { IReportRepository } from '../../domain/repositories/user/IReportRepository';
 import { ReportRepository } from '../repositories/user/ReportRepository';
@@ -121,13 +137,26 @@ import { AdminReportController } from '../../presentation/controllers/admin/Admi
 // Dashboard
 import { IWalletService } from '../../application/interface/http/IWalletService';
 import { WalletService } from '../http/WalletService';
-import { IGetPlatformRevenueStatsUseCase } from '../../application/interface/usecase/admin/IGetPlatformRevenueStatsUseCase';
+import { IGetPlatformRevenueStatsUseCase } from '../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
 import { GetPlatformRevenueStatsUseCase } from '../../application/usecases/admin/dashboard/GetPlatformRevenueStatsUseCase';
 import { IAdminDashboardController } from '../../presentation/interfaces/admin/IAdminDashboardController';
 import { AdminDashboardController } from '../../presentation/controllers/admin/AdminDashboardController';
 
 
+
 const container = new Container();
+
+// Auth
+container.bind<IAccessTokenVerifier>(TYPES.IAccessTokenVerifier)
+.to(JwtTokenAdapter);
+container.bind<IRefreshTokenVerifier>(TYPES.IRefreshTokenVerifier)
+.to(JwtTokenAdapter);
+container.bind<IEmailTokenVerifier>(TYPES.IEmailTokenVerifier)
+.to(JwtTokenAdapter);
+container.bind<ITokenGenerator>(TYPES.ITokenGenerator)
+.to(JwtTokenAdapter);
+container.bind<IGoogleTokenVerifier>(TYPES.IGoogleTokenVerifier)
+.to(FirebaseGoogleTokenVerifier);
 
 // Repositories & Services
 container
@@ -172,6 +201,9 @@ container
   .to(VerifyEmailTokenUserUseCase);
 
 // Use cases - Auth
+container
+  .bind<ILogoutUserUseCase>(TYPES.ILogoutUserUseCase)
+  .to(LogoutUserUseCase);
 container
   .bind<IStartRegisterUserUseCase>(TYPES.IStartRegisterUserUseCase)
   .to(StartRegisterUserUseCase);
@@ -247,6 +279,15 @@ container
   .bind<IGetAllArtistRequestsUseCase>(TYPES.IGetAllArtistRequestsUseCase)
   .to(GetAllArtistRequestsUseCase);
 
+  // Dashboard
+  container.bind<IWalletService>(TYPES.IWalletService).to(WalletService).inSingletonScope();
+  container.bind<IGetPlatformRevenueStatsUseCase>(TYPES.IGetPlatformRevenueStatsUseCase).to(GetPlatformRevenueStatsUseCase);
+  container.bind<IAdminDashboardController>(TYPES.IAdminDashboardController).to(AdminDashboardController);
+
+
+// Logger
+container.bind<ILogger>(TYPES.ILogger).to(AppLogger);
+
 // Controllers
 container.bind<IUserController>(TYPES.IUserController).to(UserController);
 container
@@ -276,9 +317,5 @@ container.bind<IUpdateReportStatusBulkUseCase>(TYPES.IUpdateReportStatusBulkUseC
 container.bind<IReportController>(TYPES.IReportController).to(ReportController);
 container.bind<IAdminReportController>(TYPES.IAdminReportController).to(AdminReportController);
 
-// Dashboard
-container.bind<IWalletService>(TYPES.IWalletService).to(WalletService).inSingletonScope();
-container.bind<IGetPlatformRevenueStatsUseCase>(TYPES.IGetPlatformRevenueStatsUseCase).to(GetPlatformRevenueStatsUseCase);
-container.bind<IAdminDashboardController>(TYPES.IAdminDashboardController).to(AdminDashboardController);
 
 export { container };

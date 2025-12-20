@@ -7,6 +7,8 @@ import { IUserRepository } from '../../../../domain/repositories/user/IUserRepos
 import { StartRegisterRequestDto } from '../../../interface/dtos/user/auth/StartRegisterRequestDto';
 import { IStartRegisterUserUseCase } from '../../../interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { StartRegisterResultDto } from '../../../interface/dtos/user/auth/StartRegisterResultDto';
+import { publishNotification } from '../../../../infrastructure/messaging/rabbitmq';
+import { config } from '../../../../infrastructure/config/env';
 
 @injectable()
 export class StartRegisterUserUseCase implements IStartRegisterUserUseCase {
@@ -34,6 +36,16 @@ export class StartRegisterUserUseCase implements IStartRegisterUserUseCase {
     };
 
     const token = tokenService.generateEmailVerificationToken(payload);
+
+    await publishNotification('email.verification', {
+      type: 'VERIFICATION',
+      email: payload.email,
+      payload: {
+        name: payload.name,
+        token,
+        link: `${config.frontend_URL}/verify?token=${token}`,
+      },
+    });
 
     return { token, payload };
   }

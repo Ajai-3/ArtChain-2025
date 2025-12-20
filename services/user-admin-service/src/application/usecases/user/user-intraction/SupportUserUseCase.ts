@@ -1,23 +1,25 @@
 import { inject, injectable } from 'inversify';
+import { ILogger } from '../../../interface/ILogger';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { publishNotification } from '../../../../infrastructure/messaging/rabbitmq';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
-import { SupportResultDto } from '../../../interface/dtos/user/user-intraction/SupportResultDto';
 import { ISupportUserUseCase } from '../../../interface/usecases/user/user-intraction/ISupportUserUseCase';
 import { SupportUnSupportRequestDto } from '../../../interface/dtos/user/user-intraction/SupportUnSupportRequestDto';
 
 @injectable()
 export class SupportUserUseCase implements ISupportUserUseCase {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.ISupporterRepository)
-    readonly _supporterRepo: ISupporterRepository
+    private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: SupportUnSupportRequestDto): Promise<SupportResultDto> {
+  async execute(data: SupportUnSupportRequestDto): Promise<void> {
     const { userId, currentUserId } = data;
 
     if (!userId || !currentUserId) {
@@ -32,6 +34,7 @@ export class SupportUserUseCase implements ISupportUserUseCase {
     if (!supporter) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
     }
+
     const targetUser = await this._userRepo.findById(userId);
     if (!targetUser) {
       throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
@@ -47,17 +50,14 @@ export class SupportUserUseCase implements ISupportUserUseCase {
 
     await this._supporterRepo.addSupport(supporter.id, targetUser.id);
 
-    return {
-      supporter: {
-        id: supporter.id,
-        username: supporter.username,
-        profileImage: supporter.profileImage,
-      },
-      targetUser: {
-        id: targetUser.id,
-        username: targetUser.username,
-      },
+    await publishNotification('user.supported', {
+      userId: targetUser.id,
+      senderId: supporter.id,
+      senderName: supporter.username,
+      senderProfile: supporter.profileImage,
       createdAt: new Date(),
-    };
+    });
+
+    this._logger.info(`User ${supporter.username} supported ${targetUser.username}`);
   }
 }

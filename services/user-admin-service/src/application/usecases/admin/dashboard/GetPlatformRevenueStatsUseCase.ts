@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { IGetPlatformRevenueStatsUseCase, PlatformRevenueStats } from '../../../interface/usecase/admin/IGetPlatformRevenueStatsUseCase';
-import { GetPlatformRevenueStatsDTO } from '../../../interface/dto/admin/GetPlatformRevenueStatsDTO';
+import { GetPlatformRevenueStatsDTO } from '../../../interface/dtos/admin/GetPlatformRevenueStatsDTO';
 import { IWalletService } from '../../../interface/http/IWalletService';
 
 @injectable()

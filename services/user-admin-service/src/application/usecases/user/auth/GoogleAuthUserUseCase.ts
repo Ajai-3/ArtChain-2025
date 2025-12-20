@@ -4,22 +4,26 @@ import { TYPES } from "../../../../infrastructure/inversify/types";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { BadRequestError, ForbiddenError } from "art-chain-shared";
 import admin from "../../../../infrastructure/config/firebase-admin";
-import { tokenService } from "../../../../presentation/service/token.service";
+import { ITokenGenerator } from "../../../interface/auth/ITokenGenerator";
 import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { GoogleAuthRequestDto } from "../../../interface/dtos/user/auth/GoogleAuthRequestDto";
 import { IGoogleAuthUserUseCase } from "../../../interface/usecases/user/auth/IGoogleAuthUserUseCase";
+import { IGoogleTokenVerifier } from "../../../interface/auth/IGoogleTokenVerifier";
 
 @injectable()
 export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.IGoogleTokenVerifier)
+    private readonly _googleTokenVerifier: IGoogleTokenVerifier
   ) {}
 
   async execute(data: GoogleAuthRequestDto): Promise<AuthResultDto> {
     const { token, email, name } = data;
 
-    const decodedToken = await admin.auth().verifyIdToken(token);
+    const decodedToken = await this._googleTokenVerifier.verify(token);
     if (!decodedToken) {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_VERIFICATION_TOKEN);
     }
@@ -60,8 +64,8 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
         role: newUser.role,
       };
 
-      const refreshToken = tokenService.generateRefreshToken(payload);
-      const accessToken = tokenService.generateAccessToken(payload);
+      const refreshToken = this._tokenGenerator.generateRefresh(payload);
+      const accessToken = this._tokenGenerator.generateAccess(payload);
 
       return { user: newUser, isNewUser: true, accessToken, refreshToken };
     }
@@ -91,8 +95,8 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
       backgroundImage: mapCdnUrl(existingUser.backgroundImage) || "",
     };
 
-    const refreshToken = tokenService.generateRefreshToken(payload);
-    const accessToken = tokenService.generateAccessToken(payload);
+    const refreshToken = this._tokenGenerator.generateRefresh(payload);
+    const accessToken = this._tokenGenerator.generateAccess(payload);
 
     return { user: formattedUser, isNewUser: false, accessToken, refreshToken };
   }

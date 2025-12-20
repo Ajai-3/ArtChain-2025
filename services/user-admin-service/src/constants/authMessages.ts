@@ -1,4 +1,7 @@
 export const AUTH_MESSAGES = {
+  // Auth
+  AUTH_INITIALIZED: 'Auth initialized successfully.',
+
   // Registration
   ALL_FIELDS_REQUIRED: 'All fields are required.',
   TOKEN_REQUIRED: 'Verification token is required.',
