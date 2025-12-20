@@ -6,7 +6,6 @@ import { validateWithZod } from '../../../utils/zodValidator';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../constants/userMessages';
 import { IUserController } from '../../interfaces/user/IUserController';
-import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
 import { updateProfileSchema } from '../../../application/validations/user/updateProfileSchema';
 import { UpdateUserProfileDto } from '../../../application/interface/dtos/user/profile/UpdateUserProfileDto';
 import { IGetUserProfileUseCase } from '../../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
@@ -56,7 +55,7 @@ export class UserController implements IUserController {
   ): Promise<Response | void> => {
     try {
       const { username } = req.params;
-      const currentUserId = req.headers['x-user-id'] as string | undefined;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       const dto: GetUserProfileRequestDto = { username, currentUserId };
       const result = await this._getUserProfileUseCase.execute(dto);
@@ -89,8 +88,8 @@ export class UserController implements IUserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers['x-user-id'] as string;
-      const dto: GetUserProfileRequestDto = { userId, currentUserId };
 
+      const dto: GetUserProfileRequestDto = { userId, currentUserId };
       const user = await this._getUserWithIdUseCase.execute(dto);
 
       logger.info(`User ${user.username} Profile fetched with id ${user.id}.`);
@@ -124,7 +123,6 @@ export class UserController implements IUserController {
       const validatedData = validateWithZod(updateProfileSchema, req.body);
 
       const dto: UpdateUserProfileDto = { ...validatedData, userId };
-
       const user = await this._updateProfileUserUseCase.execute(dto);
 
       logger.info(`User profile updated ${JSON.stringify(user)}`);
@@ -155,21 +153,9 @@ export class UserController implements IUserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers['x-user-id'] as string;
+
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
-
-      const result = await this._supportUserUseCase.execute(dto);
-
-      await publishNotification('user.supported', {
-        supportedUserId: result.targetUser.id,
-        supporterId: result.supporter.id,
-        supporterName: result.supporter.username,
-        supporterProfile: result.supporter.profileImage,
-        createdAt: result.createdAt,
-      });
-
-      logger.info(
-        `${result.supporter.username} supported ${result.targetUser.username} at ${result.createdAt}`
-      );
+      await this._supportUserUseCase.execute(dto);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORT_SUCCESS,
@@ -259,13 +245,16 @@ export class UserController implements IUserController {
       const limit = Number(req.query.limit) || 10;
 
       logger.debug(`Get supporing user userId: ${userId}`);
+
+      // be - data passing to the usecase must be in dto
       let supporters = await this._getSupportersUseCase.execute(
         currentUserId,
         userId,
         page,
         limit
       );
-      console.log(currentUserId);
+
+      // be - filter must be inside the usecase
       if (userId === currentUserId) {
         supporters = supporters.filter((s) => s.id !== currentUserId);
       }

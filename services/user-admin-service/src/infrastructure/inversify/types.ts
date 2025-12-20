@@ -1,4 +1,12 @@
 export const TYPES = {
+  // Auth
+  ITokenGenerator: Symbol.for('ITokenGenerator'),
+  IEmailTokenVerifier: Symbol.for('IEmailTokenVerifier'),
+  IGoogleTokenVerifier: Symbol.for('IGoogleTokenVerifier'),
+  IAccessTokenVerifier: Symbol.for('IAccessTokenVerifier'),
+  IRefreshTokenVerifier: Symbol.for('IRefreshTokenVerifier'),
+  FirebaseGoogleTokenVerifier: Symbol.for('FirebaseGoogleTokenVerifier'),
+  
   // Repositories
   IUserRepository: Symbol.for('IUserRepository'),
   IReportRepository: Symbol.for('IReportRepository'),
@@ -22,6 +30,7 @@ export const TYPES = {
 
   // Use cases - Auth
   ILoginUserUseCase: Symbol.for('ILoginUserUseCase'),
+  ILogoutUserUseCase: Symbol.for('ILogoutUserUseCase'),
   IRefreshTokenUseCase: Symbol.for('IRefreshTokenUseCase'),
   IRegisterUserUseCase: Symbol.for('IRegisterUserUseCase'),
   IGoogleAuthUserUseCase: Symbol.for('IGoogleAuthUserUseCase'),
@@ -56,6 +65,9 @@ export const TYPES = {
   IGetGroupedReportsUseCase: Symbol.for('IGetGroupedReportsUseCase'),
   IUpdateReportStatusBulkUseCase: Symbol.for('IUpdateReportStatusBulkUseCase'),
   IGetPlatformRevenueStatsUseCase: Symbol.for('IGetPlatformRevenueStatsUseCase'),
+
+  // Logger
+  ILogger: Symbol.for('ILogger'),
 
   // Controllers
   IUserController: Symbol.for('IUserController'),

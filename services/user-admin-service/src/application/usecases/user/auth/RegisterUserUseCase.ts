@@ -4,8 +4,8 @@ import { ConflictError } from "art-chain-shared";
 import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
 import { TYPES } from "../../../../infrastructure/inversify/types";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { tokenService } from "../../../../presentation/service/token.service";
 import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
+import { ITokenGenerator } from "../../../../application/interface/auth/ITokenGenerator";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { RegisterRequestDto } from "../../../interface/dtos/user/auth/RegisterRequestDto";
 import { IRegisterUserUseCase } from "../../../interface/usecases/user/auth/IRegisterUserUseCase";
@@ -13,7 +13,8 @@ import { IRegisterUserUseCase } from "../../../interface/usecases/user/auth/IReg
 @injectable()
 export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator
   ) {}
 
   async execute(data: RegisterRequestDto): Promise<AuthResultDto> {
@@ -65,8 +66,8 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       backgroundImage: mapCdnUrl(user.backgroundImage) || "",
     };
 
-    const refreshToken = tokenService.generateRefreshToken(payload);
-    const accessToken = tokenService.generateAccessToken(payload);
+    const refreshToken = this._tokenGenerator.generateRefresh(payload);
+    const accessToken = this._tokenGenerator.generateAccess(payload);
 
     return { user: formattedUser, accessToken, refreshToken };
   }

@@ -1,8 +1,8 @@
 import { HttpStatus } from 'art-chain-shared';
-import { logger } from '../../../utils/logger';
 import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../../infrastructure/inversify/types';
+import { ILogger } from '../../../application/interface/ILogger';
 
 import { tokenService } from '../../service/token.service';
 import { config } from '../../../infrastructure/config/env';
@@ -25,6 +25,7 @@ import { passwordTokenSchema } from '../../../application/validations/user/Passw
 import { forgotPasswordSchema } from '../../../application/validations/user/forgotPasswordSchema';
 
 import { ILoginUserUseCase } from '../../../application/interface/usecases/user/auth/ILoginUserUseCase';
+import { ILogoutUserUseCase } from '../../../application/interface/usecases/user/auth/ILogoutUserUseCase';
 import { IRefreshTokenUseCase } from '../../../application/interface/usecases/user/auth/IRefreshTokenUseCase';
 import { IRegisterUserUseCase } from './../../../application/interface/usecases/user/auth/IRegisterUserUseCase';
 import { IGoogleAuthUserUseCase } from '../../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase';
@@ -38,6 +39,10 @@ import { IInitializeAuthUseCase } from '../../../application/interface/usecases/
 @injectable()
 export class UserAuthController implements IUserAuthController {
   constructor(
+    @inject(TYPES.ILogger)
+    private readonly _logger: ILogger,
+    @inject(TYPES.ILogoutUserUseCase)
+    private readonly _logoutUserUseCase: ILogoutUserUseCase,
     @inject(TYPES.IStartRegisterUserUseCase)
     private readonly _startRegisterUserUseCase: IStartRegisterUserUseCase,
     @inject(TYPES.IRegisterUserUseCase)
@@ -57,8 +62,6 @@ export class UserAuthController implements IUserAuthController {
     @inject(TYPES.IInitializeAuthUseCase)
     private readonly _initializeAuthUseCase: IInitializeAuthUseCase
   ) {}
-
-// ... (existing methods until refreshToken)
 
   //#=================================================================================================================
   //# INITIALIZE USER AUTH
@@ -80,19 +83,17 @@ export class UserAuthController implements IUserAuthController {
         refreshToken
       );
 
-      logger.info(
+      this._logger.info(
         `Auth initialized for user: ${user.email}`
       );
 
       return res
         .status(HttpStatus.OK)
-        .json({ message: 'Auth initialized successfully', accessToken, user });
+        .json({ message: AUTH_MESSAGES.AUTH_INITIALIZED, accessToken, user });
     } catch (error) {
       next(error);
     }
   };
-
-
 
   //# ================================================================================================================
   //# START REGISTER USER
@@ -107,28 +108,13 @@ export class UserAuthController implements IUserAuthController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const result = validateWithZod(startRegisterSchema, req.body);
-
-      const { name, username, email } = result;
-
-      const dto: StartRegisterRequestDto = { name, username, email };
-
+      const dto: StartRegisterRequestDto = validateWithZod(startRegisterSchema, req.body);
       const { token, payload } = await this._startRegisterUserUseCase.execute(
         dto
       );
 
-      await publishNotification('email.verification', {
-        type: 'VERIFICATION',
-        email: payload.email,
-        payload: {
-          name: payload.name,
-          token,
-          link: `${config.frontend_URL}/verify?token=${token}`,
-        },
-      });
-
       console.log(`${config.frontend_URL}/verify?token=${token}`);
-      logger.info(`Start registration sucessfull of user ${payload.name}`);
+      this._logger.info(`Start registration sucessfull of user ${payload.name}`);
 
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
@@ -192,7 +178,7 @@ export class UserAuthController implements IUserAuthController {
 
       await publishNotification('user.created', elasticUser);
 
-      logger.info(`${user.username} account created successfully.`);
+      this._logger.info(`${user.username} account created successfully.`);
 
       return res.status(HttpStatus.CREATED).json({
         message: AUTH_MESSAGES.REGISTRATION_SUCCESS,
@@ -217,12 +203,7 @@ export class UserAuthController implements IUserAuthController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const result = validateWithZod(loginUserSchema, req.body);
-
-      const { identifier, password } = result;
-
-      const dto: LoginRequestDto = { identifier, password };
-
+      const dto: LoginRequestDto = validateWithZod(loginUserSchema, req.body);
       const { user, accessToken, refreshToken } =
         await this._loginUserUseCase.execute(dto);
 
@@ -233,9 +214,10 @@ export class UserAuthController implements IUserAuthController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      logger.info(
+      this._logger.info(
         `${user.username} Logged at ${new Date().toLocaleTimeString()}`
       );
+
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.LOGIN_SUCCESS,
         user,
@@ -259,12 +241,7 @@ export class UserAuthController implements IUserAuthController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const result = validateWithZod(googleAuthSchema, req.body);
-
-      const { token, email, name } = result;
-
-      const dto: GoogleAuthRequestDto = { token, email, name };
-
+      const dto: GoogleAuthRequestDto = validateWithZod(googleAuthSchema, req.body);
       const { user, isNewUser, accessToken, refreshToken } =
         await this._googleAuthUserUseCase.execute(dto);
 
@@ -283,7 +260,7 @@ export class UserAuthController implements IUserAuthController {
         await publishNotification('user.created', elasticUser);
       }
 
-      logger.info(
+      this._logger.info(
         `${user.username} has ${
           isNewUser ? 'just registered (new user)' : 'logged in (existing user)'
         }`
@@ -330,7 +307,7 @@ export class UserAuthController implements IUserAuthController {
         },
       });
 
-      logger.info(`Password reset requested for email: ${identifier}`);
+      this._logger.info(`Password reset requested for email: ${identifier}`);
 
       return res
         .status(HttpStatus.OK)
@@ -353,15 +330,11 @@ export class UserAuthController implements IUserAuthController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const result = validateWithZod(passwordTokenSchema, req.body);
-
-      const { token, password } = result;
-
-      const dto: ResetPasswordRequestDto = { token, password };
+      const dto: ResetPasswordRequestDto = validateWithZod(passwordTokenSchema, req.body);
       await this._resetPasswordUserUseCase.execute(dto);
 
-      logger.info(
-        `Password reset attempt with token: ${JSON.stringify(token)} for user.`
+      this._logger.info(
+        `Password reset attempt with token: ${JSON.stringify(dto.token)} for user.`
       );
 
       return res
@@ -392,7 +365,7 @@ export class UserAuthController implements IUserAuthController {
         refreshToken
       );
 
-      logger.info(
+      this._logger.info(
         `Access token refresh requested. Refresh token present: ${JSON.stringify(
           refreshToken
         )}`
@@ -421,31 +394,13 @@ export class UserAuthController implements IUserAuthController {
     try {
       const refreshToken = req.cookies.userRefreshToken;
 
-      if (!refreshToken) {
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: AUTH_MESSAGES.REFRESH_TOKEN_REQUIRED });
-      }
-
-      const payload = tokenService.verifyRefreshToken(refreshToken);
-
-      if (typeof payload !== 'object' || payload === null) {
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: AUTH_MESSAGES.INVALID_REFRESH_TOKEN });
-      }
+      await this._logoutUserUseCase.execute(refreshToken);
 
       res.clearCookie('userRefreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
       });
-
-      logger.info(
-        `Logout attempt for user: ${
-          payload?.username || 'unknown'
-        }. Refresh token present: ${!!refreshToken}`
-      );
 
       return res
         .status(HttpStatus.OK)
