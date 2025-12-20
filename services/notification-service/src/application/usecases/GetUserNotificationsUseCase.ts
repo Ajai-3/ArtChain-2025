@@ -24,7 +24,6 @@ export class GetUserNotificationsUseCase
       limit
     );
 
-    // Generic enrichment for any notification containing senderId
     const notificationsWithSender = notifications.filter(n => n.data && n.data.senderId);
     
     if (notificationsWithSender.length > 0) {
@@ -32,7 +31,12 @@ export class GetUserNotificationsUseCase
         const users = await this._userServiceClient.getUsers(senderIds);
         const userMap = new Map(users.map(u => [u.id, u]));
 
-        // Attach user info to notification data
+        if(users.length === 0) {
+            console.log("no users")
+        }
+
+        console.log("users", users);
+
         notifications.forEach(n => {
             if (n.data && n.data.senderId) {
                 const user = userMap.get(n.data.senderId);
