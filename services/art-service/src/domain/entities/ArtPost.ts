@@ -21,10 +21,9 @@ export class ArtPost {
     public readonly artcoins?: number,
     public readonly fiatPrice?: number | null,
     public readonly postType: PostType = "original",
-    public readonly originalPostId?: string,
     public readonly status: PostStatus = "active",
+    public readonly isSold: boolean = false,
     public readonly createdAt?: Date,
-    public readonly updatedAt?: Date,
-    public readonly ownerId?: string
+    public readonly updatedAt?: Date
   ) {}
 }

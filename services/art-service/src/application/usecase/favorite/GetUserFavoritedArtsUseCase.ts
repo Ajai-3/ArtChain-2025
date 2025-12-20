@@ -4,7 +4,7 @@ import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
+import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
@@ -35,8 +35,6 @@ export class GetUserFavoritedArtsUseCase {
     const userRes = await UserService.getUserById(userId, currentUserId);
     if (!userRes) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
 
-    const user = userRes.data;
-
     const arts = await Promise.all(
       favorites.map(async (fav) => {
         const art = await this._artRepo.findById(fav.postId);
@@ -56,7 +54,7 @@ export class GetUserFavoritedArtsUseCase {
           (await this._favoriteRepo.findFavorite(art._id, currentUserId));
 
         return {
-          ...toArtWithUserResponse(art, user),
+          ...toArtWithUserResponse(art, userRes),
           likeCount,
           favoriteCount,
           commentCount,

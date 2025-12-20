@@ -3,12 +3,14 @@ import { inject, injectable } from "inversify";
 import { ART_MESSAGES } from "../../../constants/ArtMessages";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { UserService } from "../../../infrastructure/service/UserService";
+import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
+
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
+import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 import { IGetArtByNameUseCase } from "../../interface/usecase/art/IGetArtByNameUseCase";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetArtByNameUseCase implements IGetArtByNameUseCase {
@@ -19,7 +21,11 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
     @inject(TYPES.ICommentRepository)
     private readonly _commentRepo: ICommentRepository,
     @inject(TYPES.IFavoriteRepository)
-    private readonly _favoriteRepo: IFavoriteRepository
+    private readonly _favoriteRepo: IFavoriteRepository,
+    @inject(TYPES.IPurchaseRepository)
+    private readonly _purchaseRepo: IPurchaseRepository,
+    @inject(TYPES.IUserService)
+    private readonly _userService: IUserService
   ) {}
 
   async execute(artName: string, currentUserId: string) {
@@ -28,7 +34,7 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
       throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
     }
 
-    const userRes = await UserService.getUserById(
+    const userRes = await this._userService.getUserById(
       artFull.userId,
       currentUserId
     );
@@ -51,8 +57,16 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
       (await this._favoriteRepo.findFavorite(artFull._id, currentUserId))
     );
 
+    let purchaser = null;
+    if (artFull.isForSale && artFull.isSold) {
+        const purchase = await this._purchaseRepo.findByArtId(artFull._id);
+        if (purchase) {
+            purchaser = await this._userService.getUserById(purchase.userId, currentUserId);
+        }
+    }
+
     return {
-      ...toArtWithUserResponse(artFull, userRes.data),
+      ...toArtWithUserResponse(artFull, userRes, purchaser),
       isLiked,
       likeCount,
       isFavorited,

@@ -12,8 +12,10 @@ export const TYPES = {
   IAIGenerationRepository: Symbol.for("IAIGenerationRepository"),
   IAIConfigRepository: Symbol.for("IAIConfigRepository"),
   IPlatformConfigRepository: Symbol.for("IPlatformConfigRepository"),
+  IUserService: Symbol.for("IUserService"),
   AIProviderService: Symbol.for("AIProviderService"),
   ICommissionRepository: Symbol.for("ICommissionRepository"),
+  IPurchaseRepository: Symbol.for("IPurchaseRepository"),
 
   // Use Cases - Art
   IGetAllArtUseCase: Symbol.for("IGetAllArtUseCase"),

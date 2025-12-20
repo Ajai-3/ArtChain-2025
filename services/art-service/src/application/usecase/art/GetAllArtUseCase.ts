@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
+import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
 import { IGetAllArtUseCase } from "../../interface/usecase/art/IGetAllArtUseCase";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";

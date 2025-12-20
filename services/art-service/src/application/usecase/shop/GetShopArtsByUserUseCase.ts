@@ -21,8 +21,6 @@ export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    const user = userRes.data;
-
     const arts = await this._artRepo.findAllByUser(userId, page, limit);
 
     const artsWithFavorites = await Promise.all(
@@ -30,7 +28,7 @@ export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
           art._id.toString()
         );
-        return { ...art, favoriteCount, user };
+        return { ...art, favoriteCount, user: userRes };
       })
     );
 

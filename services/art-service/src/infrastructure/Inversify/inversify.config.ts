@@ -15,6 +15,8 @@ import { IAIConfigRepository } from "../../domain/repositories/IAIConfigReposito
 import { AIProviderService } from "../service/AIProviderService";
 import { IWalletService } from "../../domain/interfaces/IWalletService";
 import { WalletService } from "../service/WalletService";
+import { IUserService } from "../../application/interface/service/IUserService";
+import { UserServiceImpl } from "../service/UserServiceImpl";
 
 import { GetCommissionStatsUseCase } from "../../application/usecase/commission/GetCommissionStatsUseCase";
 
@@ -29,6 +31,10 @@ import { IPlatformConfigRepository } from "../../domain/repositories/IPlatformCo
 import { PlatformConfigRepositoryImpl } from "../repositories/PlatformConfigRepositoryImpl";
 import { IGetPlatformConfigUseCase } from "../../application/interface/usecase/admin/IGetPlatformConfigUseCase";
 import { GetPlatformConfigUseCase } from "../../application/usecase/admin/GetPlatformConfigUseCase";
+
+import { IPurchaseRepository } from "../../domain/repositories/IPurchaseRepository";
+import { PurchaseRepositoryImpl } from "../repositories/PurchaseRepositoryImpl";
+
 import { IUpdatePlatformConfigUseCase } from "../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase";
 import { UpdatePlatformConfigUseCase } from "../../application/usecase/admin/UpdatePlatformConfigUseCase";
 import { IAdminPlatformConfigController } from "../../presentation/interface/IAdminPlatformConfigController";
@@ -191,7 +197,9 @@ container.bind<ILikeRepository>(TYPES.ILikeRepository).to(LikeRepositoryImpl);
 container.bind<ICommentRepository>(TYPES.ICommentRepository).to(CommentRepositoryImpl);
 container.bind<IFavoriteRepository>(TYPES.IFavoriteRepository).to(FavoriteRepositoryImpl);
 container.bind<IAIGenerationRepository>(TYPES.IAIGenerationRepository).to(AIGenerationRepositoryImpl);
+
 container.bind<IAIConfigRepository>(TYPES.IAIConfigRepository).to(AIConfigRepositoryImpl);
+container.bind<IPurchaseRepository>(TYPES.IPurchaseRepository).to(PurchaseRepositoryImpl);
 
 // AI Use Cases
 container.bind<IGenerateAIImageUseCase>(TYPES.IGenerateAIImageUseCase).to(GenerateAIImageUseCase);
@@ -204,6 +212,7 @@ container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAna
 container.bind<IDeleteAIGenerationUseCase>(TYPES.IDeleteAIGenerationUseCase).to(DeleteAIGenerationUseCase);
 container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
 container.bind<IWalletService>(TYPES.IWalletService).to(WalletService);
+container.bind<IUserService>(TYPES.IUserService).to(UserServiceImpl);
 
 // AI Controllers
 container.bind<IAIController>(TYPES.IAIController).to(AIController);

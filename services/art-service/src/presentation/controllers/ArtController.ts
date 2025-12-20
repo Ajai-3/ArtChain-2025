@@ -66,6 +66,8 @@ export class ArtController implements IArtController {
       );
 
       logger.info(`${data.art.artName} fetched succefully.`);
+
+      console.log("Art fetched successfully.", data);
       return res
         .status(HttpStatus.OK)
         .json({ message: ART_MESSAGES.ART_FETCH_WITH_ART_NAME_SUCESS, data });

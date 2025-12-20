@@ -3,7 +3,7 @@ import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { toArtWithUserResponse } from "../../../utils/mappers/artWithUserMapper";
+import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
@@ -52,7 +52,7 @@ export class GetAllArtWithUserIdUseCase {
         );
 
         return {
-          ...toArtWithUserResponse(art, userRes.data),
+          ...toArtWithUserResponse(art, userRes),
           likeCount,
           favoriteCount,
           commentCount,

@@ -19,13 +19,13 @@ const ArtPostSchema = new Schema<ArtPostDocument>(
     isPrivate: { type: Boolean, default: false },
     isSensitive: { type: Boolean, default: false },
     isForSale: { type: Boolean, default: false },
+    isSold: { type: Boolean, default: false },
 
     priceType: { type: String, enum: ["artcoin", "fiat"] as PriceType[] },
     artcoins: { type: Number },
     fiatPrice: { type: Number },
 
     postType: { type: String, enum: ["original", "repost", "purchased"] as PostType[], default: "original" },
-    originalPostId: { type: String },
     status: { type: String, enum: ["active", "archived", "deleted"] as PostStatus[], default: "active" },
   },
   { timestamps: true }

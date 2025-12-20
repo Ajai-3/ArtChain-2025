@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
 import { CommissionStatus } from "../../../domain/entities/Commission";
-import { IGetPlatformConfigUseCase } from "../platform-config/IGetPlatformConfigUseCase";
+import { IGetPlatformConfigUseCase } from "../../interface/usecase/admin/IGetPlatformConfigUseCase";
 
 @injectable()
 export class GetCommissionStatsUseCase {
