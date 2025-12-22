@@ -4,10 +4,11 @@ import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { publishNotification } from '../../../../infrastructure/messaging/rabbitmq';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
 import { ISupportUserUseCase } from '../../../interface/usecases/user/user-intraction/ISupportUserUseCase';
+import { IEventBus } from '../../../interface/events/IEventBus';
+import { UserSupportedEvent } from '../../../../domain/events/UserSupportedEvent';
 import { SupportUnSupportRequestDto } from '../../../interface/dtos/user/user-intraction/SupportUnSupportRequestDto';
 
 @injectable()
@@ -16,7 +17,9 @@ export class SupportUserUseCase implements ISupportUserUseCase {
     @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.ISupporterRepository)
-    private readonly _supporterRepo: ISupporterRepository
+    private readonly _supporterRepo: ISupporterRepository,
+    @inject(TYPES.IEventBus)
+    private readonly _eventBus: IEventBus
   ) {}
 
   async execute(data: SupportUnSupportRequestDto): Promise<void> {
@@ -50,13 +53,12 @@ export class SupportUserUseCase implements ISupportUserUseCase {
 
     await this._supporterRepo.addSupport(supporter.id, targetUser.id);
 
-    await publishNotification('user.supported', {
-      userId: targetUser.id,
-      senderId: supporter.id,
-      senderName: supporter.username,
-      senderProfile: supporter.profileImage,
-      createdAt: new Date(),
-    });
+    await this._eventBus.publish(new UserSupportedEvent(
+      targetUser.id,
+      supporter.id,
+      supporter.username,
+      supporter.profileImage || ''
+    ));
 
     this._logger.info(`User ${supporter.username} supported ${targetUser.username}`);
   }

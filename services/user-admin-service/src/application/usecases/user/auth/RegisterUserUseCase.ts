@@ -9,12 +9,15 @@ import { ITokenGenerator } from "../../../../application/interface/auth/ITokenGe
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { RegisterRequestDto } from "../../../interface/dtos/user/auth/RegisterRequestDto";
 import { IRegisterUserUseCase } from "../../../interface/usecases/user/auth/IRegisterUserUseCase";
+import { IEventBus } from "../../../interface/events/IEventBus";
+import { UserCreatedEvent } from "../../../../domain/events/UserCreatedEvent";
 
 @injectable()
 export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
-    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator
+    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.IEventBus) private readonly _eventBus: IEventBus
   ) {}
 
   async execute(data: RegisterRequestDto): Promise<AuthResultDto> {
@@ -53,12 +56,6 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       updatedAt: new Date(),
     });
 
-    const payload = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
     const formattedUser = {
       ...user,
       profileImage: mapCdnUrl(user.profileImage) || "",
@@ -66,8 +63,16 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       backgroundImage: mapCdnUrl(user.backgroundImage) || "",
     };
 
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
     const refreshToken = this._tokenGenerator.generateRefresh(payload);
     const accessToken = this._tokenGenerator.generateAccess(payload);
+
+    await this._eventBus.publish(new UserCreatedEvent(formattedUser));
 
     return { user: formattedUser, accessToken, refreshToken };
   }

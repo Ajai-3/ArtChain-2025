@@ -1,8 +1,8 @@
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { tokenService } from '../../../../presentation/service/token.service';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { IEmailTokenVerifier } from '../../../interface/auth/IEmailTokenVerifier';
 import { VerifyEmailTokenRequestDto } from '../../../interface/dtos/user/security/VerifyEmailTokenRequestDto';
 import { IVerifyEmailTokenUserUseCase } from '../../../interface/usecases/user/security/IVerifyEmailTokenUserUseCase';
 import {
@@ -16,13 +16,14 @@ export class VerifyEmailTokenUserUseCase
   implements IVerifyEmailTokenUserUseCase
 {
   constructor(
+    @inject(TYPES.IEmailTokenVerifier) private readonly _emailTokenVerifier: IEmailTokenVerifier,
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository
   ) {}
 
   async execute(data: VerifyEmailTokenRequestDto): Promise<any> {
     const { userId, token } = data;
 
-    const decoded = tokenService.verifyEmailVerificationToken(token);
+    const decoded = this._emailTokenVerifier.verify(token);
     if (!decoded) {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_CHANGE_EMAIL_TOKEN);
     }

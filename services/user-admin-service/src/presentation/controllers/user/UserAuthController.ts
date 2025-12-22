@@ -9,7 +9,6 @@ import { config } from '../../../infrastructure/config/env';
 import { validateWithZod } from '../../../utils/zodValidator';
 import { AUTH_MESSAGES } from '../../../constants/authMessages';
 import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
-import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
 
 import { LoginRequestDto } from '../../../application/interface/dtos/user/auth/LoginRequestDto';
 import { RegisterRequestDto } from '../../../application/interface/dtos/user/auth/RegisterRequestDto';
@@ -32,7 +31,6 @@ import { IGoogleAuthUserUseCase } from '../../../application/interface/usecases/
 import { IResetPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IResetPasswordUserUseCase';
 import { IStartRegisterUserUseCase } from '../../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { IForgotPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
-import { IAddUserToElasticSearchUseCase } from '../../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 import { IInitializeAuthUseCase } from '../../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 
 
@@ -57,10 +55,8 @@ export class UserAuthController implements IUserAuthController {
     private readonly _resetPasswordUserUseCase: IResetPasswordUserUseCase,
     @inject(TYPES.IRefreshTokenUseCase)
     private readonly _refreshTokenUserUseCase: IRefreshTokenUseCase,
-    @inject(TYPES.IAddUserToElasticSearchUseCase)
-    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase,
     @inject(TYPES.IInitializeAuthUseCase)
-    private readonly _initializeAuthUseCase: IInitializeAuthUseCase
+    private readonly _initializeAuthUseCase: IInitializeAuthUseCase,
   ) {}
 
   //#=================================================================================================================
@@ -113,7 +109,6 @@ export class UserAuthController implements IUserAuthController {
         dto
       );
 
-      console.log(`${config.frontend_URL}/verify?token=${token}`);
       this._logger.info(`Start registration sucessfull of user ${payload.name}`);
 
       return res.status(HttpStatus.OK).json({
@@ -140,11 +135,6 @@ export class UserAuthController implements IUserAuthController {
   ): Promise<Response | void> => {
     try {
       const { token, password } = req.body;
-      if (!token || !password) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: AUTH_MESSAGES.ALL_FIELDS_REQUIRED });
-      }
 
       const decoded = tokenService.verifyEmailVerificationToken(token);
       if (!decoded) {
@@ -153,16 +143,12 @@ export class UserAuthController implements IUserAuthController {
           .json({ error: AUTH_MESSAGES.INVALID_VERIFICATION_TOKEN });
       }
 
-      const result = validateWithZod(registerUserSchema, {
+      const dto: RegisterRequestDto = validateWithZod(registerUserSchema, {
         name: decoded.name,
         username: decoded.username,
         email: decoded.email,
         password,
       });
-
-      const { name, username, email } = result;
-
-      const dto: RegisterRequestDto = { name, username, email, password };
 
       const { user, accessToken, refreshToken } =
         await this._registerUserUseCase.execute(dto);
@@ -174,9 +160,6 @@ export class UserAuthController implements IUserAuthController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      const elasticUser = await this._addUserToElasticUserUseCase.execute(user);
-
-      await publishNotification('user.created', elasticUser);
 
       this._logger.info(`${user.username} account created successfully.`);
 
@@ -252,14 +235,6 @@ export class UserAuthController implements IUserAuthController {
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
-      if (isNewUser) {
-        const elasticUser = await this._addUserToElasticUserUseCase.execute(
-          user
-        );
-
-        await publishNotification('user.created', elasticUser);
-      }
-
       this._logger.info(
         `${user.username} has ${
           isNewUser ? 'just registered (new user)' : 'logged in (existing user)'
@@ -293,19 +268,9 @@ export class UserAuthController implements IUserAuthController {
     try {
       const { identifier } = validateWithZod(forgotPasswordSchema, req.body);
 
-      const { user, token } = await this._forgotPasswordUserUseCase.execute(
+      const { user } = await this._forgotPasswordUserUseCase.execute(
         identifier
       );
-
-      await publishNotification('email.password_reset', {
-        type: 'PASSWORD_RESET',
-        email: user.email,
-        payload: {
-          name: user.name,
-          token,
-          link: `${config.frontend_URL}/reset-password?token=${token}`,
-        },
-      });
 
       this._logger.info(`Password reset requested for email: ${identifier}`);
 

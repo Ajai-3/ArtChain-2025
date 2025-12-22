@@ -2,15 +2,19 @@ import { logger } from '../../utils/logger';
 import { ILogger } from '../../application/interface/ILogger';
 
 export class AppLogger implements ILogger {
-  info(message: string, meta?: any): void {
+  info(message: string, meta?: unknown): void {
     logger.info(message, meta);
   }
 
-  warn(message: string, meta?: any): void {
+  warn(message: string, meta?: unknown): void {
     logger.warn(message, meta);
   }
 
-  error(message: string, meta?: any): void {
+  debug(message: string, meta?: unknown): void {
+    logger.debug(message, meta);
+  }
+
+  error(message: string, meta?: unknown): void {
     logger.error(message, meta);
   }
 }

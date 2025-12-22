@@ -2,13 +2,12 @@ import express from 'express';
 import 'reflect-metadata';
 import { logger } from './utils/logger';
 import cookieParser from 'cookie-parser';
+import { ROUTES } from './constants/routes';
 import { createErrorHandler } from 'art-chain-shared';
 
 import authRouter from './presentation/routes/user/auth.routes';
 import userRouter from './presentation/routes/user/user.routes';
 import adminRouter from './presentation/routes/admin/admin.routes';
-import { ROUTES } from './constants/routes';
-
 const app = express();
 
 app.use(cookieParser());

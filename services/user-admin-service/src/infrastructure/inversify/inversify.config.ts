@@ -12,6 +12,23 @@ import { IGoogleTokenVerifier } from '../../application/interface/auth/IGoogleTo
 import { JwtTokenAdapter } from '../auth/JwtTokenAdapter';
 import { FirebaseGoogleTokenVerifier } from '../auth/FirebaseGoogleTokenVerifier';
 
+// Messaging
+import { IEventBus } from '../../application/interface/events/IEventBus';
+import { IMessagePublisher } from '../../application/interface/messaging/IMessagePublisher';
+
+import { EventBus } from '../../application/events/EventBus';
+import { RabbitMQMessagePublisher } from '../messaging/RabbitMQMessagePublisher';
+import { EventType } from '../../domain/events/EventType';
+import { IEventHandler } from '../../application/interface/events/handlers/IEventHandler';
+
+// Handlers
+import { UserCreatedElasticHandler } from '../../application/events/handlers/UserCreatedElasticHandler';
+import { UserSupportedRabbitHandler } from '../../application/events/handlers/UserSupportedRabbitHandler';
+import { EmailVerificationRabbitHandler } from '../../application/events/handlers/EmailVerificationRabbitHandler';
+import { EmailChangeVerificationRabbitHandler } from '../../application/events/handlers/EmailChangeVerificationRabbitHandler';
+import { UserUpdatedElasticHandler } from '../../application/events/handlers/UserUpdatedElasticHandler';
+import { PasswordResetRabbitHandler } from '../../application/events/handlers/PasswordResetRabbitHandler';
+
 // Repositories & Services
 import { IArtService } from '../../application/interface/http/IArtService';
 import { IUserRepository } from '../../domain/repositories/user/IUserRepository';
@@ -48,7 +65,6 @@ import { IGoogleAuthUserUseCase } from '../../application/interface/usecases/use
 import { IResetPasswordUserUseCase } from '../../application/interface/usecases/user/auth/IResetPasswordUserUseCase';
 import { IStartRegisterUserUseCase } from '../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { IForgotPasswordUserUseCase } from '../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
-import { IAddUserToElasticSearchUseCase } from '../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
 import { IInitializeAuthUseCase } from '../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 
 import { LogoutUserUseCase } from '../../application/usecases/user/auth/LogoutUserUseCase';
@@ -59,7 +75,6 @@ import { RefreshTokenUserUseCase } from '../../application/usecases/user/auth/Re
 import { ResetPasswordUserUseCase } from '../../application/usecases/user/auth/ResetPasswordUserUseCase';
 import { StartRegisterUserUseCase } from '../../application/usecases/user/auth/StartRegisterUserUseCase';
 import { ForgotPasswordUserUseCase } from '../../application/usecases/user/auth/ForgotPasswordUserUseCase';
-import { AddUserToElasticSearchUseCase } from '../../application/usecases/user/search/AddUserToElasticSearchUseCase';
 import { InitializeAuthUseCase } from '../../application/usecases/user/auth/InitializeAuthUseCase';
 
 // Use cases - User Profile & Interaction
@@ -224,9 +239,6 @@ container
   .bind<IRefreshTokenUseCase>(TYPES.IRefreshTokenUseCase)
   .to(RefreshTokenUserUseCase);
 container
-  .bind<IAddUserToElasticSearchUseCase>(TYPES.IAddUserToElasticSearchUseCase)
-  .to(AddUserToElasticSearchUseCase);
-container
   .bind<IInitializeAuthUseCase>(TYPES.IInitializeAuthUseCase)
   .to(InitializeAuthUseCase);
 
@@ -288,6 +300,10 @@ container
 // Logger
 container.bind<ILogger>(TYPES.ILogger).to(AppLogger);
 
+// Messaging
+container.bind<IEventBus>(TYPES.IEventBus).to(EventBus).inSingletonScope();
+container.bind<IMessagePublisher>(TYPES.IMessagePublisher).to(RabbitMQMessagePublisher).inSingletonScope();
+
 // Controllers
 container.bind<IUserController>(TYPES.IUserController).to(UserController);
 container
@@ -317,5 +333,44 @@ container.bind<IUpdateReportStatusBulkUseCase>(TYPES.IUpdateReportStatusBulkUseC
 container.bind<IReportController>(TYPES.IReportController).to(ReportController);
 container.bind<IAdminReportController>(TYPES.IAdminReportController).to(AdminReportController);
 
+
+// Register Events
+try {
+  const eventBus = container.get<IEventBus>(TYPES.IEventBus);
+
+  // User Created
+  container.bind<UserCreatedElasticHandler>(UserCreatedElasticHandler).toSelf();
+  const userCreatedElasticHandler = container.get<IEventHandler<any>>(UserCreatedElasticHandler);
+  eventBus.register(EventType.USER_CREATED, userCreatedElasticHandler);
+
+  // User Supported
+  container.bind<UserSupportedRabbitHandler>(UserSupportedRabbitHandler).toSelf();
+  const userSupportedRabbitHandler = container.get<IEventHandler<any>>(UserSupportedRabbitHandler);
+  eventBus.register(EventType.USER_SUPPORTED, userSupportedRabbitHandler);
+
+  // Email Verification
+  container.bind<EmailVerificationRabbitHandler>(EmailVerificationRabbitHandler).toSelf();
+  const emailVerificationRabbitHandler = container.get<IEventHandler<any>>(EmailVerificationRabbitHandler);
+  eventBus.register(EventType.EMAIL_VERIFICATION, emailVerificationRabbitHandler);
+
+  // Email Change
+  container.bind<EmailChangeVerificationRabbitHandler>(EmailChangeVerificationRabbitHandler).toSelf();
+  const emailChangeVerificationRabbitHandler = container.get<IEventHandler<any>>(EmailChangeVerificationRabbitHandler);
+  eventBus.register(EventType.EMAIL_CHANGE_VERIFICATION, emailChangeVerificationRabbitHandler);
+
+  // User Updated
+  container.bind<UserUpdatedElasticHandler>(UserUpdatedElasticHandler).toSelf();
+  const userUpdatedElasticHandler = container.get<IEventHandler<any>>(UserUpdatedElasticHandler);
+  eventBus.register(EventType.USER_UPDATED, userUpdatedElasticHandler);
+
+   // Password Reset
+  container.bind<PasswordResetRabbitHandler>(PasswordResetRabbitHandler).toSelf();
+   const passwordResetRabbitHandler = container.get<IEventHandler<any>>(PasswordResetRabbitHandler);
+   eventBus.register(EventType.PASSWORD_RESET_REQUESTED, passwordResetRabbitHandler);
+
+   console.log('Events registered successfully via IoC container');
+} catch (error) {
+  console.error('Error registering events in IoC container:', error);
+}
 
 export { container };

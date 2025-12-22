@@ -34,11 +34,10 @@ export const TYPES = {
   IRefreshTokenUseCase: Symbol.for('IRefreshTokenUseCase'),
   IRegisterUserUseCase: Symbol.for('IRegisterUserUseCase'),
   IGoogleAuthUserUseCase: Symbol.for('IGoogleAuthUserUseCase'),
+  IInitializeAuthUseCase: Symbol.for('IInitializeAuthUseCase'),
   IResetPasswordUserUseCase: Symbol.for('IResetPasswordUserUseCase'),
   IStartRegisterUserUseCase: Symbol.for('IStartRegisterUserUseCase'),
   IForgotPasswordUserUseCase: Symbol.for('IForgotPasswordUserUseCase'),
-  IAddUserToElasticSearchUseCase: Symbol.for('IAddUserToElasticSearchUseCase'),
-  IInitializeAuthUseCase: Symbol.for('IInitializeAuthUseCase'),
 
   // Use cases - User Profile & Interaction
   ISupportUserUseCase: Symbol.for('ISupportUserUseCase'),
@@ -68,6 +67,10 @@ export const TYPES = {
 
   // Logger
   ILogger: Symbol.for('ILogger'),
+
+  // Messaging
+  IEventBus: Symbol.for('IEventBus'),
+  IMessagePublisher: Symbol.for('IMessagePublisher'),
 
   // Controllers
   IUserController: Symbol.for('IUserController'),
