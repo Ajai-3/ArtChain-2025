@@ -1,12 +1,13 @@
 import { injectable, inject } from "inversify";
 import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
+import { IEventBus } from "../../../interface/events/IEventBus";
 import { TYPES } from "../../../../infrastructure/inversify/types";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { BadRequestError, ForbiddenError } from "art-chain-shared";
-import admin from "../../../../infrastructure/config/firebase-admin";
 import { ITokenGenerator } from "../../../interface/auth/ITokenGenerator";
 import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
+import { UserCreatedEvent } from "../../../../domain/events/UserCreatedEvent";
 import { GoogleAuthRequestDto } from "../../../interface/dtos/user/auth/GoogleAuthRequestDto";
 import { IGoogleAuthUserUseCase } from "../../../interface/usecases/user/auth/IGoogleAuthUserUseCase";
 import { IGoogleTokenVerifier } from "../../../interface/auth/IGoogleTokenVerifier";
@@ -14,6 +15,7 @@ import { IGoogleTokenVerifier } from "../../../interface/auth/IGoogleTokenVerifi
 @injectable()
 export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
   constructor(
+    @inject(TYPES.IEventBus) private readonly _eventBus: IEventBus,
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
     @inject(TYPES.IGoogleTokenVerifier)
@@ -22,6 +24,7 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
 
   async execute(data: GoogleAuthRequestDto): Promise<AuthResultDto> {
     const { token, email, name } = data;
+    let isNewUser = false;
 
     const decodedToken = await this._googleTokenVerifier.verify(token);
     if (!decodedToken) {
@@ -94,6 +97,10 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
       bannerImage: mapCdnUrl(existingUser.bannerImage) || "",
       backgroundImage: mapCdnUrl(existingUser.backgroundImage) || "",
     };
+
+    if (isNewUser) {
+          await this._eventBus.publish(new UserCreatedEvent(formattedUser));
+    }
 
     const refreshToken = this._tokenGenerator.generateRefresh(payload);
     const accessToken = this._tokenGenerator.generateAccess(payload);

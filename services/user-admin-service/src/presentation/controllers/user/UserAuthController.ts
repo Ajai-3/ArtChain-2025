@@ -32,8 +32,6 @@ import { IResetPasswordUserUseCase } from '../../../application/interface/usecas
 import { IStartRegisterUserUseCase } from '../../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { IForgotPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
 import { IInitializeAuthUseCase } from '../../../application/interface/usecases/user/auth/InitializeAuthUseCase';
-
-
 @injectable()
 export class UserAuthController implements IUserAuthController {
   constructor(

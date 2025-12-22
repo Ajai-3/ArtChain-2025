@@ -4,10 +4,8 @@ import { EventType } from "../../../domain/events/EventType";
 import { TYPES } from "../../../infrastructure/inversify/types";
 import { IMessagePublisher } from "../../interface/messaging/IMessagePublisher";
 
-import { IEventHandler } from "../../interface/events/handlers/IEventHandler";
-
 @injectable()
-export class UserSupportedRabbitHandler implements IEventHandler<UserSupportedEvent> {
+export class UserSupportedRabbitHandler {
   constructor(
       @inject(TYPES.IMessagePublisher)
       private readonly _messagePublisher: IMessagePublisher
