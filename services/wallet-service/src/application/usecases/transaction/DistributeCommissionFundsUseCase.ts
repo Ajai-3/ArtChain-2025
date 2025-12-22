@@ -3,6 +3,7 @@ import { Method } from "@prisma/client";
 import { IDistributeCommissionFundsUseCase } from "../../interface/usecase/transaction/IDistributeCommissionFundsUseCase";
 import { prisma } from "../../../infrastructure/db/prisma";
 import { TransactionCategory, TransactionStatus, TransactionType } from "../../../domain/entities/Transaction";
+import { config } from "../../../infrastructure/config/env";
 
 @injectable()
 export class DistributeCommissionFundsUseCase implements IDistributeCommissionFundsUseCase {
@@ -64,8 +65,41 @@ export class DistributeCommissionFundsUseCase implements IDistributeCommissionFu
           },
         });
 
-        // Admin/Platform Fee (We can create a special platform wallet later, or just log it for now)
-        // For now, let's just log it in the user's transaction history as a platform fee
+        // Admin/Platform Fee
+        // Credit the Platform Admin Wallet
+        const adminId = config.platform_admin_id;
+        
+        const adminWallet = await tx.wallet.upsert({
+            where: { userId: adminId },
+            create: { userId: adminId, balance: platformFee },
+            update: { balance: { increment: platformFee } }
+        });
+
+        // Create Credit Transaction for Admin
+        await tx.transaction.create({
+            data: {
+              walletId: adminWallet.id,
+              type: TransactionType.CREDITED,
+              category: TransactionCategory.COMMISSION,
+              amount: platformFee,
+              method: Method.art_coin,
+              status: TransactionStatus.SUCCESS,
+              description: `Commission from commission work ${commissionId}`,
+              externalId: commissionId,
+              meta: { buyerId: userId, artistId }
+            }
+        });
+
+        // Create Debit Transaction for User (already covered in deducted lockedAmount, 
+        // but we record the fee explicitly as a separate transaction for clarity if needed, 
+        // OR we consider the fee deduction as part of the totalAmount transfer. 
+        // In this model, the user paid 'totalAmount' which included the fee.
+        // We already deducted 'totalAmount' from locked funds.
+        // So we just need to record where that money went.
+        // - artistAmount -> Artist Wallet
+        // - platformFee -> Admin Wallet
+        
+        // Log the fee deduction in User's history
         await tx.transaction.create({
             data: {
               walletId: userWallet.id,
