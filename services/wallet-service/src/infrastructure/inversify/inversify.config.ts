@@ -117,7 +117,7 @@ container
   .bind<IRefundCommissionFundsUseCase>(TYPES.IRefundCommissionFundsUseCase)
   .to(RefundCommissionFundsUseCase);
 
-import { IGiftArtCoinsUseCase } from "../../application/interface/usecase/wallet/IGiftArtCoinsUseCase";
+import { IGiftArtCoinsUseCase } from "../../application/interface/usecases/wallet/IGiftArtCoinsUseCase";
 import { GiftArtCoinsUseCase } from "../../application/usecases/wallet/GiftArtCoinsUseCase";
 container
   .bind<IGiftArtCoinsUseCase>(TYPES.IGiftArtCoinsUseCase)
