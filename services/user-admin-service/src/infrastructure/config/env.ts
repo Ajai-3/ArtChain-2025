@@ -18,7 +18,7 @@ export const config = {
   frontend_URL: process.env.FRONTEND_URL,
   aws_cdn_domain: secrets.aws_cdn_domain,
   rabbitmq_URL: process.env.RABBITMQ_URL || "",
-  art_service_URL: process.env.ART_SERVICE_URL || "",
+  api_gateway_URL: process.env.API_GATEWAY_URL || "",
   isProduction: process.env.NODE_ENV === "production",
   jwt: {
     accessSecret: secrets.jwtAccessSecret,

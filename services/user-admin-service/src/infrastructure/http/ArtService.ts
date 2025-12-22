@@ -10,7 +10,7 @@ export class ArtService implements IArtService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = config.art_service_URL;
+    this.baseUrl = config.api_gateway_URL;
   }
 
   async getUserArtCount(userId: string): Promise<number> {

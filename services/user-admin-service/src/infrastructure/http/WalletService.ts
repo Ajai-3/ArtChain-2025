@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { injectable } from 'inversify';
 import { IWalletService } from '../../application/interface/http/IWalletService';
+import { config } from '../config/env';
 
 @injectable()
 export class WalletService implements IWalletService {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.WALLET_SERVICE_URL || 'http://localhost:4004';
+    this.baseUrl = config.api_gateway_URL;
   }
 
   async getAdminTransactions(
