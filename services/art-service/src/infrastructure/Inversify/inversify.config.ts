@@ -40,6 +40,12 @@ import { UpdatePlatformConfigUseCase } from "../../application/usecase/admin/Upd
 import { IAdminPlatformConfigController } from "../../presentation/interface/IAdminPlatformConfigController";
 import { AdminPlatformConfigController } from "../../presentation/controllers/AdminPlatformConfigController";
 
+// Services
+import { ChatService } from "../service/ChatService";
+import { SocketService } from "../service/SocketService";
+import { IChatService } from "../../domain/interfaces/IChatService";
+import { ISocketService } from "../../domain/interfaces/ISocketService";
+
 // Use Cases - Art
 import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
 import { IGetArtByIdUseCase } from "../../application/interface/usecase/art/IGetArtByIdUseCase";
@@ -248,11 +254,6 @@ container.bind<IBuyArtUseCase>(TYPES.IBuyArtUseCase).to(BuyArtUseCase);
 container.bind<IDownloadArtUseCase>(TYPES.IDownloadArtUseCase).to(DownloadArtUseCase);
 
 // Services
-import { ISocketService } from "../../domain/interfaces/ISocketService";
-import { SocketService } from "../service/SocketService";
-import { IChatService } from "../../domain/interfaces/IChatService";
-import { ChatService } from "../service/ChatService";
-
 container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
 container.bind<ISocketService>(TYPES.ISocketService).to(SocketService).inSingletonScope();
 container.bind<IChatService>(TYPES.IChatService).to(ChatService);
