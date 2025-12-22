@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../infrastructure/inversify/types";
 import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
 import { Notification } from "../../domain/entities/Notification";
+import { NotificationType } from "../../domain/enums/NotificationType";
 import { emitToUser } from "../../infrastructure/sockets/socketHandler";
 import { logger } from "../../infrastructure/utils/logger";
 import { ILikeEventHandler } from "../interfaces/handlers/ILikeEventHandler";
@@ -13,20 +14,16 @@ export class LikeEventHandler implements ILikeEventHandler {
   ) {}
 
   async handle(event: {
-    likedUserId: string;
-    likerId: string;
-    likerName: string;
-    likerProfile: string | null;
+    userId: string;
+    senderId: string;
+    senderName: string;
+    senderProfile: string | null;
     createdAt: string;
   }): Promise<void> {
     const notification = new Notification(
-      event.likedUserId,
-      "like",
-      {
-        senderId: event.likerId,
-        likerName: event.likerName,
-        likerProfile: event.likerProfile,
-      },
+      event.userId,
+      event.senderId,
+      NotificationType.LIKE,
       false,
       new Date(event.createdAt)
     );
@@ -34,7 +31,12 @@ export class LikeEventHandler implements ILikeEventHandler {
     try {
       const savedNotification = await this._notificationRepo.create(notification);
       logger.info(`✅ Like Notification saved: ${JSON.stringify(savedNotification)}`);
-      await emitToUser(event.likedUserId, "notification", savedNotification);
+      const realTimeData = {
+        ...savedNotification.toJSON(),
+        senderName: event.senderName,
+        senderImage: event.senderProfile
+      };
+      await emitToUser(event.userId, "notification", realTimeData);
     } catch (error) {
       logger.error("Error handling like event", error);
       throw error;

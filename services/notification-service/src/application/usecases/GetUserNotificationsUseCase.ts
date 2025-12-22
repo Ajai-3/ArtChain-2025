@@ -1,10 +1,12 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../infrastructure/inversify/types";
 import { Notification } from "../../domain/entities/Notification";
-import { GetUserNotificationsDTO } from "../../domain/dto/GetUserNotificationsDTO";
+import { GetUserNotificationsDTO } from "../interfaces/dto/GetUserNotificationsDTO";
 import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
 import { IGetUserNotificationsUseCase } from "../../domain/usecases/IGetUserNotificationsUseCase";
 import { IUserServiceClient } from "../interfaces/clients/IUserServiceClient";
+
+import { NotificationResponse } from "../interfaces/dto/NotificationResponse";
 
 @injectable()
 export class GetUserNotificationsUseCase
@@ -15,7 +17,7 @@ export class GetUserNotificationsUseCase
       @inject(TYPES.IUserServiceClient) private readonly _userServiceClient: IUserServiceClient
   ) {}
 
-  async execute(data: GetUserNotificationsDTO): Promise<Notification[]> {
+  async execute(data: GetUserNotificationsDTO): Promise<NotificationResponse[]> {
     const page = data.page ?? 1;
     const limit = data.limit ?? 10;
     const notifications = await this._notificationRepo.getUserNotifications(
@@ -24,33 +26,26 @@ export class GetUserNotificationsUseCase
       limit
     );
 
-    const notificationsWithSender = notifications.filter(n => n.data && n.data.senderId);
+    const responseNotifications: NotificationResponse[] = notifications.map(n => n.toJSON());
+
+    const notificationsWithSender = responseNotifications.filter(n => n.senderId);
     
     if (notificationsWithSender.length > 0) {
-        const senderIds = [...new Set(notificationsWithSender.map(n => n.data.senderId))];
+        const senderIds = [...new Set(notificationsWithSender.map(n => n.senderId))];
         const users = await this._userServiceClient.getUsers(senderIds);
         const userMap = new Map(users.map(u => [u.id, u]));
 
-        if(users.length === 0) {
-            console.log("no users")
-        }
-
-        console.log("users", users);
-
-        notifications.forEach(n => {
-            if (n.data && n.data.senderId) {
-                const user = userMap.get(n.data.senderId);
+        notificationsWithSender.forEach(n => {
+            if (n.senderId) {
+                 const user = userMap.get(n.senderId);
                 if (user) {
-                    n.data = {
-                        ...n.data,
-                        senderName: user.name || user.username,
-                        senderImage: user.profileImage
-                    };
+                    n.senderName = user.username;
+                    n.senderImage = user.profileImage || undefined;
                 }
             }
         });
     }
 
-    return notifications;
+    return responseNotifications;
   }
 }

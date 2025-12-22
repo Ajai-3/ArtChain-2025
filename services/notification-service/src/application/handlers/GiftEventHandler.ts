@@ -5,6 +5,7 @@ import { IUserServiceClient } from "../../application/interfaces/clients/IUserSe
 import { emitToUser } from "../../infrastructure/sockets/socketHandler";
 import { logger } from "../../infrastructure/utils/logger";
 import { Notification } from "../../domain/entities/Notification";
+import { NotificationType } from "../../domain/enums/NotificationType";
 import { IGiftEventHandler } from "../interfaces/handlers/IGiftEventHandler";
 
 @injectable()
@@ -15,56 +16,32 @@ export class GiftEventHandler implements IGiftEventHandler {
   ) {}
 
   async handle(event: {
+    userId: string;
     senderId: string;
-    receiverId: string;
     amount: number;
-    message?: string;
-    timestamp: string;
     senderName?: string;
     senderImage?: string;
   }): Promise<void> {
-    let { senderName, senderImage } = event;
-
-    // Enrich if missing
-    if (!senderName || !senderImage) {
-      const user = await this._userServiceClient.getUser(event.senderId);
-      if (user) {
-        senderName = user.name || user.username;
-        senderImage = user.profileImage;
-      }
-    }
-
-    const notificationData = {
-      senderId: event.senderId,
-      amount: event.amount,
-      message: event.message
-    };
-
     try {
        const notification = new Notification(
-        event.receiverId,
-        "GIFT_RECEIVED",
-        notificationData,
-        false, // read
-        new Date(event.timestamp)
+        event.userId,
+        event.senderId,
+        NotificationType.GIFT_RECEIVED,
+        false, 
       );
 
-      // Using create instead of save as per BaseRepo
       const savedNotification = await this._notificationRepo.create(notification);
 
-      logger.info(`🎁 Gift Notification saved for ${event.receiverId}`);
+      logger.info(`🎁 Gift Notification saved for ${event.userId}`);
 
-      // Emit Real-time with enriched data
+
       const realTimeData = {
-        ...savedNotification.toJSON(), // Use toJSON if available or spread
-        data: {
-          ...savedNotification.data,
-          senderName,
-          senderImage
-        }
+        ...savedNotification.toJSON(),
+        senderName: event.senderName,
+        senderImage: event.senderImage
       };
 
-      await emitToUser(event.receiverId, "notification", realTimeData);
+      await emitToUser(event.userId, "notification", realTimeData);
     } catch (error) {
       logger.error("Error handling gift event", error);
       throw error;

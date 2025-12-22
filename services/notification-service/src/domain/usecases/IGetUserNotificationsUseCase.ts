@@ -1,6 +1,6 @@
-import { Notification } from "../entities/Notification";
-import { GetUserNotificationsDTO } from './../dto/GetUserNotificationsDTO';
+import { GetUserNotificationsDTO } from '../../application/interfaces/dto/GetUserNotificationsDTO';
+import { NotificationResponse } from '../../application/interfaces/dto/NotificationResponse';
 
 export interface IGetUserNotificationsUseCase {
-  execute(data: GetUserNotificationsDTO): Promise<Notification[]>;
+  execute(data: GetUserNotificationsDTO): Promise<NotificationResponse[]>;
 }

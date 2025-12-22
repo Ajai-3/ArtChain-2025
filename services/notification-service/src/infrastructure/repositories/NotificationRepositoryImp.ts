@@ -10,28 +10,16 @@ export class NotificationRepositoryImp extends BaseRepository<Notification, Noti
     super(NotificationModel);
   }
 
-  // Renaming save to create to match BaseRepository or keeping alias if interface requires.
-  // Interface extends IBaseRepository which has create. 
-  // Old save method logic is essentially create.
-  // Override create if specialized logic needed, but BaseRepo create uses model.create.
-  // NotificationModel.create(item) expects item shape. 
-  
   protected toDomain(doc: NotificationDoc): Notification {
     return new Notification(
         doc.userId,
+        doc.senderId,
         doc.type,
-        doc.data,
         doc.read,
         doc.createdAt,
         doc._id.toString()
     );
   }
-
-  // The base create method expects T (Notification). 
-  // Notification class might have methods/properties that Mongoose create doesn't like?
-  // NotificationModel.create takes object matching schema. 
-  // Notification class structure matches schema roughly.
-  // Let's ensure create method works.
 
   async getUserNotifications(
     userId: string,
@@ -45,8 +33,6 @@ export class NotificationRepositoryImp extends BaseRepository<Notification, Noti
       .limit(limit)
       .lean();
 
-    // docs here are POJOs from lean(), need casting or careful mapping.
-    // NotificationDoc structure matches.
     return docs.map(d => this.toDomain(d as unknown as NotificationDoc));
   }
 

@@ -4,7 +4,7 @@ import { logger } from "../../infrastructure/utils/logger";
 import { TYPES } from "../../infrastructure/inversify/types";
 import { IMarkAsReadUseCase } from "../../domain/usecases/IMarkAsReadUseCase";
 import { INotificationController } from "../interface/INotificationController";
-import { GetUserNotificationsDTO } from "./../../domain/dto/GetUserNotificationsDTO";
+import { GetUserNotificationsDTO } from "../../application/interfaces/dto/GetUserNotificationsDTO";
 import { IMarkAsAllReadUseCase } from "./../../domain/usecases/IMarkAllAsReadUseCase";
 import { IGetUnreadCountUseCase } from "../../domain/usecases/IGetUnreadCountUseCase";
 import { IGetUserNotificationsUseCase } from "../../domain/usecases/IGetUserNotificationsUseCase";
