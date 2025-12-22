@@ -1,7 +1,7 @@
 import app from "./app";
 import http from "http";
 import { Server } from "socket.io";
-import { config } from "./config/env";
+import { config } from "./constants/env";
 import { logger } from "./infrastructure/utils/logger";
 import { startAllConsumers } from "./infrastructure/messaging/consumers";
 import { initSockets } from "./infrastructure/sockets";
