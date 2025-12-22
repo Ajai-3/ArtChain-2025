@@ -6,6 +6,9 @@ import { IWalletService } from "../../../domain/interfaces/IWalletService";
 import { Purchase } from "../../../domain/entities/Purchase";
 import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
 
+import { IPlatformConfigRepository } from "../../../domain/repositories/IPlatformConfigRepository";
+import { config } from "../../../infrastructure/config/env";
+
 @injectable()
 export class BuyArtUseCase implements IBuyArtUseCase {
   constructor(
@@ -14,7 +17,9 @@ export class BuyArtUseCase implements IBuyArtUseCase {
     @inject(TYPES.IWalletService)
     private readonly _walletService: IWalletService,
     @inject(TYPES.IPurchaseRepository)
-    private readonly _purchaseRepo: IPurchaseRepository
+    private readonly _purchaseRepo: IPurchaseRepository,
+    @inject(TYPES.IPlatformConfigRepository)
+    private readonly _platformConfigRepo: IPlatformConfigRepository
   ) {}
 
   async execute(artId: string, buyerId: string): Promise<boolean> {
@@ -37,11 +42,18 @@ export class BuyArtUseCase implements IBuyArtUseCase {
         throw new Error("Invalid price");
     }
 
+    // Calculate Platform Fee
+    const platformConfig = await this._platformConfigRepo.getConfig();
+    const feePercentage = platformConfig ? platformConfig.artSaleCommissionPercentage : 2; // Default 2%
+    const platformFee = Math.round((price * feePercentage) / 100);
+
     // Process transaction
-    const transactionSuccess = await this._walletService.processPurchase(
+    const transactionSuccess = await this._walletService.processSplitPurchase(
       buyerId,
       art.userId,
+      config.platform_admin_id,
       price,
+      platformFee,
       artId
     );
 

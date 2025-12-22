@@ -21,5 +21,6 @@ export const config = {
         cloudfront_key_pair_id: process.env.CLOUDFRONT_KEY_PAIR_ID!,
         cloudfront_private_key: process.env.CLOUDFRONT_PRIVATE_KEY!,
     },
-    jwt_secret: secrets.jwtAccessSecret!
+    jwt_secret: secrets.jwtAccessSecret!,
+    platform_admin_id: process.env.PLATFORM_ADMIN_ID || "admin-platform-wallet-id"
 }

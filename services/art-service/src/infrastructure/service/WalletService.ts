@@ -18,7 +18,31 @@ export class WalletService implements IWalletService {
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
-      console.error("Error processing purchase:", error);
+      console.error("Process Purchase Error:", error);
+      return false;
+    }
+  }
+
+  async processSplitPurchase(
+    buyerId: string,
+    sellerId: string,
+    adminId: string,
+    totalAmount: number,
+    commissionAmount: number,
+    artId: string
+  ): Promise<boolean> {
+    try {
+      const response = await axios.post(`${config.api_gateway_url}/api/v1/transaction/split-purchase`, {
+        buyerId,
+        sellerId,
+        adminId,
+        totalAmount,
+        commissionAmount,
+        artId
+      });
+      return response.status === 200 || response.status === 201;
+    } catch (error) {
+      console.error("Process Split Purchase Error:", error);
       return false;
     }
   }
