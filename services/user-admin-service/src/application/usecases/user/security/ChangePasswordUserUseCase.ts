@@ -14,7 +14,7 @@ import {
 @injectable()
 export class ChangePasswordUserUseCase implements IChangePasswordUserUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository
   ) {}
 
   async execute(data: ChangePasswordRequestDto): Promise<void> {

@@ -13,7 +13,11 @@ import WithdrawalModal from "./WithdrawalModal";
 import CurrencyConverter from "./CurrencyConverter";
 import type { Wallet } from "../../hooks/wallet/useGetWallet";
 import WalletChart from "./WalletChart"; 
-import { useChartData } from "../../hooks/wallet/useChartData";
+import { useGetWalletChartData } from "../../hooks/wallet/useGetWalletChartData";
+import { Loader2 } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+import { formatNumber } from "../../../../libs/formatNumber";
 
 interface DashboardContentProps {
   wallet: Wallet;
@@ -21,23 +25,19 @@ interface DashboardContentProps {
 
 const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
   const [showBalance, setShowBalance] = useState(true);
-  const [timeRange, setTimeRange] = useState<"7d" | "1m" | "all">("1m");
+  const [timeRange, setTimeRange] = useState<"7d" | "1m" | "all">("all");
   const [activeTab, setActiveTab] = useState<"trend" | "breakdown" | "stats">("trend"); 
 
-  const { balance, inrValue, quickStats } = wallet;
-  const { chartData } = useChartData(wallet.transactions, timeRange);
-
-  const statsData = [
-    { name: 'Earned', value: quickStats.earned || 0 },
-    { name: 'Spent', value: quickStats.spent || 0 },
-    { name: 'Avg Tx', value: parseFloat(String(quickStats.avgTransaction || 0)) },
-    { name: 'ROI', value: parseFloat(String(quickStats.roi || 0)) },
-  ];
+  const { balance } = wallet;
+  const rate = useSelector((state: RootState) => state.platform.artCoinRate);
+  const inrValue = balance * rate;
+  const { data: chartData, isLoading: isChartLoading } = useGetWalletChartData(timeRange);
 
   return (
     <div className="flex flex-col md:flex-row gap-4 h-full">
         {/* Left Column */}
         <div className="flex-1 flex flex-col gap-4">
+          {/* ... (Balance Card Code same as before) ... */}
           <Card className="bg-main-color/20 border border-main-color rounded-lg p-0 shadow-md relative">
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -61,16 +61,16 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
               <div className="flex justify-between items-start">
                   <div>
                       <p className="text-3xl font-bold">
-                        {showBalance ? `${balance} AC` : "****"}
+                        {showBalance ? `${formatNumber(balance)} AC` : "****"}
                       </p>
                       <p className="text-gray-400 text-sm">
-                        {showBalance ? `≈ ₹${inrValue} INR` : "****"}
+                        {showBalance ? `≈ ₹${formatNumber(inrValue)} INR` : "****"}
                       </p>
                   </div>
                   <div className="text-right bg-amber-500/10 border border-amber-500/20 px-3 py-2 rounded-lg">
                       <p className="text-xs text-amber-500/80 uppercase font-semibold">Locked Amount</p>
                       <p className="text-lg font-bold text-amber-500 tabular-nums">
-                        {showBalance ? wallet.lockedAmount : "****"} <span className="text-xs font-normal">AC</span>
+                        {showBalance ? formatNumber(wallet.lockedAmount) : "****"} <span className="text-xs font-normal">AC</span>
                       </p>
                   </div>
               </div>
@@ -99,32 +99,40 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
             <Card className="flex-1 dark:bg-secondary-color border border-zinc-600">
               <CardHeader>
                 <CardTitle>Quick Stats</CardTitle>
-                <p className="text-xs dark:text-zinc-400">This Month</p>
+                <p className="text-xs dark:text-zinc-400">
+                   {timeRange === '7d' ? 'Last 7 Days' : timeRange === '1m' ? 'Last Month' : 'All Time'}
+                </p>
               </CardHeader>
               <CardContent className="space-y-2">
-                {Object.entries(quickStats).map(([key, value]) => (
-                  <div
-                    className="flex justify-between capitalize border-b border-zinc-800 py-1"
-                    key={key}
-                  >
-                    <span>{key.replace(/([A-Z])/g, " $1")}</span>
-                    <span
-                      className={
-                        key === "earned"
-                          ? "text-green-400"
-                          : key === "spent"
-                          ? "text-red-500"
-                          : key === "roi"
-                          ? "text-yellow-400"
-                          : ""
-                      }
+                {isChartLoading ? (
+                   <div className="flex justify-center p-4"><Loader2 className="animate-spin h-4 w-4" /></div>
+                ) : (
+                  chartData?.stats.map((stat) => (
+                    <div
+                      className="flex justify-between capitalize border-b border-zinc-800 py-1"
+                      key={stat.name}
                     >
-                      {["earned", "spent", "avgTransaction"].includes(key)
-                        ? `${value} AC`
-                        : value}
-                    </span>
-                  </div>
-                ))}
+                      <span>{stat.name}</span>
+                      <span
+                        className={
+                          stat.name === "Earned"
+                            ? "text-green-400"
+                            : stat.name === "Spent"
+                            ? "text-red-500"
+                            : stat.name === "ROI"
+                            ? "text-yellow-400"
+                            : ""
+                        }
+                      >
+                        {["Earned", "Spent", "Avg Tx"].includes(stat.name)
+                          ? `${formatNumber(Number(stat.value))} AC`
+                          : stat.name === "Grade"
+                          ? stat.value
+                          : `${stat.value}%`}
+                      </span>
+                    </div>
+                  ))
+                )}
               </CardContent>
             </Card>
           </div>
@@ -188,32 +196,40 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ wallet }) => {
             </CardHeader>
             
             <CardContent className="flex-1 min-h-[300px] p-0 relative">
-               {activeTab === "trend" && (
-                  <WalletChart mode="trend" data={chartData.trend} />
-               )}
+               {isChartLoading ? (
+                 <div className="w-full h-full flex items-center justify-center">
+                   <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                 </div>
+               ) : (
+                 <>
+                   {activeTab === "trend" && (
+                      <WalletChart mode="trend" data={chartData?.trend || []} />
+                   )}
 
-               {activeTab === "breakdown" && (
-                  <div className="flex flex-row w-full h-full gap-2">
-                     <div className="flex-1 flex flex-col items-center">
-                        <span className="text-sm font-medium text-green-400 mb-2">Total Credited</span>
-                        <div className="flex-1 w-full min-h-[200px]">
-                           <WalletChart mode="breakdown" activeSubTab="earned" data={chartData.allCredited} />
-                        </div>
-                     </div>
-                     <div className="w-[1px] bg-zinc-800 my-4"></div>
-                     <div className="flex-1 flex flex-col items-center">
-                        <span className="text-sm font-medium text-red-500 mb-2">Total Debited</span>
-                        <div className="flex-1 w-full min-h-[200px]">
-                            <WalletChart mode="breakdown" activeSubTab="spent" data={chartData.allDebited} />
-                        </div>
-                     </div>
-                  </div>
+                   {activeTab === "breakdown" && (
+                      <div className="flex flex-row w-full h-full gap-2">
+                         <div className="flex-1 flex flex-col items-center">
+                            <span className="text-sm font-medium text-green-400 mb-2">Total Credited</span>
+                            <div className="flex-1 w-full min-h-[200px]">
+                               <WalletChart mode="breakdown" activeSubTab="earned" data={chartData?.breakdown.earned || []} />
+                            </div>
+                         </div>
+                         <div className="w-[1px] bg-zinc-800 my-4"></div>
+                         <div className="flex-1 flex flex-col items-center">
+                            <span className="text-sm font-medium text-red-500 mb-2">Total Debited</span>
+                            <div className="flex-1 w-full min-h-[200px]">
+                                <WalletChart mode="breakdown" activeSubTab="spent" data={chartData?.breakdown.spent || []} />
+                            </div>
+                         </div>
+                      </div>
+                   )}
+                 </>
                )}
 
                {activeTab === "stats" && (
                    <div className="w-full h-full flex flex-col items-center justify-center">
                        <div className="w-full h-full min-h-[250px]">
-                          <WalletChart mode="stats" data={statsData} />
+                          <WalletChart mode="stats" data={chartData?.stats.filter(s => typeof s.value === 'number') || []} />
                        </div>
                    </div>
                )}

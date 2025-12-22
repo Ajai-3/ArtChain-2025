@@ -5,6 +5,7 @@ import { TYPES } from "../../infrastructure/Inversify/types";
 import { IShopController } from "../interface/IShopController";
 import { IGetAllShopArtsUseCase } from "../../application/interface/usecase/art/IGetShopArtsByUserUseCase";
 import { IGetShopArtsByUserUseCase } from "../../application/interface/usecase/art/IGetAllShopArtsUseCase";
+import { HttpStatus } from "art-chain-shared";
 
 @injectable()
 export class ShopController implements IShopController {
@@ -65,8 +66,7 @@ export class ShopController implements IShopController {
         filters
       );
 
-      return res.status(200).json({
-        success: true,
+      return res.status(HttpStatus.OK).json({
         data: arts,
         page: Number(page),
         limit: Number(limit),
@@ -101,17 +101,12 @@ export class ShopController implements IShopController {
         Number(limit)
       );
 
-      return res.status(200).json({
-        success: true,
+      return res.status(HttpStatus.OK).json({
         data: arts,
         page: Number(page),
         limit: Number(limit),
       });
     } catch (error) {
-      logger.error("Error in getShopItemsByUser", {
-        error,
-        userId: req.params.userId,
-      });
       next(error);
     }
   };

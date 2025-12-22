@@ -34,27 +34,19 @@ export class SecurityController implements ISecurityController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       logger.info(`Changing password for user: ${userId}`);
 
-      const result = validateWithZod(
-        currentPasswordNewPasswordSchema,
-        req.body
-      );
-      const { currentPassword, newPassword } = result;
-
       const dto: ChangePasswordRequestDto = {
+        ...validateWithZod(currentPasswordNewPasswordSchema, req.body),
         userId,
-        currentPassword,
-        newPassword,
       };
-
       await this._changePasswordUserUseCase.execute(dto);
 
       logger.info(`${userId} user password changed`);
-      res
+      return res
         .status(HttpStatus.OK)
         .json({ message: 'Password changed successfully' });
     } catch (err) {
@@ -73,29 +65,20 @@ export class SecurityController implements ISecurityController {
     req: Request,
     res: Response,
     next: NextFunction
-  ): Promise<void> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       const { newEmail } = req.body;
       logger.info(`Changing email for user: ${userId} to ${newEmail}`);
 
-      const { user, token } = await this._changeEmailUserUseCase.execute({
+      const token = await this._changeEmailUserUseCase.execute({
         userId,
         newEmail,
       });
 
       logger.debug(`token ${token}`);
 
-      await publishNotification('email.email_change_verification', {
-        type: 'EMAIL_CHANGE_VERIFICATION',
-        email: user.email,
-        payload: {
-          name: user.name,
-          token,
-        },
-      });
-
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         data: token,
         message: 'Change email token sended successfully',
       });

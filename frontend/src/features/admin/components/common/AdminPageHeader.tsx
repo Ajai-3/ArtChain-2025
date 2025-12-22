@@ -11,7 +11,7 @@ const AdminPageHeader: React.FC<AdminPageHeaderProps> = ({
   description,
 }) => {
   return (
-    <div className="mb-4">
+    <div className="mb-2 sm:mb-4">
       <div className="flex gap-2 items-center">
         <LayoutDashboard />
         <h1 className="text-2xl font-bold ">{title}</h1>

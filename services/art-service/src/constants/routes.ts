@@ -9,6 +9,8 @@ export const ROUTES = {
   // Base API route
   BASE: "/api/v1/art",
 
+  
+
   // Category routes
   CATEGORY: {
     BASE: "/category",
@@ -65,6 +67,7 @@ export const ROUTES = {
     CONFIG: "/ai/config",
     GENERATE: "/ai/generate",
     GENERATIONS: "/ai/generations",
+    DELETE_GENERATION: "/ai/generations/:id",
   },
 
   // Admin AI routes
@@ -96,6 +99,30 @@ export const ROUTES = {
     BASE: "/admin/auctions",
     BY_ID: "/admin/auctions/:id",
     STATS: "/admin/auctions/stats",
+    CANCEL: "/admin/auctions/:id/cancel",
   },
+
+  // Admin Config routes
+  ADMIN_CONFIG: {
+    BASE: "/admin/platform-config",
+  },
+  
+  CONFIG: {
+    BASE: "/platform-config",
+  },
+
+  COMMISSION: {
+    BASE: "/commission",
+    REQUEST: "/request",
+    BY_CONVERSATION: "/conversation/:conversationId",
+    BY_ID: "/:id",
+  },
+
+  ADMIN_COMMISSION: {
+    BASE: "/admin/commissions",
+    ALL: "/all",
+    STATS: "/stats",
+    RESOLVE: "/resolve/:id",
+  }
 } as const;
 

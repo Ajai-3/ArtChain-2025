@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
-import { config } from "../../config/env";
+import { config } from "../../constants/env";
 import { logger } from "../../infrastructure/utils/logger";
 
 export const authSocket = (socket: Socket, next: (err?: Error) => void) => {

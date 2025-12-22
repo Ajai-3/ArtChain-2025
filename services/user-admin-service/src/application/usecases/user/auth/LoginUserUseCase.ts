@@ -3,7 +3,7 @@ import { inject, injectable } from "inversify";
 import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
 import { AUTH_MESSAGES } from "../../../../constants/authMessages";
 import { TYPES } from "../../../../infrastructure/inversify/types";
-import { tokenService } from "../../../../presentation/service/token.service";
+import { ITokenGenerator } from "../../../../application/interface/auth/ITokenGenerator";
 import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
 import { LoginRequestDto } from "../../../interface/dtos/user/auth/LoginRequestDto";
 import {
@@ -17,7 +17,8 @@ import { ILoginUserUseCase } from "../../../interface/usecases/user/auth/ILoginU
 @injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository
   ) {}
 
   async execute(data: LoginRequestDto): Promise<AuthResultDto> {
@@ -64,9 +65,8 @@ export class LoginUserUseCase implements ILoginUserUseCase {
       bannerImage: mapCdnUrl(user.bannerImage) || "",
       backgroundImage: mapCdnUrl(user.backgroundImage) || "",
     };
-
-    const refreshToken = tokenService.generateRefreshToken(payload);
-    const accessToken = tokenService.generateAccessToken(payload);
+    const accessToken = this._tokenGenerator.generateAccess(payload);
+    const refreshToken = this._tokenGenerator.generateRefresh(payload);
 
     return { user: formattedUser, accessToken, refreshToken };
   }

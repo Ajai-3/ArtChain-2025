@@ -1,8 +1,8 @@
 export class Notification {
   constructor(
     public userId: string,
+    public senderId: string,
     public type: string,
-    public data: any,
     public read = false,
     public createdAt = new Date(),
     public id?: string
@@ -13,7 +13,7 @@ export class Notification {
       id: this.id,
       userId: this.userId,
       type: this.type,
-      data: this.data,
+      senderId: this.senderId,
       read: this.read,
       createdAt: this.createdAt,
     };

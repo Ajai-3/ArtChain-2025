@@ -21,4 +21,5 @@ export interface IAuctionController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+  cancelAuction(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

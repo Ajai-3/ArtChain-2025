@@ -1,4 +1,12 @@
 export const TYPES = {
+  // Auth
+  ITokenGenerator: Symbol.for('ITokenGenerator'),
+  IEmailTokenVerifier: Symbol.for('IEmailTokenVerifier'),
+  IGoogleTokenVerifier: Symbol.for('IGoogleTokenVerifier'),
+  IAccessTokenVerifier: Symbol.for('IAccessTokenVerifier'),
+  IRefreshTokenVerifier: Symbol.for('IRefreshTokenVerifier'),
+  FirebaseGoogleTokenVerifier: Symbol.for('FirebaseGoogleTokenVerifier'),
+  
   // Repositories
   IUserRepository: Symbol.for('IUserRepository'),
   IReportRepository: Symbol.for('IReportRepository'),
@@ -9,6 +17,7 @@ export const TYPES = {
   // Services
   IArtService: Symbol.for('IArtService'),
   IUserService: Symbol.for('IUserService'),
+  IWalletService: Symbol.for('IWalletService'),
   
   // Use cases - Artist Request
   ICreateArtistRequestUseCase: Symbol.for('ICreateArtistRequestUseCase'),
@@ -21,13 +30,14 @@ export const TYPES = {
 
   // Use cases - Auth
   ILoginUserUseCase: Symbol.for('ILoginUserUseCase'),
+  ILogoutUserUseCase: Symbol.for('ILogoutUserUseCase'),
   IRefreshTokenUseCase: Symbol.for('IRefreshTokenUseCase'),
   IRegisterUserUseCase: Symbol.for('IRegisterUserUseCase'),
   IGoogleAuthUserUseCase: Symbol.for('IGoogleAuthUserUseCase'),
+  IInitializeAuthUseCase: Symbol.for('IInitializeAuthUseCase'),
   IResetPasswordUserUseCase: Symbol.for('IResetPasswordUserUseCase'),
   IStartRegisterUserUseCase: Symbol.for('IStartRegisterUserUseCase'),
   IForgotPasswordUserUseCase: Symbol.for('IForgotPasswordUserUseCase'),
-  IAddUserToElasticSearchUseCase: Symbol.for('IAddUserToElasticSearchUseCase'),
 
   // Use cases - User Profile & Interaction
   ISupportUserUseCase: Symbol.for('ISupportUserUseCase'),
@@ -53,6 +63,14 @@ export const TYPES = {
   IGetAllReportsUseCase: Symbol.for('IGetAllReportsUseCase'),
   IGetGroupedReportsUseCase: Symbol.for('IGetGroupedReportsUseCase'),
   IUpdateReportStatusBulkUseCase: Symbol.for('IUpdateReportStatusBulkUseCase'),
+  IGetPlatformRevenueStatsUseCase: Symbol.for('IGetPlatformRevenueStatsUseCase'),
+
+  // Logger
+  ILogger: Symbol.for('ILogger'),
+
+  // Messaging
+  IEventBus: Symbol.for('IEventBus'),
+  IMessagePublisher: Symbol.for('IMessagePublisher'),
 
   // Controllers
   IUserController: Symbol.for('IUserController'),
@@ -65,4 +83,5 @@ export const TYPES = {
   IAdminAuthController: Symbol.for('IAdminAuthController'),
   IUserManageMentController: Symbol.for('IUserManageMentController'),
   IAdminReportController: Symbol.for('IAdminReportController'),
+  IAdminDashboardController: Symbol.for('IAdminDashboardController'),
 };

@@ -14,6 +14,7 @@ export interface AIGenerationDocument extends Document {
   isFree: boolean;
   status: 'pending' | 'processing' | 'completed' | 'failed';
   generationTime?: number;
+  isDeleted: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,7 +37,8 @@ const AIGenerationSchema = new Schema<AIGenerationDocument>(
       enum: ['pending', 'processing', 'completed', 'failed'],
       default: 'pending'
     },
-    generationTime: { type: Number }
+    generationTime: { type: Number },
+    isDeleted: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

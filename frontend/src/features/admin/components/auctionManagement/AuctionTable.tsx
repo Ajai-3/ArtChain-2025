@@ -11,6 +11,7 @@ import { Button } from "../../../../components/ui/button";
 import { Eye, Trash2, Gavel } from "lucide-react";
 import { format, formatDistance } from "date-fns";
 import ConfirmModal from "../../../../components/modals/ConfirmModal";
+import { useCancelAuction } from "../../hooks/auctionManagement/useCancelAuction";
 
 interface AuctionTableProps {
   auctions: any[];
@@ -33,6 +34,8 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
 }) => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null);
+  
+  const { mutate: cancelAuction, isPending: isCanceling } = useCancelAuction();
 
   const handleDeleteClick = (id: string) => {
     setSelectedAuctionId(id);
@@ -40,10 +43,14 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
   };
 
   const confirmDelete = () => {
-    // TODO: Implement delete/cancel logic
-    console.log("Deleting auction:", selectedAuctionId);
-    setDeleteModalOpen(false);
-    setSelectedAuctionId(null);
+    if (selectedAuctionId) {
+      cancelAuction(selectedAuctionId, {
+        onSuccess: () => {
+          setDeleteModalOpen(false);
+          setSelectedAuctionId(null);
+        }
+      });
+    }
   };
 
   const renderPagination = () => {
@@ -231,7 +238,7 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
                         <Eye className="w-4 h-4" />
                       </Button>
                       
-                      {auction.status !== "ENDED" && (
+                      {auction.status !== "ENDED" && auction.status !== "CANCELLED" && (
                          <Button
                             variant="ghost"
                             size="icon"
@@ -268,9 +275,10 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
         onConfirm={confirmDelete}
         title="Cancel Auction"
         description="Are you sure you want to cancel this auction? This action cannot be undone."
-        confirmText="Cancel Auction"
+        confirmText={isCanceling ? "Canceling..." : "Cancel Auction"}
         cancelText="Keep Active"
         confirmVariant="destructive"
+        isLoading={isCanceling}
       />
     </>
   );

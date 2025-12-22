@@ -76,9 +76,29 @@ const biddingSlice = createSlice({
         state.activeAuction = null;
         state.bids = [];
         state.currentHighestBid = 0;
+    },
+    auctionEnded: (state, action: PayloadAction<{ auctionId: string, status: string, winnerId?: string, winningBidAmount?: number }>) => {
+        if (state.activeAuction && state.activeAuction.id === action.payload.auctionId) {
+            state.activeAuction.status = action.payload.status as any;
+            if (action.payload.winnerId) {
+                state.activeAuction.winnerId = action.payload.winnerId;
+            }
+            if (action.payload.winningBidAmount) {
+                 state.activeAuction.currentBid = action.payload.winningBidAmount;
+                 state.currentHighestBid = action.payload.winningBidAmount;
+            }
+        }
+        // Update in list if present
+        const auctionInList = state.auctions.find(a => a.id === action.payload.auctionId);
+        if (auctionInList) {
+             auctionInList.status = action.payload.status as any;
+             if (action.payload.winnerId) {
+                auctionInList.winnerId = action.payload.winnerId;
+             }
+        }
     }
   },
 });
 
-export const { setActiveAuction, setBids, addBid, updateHighestBid, setAuctions, setActiveAuctionData, clearBiddingState } = biddingSlice.actions;
+export const { setActiveAuction, setBids, addBid, updateHighestBid, setAuctions, setActiveAuctionData, clearBiddingState, auctionEnded } = biddingSlice.actions;
 export default biddingSlice.reducer;

@@ -22,4 +22,19 @@ router.patch(ROUTES.ADMIN.UPDATE_STATUS, adminWalletController.updateWalletStatu
 // Get user transactions
 router.get(ROUTES.ADMIN.GET_USER_TRANSACTIONS, adminWalletController.getUserTransactions);
 
+// Get revenue stats
+router.get(ROUTES.ADMIN.REVENUE_STATS, adminWalletController.getRevenueStats);
+
+// Admin Withdrawal Management
+import { IAdminWithdrawalController } from "../interface/IAdminWithdrawalController";
+const adminWithdrawalController = container.get<IAdminWithdrawalController>(
+  TYPES.IAdminWithdrawalController
+);
+
+// Get all withdrawal requests
+router.get(ROUTES.ADMIN.WITHDRAWAL_REQUESTS, adminWithdrawalController.getAllWithdrawalRequests);
+
+// Update withdrawal status
+router.patch(ROUTES.ADMIN.UPDATE_WITHDRAWAL_STATUS, adminWithdrawalController.updateWithdrawalStatus);
+
 export default router;

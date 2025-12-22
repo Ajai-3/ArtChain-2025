@@ -28,4 +28,5 @@ export const registerUserSchema = z.object({
         /[^A-Za-z0-9]/.test(val),
       'Password must include uppercase, lowercase, number, and symbol'
     ),
+    token: z.string().optional(),
 });

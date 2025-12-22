@@ -2,8 +2,9 @@ import { JwtPayload } from 'jsonwebtoken';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
-import { tokenService } from '../../../../presentation/service/token.service';
+import { ITokenGenerator } from '../../../../application/interface/auth/ITokenGenerator';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { IRefreshTokenVerifier } from '../../../../application/interface/auth/IRefreshTokenVerifier';
 import { RefreshTokenResultDto } from './../../../interface/dtos/user/auth/RefreshTokenResultDto';
 import { IRefreshTokenUseCase } from '../../../interface/usecases/user/auth/IRefreshTokenUseCase';
 import {
@@ -15,7 +16,10 @@ import {
 
 @injectable()
 export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
-  constructor(@inject(TYPES.IUserRepository) private _userRepo: IUserRepository) {}
+  constructor(
+  @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator, 
+  @inject(TYPES.IRefreshTokenVerifier) private readonly _refreshTokenVerifier: IRefreshTokenVerifier,
+  @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository) {}
 
   async execute(refreshToken: string): Promise<RefreshTokenResultDto> {
     if (!refreshToken) {
@@ -25,7 +29,7 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
     let payload: JwtPayload | null;
 
     try {
-      payload = tokenService.verifyRefreshToken(refreshToken) as JwtPayload;
+      payload = this._refreshTokenVerifier.verify(refreshToken) as JwtPayload;
     } catch (err) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
     }
@@ -43,7 +47,7 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
       throw new ForbiddenError('Your account has been banned.');
     }
 
-    const accessToken = tokenService.generateAccessToken({
+    const accessToken = this._tokenGenerator.generateAccess({
       id: user.id,
       email: user.email,
       role: user.role,

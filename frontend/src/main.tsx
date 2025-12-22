@@ -1,22 +1,22 @@
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryProvider } from "./api/providers/QueryClient.tsx";
 import App from "./App.tsx";
-import { store, persistor } from "./redux/store.ts";
+import { store } from "./redux/store.ts";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
 import { ThemeProvider } from "./context/ThemeContext.tsx";
 import "./index.css";
 import { SocketProvider } from "./components/socket/SocketProvider.tsx";
+import { AuthInitializer } from "./components/auth/AuthInitializer.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <BrowserRouter>
     <ErrorBoundary>
       <QueryProvider>
         <Provider store={store}>
-          <PersistGate persistor={persistor}>
+          <AuthInitializer>
             <SocketProvider>
               <ThemeProvider>
                 <App />
@@ -29,9 +29,10 @@ createRoot(document.getElementById("root")!).render(
                 )}
               </ThemeProvider>
             </SocketProvider>
-          </PersistGate>
+          </AuthInitializer>
         </Provider>
       </QueryProvider>
     </ErrorBoundary>
   </BrowserRouter>
 );
+

@@ -1,13 +1,21 @@
 import { Gift } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import type { ProfileSelectBarProps } from "../../../../types/users/profile/ProfileSelectBarProps";
+import { CommissionRequestModal } from "../commission/CommissionRequestModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../../../redux/store";
+import { Button } from "../../../../components/ui/button";
 
-
+import { GiftArtCoinModal } from "../wallet/GiftArtCoinModal";
 
 const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile }) => {
   const { username } = useParams<{ username?: string }>();
   const basePath = `/${username}`;
+  
+  const [isCommissionModalOpen, setIsCommissionModalOpen] = useState(false);
+  const [isGiftModalOpen, setIsGiftModalOpen] = useState(false);
+  const currentUser = useSelector((state: RootState) => state.user);
 
   const tabs = [
     { id: "gallery", label: "Gallery" },
@@ -46,20 +54,49 @@ const ProfileSelectBar: React.FC<ProfileSelectBarProps> = ({ user, isOwnProfile 
       <div className="flex-shrink-0">
         <div className="hidden sm:flex items-center gap-3">
           {/* Gift Icon Button */}
-          <button
-            className="p-2 rounded-full bg-main-color text-white shadow-md hover:bg-main-color/90 active:scale-95 transition"
-            title="Gifts"
-          >
-            <Gift size={20} />
-          </button>
+          {!isOwnProfile && currentUser.isAuthenticated && (
+            <button
+                className="p-2 rounded-full bg-main-color text-white shadow-md hover:bg-main-color/90 active:scale-95 transition"
+                title="Send a Gift"
+                onClick={() => setIsGiftModalOpen(true)}
+            >
+                <Gift size={20} />
+            </button>
+          )}
 
           {/* Request Commission Button */}
-          {!isOwnProfile && user.role === "artist" ? <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-600 active:scale-95 transition-transform">
-            Request Commission
-          </button> : ""}
+          {!isOwnProfile && user.role === "artist" && currentUser.isAuthenticated && (
+            <Button 
+                onClick={() => setIsCommissionModalOpen(true)}
+                className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-lg shadow-lg hover:from-indigo-600 hover:to-purple-600 active:scale-95 transition-transform border-none"
+            >
+                Request Commission
+            </Button>
+          )}
           
         </div>
       </div>
+      
+      {/* Commission Modal */}
+      {user?.id && user.role === "artist" && (
+          <CommissionRequestModal 
+            isOpen={isCommissionModalOpen} 
+            onClose={() => setIsCommissionModalOpen(false)} 
+            artistId={user.id}
+            artistName={user.name || user.username || "Artist"}
+          />
+      )}
+
+      {/* Gift Modal */}
+      {user?.id && (
+        <GiftArtCoinModal
+            isOpen={isGiftModalOpen}
+            onClose={() => setIsGiftModalOpen(false)}
+            receiverId={user.id}
+            receiverName={user.name || user.username || "User"}
+            receiverImage={user.profileImage}
+        />
+      )}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { ICreateAuctionUseCase } from "../../application/interface/usecase/aucti
 import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction/IGetAuctionsUseCase";
 import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
 import { IGetAuctionStatsUseCase } from "../../application/interface/usecase/auction/IGetAuctionStatsUseCase";
+import { ICancelAuctionUseCase } from "../../application/interface/usecase/auction/ICancelAuctionUseCase";
 import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
 
 import { createAuctionSchema } from "../validators/auction.schema";
@@ -26,7 +27,9 @@ export class AuctionController implements IAuctionController {
     @inject(TYPES.IGetAuctionByIdUseCase)
     private readonly _getAuctionByIdUseCase: IGetAuctionByIdUseCase,
     @inject(TYPES.IGetAuctionStatsUseCase)
-    private readonly _getAuctionStatsUseCase: IGetAuctionStatsUseCase
+    private readonly _getAuctionStatsUseCase: IGetAuctionStatsUseCase,
+    @inject(TYPES.ICancelAuctionUseCase)
+    private readonly _cancelAuctionUseCase: ICancelAuctionUseCase
   ) {}
 
   //# ================================================================================================================
@@ -53,8 +56,8 @@ export class AuctionController implements IAuctionController {
         title: validatedBody.title,
         description: validatedBody.description,
         startPrice: validatedBody.startPrice,
-        startTime: validatedBody.startTime,
-        endTime: validatedBody.endTime,
+        startTime: new Date(validatedBody.startTime),
+        endTime: new Date(validatedBody.endTime),
         imageKey: validatedBody.imageKey
       };
 
@@ -171,6 +174,33 @@ export class AuctionController implements IAuctionController {
       });
     } catch (error) {
       logger.error("Error in getAuctionStats", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# CANCEL AUCTION
+  //# ================================================================================================================
+  //# PATCH /api/v1/art/admin/auctions/:id/cancel
+  //# Params: id
+  //# This controller cancels an auction.
+  //# ================================================================================================================
+  cancelAuction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const id = req.params.id;
+      logger.info(`Cancelling auction id=${id}`);
+
+      await this._cancelAuctionUseCase.execute(id);
+
+      return res.status(HttpStatus.OK).json({
+        message: "Auction cancelled successfully",
+      });
+    } catch (error) {
+      logger.error("Error in cancelAuction", error);
       next(error);
     }
   };

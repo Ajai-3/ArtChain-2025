@@ -42,6 +42,12 @@ export const authRoutesConfig = {
     },
     { path: ROUTES.WALLET.GET_TRANSACTIONS, methods: ["GET"] },
     { path: ROUTES.WALLET.CREATE_TRANSACTIONS, methods: ["POST"] },
+    { path: ROUTES.WALLET.STATS_CHART, methods: ["GET"] },
+    
+    // Withdrawal routes
+    { path: ROUTES.WALLET.WITHDRAWAL_CREATE, methods: ["POST"] },
+    { path: ROUTES.WALLET.WITHDRAWAL_REQUESTS, methods: ["GET"] },
+    { path: ROUTES.WALLET.WITHDRAWAL_REQUEST_BY_ID, methods: ["GET"] },
 
     { path: ROUTES.ART.LIKE, methods: ["POST"] },
     { path: ROUTES.ART.UNLIKE, methods: ["DELETE"] },
@@ -71,7 +77,14 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.AUCTIONS, methods: ["GET", "POST"] },
     { path: ROUTES.ART.AUCTION_BY_ID, methods: ["GET"] },
     { path: ROUTES.ART.BIDS, methods: ["POST"] },
-    { path: ROUTES.ART.BIDS, methods: ["POST"] },
+    
+    { path: ROUTES.ART.COMMISSION_REQUEST, methods: ["POST"] },
+    { path: ROUTES.ART.COMMISSION_BY_CONVERSATION, methods: ["GET"] },
+    { path: ROUTES.ART.COMMISSION_UPDATE, methods: ["PATCH"] },
+
+    { path: ROUTES.AI.DELETE_GENERATION, methods: ["DELETE"] },
+    { path: ROUTES.WALLET.COMMISSION_LOCK, methods: ["POST"] },
+    { path: ROUTES.WALLET.COMMISSION_DISTRIBUTE, methods: ["POST"] },
   ],
   
   user_optional: [
@@ -97,5 +110,23 @@ export const authRoutesConfig = {
     { path: ROUTES.AI.ANALYTICS, methods: ["GET"] },
     { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
     { path: ROUTES.AI.TEST_PROVIDER, methods: ["POST"] },
+
+    { path: ROUTES.ADMIN.REVENUE, methods: ["GET"] },
+    
+    // Admin Wallet Management
+    { path: ROUTES.ADMIN.WALLETS, methods: ["GET"] },
+    { path: ROUTES.ADMIN.SEARCH_WALLETS, methods: ["GET"] },
+    { path: ROUTES.ADMIN.UPDATE_STATUS, methods: ["PATCH"] },
+    { path: ROUTES.ADMIN.GET_USER_TRANSACTIONS, methods: ["GET"] },
+    { path: ROUTES.ADMIN.REVENUE_STATS, methods: ["GET"] },
+
+    // Admin withdrawal routes
+    { path: ROUTES.WALLET.ADMIN_WITHDRAWAL_REQUESTS, methods: ["GET"] },
+    { path: ROUTES.WALLET.ADMIN_WITHDRAWAL_UPDATE_STATUS, methods: ["PATCH"] },
+
+    // Admin Commission routes
+    { path: ROUTES.ADMIN.ADMIN_COMMISSIONS, methods: ["GET"] },
+    { path: ROUTES.ADMIN.ADMIN_COMMISSION_STATS, methods: ["GET"] },
+    { path: ROUTES.ADMIN.ADMIN_RESOLVE_COMMISSION, methods: ["POST"] },
   ],
 };

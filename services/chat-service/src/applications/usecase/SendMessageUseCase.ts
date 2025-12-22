@@ -48,6 +48,9 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       mediaType: (mediaType as MediaType) || MediaType.TEXT,
       readBy: [senderId],
       deleteMode: DeleteMode.NONE,
+      callId: dto.callId,
+      callStatus: dto.callStatus as any,
+      callDuration: dto.callDuration,
     });
 
     await this._cacheService.cacheMessage(message);

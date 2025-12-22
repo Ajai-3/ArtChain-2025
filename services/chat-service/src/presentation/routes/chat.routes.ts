@@ -19,6 +19,10 @@ router.post(
   ROUTES.CHAT.CONVERSATION_GROUP,
   conversationController.createGroupConversation
 );
+router.post(
+  ROUTES.CHAT.CONVERSATION_REQUEST,
+  conversationController.createRequestConversation
+);
 router.get(
   ROUTES.CHAT.CONVERSATION_RECENT,
   conversationController.getResendConversations

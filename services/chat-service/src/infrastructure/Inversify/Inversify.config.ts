@@ -14,12 +14,14 @@ import { IListMessagesUseCase } from "../../applications/interface/usecase/IList
 import { IDeleteMessageUseCase } from "../../applications/interface/usecase/IDeleteMessageUseCase";
 import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
 import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
+import { ICreateRequestConversationUseCase } from "../../applications/interface/usecase/ICreateRequestConversationUseCase";
 
 import { SendMessageUseCase } from "../../applications/usecase/SendMessageUseCase";
 import { ListMessagesUseCase } from "../../applications/usecase/ListMessagesUseCase";
 import { DeleteMessageUseCase } from "../../applications/usecase/DeleteMessageUseCase";
 import { GetAllResendConversationUseCase } from "../../applications/usecase/GetAllResendConversationUseCase";
 import { CreatePrivateConversationUseCase } from "../../applications/usecase/CreatePrivateConversationUseCase";
+import { CreateRequestConversationUseCase } from "../../applications/usecase/CreateRequestConversationUseCase";
 import { IMarkMessagesReadUseCase } from "../../applications/interface/usecase/IMarkMessagesReadUseCase";
 import { MarkMessagesReadUseCase } from "../../applications/usecase/MarkMessagesReadUseCase";
 import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
@@ -34,6 +36,8 @@ import { IRemoveGroupAdminUseCase } from "../../applications/interface/usecase/I
 import { RemoveGroupAdminUseCase } from "../../applications/usecase/RemoveGroupAdminUseCase";
 import { IAddGroupMemberUseCase } from "../../applications/interface/usecase/IAddGroupMemberUseCase";
 import { AddGroupMemberUseCase } from "../../applications/usecase/AddGroupMemberUseCase";
+import { IUpdateCallMessageUseCase } from "../../applications/interface/usecase/IUpdateCallMessageUseCase";
+import { UpdateCallMessageUseCase } from "../../applications/usecase/UpdateCallMessageUseCase";
 
 // Services
 import { UserService } from "../http/UserService";
@@ -88,6 +92,9 @@ container
   )
   .to(CreatePrivateConversationUseCase);
 container
+  .bind<ICreateRequestConversationUseCase>(TYPES.ICreateRequestConversationUseCase)
+  .to(CreateRequestConversationUseCase);
+container
   .bind<IGetAllResendConversationUseCase>(
     TYPES.IGetAllResendConversationUseCase
   )
@@ -113,6 +120,9 @@ container
 container
   .bind<IAddGroupMemberUseCase>(TYPES.IAddGroupMemberUseCase)
   .to(AddGroupMemberUseCase);
+container
+  .bind<IUpdateCallMessageUseCase>(TYPES.IUpdateCallMessageUseCase)
+  .to(UpdateCallMessageUseCase);
 
 // Srevice
 container.bind<IUserService>(TYPES.IUserService).to(UserService);

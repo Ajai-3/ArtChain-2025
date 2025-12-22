@@ -9,15 +9,15 @@ import {
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { UpdateUserProfileDto } from "../../../interface/dtos/user/profile/UpdateUserProfileDto";
 import { IUpdateProfileUserUseCase } from "../../../interface/usecases/user/profile/IUpdateProfileUserUseCase";
-import { publishNotification } from "../../../../infrastructure/messaging/rabbitmq";
-import { IAddUserToElasticSearchUseCase } from "../../../interface/usecases/user/search/IAddUserToElasticSearchUseCase";
+import { IEventBus } from "../../../interface/events/IEventBus";
+import { UserUpdatedEvent } from "../../../../domain/events/UserUpdatedEvent";
 
 @injectable()
 export class UpdateProfileUserUseCase implements IUpdateProfileUserUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
-    @inject(TYPES.IAddUserToElasticSearchUseCase)
-    private readonly _addUserToElasticUserUseCase: IAddUserToElasticSearchUseCase
+    @inject(TYPES.IEventBus)
+    private readonly _eventBus: IEventBus
   ) {}
 
   async execute(dto: UpdateUserProfileDto): Promise<any> {
@@ -44,11 +44,7 @@ export class UpdateProfileUserUseCase implements IUpdateProfileUserUseCase {
       throw new BadRequestError(USER_MESSAGES.PROFILE_UPDATE_FAILED);
     }
 
-    const elasticUser = await this._addUserToElasticUserUseCase.execute(updatedUser);
-
-    console.log(updatedUser, elasticUser)
-
-    await publishNotification("user.update", elasticUser);
+    await this._eventBus.publish(new UserUpdatedEvent(updatedUser));
 
     return updatedUser;
   }

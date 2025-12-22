@@ -18,6 +18,14 @@ interface TransactionComposedChartProps {
 }
 
 const TransactionComposedChart: React.FC<TransactionComposedChartProps> = ({ data }) => {
+  if (!data || data.length === 0) {
+    return (
+      <div className="text-xs text-muted-foreground w-full h-full flex items-center justify-center">
+        No transaction data available
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <ComposedChart

@@ -43,6 +43,9 @@ export const ROUTES = {
     AUCTION_BY_ID: "/api/v1/art/auctions/:id",
     BIDS: "/api/v1/art/bids",
     BIDS_BY_AUCTION: "/api/v1/art/bids/:auctionId",
+    COMMISSION_REQUEST: "/api/v1/art/commission/request",
+    COMMISSION_BY_CONVERSATION: "/api/v1/art/commission/conversation/:conversationId",
+    COMMISSION_UPDATE: "/api/v1/art/commission/:id",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",
@@ -55,6 +58,19 @@ export const ROUTES = {
     CREATE_CHECKOUT_SESSION: "/api/v1/wallet/stripe/create-checkout-session",
     GET_TRANSACTIONS: "/api/v1/wallet/get-transactions",
     CREATE_TRANSACTIONS: "/api/v1/wallet/create-transactions",
+    STATS_CHART: "/api/v1/wallet/stats/chart",
+    
+    // Withdrawal routes
+    WITHDRAWAL_CREATE: "/api/v1/wallet/withdrawal/create",
+    WITHDRAWAL_REQUESTS: "/api/v1/wallet/withdrawal/requests",
+    WITHDRAWAL_REQUEST_BY_ID: "/api/v1/wallet/withdrawal/requests/:id",
+    
+    // Admin withdrawal routes
+    ADMIN_WITHDRAWAL_REQUESTS: "/api/v1/wallet/admin/withdrawal/requests",
+    ADMIN_WITHDRAWAL_UPDATE_STATUS: "/api/v1/wallet/admin/withdrawal/requests/:withdrawalId/status",
+    COMMISSION_LOCK: "/api/v1/wallet/transaction/commission/lock",
+    COMMISSION_DISTRIBUTE: "/api/v1/wallet/transaction/commission/distribute",
+    COMMISSION_REFUND: "/api/v1/wallet/transaction/commission/refund",
   },
   CHAT: {
     PRIVATE: "/api/v1/chat/conversation/private",
@@ -74,9 +90,19 @@ export const ROUTES = {
     CONFIG: "/api/v1/art/ai/config",
     ANALYTICS: "/api/v1/art/ai/analytics",
     TEST_PROVIDER: "/api/v1/art/ai/test-provider",
+    DELETE_GENERATION: "/api/v1/art/ai/generations/:id",
   },
   ADMIN: {
     DASHBOARD: "/api/v1/admin/dashboard",
     USERS: "/api/v1/admin/users",
+    REVENUE: "/api/v1/admin/revenue-stats",
+    WALLETS: "/api/v1/wallet/admin/wallets",
+    SEARCH_WALLETS: "/api/v1/wallet/admin/wallets/search",
+    UPDATE_STATUS: "/api/v1/wallet/admin/wallets/:walletId/status",
+    GET_USER_TRANSACTIONS: "/api/v1/wallet/admin/wallets/:walletId/transactions",
+    REVENUE_STATS: "/api/v1/wallet/admin/revenue-stats",
+    ADMIN_COMMISSIONS: "/api/v1/art/admin/commissions/all",
+    ADMIN_COMMISSION_STATS: "/api/v1/art/admin/commissions/stats",
+    ADMIN_RESOLVE_COMMISSION: "/api/v1/art/admin/commissions/resolve/:id",
   },
 };

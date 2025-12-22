@@ -1,7 +1,8 @@
 import { IBaseRepository } from './../IBaseRepository';
 import { UserPreview } from '../../../types/UserPreview';
+import { Supporter } from '../../entities/Supporter';
 
-export interface ISupporterRepository extends IBaseRepository {
+export interface ISupporterRepository extends IBaseRepository<Supporter> {
   getUserSupportersAndSupportingCounts(userId: string): Promise<{
     supportersCount: number;
     supportingCount: number;

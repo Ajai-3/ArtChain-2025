@@ -261,7 +261,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
             </div>
 
             {!isOwnProfile && (
-              <div className="flex gap-4 items-center">
+              <div className="flex gap-4 items-center flex-wrap">
                 <Button
                   variant={isSupporting ? "unSupport" : "support"}
                   size="support"
@@ -294,6 +294,9 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                     )}
                   </span>
                 </Button>
+                
+                
+
                 <div 
                   className={iconButtonClasses}
                   onClick={() => setIsOptionsOpen(true)}
@@ -314,7 +317,7 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
           onClose={() => setModalType(null)}
         />
       )}
-
+      
       {/* Zoomed Profile Image Modal */}
       {zoomImage && (
         <div

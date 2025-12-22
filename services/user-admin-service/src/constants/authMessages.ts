@@ -1,4 +1,7 @@
 export const AUTH_MESSAGES = {
+  // Auth
+  AUTH_INITIALIZED: 'Auth initialized successfully.',
+
   // Registration
   ALL_FIELDS_REQUIRED: 'All fields are required.',
   TOKEN_REQUIRED: 'Verification token is required.',
@@ -54,5 +57,8 @@ export const AUTH_MESSAGES = {
 
 
   INVALID_CHANGE_EMAIL_TOKEN: 'Invalid change email token',
-  EMAIL_UPDATE_FAILED: 'Email updation failed'
+  EMAIL_UPDATE_FAILED: 'Email updation failed',
+
+  USER_BANNED: 'Your account has been banned.',
+  USER_SUSPENDED: 'Your account has been suspended.',
 } as const;

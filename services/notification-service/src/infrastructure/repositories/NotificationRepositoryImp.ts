@@ -1,19 +1,23 @@
 import { injectable } from "inversify";
 import { Notification } from "../../domain/entities/Notification";
-import { NotificationModel } from "../db/models/NotificationModel";
+import { NotificationModel, NotificationDoc } from "../db/models/NotificationModel";
 import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
+import { BaseRepository } from "./BaseRepository";
 
 @injectable()
-export class NotificationRepositoryImp implements INotificationRepository {
-  async save(notification: Notification): Promise<Notification> {
-    const doc = await NotificationModel.create(notification);
+export class NotificationRepositoryImp extends BaseRepository<Notification, NotificationDoc> implements INotificationRepository {
+  constructor() {
+    super(NotificationModel);
+  }
+
+  protected toDomain(doc: NotificationDoc): Notification {
     return new Notification(
-      doc.userId,
-      doc.type,
-      doc.data,
-      doc.read,
-      doc.createdAt,
-      doc._id.toString()
+        doc.userId,
+        doc.senderId,
+        doc.type,
+        doc.read,
+        doc.createdAt,
+        doc._id.toString()
     );
   }
 
@@ -23,34 +27,24 @@ export class NotificationRepositoryImp implements INotificationRepository {
     limit: number = 10
   ): Promise<Notification[]> {
     const skip = (page - 1) * limit;
-    const docs = await NotificationModel.find({ userId })
+    const docs = await this._model.find({ userId })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
 
-    return docs.map(
-      (d) =>
-        new Notification(
-          d.userId,
-          d.type,
-          d.data,
-          d.read,
-          d.createdAt,
-          (d as any)._id.toString()
-        )
-    );
+    return docs.map(d => this.toDomain(d as unknown as NotificationDoc));
   }
 
   async getUnreadCount(userId: string) {
-    return NotificationModel.countDocuments({ userId, read: false });
+    return this._model.countDocuments({ userId, read: false });
   }
 
   async markAsRead(id: string) {
-    await NotificationModel.findByIdAndUpdate(id, { read: true });
+    await this.update(id, { read: true });
   }
 
   async markAllAsRead(userId: string) {
-    await NotificationModel.updateMany({ userId, read: false }, { read: true });
+    await this._model.updateMany({ userId, read: false }, { read: true });
   }
 }

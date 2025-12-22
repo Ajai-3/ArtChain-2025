@@ -11,7 +11,11 @@ export const TYPES = {
   // AI Repositories
   IAIGenerationRepository: Symbol.for("IAIGenerationRepository"),
   IAIConfigRepository: Symbol.for("IAIConfigRepository"),
+  IPlatformConfigRepository: Symbol.for("IPlatformConfigRepository"),
+  IUserService: Symbol.for("IUserService"),
   AIProviderService: Symbol.for("AIProviderService"),
+  ICommissionRepository: Symbol.for("ICommissionRepository"),
+  IPurchaseRepository: Symbol.for("IPurchaseRepository"),
 
   // Use Cases - Art
   IGetAllArtUseCase: Symbol.for("IGetAllArtUseCase"),
@@ -58,9 +62,18 @@ export const TYPES = {
   IUpdateAIConfigUseCase: Symbol.for("IUpdateAIConfigUseCase"),
   IGetAIConfigsUseCase: Symbol.for("IGetAIConfigsUseCase"),
   IGetAIAnalyticsUseCase: Symbol.for("IGetAIAnalyticsUseCase"),
+  IDeleteAIGenerationUseCase: Symbol.for("IDeleteAIGenerationUseCase"),
 
 
   
+  // Use Cases - Commission
+  ICreateCommissionUseCase: Symbol.for("ICreateCommissionUseCase"),
+  IGetCommissionByConversationUseCase: Symbol.for("IGetCommissionByConversationUseCase"),
+  IUpdateCommissionUseCase: Symbol.for("IUpdateCommissionUseCase"),
+  IGetCommissionStatsUseCase: Symbol.for("IGetCommissionStatsUseCase"),
+  IResolveCommissionDisputeUseCase: Symbol.for("IResolveCommissionDisputeUseCase"),
+  IGetAllCommissionsUseCase: Symbol.for("IGetAllCommissionsUseCase"),
+
   // Use Cases - Bidding
   ICreateAuctionUseCase: Symbol.for("ICreateAuctionUseCase"),
   IGetAuctionsUseCase: Symbol.for("IGetAuctionsUseCase"),
@@ -69,6 +82,7 @@ export const TYPES = {
   IPlaceBidUseCase: Symbol.for("IPlaceBidUseCase"),
   IGetBidsUseCase: Symbol.for("IGetBidsUseCase"),
   IGetUserBidsUseCase: Symbol.for("IGetUserBidsUseCase"),
+  ICancelAuctionUseCase: Symbol.for("ICancelAuctionUseCase"),
   IArtController: Symbol.for("IArtController"),
   IShopController: Symbol.for("IShopController"),
   ILikeController: Symbol.for("ILikeController"),
@@ -78,6 +92,7 @@ export const TYPES = {
   IAIController: Symbol.for("IAIController"),
   IAdminAIController: Symbol.for("IAdminAIController"),
   IAuctionController: Symbol.for("IAuctionController"),
+  IAdminPlatformConfigController: Symbol.for("IAdminPlatformConfigController"),
   IBidController: Symbol.for("IBidController"),
 
   // Admin Art
@@ -91,4 +106,14 @@ export const TYPES = {
   IS3Service: Symbol.for("IS3Service"),
   IDownloadArtUseCase: Symbol.for("IDownloadArtUseCase"),
   ISocketService: Symbol.for("ISocketService"),
+  IChatService: Symbol.for("IChatService"),
+
+  // Platform Config
+  IGetPlatformConfigUseCase: Symbol.for("IGetPlatformConfigUseCase"),
+  IUpdatePlatformConfigUseCase: Symbol.for("IUpdatePlatformConfigUseCase"),
+
+  RabbitMQService: Symbol.for("RabbitMQService"),
+  IEndAuctionUseCase: Symbol.for("IEndAuctionUseCase"),
+  AuctionEndedConsumer: Symbol.for("AuctionEndedConsumer"),
+  ICommissionController: Symbol.for("ICommissionController"),
 };

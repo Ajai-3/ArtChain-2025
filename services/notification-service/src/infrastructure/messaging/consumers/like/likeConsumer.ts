@@ -1,6 +1,8 @@
 import { Channel, ConsumeMessage } from "amqplib";
 import { getRabbitChannel } from "../../rabbitmq";
-import { handleLikeEvent } from "../../../../application/notifications/handleLikeEvent";
+import { container } from "../../../inversify/inversify.config";
+import { TYPES } from "../../../inversify/types";
+import { ILikeEventHandler } from "../../../../application/interfaces/handlers/ILikeEventHandler";
 
 export async function startLikeConsumer() {
   const ch: Channel = await getRabbitChannel();
@@ -13,7 +15,8 @@ export async function startLikeConsumer() {
       const event = JSON.parse(msg.content.toString());
       console.log("📥 Received like event:", event);
 
-      await handleLikeEvent(event);
+      const handler = container.get<ILikeEventHandler>(TYPES.ILikeEventHandler);
+      await handler.handle(event);
 
       ch.ack(msg);
     } catch (err) {

@@ -1,10 +1,3 @@
-/**
- * API Route Constants
- * 
- * This file contains all route path constants used throughout the application.
- * All route definitions should use these constants instead of hardcoded strings.
- */
-
 export const ROUTES = {
   // Base API paths
   BASE: {
@@ -19,6 +12,9 @@ export const ROUTES = {
     UPDATE: "/update",
     LOCK: "/lock",
     UNLOCK: "/unlock",
+    SETTLE_AUCTION: "/settle-auction",
+    STATS_CHART: "/stats/chart",
+    GIFT: "/gift",
   },
 
   // Transaction routes
@@ -26,6 +22,19 @@ export const ROUTES = {
     GET_TRANSACTIONS: "/get-transactions",
     CREATE_TRANSACTION: "/create-transaction",
     PURCHASE: "/transaction/purchase",
+    SPLIT_PURCHASE: "/transaction/split-purchase",
+    PAYMENT: "/transaction/payment",
+    COMMISSION_LOCK: "/transaction/commission/lock",
+    COMMISSION_DISTRIBUTE: "/transaction/commission/distribute",
+    COMMISSION_REFUND: "/transaction/commission/refund",
+    TRANSACTION_LOCK: "/transaction/lock",
+  },
+
+  // Withdrawal routes
+  WITHDRAWAL: {
+    CREATE_REQUEST: "/withdrawal/create",
+    GET_REQUESTS: "/withdrawal/requests",
+    GET_REQUEST_BY_ID: "/withdrawal/requests/:id",
   },
 
   // Stripe routes
@@ -54,6 +63,11 @@ export const ROUTES = {
     SEARCH_WALLETS: "/admin/wallets/search",
     UPDATE_STATUS: "/admin/wallets/:walletId/status",
     GET_USER_TRANSACTIONS: "/admin/wallets/:walletId/transactions",
+    REVENUE_STATS: "/admin/revenue-stats",
+    ADMIN_TRANSACTIONS: "/admin/:adminId/transactions",
+    // Withdrawal management
+    WITHDRAWAL_REQUESTS: "/admin/withdrawal/requests",
+    UPDATE_WITHDRAWAL_STATUS: "/admin/withdrawal/requests/:withdrawalId/status",
   },
 } as const;
 

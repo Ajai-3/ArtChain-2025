@@ -7,6 +7,7 @@ export const ROUTES = {
   CHAT: {
     // Conversation routes
     CONVERSATION_PRIVATE: "/conversation/private",
+    CONVERSATION_REQUEST: "/conversation/request",
     CONVERSATION_GROUP: "/conversation/group",
     CONVERSATION_RECENT: "/conversation/recent",
     

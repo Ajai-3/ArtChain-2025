@@ -15,6 +15,10 @@ import { IAIConfigRepository } from "../../domain/repositories/IAIConfigReposito
 import { AIProviderService } from "../service/AIProviderService";
 import { IWalletService } from "../../domain/interfaces/IWalletService";
 import { WalletService } from "../service/WalletService";
+import { IUserService } from "../../application/interface/service/IUserService";
+import { UserServiceImpl } from "../service/UserServiceImpl";
+
+import { GetCommissionStatsUseCase } from "../../application/usecase/commission/GetCommissionStatsUseCase";
 
 import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
 import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
@@ -23,6 +27,24 @@ import { CategoryRepositoryImpl } from "../repositories/CategoryRepositoryImpl";
 import { FavoriteRepositoryImpl } from "../repositories/FavoriteRepositoryImpl";
 import { AIGenerationRepositoryImpl } from "../repositories/AIGenerationRepositoryImpl";
 import { AIConfigRepositoryImpl } from "../repositories/AIConfigRepositoryImpl";
+import { IPlatformConfigRepository } from "../../domain/repositories/IPlatformConfigRepository";
+import { PlatformConfigRepositoryImpl } from "../repositories/PlatformConfigRepositoryImpl";
+import { IGetPlatformConfigUseCase } from "../../application/interface/usecase/admin/IGetPlatformConfigUseCase";
+import { GetPlatformConfigUseCase } from "../../application/usecase/admin/GetPlatformConfigUseCase";
+
+import { IPurchaseRepository } from "../../domain/repositories/IPurchaseRepository";
+import { PurchaseRepositoryImpl } from "../repositories/PurchaseRepositoryImpl";
+
+import { IUpdatePlatformConfigUseCase } from "../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase";
+import { UpdatePlatformConfigUseCase } from "../../application/usecase/admin/UpdatePlatformConfigUseCase";
+import { IAdminPlatformConfigController } from "../../presentation/interface/IAdminPlatformConfigController";
+import { AdminPlatformConfigController } from "../../presentation/controllers/AdminPlatformConfigController";
+
+// Services
+import { ChatService } from "../service/ChatService";
+import { SocketService } from "../service/SocketService";
+import { IChatService } from "../../domain/interfaces/IChatService";
+import { ISocketService } from "../../domain/interfaces/ISocketService";
 
 // Use Cases - Art
 import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
@@ -104,6 +126,7 @@ import { ICheckAIQuotaUseCase } from "../../application/interface/usecase/ai/ICh
 import { IUpdateAIConfigUseCase } from "../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase";
 import { IGetAIConfigsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase";
 import { IGetAIAnalyticsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase";
+import { IDeleteAIGenerationUseCase } from "../../application/interface/usecase/ai/IDeleteAIGenerationUseCase"; // Added
 
 import { GenerateAIImageUseCase } from "../../application/usecase/ai/GenerateAIImageUseCase";
 import { GetMyAIGenerationsUseCase } from "../../application/usecase/ai/GetMyAIGenerationsUseCase";
@@ -113,6 +136,7 @@ import { GetAIConfigsUseCase } from "../../application/usecase/ai/admin/GetAICon
 import { GetAIAnalyticsUseCase } from "../../application/usecase/ai/admin/GetAIAnalyticsUseCase";
 import { GetEnabledAIConfigsUseCase } from "../../application/usecase/ai/GetEnabledAIConfigsUseCase";
 import { IGetEnabledAIConfigsUseCase } from "../../application/interface/usecase/ai/IGetEnabledAIConfigsUseCase";
+import { DeleteAIGenerationUseCase } from "../../application/usecase/ai/DeleteAIGenerationUseCase"; // Added
 
 // Controllers
 import { IAIController } from "../../presentation/interface/IAIController";
@@ -162,6 +186,8 @@ import { IPlaceBidUseCase } from "../../application/interface/usecase/bid/IPlace
 import { PlaceBidUseCase } from "../../application/usecase/bid/PlaceBidUseCase";
 import { IGetBidsUseCase } from "../../application/interface/usecase/bid/IGetBidsUseCase";
 import { GetBidsUseCase } from "../../application/usecase/bid/GetBidsUseCase";
+import { ICancelAuctionUseCase } from "../../application/interface/usecase/auction/ICancelAuctionUseCase";
+import { CancelAuctionUseCase } from "../../application/usecase/auction/CancelAuctionUseCase";
 import { IAuctionController } from "../../presentation/interface/IAuctionController";
 import { AuctionController } from "../../presentation/controllers/AuctionController";
 import { IBidController } from "../../presentation/interface/IBidController";
@@ -177,7 +203,9 @@ container.bind<ILikeRepository>(TYPES.ILikeRepository).to(LikeRepositoryImpl);
 container.bind<ICommentRepository>(TYPES.ICommentRepository).to(CommentRepositoryImpl);
 container.bind<IFavoriteRepository>(TYPES.IFavoriteRepository).to(FavoriteRepositoryImpl);
 container.bind<IAIGenerationRepository>(TYPES.IAIGenerationRepository).to(AIGenerationRepositoryImpl);
+
 container.bind<IAIConfigRepository>(TYPES.IAIConfigRepository).to(AIConfigRepositoryImpl);
+container.bind<IPurchaseRepository>(TYPES.IPurchaseRepository).to(PurchaseRepositoryImpl);
 
 // AI Use Cases
 container.bind<IGenerateAIImageUseCase>(TYPES.IGenerateAIImageUseCase).to(GenerateAIImageUseCase);
@@ -187,8 +215,10 @@ container.bind<IGetEnabledAIConfigsUseCase>(TYPES.IGetEnabledAIConfigsUseCase).t
 container.bind<IUpdateAIConfigUseCase>(TYPES.IUpdateAIConfigUseCase).to(UpdateAIConfigUseCase);
 container.bind<IGetAIConfigsUseCase>(TYPES.IGetAIConfigsUseCase).to(GetAIConfigsUseCase);
 container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAnalyticsUseCase);
+container.bind<IDeleteAIGenerationUseCase>(TYPES.IDeleteAIGenerationUseCase).to(DeleteAIGenerationUseCase);
 container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
 container.bind<IWalletService>(TYPES.IWalletService).to(WalletService);
+container.bind<IUserService>(TYPES.IUserService).to(UserServiceImpl);
 
 // AI Controllers
 container.bind<IAIController>(TYPES.IAIController).to(AIController);
@@ -224,11 +254,9 @@ container.bind<IBuyArtUseCase>(TYPES.IBuyArtUseCase).to(BuyArtUseCase);
 container.bind<IDownloadArtUseCase>(TYPES.IDownloadArtUseCase).to(DownloadArtUseCase);
 
 // Services
-import { ISocketService } from "../../domain/interfaces/ISocketService";
-import { SocketService } from "../service/SocketService";
-
 container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
 container.bind<ISocketService>(TYPES.ISocketService).to(SocketService).inSingletonScope();
+container.bind<IChatService>(TYPES.IChatService).to(ChatService);
 
 // Use Cases - Category
 container
@@ -318,8 +346,51 @@ container.bind<IGetAuctionByIdUseCase>(TYPES.IGetAuctionByIdUseCase).to(GetAucti
 container.bind<IPlaceBidUseCase>(TYPES.IPlaceBidUseCase).to(PlaceBidUseCase);
 container.bind<IGetBidsUseCase>(TYPES.IGetBidsUseCase).to(GetBidsUseCase);
 container.bind<IGetUserBidsUseCase>(TYPES.IGetUserBidsUseCase).to(GetUserBidsUseCase);
+container.bind<ICancelAuctionUseCase>(TYPES.ICancelAuctionUseCase).to(CancelAuctionUseCase);
 
 container.bind<IAuctionController>(TYPES.IAuctionController).to(AuctionController);
 container.bind<IBidController>(TYPES.IBidController).to(BidController);
+
+// Platform Config
+container.bind<IPlatformConfigRepository>(TYPES.IPlatformConfigRepository).to(PlatformConfigRepositoryImpl);
+container.bind<IGetPlatformConfigUseCase>(TYPES.IGetPlatformConfigUseCase).to(GetPlatformConfigUseCase);
+container.bind<IUpdatePlatformConfigUseCase>(TYPES.IUpdatePlatformConfigUseCase).to(UpdatePlatformConfigUseCase);
+container.bind<IAdminPlatformConfigController>(TYPES.IAdminPlatformConfigController).to(AdminPlatformConfigController);
+
+// Commission
+import { ICommissionRepository } from "../../domain/repositories/ICommissionRepository";
+import { CommissionRepositoryImpl } from "../repositories/CommissionRepositoryImpl";
+import { ICreateCommissionUseCase } from "../../application/interface/usecase/commission/ICreateCommissionUseCase";
+import { CreateCommissionUseCase } from "../../application/usecase/commission/CreateCommissionUseCase";
+import { IGetCommissionByConversationUseCase } from "../../application/interface/usecase/commission/IGetCommissionByConversationUseCase";
+import { GetCommissionByConversationUseCase } from "../../application/usecase/commission/GetCommissionByConversationUseCase";
+import { IUpdateCommissionUseCase } from "../../application/interface/usecase/commission/IUpdateCommissionUseCase";
+import { UpdateCommissionUseCase } from "../../application/usecase/commission/UpdateCommissionUseCase";
+
+import { ICommissionController } from "../../presentation/interface/ICommissionController";
+import { CommissionController } from "../../presentation/controllers/CommissionController";
+import { GetAllCommissionsUseCase } from "../../application/usecase/commission/GetAllCommissionsUseCase";
+import { ResolveCommissionDisputeUseCase } from "../../application/usecase/commission/ResolveCommissionDisputeUseCase";
+import { AdminCommissionController } from "../../presentation/controllers/AdminCommissionController";
+
+container.bind<ICommissionRepository>(TYPES.ICommissionRepository).to(CommissionRepositoryImpl);
+container.bind<ICreateCommissionUseCase>(TYPES.ICreateCommissionUseCase).to(CreateCommissionUseCase);
+container.bind<IGetCommissionByConversationUseCase>(TYPES.IGetCommissionByConversationUseCase).to(GetCommissionByConversationUseCase);
+container.bind<IUpdateCommissionUseCase>(TYPES.IUpdateCommissionUseCase).to(UpdateCommissionUseCase);
+container.bind<ICommissionController>(TYPES.ICommissionController).to(CommissionController);
+container.bind<GetAllCommissionsUseCase>(GetAllCommissionsUseCase).to(GetAllCommissionsUseCase);
+container.bind<ResolveCommissionDisputeUseCase>(ResolveCommissionDisputeUseCase).to(ResolveCommissionDisputeUseCase);
+container.bind<AdminCommissionController>(AdminCommissionController).to(AdminCommissionController);
+
+// RabbitMQ & Auction Ending
+import { RabbitMQService } from "../messaging/RabbitMQService";
+import { IEndAuctionUseCase } from "../../application/interface/usecase/auction/IEndAuctionUseCase";
+import { EndAuctionUseCase } from "../../application/usecase/auction/EndAuctionUseCase";
+import { AuctionEndedConsumer } from "../messaging/consumers/AuctionEndedConsumer";
+
+container.bind<RabbitMQService>(TYPES.RabbitMQService).to(RabbitMQService).inSingletonScope();
+container.bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase).to(EndAuctionUseCase);
+container.bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer).to(AuctionEndedConsumer).inSingletonScope();
+container.bind<GetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
 
 export { container };

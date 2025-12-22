@@ -16,12 +16,15 @@ import ArtInfo from "../components/art/details/ArtInfo";
 import Comments from "../components/art/details/Comments";
 import ArtSidebar from "../components/art/details/ArtSidebar";
 import ZoomOverlay from "../components/art/details/ZoomOverlay";
+import BuyArtModal from "../components/art/details/BuyArtModal";
 import { ROUTES } from "../../../constants/routes";
+import type { ArtWithUserResponse } from "../../../types/art";
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user);
+  const wallet = useSelector((state: RootState) => state.wallet);
 
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
@@ -30,13 +33,15 @@ const ArtPage: React.FC = () => {
   const buyArtMutation = useBuyArtMutation();
   const downloadArtMutation = useDownloadArtMutation();
 
-  const { data, isLoading, isError, error } = useGetArtByName(artname!);
+  const { data: apiResponse, isLoading, isError, error } = useGetArtByName(artname!);
+  const data = apiResponse as unknown as { data: ArtWithUserResponse }; 
 
   const [zoomed, setZoomed] = useState(false);
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [showBuyModal, setShowBuyModal] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const {
@@ -76,6 +81,7 @@ const ArtPage: React.FC = () => {
   const art = data.data.art;
   const actualUser = data.data.user;
   const price = data.data.price;
+  const purchaser = data.data.purchaser;
 
   const handleFavorite = () => {
     if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
@@ -103,7 +109,13 @@ const ArtPage: React.FC = () => {
 
   const handleBuy = () => {
     if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
-    buyArtMutation.mutate(art.id);
+    setShowBuyModal(true);
+  };
+  
+  const confirmBuy = () => {
+      buyArtMutation.mutate(art.id, {
+          onSuccess: () => setShowBuyModal(false)
+      });
   };
 
   const handleDownload = () => {
@@ -139,9 +151,13 @@ const ArtPage: React.FC = () => {
     year: "numeric",
   });
 
-  const isOwner = user.user?.id === (art.ownerId || art.userId);
+  const isOwner = user.user?.id === (art.userId || actualUser.id);
+  const isPurchaser = purchaser?.id === user.user?.id;
+  
   const canBuy = art.isForSale && !isOwner;
-  const canDownload = isOwner;
+  
+  const isFree = !art.isForSale && !purchaser && !art.downloadingDisabled && (!price?.artcoins || price?.artcoins === 0);
+  const canDownload = isOwner || isPurchaser || isFree;
 
   return (
     <div className="flex flex-col lg:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen max-w-[1600px] mx-auto">
@@ -152,9 +168,13 @@ const ArtPage: React.FC = () => {
           art={{ 
             id: art.id, 
             artName: art.artName, 
+            artType: art.artType,
             isForSale: canBuy, 
+            isSold: art.isSold ?? false,
             downloadingDisabled: !canDownload, 
-            price 
+            price,
+            userId: art.userId,
+            purchaser
           }}
           stats={{ isLiked: data.data.isLiked, likeCount: data.data.likeCount || 0, isFavorited: data.data.isFavorited, favoriteCount: data.data.favoriteCount || 0, commentCount: data.data.commentCount || 0 }}
           user={{ isAuthenticated: user.isAuthenticated }}
@@ -168,7 +188,8 @@ const ArtPage: React.FC = () => {
             onCloseFavorites: () => setShowFavorites(false),
             onReport: () => setShowReport(true),
             onCloseReport: () => setShowReport(false),
-            onDownload: handleDownload
+            onDownload: handleDownload,
+            onBuy: handleBuy
           }}
           modals={{ showLikes, showFavorites, showReport }}
           isDownloading={downloadArtMutation.isPending}
@@ -178,6 +199,7 @@ const ArtPage: React.FC = () => {
           art={{ title: art.title, createdAt: art.createdAt, hashtags: art.hashtags, description: art.description }}
           artist={{ username: actualUser?.username || "", name: actualUser?.name || "", profileImage: actualUser?.profileImage }}
           formattedDate={formattedDate}
+          purchaser={purchaser}
         />
 
         <Comments artId={art.id} artName={art.artName} commentingDisabled={art.commentingDisabled} />
@@ -203,6 +225,16 @@ const ArtPage: React.FC = () => {
         onPrev={() => currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1)}
         onNext={() => currentImageIndex < recommendedArts.length && setCurrentImageIndex(currentImageIndex + 1)}
         onGoHome={() => { handleCloseZoom(); navigate(ROUTES.HOME); }}
+      />
+
+      <BuyArtModal 
+        isOpen={showBuyModal}
+        onClose={() => setShowBuyModal(false)}
+        onConfirm={confirmBuy}
+        artName={art.artName}
+        price={price?.artcoins || 0}
+        balance={wallet.balance || 0}
+        isLoading={buyArtMutation.isPending}
       />
     </div>
   );

@@ -7,6 +7,7 @@ import { IShopController } from "../interface/IShopController";
 import { ICommentController } from "../interface/ICommentController";
 import { IFavoriteController } from "../interface/IFavoriteController";
 import { ICategoryController } from "../interface/ICategoryController";
+import { IAdminPlatformConfigController } from "../interface/IAdminPlatformConfigController";
 import { container } from "../../infrastructure/Inversify/inversify.config";
 import { ROUTES } from "../../constants/routes";
 
@@ -25,6 +26,10 @@ const favoriteController = container.get<IFavoriteController>(
   TYPES.IFavoriteController
 );
 
+const adminConfigController = container.get<IAdminPlatformConfigController>(
+  TYPES.IAdminPlatformConfigController
+);
+
 // Category
 router.get(ROUTES.CATEGORY.BASE, categoryController.getCategory);
 router.post(ROUTES.CATEGORY.BASE, categoryController.createCategory);
@@ -33,6 +38,9 @@ router.patch(ROUTES.CATEGORY.BY_ID, categoryController.editCategory);
 // Shop
 router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
 router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
+
+// Platform Config (Public) - Must be before /:id routes
+router.get(ROUTES.CONFIG.BASE, adminConfigController.getConfig);
 
 // Art
 router.get(ROUTES.ART.BASE, artController.getAllArt);
@@ -64,5 +72,8 @@ router.delete(ROUTES.FAVORITE.UNFAVORITE, favoriteController.removeFavorite);
 router.get(ROUTES.FAVORITE.FAVORITES_BY_POST_ID, favoriteController.getFavoritedUsers);
 router.get(ROUTES.FAVORITE.FAVORITES_COUNT_BY_POST_ID, favoriteController.getFavoriteCount);
 router.get(ROUTES.FAVORITE.FAVORITES_BY_USER_ID, favoriteController.getUserFavoritedArts);
+
+
+
 
 export default router;

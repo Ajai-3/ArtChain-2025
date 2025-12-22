@@ -5,16 +5,14 @@ import { IAuctionRepository } from "../../../domain/repositories/IAuctionReposit
 import { Auction } from "../../../domain/entities/Auction";
 
 import { CreateAuctionDTO } from "../../interface/dto/auction/CreateAuctionDTO";
+import { RabbitMQService } from "../../../infrastructure/messaging/RabbitMQService";
 
 @injectable()
 export class CreateAuctionUseCase implements ICreateAuctionUseCase {
-  private repository: IAuctionRepository;
-
   constructor(
-    @inject(TYPES.IAuctionRepository) repository: IAuctionRepository
-  ) {
-    this.repository = repository;
-  }
+    @inject(TYPES.IAuctionRepository) private repository: IAuctionRepository,
+    @inject(TYPES.RabbitMQService) private rabbitMQService: RabbitMQService
+  ) {}
 
   async execute(data: CreateAuctionDTO): Promise<Auction> {
     const auction = new Auction(
@@ -26,6 +24,20 @@ export class CreateAuctionUseCase implements ICreateAuctionUseCase {
       data.startTime,
       data.endTime
     );
-    return this.repository.create(auction);
+    
+    const savedAuction = await this.repository.create(auction);
+
+    if (savedAuction._id) {
+        const now = new Date();
+        const endTime = new Date(savedAuction.endTime);
+        const delay = endTime.getTime() - now.getTime();
+        
+        // Only schedule if future (or near future)
+        if (delay > 0) {
+            await this.rabbitMQService.publishDelayedAuctionEnd(savedAuction._id, delay);
+        }
+    }
+
+    return savedAuction;
   }
 }

@@ -1,5 +1,5 @@
 import AWS from "aws-sdk";
-import { config } from "./env";
+import { config } from "../constants/env";
 import { logger } from "../infrastructure/utils/logger";
 
 const s3 = new AWS.S3({ region: "ap-south-1" });

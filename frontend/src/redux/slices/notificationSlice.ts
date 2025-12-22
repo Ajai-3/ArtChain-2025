@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { Notification } from "../../types/notification";
+import type { Notification } from "../../types/notification/notification";
 import { logout } from "./userSlice";
 
 interface NotificationState {

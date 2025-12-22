@@ -44,7 +44,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
 
   const getProfileImage = () => {
     if (
-      conversation.type === ConversationType.PRIVATE &&
+      (conversation.type === ConversationType.PRIVATE || conversation.type === ConversationType.REQUEST) &&
       conversation.partner?.profileImage
     ) {
       return conversation.partner.profileImage;
@@ -84,6 +84,8 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           return "🎥 Video";
         case "AUDIO":
           return "🎵 Audio";
+        case "CALL_LOG":
+          return "📞 Call Log";
         default:
           return "📎 Attachment";
       }

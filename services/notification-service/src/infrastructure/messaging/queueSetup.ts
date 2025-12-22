@@ -40,5 +40,9 @@ export async function setupNotificationQueues(ch: Channel) {
   });
   await ch.bindQueue("profile_update", exchange, "user.profile_update");
 
+  // Wallet notifications queue
+  await ch.assertQueue("wallet_notifications", { durable: true });
+  await ch.bindQueue("wallet_notifications", exchange, "wallet.*");
+
   console.log("✅ Notification queues + DLQ setup complete");
 }

@@ -15,4 +15,5 @@ export interface IMessageRepository extends IBaseRepository<Message> {
     userId: string
   ): Promise<{ conversationId: string; count: number }[]>;
   markAllRead(conversationId: string, userId: string): Promise<void>;
+  updateByCallId(callId: string, updates: Partial<Message>): Promise<Message | null>;
 }

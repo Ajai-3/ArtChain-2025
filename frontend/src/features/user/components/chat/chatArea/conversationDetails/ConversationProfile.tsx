@@ -19,7 +19,7 @@ const ConversationProfile: React.FC<ConversationProfileProps> = ({ conversation,
   };
 
   const getProfileImage = () => {
-    if (conversation.type === "PRIVATE" && conversation.partner?.profileImage) {
+    if ((conversation.type === "PRIVATE" || conversation.type === "REQUEST") && conversation.partner?.profileImage) {
       return conversation.partner.profileImage;
     }
     if (conversation.type === "GROUP" && conversation?.group?.profileImage) {
@@ -73,7 +73,7 @@ const ConversationProfile: React.FC<ConversationProfileProps> = ({ conversation,
           : "Request conversation"}
       </p>
 
-      {conversation.type === ConversationType.PRIVATE &&
+      {(conversation.type === ConversationType.PRIVATE || conversation.type === ConversationType.REQUEST) &&
         conversation.partner && (
           <button
             onClick={handleViewProfile}

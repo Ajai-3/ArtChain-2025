@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-import { ReportStats } from "../components/moderation/ReportStats";
-import { ReportFilters } from "../components/moderation/ReportFilters";
-import { ReportPagination } from "../components/moderation/ReportPagination";
-import { GroupedReportsSkeleton } from "../components/moderation/GroupedReportsSkeleton";
-import { GroupedReportTable } from "../components/moderation/GroupedReportTable";
+import { ReportStats } from "../components/contentModeration/ReportStats";
+import { ReportFilters } from "../components/contentModeration/ReportFilters";
+import { ReportPagination } from "../components/contentModeration/ReportPagination";
+import { GroupedReportsSkeleton } from "../components/contentModeration/GroupedReportsSkeleton";
+import { GroupedReportTable } from "../components/contentModeration/GroupedReportTable";
 import { useGetGroupedReports } from "../hooks/contentModeration/useGetGroupedReports";
 import AdminPageLayout from "../components/common/AdminPageLayout";
 
@@ -52,10 +52,8 @@ const ContentModeration = () => {
         <GroupedReportsSkeleton />
       ) : (
         <>
-          {/* Stats */}
-          <div className="mb-8">
+
             <ReportStats reports={mockReportsForStats} />
-          </div>
 
           {/* Filters & Table */}
           <div className="flex flex-col gap-4">

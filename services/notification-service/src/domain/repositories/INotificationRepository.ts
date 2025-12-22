@@ -1,7 +1,7 @@
 import { Notification } from "../entities/Notification";
+import { IBaseRepository } from "./IBaseRepository";
 
-export interface INotificationRepository {
-  save(notification: Notification): Promise<Notification>;
+export interface INotificationRepository extends IBaseRepository<Notification> {
   getUserNotifications(userId: string, page: number, limit: number): Promise<Notification[]>;
   getUnreadCount(userId: string): Promise<number>;
   markAsRead(id: string): Promise<void>;

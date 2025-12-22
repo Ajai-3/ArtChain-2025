@@ -19,6 +19,9 @@ const ContentModeration = lazy(() => import("../../features/admin/pages/ContentM
 const WalletManagement = lazy(() => import("../../features/admin/pages/WalletManagement"));
 const ArtManagement = lazy(() => import("../../features/admin/pages/ArtManagement"));
 const AuctionManagement = lazy(() => import("../../features/admin/pages/AuctionManagement"));
+const CommissionSettings = lazy(() => import("../../features/admin/pages/CommissionSettings"));
+const CommissionRequestsPage = lazy(() => import("../../features/admin/pages/CommissionRequestsPage"));
+const WithdrawalManagement = lazy(() => import("../../features/admin/pages/WithdrawalManagement"));
 
 const AdminRoutes = (
   <>
@@ -33,10 +36,13 @@ const AdminRoutes = (
         <Route path="user-management" element={<UserManagement />} />
         <Route path="category-management" element={<CategoryMangement />} />
         <Route path="ai-settings" element={<AIConfigPage />} />
+        <Route path="commission-settings" element={<CommissionSettings />} />
+        <Route path="commission-requests" element={<CommissionRequestsPage />} />
         <Route path="content-moderation" element={<ContentModeration />} />
         <Route path="wallet-management" element={<WalletManagement />} />
         <Route path="art-management" element={<ArtManagement />} />
         <Route path="auction-management" element={<AuctionManagement />} />
+        <Route path="withdrawal-management" element={<WithdrawalManagement />} />
       </Route>
     </Route>
   </>

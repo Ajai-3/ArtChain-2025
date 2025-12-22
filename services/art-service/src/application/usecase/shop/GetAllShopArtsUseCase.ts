@@ -1,9 +1,10 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { UserService } from "../../../infrastructure/service/UserService";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
+import { IUserService } from "../../interface/service/IUserService";
+import { toShopArtListResponse } from "../../mapper/artWithUserMapper";
 
 @injectable()
 export class GetAllShopArtsUseCase {
@@ -11,7 +12,9 @@ export class GetAllShopArtsUseCase {
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
     @inject(TYPES.IFavoriteRepository)
-    private readonly _favoriteRepo: IFavoriteRepository
+    private readonly _favoriteRepo: IFavoriteRepository,
+    @inject(TYPES.IUserService)
+    private readonly _userService: IUserService
   ) {}
 
   async execute(
@@ -62,7 +65,7 @@ export class GetAllShopArtsUseCase {
     if (!arts.length) return [];
 
     const userIds = arts.map((u) => u.userId);
-    const userRes = await UserService.getUsersByIds(userIds);
+    const userRes = await this._userService.getUsersByIds(userIds);
     if (!userRes) {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
@@ -73,27 +76,8 @@ export class GetAllShopArtsUseCase {
           art._id
         );
         const user = userRes.find((u: any) => u.id === art.userId);
-
-        return {
-          id: art._id,
-          title: art.title,
-          artName: art.artName,
-          previewUrl: art.previewUrl,
-          artType: art.artType,
-          priceType: art.priceType,
-          artcoins: art.artcoins,
-          fiatPrice: art.fiatPrice,
-          status: art.status,
-          favoriteCount,
-          user: user
-            ? {
-                id: user.id,
-                name: user.name,
-                username: user.username,
-                profileImage: user.profileImage,
-              }
-            : null,
-        };
+        
+        return toShopArtListResponse(art, user, favoriteCount);
       })
     );
 

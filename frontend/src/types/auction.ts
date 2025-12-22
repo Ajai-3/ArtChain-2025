@@ -8,7 +8,8 @@ export interface Auction {
   startPrice: number;
   startTime: string;
   endTime: string;
-  status: "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED";
+  status: "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED" | "UNSOLD";
+  winnerId?: string;
   bids?: Bid[];
   host?: {
     id: string;

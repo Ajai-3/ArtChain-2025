@@ -7,4 +7,5 @@ export enum AI_MESSAGES {
   CONFIG_UPDATED_SUCCESS = "Config updated successfully",
   ALL_CONFIGS_FETCHED_SUCCESS = "Configs fetched successfully",
   PROVIDER_TESTED_SUCCESS = "Provider connection tested",
+  GENERATION_DELETED_SUCCESS = "Generation deleted successfully",
 }

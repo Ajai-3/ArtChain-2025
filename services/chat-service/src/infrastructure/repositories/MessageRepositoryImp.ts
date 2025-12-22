@@ -104,4 +104,14 @@ export class MessageRepositoryImp
        throw error;
     }
   }
+
+  async updateByCallId(callId: string, updates: Partial<Message>): Promise<Message | null> {
+    const updatedDoc = await this.model.findOneAndUpdate(
+      { callId },
+      { $set: updates },
+      { new: true }
+    ).lean();
+
+    return updatedDoc ? this.mapDbToDomain(updatedDoc) : null;
+  }
 }

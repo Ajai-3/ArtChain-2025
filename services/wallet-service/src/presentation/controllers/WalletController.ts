@@ -10,6 +10,10 @@ import { ILockFundsUseCase } from "../../application/interface/usecase/wallet/IL
 import { IUnlockFundsUseCase } from "../../application/interface/usecase/wallet/IUnlockFundsUseCase";
 import { LockFundsDTO } from "../../application/interface/dto/wallet/LockFundsDTO";
 import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFundsDTO";
+import { SettleAuctionDTO } from "../../application/interface/dto/wallet/SettleAuctionDTO";
+import { ISettleAuctionUseCase } from "../../application/interface/usecase/wallet/ISettleAuctionUseCase";
+import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
+import { IGiftArtCoinsUseCase } from "../../application/interface/usecases/wallet/IGiftArtCoinsUseCase";
 
 @injectable()
 export class WalletController implements IWalletController {
@@ -19,8 +23,47 @@ export class WalletController implements IWalletController {
     @inject(TYPES.ILockFundsUseCase)
     private readonly _lockFundsUseCase: ILockFundsUseCase,
     @inject(TYPES.IUnlockFundsUseCase)
-    private readonly _unlockFundsUseCase: IUnlockFundsUseCase
+    private readonly _unlockFundsUseCase: IUnlockFundsUseCase,
+    @inject(TYPES.ISettleAuctionUseCase)
+    private readonly _settleAuctionUseCase: ISettleAuctionUseCase,
+    @inject(TYPES.IGetWalletChartDataUseCase)
+    private readonly _getWalletChartDataUseCase: IGetWalletChartDataUseCase,
+    @inject(TYPES.IGiftArtCoinsUseCase)
+    private readonly _giftArtCoinsUseCase: IGiftArtCoinsUseCase
   ) {}
+
+  // ... (existing methods)
+
+  //# ================================================================================================================
+  //# GET CHART DATA
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/stats/chart
+  //# Query: timeRange (7d, 1m, all)
+  //# Headers: x-user-id
+  //# ================================================================================================================
+  getChartData = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const userId = req.headers["x-user-id"] as string;
+      const timeRange = (req.query.timeRange as "7d" | "1m" | "all") || "7d";
+      
+      logger.info(`[WalletController] Fetching chart data for userId: ${userId}, range: ${timeRange}`);
+
+      const chartData = await this._getWalletChartDataUseCase.execute(userId, timeRange);
+
+      return res.status(HttpStatus.OK).json({
+        message: "Chart data fetched successfully",
+        data: chartData
+      });
+    } catch (error) {
+      logger.error(`[WalletController] Error fetching chart data: ${error}`);
+      next(error);
+    }
+  };
+
 
   //# ================================================================================================================
   //# GET WALLET
@@ -183,6 +226,77 @@ export class WalletController implements IWalletController {
       return res.status(HttpStatus.OK).json({ success: result });
     } catch (error) {
       logger.error(`[WalletController] Error unlocking funds: ${error}`);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# SETTLE AUCTION FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/wallet/settle-auction
+  //# Request body: winnerId, sellerId, adminId, totalAmount, commissionAmount, auctionId
+  //# This controller settles funds after an auction ends (Split payment).
+  //# ================================================================================================================
+  settleAuction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { winnerId, sellerId, adminId, totalAmount, commissionAmount, auctionId } = req.body;
+      
+      logger.info(`[WalletController] Settling auction ${auctionId}`);
+
+      const dto: SettleAuctionDTO = {
+        winnerId,
+        sellerId,
+        adminId, // Recipient for commission
+        totalAmount,
+        commissionAmount,
+        auctionId
+      };
+
+      const result = await this._settleAuctionUseCase.execute(dto);
+
+      if (!result) {
+        return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to settle auction funds" });
+      }
+
+      return res.status(HttpStatus.OK).json({ message: "Auction funds settled successfully" });
+    } catch (error) {
+       logger.error(`[WalletController] Error settling auction: ${error}`);
+       next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GIFT ART COINS
+  //# ================================================================================================================
+  //# POST /api/v1/wallet/gift
+  //# Request headers: x-user-id
+  //# Body: receiverId, amount, message
+  //# ================================================================================================================
+  giftArtCoins = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const senderId = req.headers["x-user-id"] as string;
+      const { receiverId, amount, message } = req.body;
+      
+      logger.info(`[WalletController] Gifting ${amount} from ${senderId} to ${receiverId}`);
+
+      const result = await this._giftArtCoinsUseCase.execute({
+        senderId,
+        receiverId,
+        amount,
+        message,
+      });
+
+      return res.status(HttpStatus.OK).json({message: "Art coins gifted successfully", data:result});
+    } catch (error) {
+      logger.error(`[WalletController] Error gifting art coins: ${error}`);
       next(error);
     }
   };

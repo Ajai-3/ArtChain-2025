@@ -246,7 +246,8 @@ const ChatMessages: React.FC<ChatMessagesProps> = ({
                       )}
 
                     {(isCurrentUser(hydratedMessage.senderId) ||
-                      conversation.type === "PRIVATE") && (
+                      conversation.type === "PRIVATE" ||
+                      conversation.type === "REQUEST") && (
                       <div className="max-w-[70%]">
                         <MessageBubble
                           message={hydratedMessage}

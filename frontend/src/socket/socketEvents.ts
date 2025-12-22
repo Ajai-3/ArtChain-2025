@@ -7,7 +7,7 @@ import {
 import { addConversation, addOrReplaceMessage, markMessagesAsRead } from "../redux/slices/chatSlice";
 import type { Message } from "../types/chat/chat";
 import { updateOnlineUsers, addTypingUser, removeTypingUser } from "../features/user/hooks/chat/presenceStore";
-import { addBid } from "../redux/slices/biddingSlice";
+import { addBid, auctionEnded } from "../redux/slices/biddingSlice";
 
 
 export const registerChatSocketEvents = (socket: Socket) => {
@@ -112,6 +112,11 @@ export const registerBiddingSocketEvents = (socket: Socket) => {
   socket.on("bid_placed", (newBid: any) => {
     console.log("🔨 New Bid Placed:", newBid);
     store.dispatch(addBid(newBid));
+  });
+
+  socket.on("auction_ended", (data: any) => {
+      console.log("🏁 Auction Ended:", data);
+      store.dispatch(auctionEnded(data));
   });
 
   socket.on("connect_error", (err) =>

@@ -8,7 +8,9 @@ import {
 } from "../../../../components/ui/card";
 import TransactionsTable from "./TransactionsTable";
 import WalletSummaryStats from "./WalletSummaryStats";
-import { useChartData } from "../../hooks/wallet/useChartData";
+import { useGetWalletChartData } from "../../hooks/wallet/useGetWalletChartData";
+
+// ...
 
 interface TransactionsContentProps {
   transactionSummary: Record<string, number>;
@@ -18,12 +20,31 @@ interface TransactionsContentProps {
 const TransactionsContent: React.FC<TransactionsContentProps> = ({
   transactions,
 }) => {
-  const [timeRange, setTimeRange] = React.useState<"7d" | "1m" | "all">("1m");
+  const [timeRange, setTimeRange] = React.useState<"7d" | "1m" | "all">("all");
   const [activeTab, setActiveTab] = React.useState<
     "overview" | "earned" | "spent"
   >("overview");
 
-  const { summary, chartData } = useChartData(transactions, timeRange);
+  const { data: backendChartData, isLoading } = useGetWalletChartData(timeRange);
+
+  const summary = React.useMemo(() => {
+      const earned = Number(backendChartData?.stats.find((s) => s.name === "Earned")?.value || 0);
+      const spent = Number(backendChartData?.stats.find((s) => s.name === "Spent")?.value || 0);
+      return {
+          totalCredited: earned,
+          totalDebited: spent,
+          businessEarned: earned,
+          businessSpent: spent,
+          netGain: earned - spent,
+          netFlow: earned - spent
+      };
+  }, [backendChartData]);
+
+  const chartData = {
+      overview: backendChartData?.trend || [],
+      businessEarned: [], 
+      businessSpent: []
+  };
 
   return (
     <div className="flex flex-col md:flex-row gap-6 items-start h-full">

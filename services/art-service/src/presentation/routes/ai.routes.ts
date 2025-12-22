@@ -11,6 +11,7 @@ const aiController = container.get<IAIController>(TYPES.IAIController);
 // User AI routes
 router.post(ROUTES.AI.GENERATE, aiController.generateImage);
 router.get(ROUTES.AI.GENERATIONS, aiController.getMyGenerations);
+router.delete(ROUTES.AI.DELETE_GENERATION, aiController.deleteGeneration);
 router.get(ROUTES.AI.QUOTA, aiController.checkQuota);
 router.get(ROUTES.AI.CONFIG, aiController.getEnabledConfigs);
 

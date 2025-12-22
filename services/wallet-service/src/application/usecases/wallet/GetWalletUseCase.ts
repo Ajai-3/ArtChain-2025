@@ -24,34 +24,10 @@ export class GetWalletUseCase implements IGetWalletUseCase {
       });
     }
 
-    const stats = await this._walletRepo.getTransactionStats(wallet.id);
-    const { earned, spent, avgTransaction } = stats;
-    const netGain = earned - spent;
-    const roi =
-      wallet.balance > 0
-        ? `${((netGain / wallet.balance) * 100).toFixed(2)}%`
-        : "0%";
-
-    const transactionSummary = {
-      earned,
-      spent,
-      netGain,
-    };
-
-    let grade = "-";
-    if (roi !== "0%") {
-      const roiNum = parseFloat(roi);
-      if (roiNum > 50) grade = "A";
-      else if (roiNum > 20) grade = "B";
-      else grade = "C";
-    }
-
     return {
       balance: wallet.balance,
       inrValue: wallet.balance * 10,
       lockedAmount: wallet.lockedAmount,
-      quickStats: { earned, spent, avgTransaction, roi, grade },
-      transactionSummary,
     };
   }
 }

@@ -27,25 +27,31 @@ export interface PaginatedResponse<T = ShopItem> {
   limit: number;
 }
 
-export const useGetShopItemsByUser = (userId: string) => {
-  return useInfiniteQuery<PaginatedResponse<ShopItem>, Error, PaginatedResponse<ShopItem>, number>({
+
+export const useGetShopItemsByUser = (userId?: string) => {
+  return useInfiniteQuery<
+    PaginatedResponse<ShopItem>,
+    Error
+  >({
     queryKey: ["shopItemsByUser", userId],
+    enabled: !!userId,
     queryFn: async ({ pageParam = 1, signal }) => {
       const res = await apiClient.get<PaginatedResponse<ShopItem>>(
         `/api/v1/art/shop/${userId}`,
         {
-          params: { page: pageParam, limit: 12 },
-          signal, // allows cancellation
+          params: { page: pageParam as number, limit: 12 },
+          signal,
         }
       );
       return res.data;
     },
     getNextPageParam: (lastPage) => {
-      if (!lastPage.data || lastPage.data.length === 0) return undefined;
+      if (lastPage.data.length < 12) return undefined;
       return lastPage.page + 1;
     },
-    staleTime: 1000 * 60 * 2,
-    refetchOnMount: "always",
+    initialPageParam: 1,
+    staleTime: 1000 * 60 * 10,
+    refetchOnMount: false,
     refetchOnWindowFocus: false,
   });
 };

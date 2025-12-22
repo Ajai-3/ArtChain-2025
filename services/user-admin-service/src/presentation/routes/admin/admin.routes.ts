@@ -4,6 +4,7 @@ import { container } from '../../../infrastructure/inversify/inversify.config';
 import { IAdminAuthController } from '../../interfaces/admin/IAdminAuthController';
 import { IUserManageMentController } from '../../interfaces/admin/IUserManagementController';
 import { IAdminReportController } from '../../interfaces/admin/IAdminReportController';
+import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
 import { ROUTES } from '../../../constants/routes';
 
 const adminAuthController = container.get<IAdminAuthController>(
@@ -14,6 +15,9 @@ const userManageMentController = container.get<IUserManageMentController>(
 );
 const adminReportController = container.get<IAdminReportController>(
   TYPES.IAdminReportController
+);
+const adminDashboardController = container.get<IAdminDashboardController>(
+  TYPES.IAdminDashboardController
 );
 
 const router = express.Router();
@@ -45,5 +49,8 @@ router.patch(
 router.get(ROUTES.ADMIN.REPORTS, adminReportController.getAllReports);
 router.get('/reports/grouped', adminReportController.getGroupedReports);
 router.patch('/reports/bulk-status', adminReportController.updateReportStatusBulk);
+
+// Dashboard Routes
+router.get(ROUTES.ADMIN.REVENUE_STATS, adminDashboardController.getPlatformRevenueStats);
 
 export default router;

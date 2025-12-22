@@ -2,6 +2,33 @@ import 'reflect-metadata';
 import { TYPES } from './types';
 import { Container } from 'inversify';
 
+// Auth
+import { ITokenGenerator } from '../../application/interface/auth/ITokenGenerator';
+import { IEmailTokenVerifier } from '../../application/interface/auth/IEmailTokenVerifier';
+import { IAccessTokenVerifier } from '../../application/interface/auth/IAccessTokenVerifier';
+import { IRefreshTokenVerifier } from '../../application/interface/auth/IRefreshTokenVerifier';
+import { IGoogleTokenVerifier } from '../../application/interface/auth/IGoogleTokenVerifier';
+
+import { JwtTokenAdapter } from '../auth/JwtTokenAdapter';
+import { FirebaseGoogleTokenVerifier } from '../auth/FirebaseGoogleTokenVerifier';
+
+// Messaging
+import { IEventBus } from '../../application/interface/events/IEventBus';
+import { IMessagePublisher } from '../../application/interface/messaging/IMessagePublisher';
+
+import { EventBus } from '../../application/events/EventBus';
+import { RabbitMQMessagePublisher } from '../messaging/RabbitMQMessagePublisher';
+import { EventType } from '../../domain/events/EventType';
+import { IEventHandler } from '../../application/interface/events/handlers/IEventHandler';
+
+// Handlers
+import { UserCreatedElasticHandler } from '../../application/events/handlers/UserCreatedElasticHandler';
+import { UserSupportedRabbitHandler } from '../../application/events/handlers/UserSupportedRabbitHandler';
+import { EmailVerificationRabbitHandler } from '../../application/events/handlers/EmailVerificationRabbitHandler';
+import { EmailChangeVerificationRabbitHandler } from '../../application/events/handlers/EmailChangeVerificationRabbitHandler';
+import { UserUpdatedElasticHandler } from '../../application/events/handlers/UserUpdatedElasticHandler';
+import { PasswordResetRabbitHandler } from '../../application/events/handlers/PasswordResetRabbitHandler';
+
 // Repositories & Services
 import { IArtService } from '../../application/interface/http/IArtService';
 import { IUserRepository } from '../../domain/repositories/user/IUserRepository';
@@ -31,14 +58,16 @@ import { IVerifyEmailTokenUserUseCase } from '../../application/interface/usecas
 
 // Use cases - Auth
 import { ILoginUserUseCase } from '../../application/interface/usecases/user/auth/ILoginUserUseCase';
+import { ILogoutUserUseCase } from '../../application/interface/usecases/user/auth/ILogoutUserUseCase';
 import { IRefreshTokenUseCase } from '../../application/interface/usecases/user/auth/IRefreshTokenUseCase';
 import { IRegisterUserUseCase } from '../../application/interface/usecases/user/auth/IRegisterUserUseCase';
 import { IGoogleAuthUserUseCase } from '../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase';
 import { IResetPasswordUserUseCase } from '../../application/interface/usecases/user/auth/IResetPasswordUserUseCase';
 import { IStartRegisterUserUseCase } from '../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { IForgotPasswordUserUseCase } from '../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
-import { IAddUserToElasticSearchUseCase } from '../../application/interface/usecases/user/search/IAddUserToElasticSearchUseCase';
+import { IInitializeAuthUseCase } from '../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 
+import { LogoutUserUseCase } from '../../application/usecases/user/auth/LogoutUserUseCase';
 import { LoginUserUseCase } from '../../application/usecases/user/auth/LoginUserUseCase';
 import { RegisterUserUseCase } from '../../application/usecases/user/auth/RegisterUserUseCase';
 import { GoogleAuthUserUseCase } from '../../application/usecases/user/auth/GoogleAuthUserUseCase';
@@ -46,7 +75,7 @@ import { RefreshTokenUserUseCase } from '../../application/usecases/user/auth/Re
 import { ResetPasswordUserUseCase } from '../../application/usecases/user/auth/ResetPasswordUserUseCase';
 import { StartRegisterUserUseCase } from '../../application/usecases/user/auth/StartRegisterUserUseCase';
 import { ForgotPasswordUserUseCase } from '../../application/usecases/user/auth/ForgotPasswordUserUseCase';
-import { AddUserToElasticSearchUseCase } from '../../application/usecases/user/search/AddUserToElasticSearchUseCase';
+import { InitializeAuthUseCase } from '../../application/usecases/user/auth/InitializeAuthUseCase';
 
 // Use cases - User Profile & Interaction
 import { IGetUserProfileUseCase } from '../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
@@ -100,6 +129,10 @@ import { IUserManageMentController } from '../../presentation/interfaces/admin/I
 import { AdminAuthController } from '../../presentation/controllers/admin/AdminAuthController';
 import { UserManageMentController } from './../../presentation/controllers/admin/UserManagementController';
 
+// Logger
+import { AppLogger } from '../../infrastructure/logger/AppLogger';
+import { ILogger } from '../../application/interface/ILogger';
+
 // Report
 import { IReportRepository } from '../../domain/repositories/user/IReportRepository';
 import { ReportRepository } from '../repositories/user/ReportRepository';
@@ -116,7 +149,29 @@ import { UpdateReportStatusBulkUseCase } from '../../application/usecases/admin/
 import { IAdminReportController } from '../../presentation/interfaces/admin/IAdminReportController';
 import { AdminReportController } from '../../presentation/controllers/admin/AdminReportController';
 
+// Dashboard
+import { IWalletService } from '../../application/interface/http/IWalletService';
+import { WalletService } from '../http/WalletService';
+import { IGetPlatformRevenueStatsUseCase } from '../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
+import { GetPlatformRevenueStatsUseCase } from '../../application/usecases/admin/dashboard/GetPlatformRevenueStatsUseCase';
+import { IAdminDashboardController } from '../../presentation/interfaces/admin/IAdminDashboardController';
+import { AdminDashboardController } from '../../presentation/controllers/admin/AdminDashboardController';
+
+
+
 const container = new Container();
+
+// Auth
+container.bind<IAccessTokenVerifier>(TYPES.IAccessTokenVerifier)
+.to(JwtTokenAdapter);
+container.bind<IRefreshTokenVerifier>(TYPES.IRefreshTokenVerifier)
+.to(JwtTokenAdapter);
+container.bind<IEmailTokenVerifier>(TYPES.IEmailTokenVerifier)
+.to(JwtTokenAdapter);
+container.bind<ITokenGenerator>(TYPES.ITokenGenerator)
+.to(JwtTokenAdapter);
+container.bind<IGoogleTokenVerifier>(TYPES.IGoogleTokenVerifier)
+.to(FirebaseGoogleTokenVerifier);
 
 // Repositories & Services
 container
@@ -131,6 +186,7 @@ container
   .bind<IUserSearchRepository>(TYPES.IUserSearchRepository)
   .to(ElasticUserSearchRepositoryImpl)
   .inSingletonScope();
+
 container
   .bind<ISupporterRepository>(TYPES.ISupporterRepository)
   .to(SupporterRepositoryImpl)
@@ -161,6 +217,9 @@ container
 
 // Use cases - Auth
 container
+  .bind<ILogoutUserUseCase>(TYPES.ILogoutUserUseCase)
+  .to(LogoutUserUseCase);
+container
   .bind<IStartRegisterUserUseCase>(TYPES.IStartRegisterUserUseCase)
   .to(StartRegisterUserUseCase);
 container
@@ -180,8 +239,8 @@ container
   .bind<IRefreshTokenUseCase>(TYPES.IRefreshTokenUseCase)
   .to(RefreshTokenUserUseCase);
 container
-  .bind<IAddUserToElasticSearchUseCase>(TYPES.IAddUserToElasticSearchUseCase)
-  .to(AddUserToElasticSearchUseCase);
+  .bind<IInitializeAuthUseCase>(TYPES.IInitializeAuthUseCase)
+  .to(InitializeAuthUseCase);
 
 // Use cases - User Profile & Interaction
 container
@@ -232,6 +291,19 @@ container
   .bind<IGetAllArtistRequestsUseCase>(TYPES.IGetAllArtistRequestsUseCase)
   .to(GetAllArtistRequestsUseCase);
 
+  // Dashboard
+  container.bind<IWalletService>(TYPES.IWalletService).to(WalletService).inSingletonScope();
+  container.bind<IGetPlatformRevenueStatsUseCase>(TYPES.IGetPlatformRevenueStatsUseCase).to(GetPlatformRevenueStatsUseCase);
+  container.bind<IAdminDashboardController>(TYPES.IAdminDashboardController).to(AdminDashboardController);
+
+
+// Logger
+container.bind<ILogger>(TYPES.ILogger).to(AppLogger);
+
+// Messaging
+container.bind<IEventBus>(TYPES.IEventBus).to(EventBus).inSingletonScope();
+container.bind<IMessagePublisher>(TYPES.IMessagePublisher).to(RabbitMQMessagePublisher).inSingletonScope();
+
 // Controllers
 container.bind<IUserController>(TYPES.IUserController).to(UserController);
 container
@@ -260,5 +332,45 @@ container.bind<IGetGroupedReportsUseCase>(TYPES.IGetGroupedReportsUseCase).to(Ge
 container.bind<IUpdateReportStatusBulkUseCase>(TYPES.IUpdateReportStatusBulkUseCase).to(UpdateReportStatusBulkUseCase);
 container.bind<IReportController>(TYPES.IReportController).to(ReportController);
 container.bind<IAdminReportController>(TYPES.IAdminReportController).to(AdminReportController);
+
+
+// Register Events
+try {
+  const eventBus = container.get<IEventBus>(TYPES.IEventBus);
+
+  // User Created
+  container.bind<UserCreatedElasticHandler>(UserCreatedElasticHandler).toSelf();
+  const userCreatedElasticHandler = container.get<IEventHandler<any>>(UserCreatedElasticHandler);
+  eventBus.register(EventType.USER_CREATED, userCreatedElasticHandler);
+
+  // User Supported
+  container.bind<UserSupportedRabbitHandler>(UserSupportedRabbitHandler).toSelf();
+  const userSupportedRabbitHandler = container.get<IEventHandler<any>>(UserSupportedRabbitHandler);
+  eventBus.register(EventType.USER_SUPPORTED, userSupportedRabbitHandler);
+
+  // Email Verification
+  container.bind<EmailVerificationRabbitHandler>(EmailVerificationRabbitHandler).toSelf();
+  const emailVerificationRabbitHandler = container.get<IEventHandler<any>>(EmailVerificationRabbitHandler);
+  eventBus.register(EventType.EMAIL_VERIFICATION, emailVerificationRabbitHandler);
+
+  // Email Change
+  container.bind<EmailChangeVerificationRabbitHandler>(EmailChangeVerificationRabbitHandler).toSelf();
+  const emailChangeVerificationRabbitHandler = container.get<IEventHandler<any>>(EmailChangeVerificationRabbitHandler);
+  eventBus.register(EventType.EMAIL_CHANGE_VERIFICATION, emailChangeVerificationRabbitHandler);
+
+  // User Updated
+  container.bind<UserUpdatedElasticHandler>(UserUpdatedElasticHandler).toSelf();
+  const userUpdatedElasticHandler = container.get<IEventHandler<any>>(UserUpdatedElasticHandler);
+  eventBus.register(EventType.USER_UPDATED, userUpdatedElasticHandler);
+
+   // Password Reset
+  container.bind<PasswordResetRabbitHandler>(PasswordResetRabbitHandler).toSelf();
+   const passwordResetRabbitHandler = container.get<IEventHandler<any>>(PasswordResetRabbitHandler);
+   eventBus.register(EventType.PASSWORD_RESET_REQUESTED, passwordResetRabbitHandler);
+
+   console.log('Events registered successfully via IoC container');
+} catch (error) {
+  console.error('Error registering events in IoC container:', error);
+}
 
 export { container };

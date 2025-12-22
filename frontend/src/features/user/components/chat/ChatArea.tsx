@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { useVideoCall } from "../../../../context/VideoCallContext";
 import ChatInput from "./chatArea/Chatinput";
 import ChatHeader from "./chatArea/ChatHeader";
 import React, { useState, useMemo, useCallback, useRef } from "react";
@@ -19,6 +20,8 @@ import {
   DialogFooter,
 } from "../../../../components/ui/dialog";
 import { Button } from "../../../../components/ui/button";
+import { ConversationType } from "../../../../types/chat/chat";
+import { CommissionChatCard } from "./chatArea/CommissionChatCard";
 
 interface ChatAreaProps {
   selectedConversation: Conversation | null;
@@ -34,7 +37,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   onBack,
   currentUserId,
   onSendMessage,
-  onSendImage, // unused now
+  onSendImage,
   onDeleteMessage,
 }) => {
   const convId = selectedConversation?.id ?? "";
@@ -61,13 +64,20 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   useUserResolver(senderIds);
   useMarkRead(convId, currentUserId);
 
-  const handleVideoCall = useCallback(() => {
-    console.log("Video call with:", selectedConversation?.partner?.name);
-  }, [selectedConversation]);
+  const { startCall } = useVideoCall();
 
-  const handleVoiceCall = useCallback(() => {
-    console.log("Voice call with:", selectedConversation?.partner?.name);
-  }, [selectedConversation]);
+  const handleVideoCall = useCallback(() => {
+    if (selectedConversation && selectedConversation.partner) {
+        startCall(
+          selectedConversation.id, 
+          selectedConversation.partner.id, 
+          false,
+          selectedConversation.partner.name,
+          selectedConversation.partner.profileImage || undefined
+        );
+    }
+  }, [selectedConversation, startCall]);
+
 
   const handleToggleDetails = useCallback(() => {
     setShowDetails((prev) => !prev);
@@ -162,8 +172,14 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           onToggleDetails={handleToggleDetails}
           showDetails={showDetails}
           onVideoCall={handleVideoCall}
-          onVoiceCall={handleVoiceCall}
         />
+
+        {selectedConversation.type === ConversationType.REQUEST && (
+          <CommissionChatCard 
+            conversationId={selectedConversation.id} 
+            currentUserId={currentUserId} 
+          />
+        )}
 
         <ChatMessages
           messages={messages}
@@ -181,7 +197,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
           onSendMessage={(text) => onSendMessage({ content: text, mediaType: "TEXT" })}
           onSendImage={handleFileSelect}
           onTyping={handleTyping}
-          disabled={selectedConversation.locked}
+          disabled={false}
         />
       </div>
 

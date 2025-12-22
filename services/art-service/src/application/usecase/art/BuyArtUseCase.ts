@@ -3,6 +3,8 @@ import { IBuyArtUseCase } from "../../interface/usecase/art/IBuyArtUseCase";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { IWalletService } from "../../../domain/interfaces/IWalletService";
+import { Purchase } from "../../../domain/entities/Purchase";
+import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
 
 @injectable()
 export class BuyArtUseCase implements IBuyArtUseCase {
@@ -10,7 +12,9 @@ export class BuyArtUseCase implements IBuyArtUseCase {
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepository: IArtPostRepository,
     @inject(TYPES.IWalletService)
-    private readonly _walletService: IWalletService
+    private readonly _walletService: IWalletService,
+    @inject(TYPES.IPurchaseRepository)
+    private readonly _purchaseRepo: IPurchaseRepository
   ) {}
 
   async execute(artId: string, buyerId: string): Promise<boolean> {
@@ -45,11 +49,22 @@ export class BuyArtUseCase implements IBuyArtUseCase {
       throw new Error("Transaction failed");
     }
 
-    // Update art ownership
+    // Create Purchase Record
+    const purchase = new Purchase(
+      buyerId,
+      artId,
+      art.userId,
+      price,
+      `tx_${Date.now()}_${buyerId}` // Placeholder transaction ID
+    );
+
+    await this._purchaseRepo.create(purchase);
+
+    // Update art status
     await this._artRepository.update(artId, {
-      ownerId: buyerId,
       isForSale: false,
-      postType: "purchased",
+      isSold: true,
+      status: "active",
       updatedAt: new Date(),
     });
 

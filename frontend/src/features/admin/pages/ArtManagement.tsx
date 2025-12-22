@@ -33,7 +33,6 @@ const ArtManagement = () => {
     >
       {statsData && <ArtStats stats={statsData.data} />}
 
-      <div className="mt-6">
         <ArtFilters
           search={search}
           onSearchChange={setSearch}
@@ -53,7 +52,6 @@ const ArtManagement = () => {
           limit={limit}
           onPageChange={setPage}
         />
-      </div>
     </AdminPageLayout>
   );
 };

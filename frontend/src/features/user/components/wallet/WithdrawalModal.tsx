@@ -1,5 +1,7 @@
 // WithdrawalModal.tsx
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +12,10 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { Label } from "../../../../components/ui/label";
+import { withdrawalSchema, type WithdrawalFormData } from "../../schemas/withdrawalSchema";
+import { useCreateWithdrawalRequest } from "../../hooks/wallet/useCreateWithdrawalRequest";
+import CustomLoader from "../../../../components/CustomLoader";
+import WithdrawalSuccessModal from "./WithdrawalSuccessModal";
 
 interface WithdrawalModalProps {
   trigger: React.ReactNode;
@@ -17,44 +23,91 @@ interface WithdrawalModalProps {
 }
 
 const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ trigger, balance }) => {
-  const [amount, setAmount] = useState<number | "">("");
-  const [method, setMethod] = useState<"bank" | "upi">("bank");
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [method, setMethod] = useState<"BANK_TRANSFER" | "UPI">("BANK_TRANSFER");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successData, setSuccessData] = useState<{
+    amount: number;
+    method: string;
+    accountDetails: string;
+  } | null>(null);
+  
+  const createWithdrawalMutation = useCreateWithdrawalRequest();
 
-  // Separate states for better validation
-  const [bankInfo, setBankInfo] = useState({ holder: "", account: "", ifsc: "" });
-  const [upiId, setUpiId] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    watch,
+    setValue,
+  } = useForm<WithdrawalFormData>({
+    resolver: zodResolver(withdrawalSchema),
+    defaultValues: {
+      method: "BANK_TRANSFER",
+      amount: undefined,
+    },
+  });
+
+  const amount = watch("amount");
 
   const resetState = () => {
-    setAmount("");
-    setBankInfo({ holder: "", account: "", ifsc: "" });
-    setUpiId("");
-    setIsLoading(false);
+    reset({
+      method: "BANK_TRANSFER",
+      amount: undefined,
+      accountHolderName: undefined,
+      accountNumber: undefined,
+      ifscCode: undefined,
+      upiId: undefined,
+    });
+    setMethod("BANK_TRANSFER");
   };
 
-  const handleWithdraw = () => {
-    if (!amount || amount <= 0) return alert("Please enter a valid amount");
-    if (amount > balance) return alert("Insufficient balance");
-    
-    if (method === 'bank') {
-        if (!bankInfo.holder || !bankInfo.account || !bankInfo.ifsc) return alert("Please fill all bank details");
-    } else {
-        if (!upiId) return alert("Please enter UPI ID");
+  const onSubmit = async (data: WithdrawalFormData) => {
+    try {
+      console.log("Submitting withdrawal request:", data);
+      console.log("Form errors:", errors);
+      await createWithdrawalMutation.mutateAsync(data);
+      console.log("Withdrawal request successful");
+      
+      // Prepare success modal data
+      const accountDetails = data.method === "BANK_TRANSFER" 
+        ? `${data.accountHolderName} - ${data.accountNumber?.replace(/(\d{4})(?=\d)/g, "$1 ")}`
+        : data.upiId || "";
+      
+      setSuccessData({
+        amount: data.amount,
+        method: data.method,
+        accountDetails,
+      });
+      
+      // Close withdrawal modal and show success modal
+      setIsOpen(false);
+      setShowSuccessModal(true);
+      resetState();
+    } catch (error) {
+      // Error is handled by the mutation hook
+      console.error("Withdrawal submission error:", error);
     }
-
-    setIsLoading(true);
-
-    // Dummy API call simulation
-    setTimeout(() => {
-        setIsLoading(false);
-        alert(`Withdrawal of ${amount} AC requested successfully! This is a demo feature.`);
-        setIsOpen(false);
-        resetState();
-    }, 2000);
   };
+
+  const handleMethodChange = (newMethod: "BANK_TRANSFER" | "UPI") => {
+    setMethod(newMethod);
+    setValue("method", newMethod);
+    // Clear the fields for the other method
+    if (newMethod === "UPI") {
+      setValue("accountHolderName", undefined);
+      setValue("accountNumber", undefined);
+      setValue("ifscCode", undefined);
+    } else {
+      setValue("upiId", undefined);
+    }
+  };
+
+  const isLoading = isSubmitting || createWithdrawalMutation.isPending;
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={(open) => { setIsOpen(open); if(!open) resetState(); }}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="max-w-md w-full bg-background rounded-lg p-6 border border-border">
@@ -62,7 +115,7 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ trigger, balance }) =
           <DialogTitle className="text-xl font-bold text-foreground">Withdraw Funds</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 mt-2">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-2">
             {/* Balance Display */}
             <div className="bg-secondary p-3 rounded-md border border-border flex justify-between items-center">
                 <span className="text-muted-foreground text-sm">Available Balance</span>
@@ -76,29 +129,34 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ trigger, balance }) =
                     id="amount" 
                     type="number" 
                     placeholder="Enter amount" 
-                    value={amount}
-                    onChange={(e) => setAmount(Number(e.target.value))}
+                    {...register("amount", { valueAsNumber: true })}
                     className="bg-background border-input text-foreground"
                 />
-                <p className="text-xs text-muted-foreground text-right">Min: 100 AC</p>
+                {errors.amount && (
+                  <p className="text-xs text-destructive">{errors.amount.message}</p>
+                )}
+                <p className="text-xs text-muted-foreground text-right">Min: 100 AC | Max: 1,000,000 AC</p>
             </div>
 
              {/* Method Selection */}
              <div className="space-y-2">
                 <Label className="text-foreground">Payout Method</Label>
+                <input type="hidden" {...register("method")} />
                 <div className="flex gap-2">
                     <Button 
-                        variant={method === 'bank' ? 'default' : 'outline'} 
+                        type="button"
+                        variant={method === 'BANK_TRANSFER' ? 'default' : 'outline'} 
                         size="sm" 
-                        onClick={() => setMethod('bank')}
+                        onClick={() => handleMethodChange('BANK_TRANSFER')}
                         className="flex-1"
                     >
                         Bank Transfer
                     </Button>
                     <Button 
-                        variant={method === 'upi' ? 'default' : 'outline'} 
+                        type="button"
+                        variant={method === 'UPI' ? 'default' : 'outline'} 
                         size="sm" 
-                        onClick={() => setMethod('upi')}
+                        onClick={() => handleMethodChange('UPI')}
                         className="flex-1"
                     >
                         UPI
@@ -107,64 +165,91 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({ trigger, balance }) =
              </div>
 
              {/* Dynamic Inputs based on Method */}
-             {method === "bank" ? (
+             {method === "BANK_TRANSFER" ? (
                  <div className="space-y-3 p-3 border border-border rounded-md bg-secondary/20">
                      <div className="space-y-1">
-                         <Label htmlFor="holder" className="text-xs text-muted-foreground">Account Holder Name</Label>
+                         <Label htmlFor="accountHolderName" className="text-xs text-muted-foreground">Account Holder Name</Label>
                          <Input 
-                            id="holder"
+                            id="accountHolderName"
                             placeholder="e.g. John Doe"
-                            value={bankInfo.holder}
-                            onChange={(e) => setBankInfo({...bankInfo, holder: e.target.value})}
+                            {...register("accountHolderName")}
                             className="h-8 text-sm"
                          />
+                         {errors.accountHolderName && (
+                           <p className="text-xs text-destructive">{errors.accountHolderName.message}</p>
+                         )}
                      </div>
                      <div className="space-y-1">
-                         <Label htmlFor="account" className="text-xs text-muted-foreground">Account Number / IBAN</Label>
+                         <Label htmlFor="accountNumber" className="text-xs text-muted-foreground">Account Number</Label>
                          <Input 
-                            id="account"
-                            placeholder="Enter Account No"
-                            value={bankInfo.account}
-                            onChange={(e) => setBankInfo({...bankInfo, account: e.target.value})}
+                            id="accountNumber"
+                            placeholder="Enter Account No (9-18 digits)"
+                            {...register("accountNumber")}
                             className="h-8 text-sm"
                          />
+                         {errors.accountNumber && (
+                           <p className="text-xs text-destructive">{errors.accountNumber.message}</p>
+                         )}
                      </div>
                      <div className="space-y-1">
-                         <Label htmlFor="ifsc" className="text-xs text-muted-foreground">IFSC / SWIFT Code</Label>
+                         <Label htmlFor="ifscCode" className="text-xs text-muted-foreground">IFSC Code</Label>
                          <Input 
-                            id="ifsc"
-                            placeholder="Enter IFSC Code"
-                            value={bankInfo.ifsc}
-                            onChange={(e) => setBankInfo({...bankInfo, ifsc: e.target.value})}
+                            id="ifscCode"
+                            placeholder="e.g. SBIN0001234"
+                            {...register("ifscCode")}
                             className="h-8 text-sm"
                          />
+                         {errors.ifscCode && (
+                           <p className="text-xs text-destructive">{errors.ifscCode.message}</p>
+                         )}
                      </div>
                  </div>
              ) : (
                 <div className="space-y-1 p-3 border border-border rounded-md bg-secondary/20">
-                     <Label htmlFor="upi" className="text-xs text-muted-foreground">UPI ID</Label>
+                     <Label htmlFor="upiId" className="text-xs text-muted-foreground">UPI ID</Label>
                      <Input 
-                        id="upi"
-                        placeholder="username@bank"
-                        value={upiId}
-                        onChange={(e) => setUpiId(e.target.value)}
+                        id="upiId"
+                        placeholder="username@paytm"
+                        {...register("upiId")}
                         className="h-9 text-sm"
                      />
+                     {errors.upiId && (
+                       <p className="text-xs text-destructive">{errors.upiId.message}</p>
+                     )}
                 </div>
              )}
 
              {/* Action Button */}
              <Button 
-                onClick={handleWithdraw} 
+                type="submit"
                 className="w-full mt-2" 
-                variant="main" // Use 'main' variant per user request for theme consistency or custom variant
+                variant="main"
                 disabled={isLoading || !amount || amount > balance}
              >
-                {isLoading ? "Processing Request..." : "Confirm Withdrawal"}
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <CustomLoader size={16} />
+                    Processing Request...
+                  </span>
+                ) : (
+                  "Confirm Withdrawal"
+                )}
              </Button>
-        </div>
+        </form>
       </DialogContent>
     </Dialog>
+    
+    {/* Success Modal */}
+    {successData && (
+      <WithdrawalSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        amount={successData.amount}
+        method={successData.method}
+        accountDetails={successData.accountDetails}
+      />
+    )}
+    </>
   );
 };
 

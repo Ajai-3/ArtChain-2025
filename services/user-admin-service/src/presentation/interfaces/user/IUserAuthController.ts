@@ -13,6 +13,7 @@ export interface IUserAuthController {
   // changePassword(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 
   // Tokens & logout
+  initializeAuth(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   refreshToken(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
   logoutUser(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

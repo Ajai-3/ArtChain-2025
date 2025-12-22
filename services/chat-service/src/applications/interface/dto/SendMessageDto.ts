@@ -6,4 +6,7 @@ export interface SendMessageDto {
   receiverId?: string;
   conversationId: string;
   mediaType?: string;
+  callId?: string;
+  callStatus?: string;
+  callDuration?: number;
 }

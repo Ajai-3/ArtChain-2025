@@ -1,6 +1,6 @@
 // components/chat/chatArea/ChatHeader.tsx
 import React from "react";
-import { Video, Phone, MoreVertical } from "lucide-react";
+import { Video, MoreVertical } from "lucide-react";
 import type { Conversation } from "../../../../../types/chat/chat";
 import { usePresence } from "../../../hooks/chat/usePresence";
 
@@ -11,7 +11,6 @@ interface ChatHeaderProps {
   onToggleDetails: () => void;
   showDetails: boolean;
   onVideoCall?: () => void;
-  onVoiceCall?: () => void;
   onSearch?: () => void;
 }
 
@@ -22,7 +21,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   onToggleDetails,
   // showDetails,
   onVideoCall,
-  onVoiceCall,
 }) => {
   console.log("🟢 ChatHeader - Conversation:", conversation);
 
@@ -40,7 +38,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   const getProfileImage = () => {
-    if (conversation.type === "PRIVATE" && conversation.partner?.profileImage) {
+    if ((conversation.type === "PRIVATE" || conversation.type === "REQUEST") && conversation.partner?.profileImage) {
       return conversation.partner.profileImage;
     }
     if (conversation.type === "GROUP" && conversation?.group?.profileImage) {
@@ -60,7 +58,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   const getStatusText = () => {
-    if (conversation.locked) return "Pending request";
+    if (conversation.type === "REQUEST") return "Commission Chat";
+    if (conversation.locked) return "Secured Chat";
     if (typingUsers.length > 0) return "typing...";
     if (conversation.type === "GROUP") {
        const onlineCount = conversation.memberIds?.filter(id => onlineUsers.has(id)).length || 0;
@@ -126,17 +125,8 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
 
       <div className="flex items-center space-x-1">
-        {onVoiceCall && conversation.type === "PRIVATE" && (
-          <button
-            onClick={onVoiceCall}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
-            title="Voice call"
-          >
-            <Phone className="w-5 h-5" />
-          </button>
-        )}
 
-        {onVideoCall && conversation.type === "PRIVATE" && (
+        {onVideoCall && (conversation.type === "PRIVATE" || conversation.type === "REQUEST") && (
           <button
             onClick={onVideoCall}
             className="p-2 hover:bg-muted rounded-full transition-colors"
@@ -146,13 +136,15 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
           </button>
         )}
 
-        <button
-          onClick={onToggleDetails}
-          className="p-2 hover:bg-muted rounded-full transition-colors"
-          title="More options"
-        >
-          <MoreVertical className="w-5 h-5" />
-        </button>
+        {conversation.type !== "REQUEST" && (
+          <button
+            onClick={onToggleDetails}
+            className="p-2 hover:bg-muted rounded-full transition-colors"
+            title="More options"
+          >
+            <MoreVertical className="w-5 h-5" />
+          </button>
+        )}
       </div>
     </div>
   );

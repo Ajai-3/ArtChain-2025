@@ -16,7 +16,7 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(data: GetUserProfileRequestDto): Promise<any> {
+  async execute(data: GetUserProfileRequestDto) {
     const { userId, currentUserId } = data;
 
     if (!userId) {
@@ -32,7 +32,7 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
       await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
 
     let isSupporting = false;
-    if (currentUserId) {
+    if (currentUserId && currentUserId !== userId) {
       isSupporting = await this._supporterRepo.isSupporting(
         currentUserId,
         userId
@@ -43,10 +43,11 @@ export class GetUserWithIdUserUseCase implements IGetUserWithIdUserUseCase {
       id: fullUser.id,
       name: fullUser.name,
       username: fullUser.username,
-      profileImage: mapCdnUrl(fullUser.profileImage),
-      bannerImage: mapCdnUrl(fullUser.bannerImage),
+      profileImage: mapCdnUrl(fullUser.profileImage) || "",
+      bannerImage: mapCdnUrl(fullUser.bannerImage) || "",
       status: fullUser.status,
       isVerified: fullUser.isVerified,
+      role: fullUser.role,
       plan: fullUser.plan,
       supportersCount,
       supportingCount,

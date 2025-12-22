@@ -16,6 +16,7 @@ export const TYPES = {
   IDeleteMessageUseCase: Symbol.for("IDeleteMessageUseCase"),
   IGetAllResendConversationUseCase: Symbol.for("IGetAllResendConversationUseCase"),
   ICreatePrivateConversationUseCase: Symbol.for("ICreatePrivateConversationUseCase"),
+  ICreateRequestConversationUseCase: Symbol.for("ICreateRequestConversationUseCase"),
   ICreateGroupConversationUseCase: Symbol.for("ICreateGroupConversationUseCase"),
   IMarkMessagesReadUseCase: Symbol.for("IMarkMessagesReadUseCase"),
   IGetGroupMembersUseCase: Symbol.for("IGetGroupMembersUseCase"),
@@ -23,6 +24,7 @@ export const TYPES = {
   IAddGroupAdminUseCase: Symbol.for("IAddGroupAdminUseCase"),
   IRemoveGroupAdminUseCase: Symbol.for("IRemoveGroupAdminUseCase"),
   IAddGroupMemberUseCase: Symbol.for("IAddGroupMemberUseCase"),
+  IUpdateCallMessageUseCase: Symbol.for("IUpdateCallMessageUseCase"),
 
   // Handlers
   IClientEventHandler: Symbol.for("IClientEventHandler"),

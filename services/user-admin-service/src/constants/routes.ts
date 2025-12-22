@@ -21,6 +21,7 @@ export const ROUTES = {
     FORGOT_PASSWORD: '/forgot-password',
     RESET_PASSWORD: '/reset-password',
     REFRESH_TOKEN: '/refresh-token',
+    INITIALIZE: '/initialize',
     LOGOUT: '/logout',
   },
 
@@ -54,6 +55,7 @@ export const ROUTES = {
     ARTIST_REQUEST_APPROVE: '/artist-request/:id/approve',
     ARTIST_REQUEST_REJECT: '/artist-request/:id/reject',
     REPORTS: '/reports',
+    REVENUE_STATS: '/revenue-stats',
   },
 
   // External service routes
