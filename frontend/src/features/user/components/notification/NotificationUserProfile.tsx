@@ -1,7 +1,8 @@
 // components/NotificationUserProfile.tsx
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
-import type { Notification } from "../../../../types/notification";
+import type { Notification } from "../../../../types/notification/notification";
+import { NotificationType } from "../../../../types/notification/NotificationType";
 import { User } from "lucide-react";
 
 interface NotificationUserProfileProps {
@@ -19,14 +20,14 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
 }) => {
   const handleClick = () => {
     if (onSelectUser) {
-      const username = n.data?.supporterName || n.data?.likerName;
+      const username = n.senderName;
       if (username) onSelectUser(username);
     }
   };
 
   // Determine which user info to display
-  const userName = n.data?.supporterName || n.data?.likerName || "Unknown";
-  const userProfile = n.data?.supporterProfile || n.data?.likerProfile || "/avatar-icon.png";
+  const userName = n.senderName || "Unknown";
+  const userProfile = n.senderImage || "/avatar-icon.png";
 
   return (
     <div
@@ -50,19 +51,26 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
       </div>
 
       <div className="flex-1">
-        {n.type === "support" ? (
+        {n.type === NotificationType.SUPPORT ? (
           <p
             className="dark:text-white text-black text-sm truncate w-64"
             title={`${userName} started supporting you.`}
           >
             <strong>{userName}</strong> started supporting you.
           </p>
-        ) : n.type === "like" ? (
+        ) : n.type === NotificationType.LIKE ? (
           <p
             className="dark:text-white text-black text-sm truncate w-64"
             title={`${userName} liked your post.`}
           >
             <strong>{userName}</strong> liked your post.
+          </p>
+        ) : n.type === NotificationType.GIFT_RECEIVED ? (
+           <p
+            className="dark:text-white text-black text-sm truncate w-64"
+            title={`${userName} sent you a gift.`}
+          >
+            <strong>{userName}</strong> sent you a gift.
           </p>
         ) : (
           <p className="text-white">You have a new notification.</p>

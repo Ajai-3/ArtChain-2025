@@ -7,7 +7,7 @@ import { useNotifications } from "../../hooks/notifications/useNotifications";
 import { useMarkAllAsRead } from "../../hooks/notifications/useMarkAllAsRead";
 import { setNotifications, markAllAsRead } from "../../../../redux/slices/notificationSlice";
 import NotificationUserProfile from "./NotificationUserProfile";
-import type { Notification } from "../../../../types/notification";
+import type { Notification } from "../../../../types/notification/notification";
 import type { RootState } from "../../../../redux/store";
 
 interface NotificationSidebarProps {
