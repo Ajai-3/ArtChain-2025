@@ -20,7 +20,16 @@ export interface IAdminWalletRepository {
     page: number,
     limit: number,
     filters?: WalletFilters
-  ): Promise<{ data: any[]; meta: { total: number; page: number; limit: number } }>;
+  ): Promise<{ 
+    data: any[]; 
+    meta: { total: number; page: number; limit: number };
+    stats?: {
+      total: number;
+      active: number;
+      suspended: number;
+      locked: number;
+    }
+  }>;
 
   findWalletsByUserIds(
     userIds: string[],

@@ -14,10 +14,24 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
     page: number,
     limit: number,
     filters?: WalletFilters
-  ): Promise<{ data: any[]; meta: { total: number; page: number; limit: number } }> {
+  ): Promise<{ 
+    data: any[]; 
+    meta: { total: number; page: number; limit: number };
+    stats?: {
+      total: number;
+      active: number;
+      suspended: number;
+      locked: number;
+    }
+  }> {
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const baseWhere: any = {
+      userId: { notIn: ['admin', 'admin-platform-wallet-id'] },
+    };
+
+    const where: any = { ...baseWhere };
+
     if (filters?.status) {
       where.status = filters.status;
     }
@@ -43,13 +57,20 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
       },
     });
 
-    const stats = await prisma.wallet.aggregate({
-      where,
-      _sum: { balance: true },
-      _avg: { balance: true },
-      _min: { balance: true },
-      _max: { balance: true },
-    });
+    // Calculate global stats (ignoring view filters but excluding admins)
+    const [active, suspended, locked, totalWallets] = await Promise.all([
+      prisma.wallet.count({ where: { ...baseWhere, status: 'active' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'suspended' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'locked' } }),
+      prisma.wallet.count({ where: baseWhere }),
+    ]);
+
+    const stats = {
+      total: totalWallets,
+      active,
+      suspended,
+      locked
+    };
 
     const data = wallets.map(wallet => ({
       id: wallet.id,
