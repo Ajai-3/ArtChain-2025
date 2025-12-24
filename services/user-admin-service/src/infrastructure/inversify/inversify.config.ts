@@ -154,6 +154,8 @@ import { IWalletService } from '../../application/interface/http/IWalletService'
 import { WalletService } from '../http/WalletService';
 import { IGetPlatformRevenueStatsUseCase } from '../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
 import { GetPlatformRevenueStatsUseCase } from '../../application/usecases/admin/dashboard/GetPlatformRevenueStatsUseCase';
+import { IGetDashboardStatsUseCase } from '../../application/interface/usecases/admin/IGetDashboardStatsUseCase';
+import { GetDashboardStatsUseCase } from '../../application/usecases/admin/dashboard/GetDashboardStatsUseCase';
 import { IAdminDashboardController } from '../../presentation/interfaces/admin/IAdminDashboardController';
 import { AdminDashboardController } from '../../presentation/controllers/admin/AdminDashboardController';
 
@@ -294,6 +296,7 @@ container
   // Dashboard
   container.bind<IWalletService>(TYPES.IWalletService).to(WalletService).inSingletonScope();
   container.bind<IGetPlatformRevenueStatsUseCase>(TYPES.IGetPlatformRevenueStatsUseCase).to(GetPlatformRevenueStatsUseCase);
+  container.bind<IGetDashboardStatsUseCase>(TYPES.IGetDashboardStatsUseCase).to(GetDashboardStatsUseCase);
   container.bind<IAdminDashboardController>(TYPES.IAdminDashboardController).to(AdminDashboardController);
 
 

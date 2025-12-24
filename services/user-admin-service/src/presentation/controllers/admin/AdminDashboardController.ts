@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
+import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
 import { IGetPlatformRevenueStatsUseCase } from '../../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
+import { IGetDashboardStatsUseCase } from '../../../application/interface/usecases/admin/IGetDashboardStatsUseCase';
 import { GetPlatformRevenueStatsDTO } from '../../../application/interface/dtos/admin/GetPlatformRevenueStatsDTO';
 import { HttpStatus } from 'art-chain-shared';
 
@@ -10,7 +12,9 @@ import { HttpStatus } from 'art-chain-shared';
 export class AdminDashboardController implements IAdminDashboardController {
   constructor(
     @inject(TYPES.IGetPlatformRevenueStatsUseCase)
-    private readonly _getPlatformRevenueStatsUseCase: IGetPlatformRevenueStatsUseCase
+    private readonly _getPlatformRevenueStatsUseCase: IGetPlatformRevenueStatsUseCase,
+    @inject(TYPES.IGetDashboardStatsUseCase)
+    private readonly _getDashboardStatsUseCase: IGetDashboardStatsUseCase
   ) {}
 
   getPlatformRevenueStats = async (req: Request, res: Response): Promise<void> => {
@@ -44,6 +48,32 @@ export class AdminDashboardController implements IAdminDashboardController {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: error.message || 'Failed to fetch platform revenue stats',
+      });
+    }
+  };
+
+  getDashboardStats = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (!token) {
+        res.status(HttpStatus.UNAUTHORIZED).json({
+          success: false,
+          message: 'Authorization token is required',
+        });
+        return;
+      }
+
+      const stats = await this._getDashboardStatsUseCase.execute(token);
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        data: stats,
+      });
+    } catch (error: any) {
+      console.error('Error in getDashboardStats:', error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: error.message || 'Failed to fetch dashboard stats',
       });
     }
   };

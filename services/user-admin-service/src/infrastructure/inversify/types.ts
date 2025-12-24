@@ -64,6 +64,7 @@ export const TYPES = {
   IGetGroupedReportsUseCase: Symbol.for('IGetGroupedReportsUseCase'),
   IUpdateReportStatusBulkUseCase: Symbol.for('IUpdateReportStatusBulkUseCase'),
   IGetPlatformRevenueStatsUseCase: Symbol.for('IGetPlatformRevenueStatsUseCase'),
+  IGetDashboardStatsUseCase: Symbol.for('IGetDashboardStatsUseCase'),
 
   // Logger
   ILogger: Symbol.for('ILogger'),

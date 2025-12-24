@@ -11,4 +11,6 @@ export interface IWalletService {
       createdAt: Date;
     }>;
   }>;
+  getRecentTransactions(token: string, limit?: number): Promise<any[]>;
+  getTransactionStats(token: string): Promise<any[]>;
 }

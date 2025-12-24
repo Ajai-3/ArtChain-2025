@@ -39,4 +39,29 @@ export class WalletService implements IWalletService {
       return { transactions: [] };
     }
   }
+
+  async getRecentTransactions(token: string, limit: number = 5): Promise<any[]> {
+    try {
+      const res = await axios.get(`${this.baseUrl}/api/v1/wallet/admin/transactions/recent`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { limit }
+      });
+      return res.data.data;
+    } catch (err) {
+      console.error('Error getting recent transactions:', err);
+      return [];
+    }
+  }
+
+  async getTransactionStats(token: string): Promise<any[]> {
+    try {
+      const res = await axios.get(`${this.baseUrl}/api/v1/wallet/admin/transactions/stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      return res.data.data;
+    } catch (err) {
+      console.error('Error getting transaction stats:', err);
+      return [];
+    }
+  }
 }
