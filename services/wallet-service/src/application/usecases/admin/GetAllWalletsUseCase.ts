@@ -41,10 +41,18 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
        const userIds = await this._elasticsearchClient.searchUsers(query);
        
        if (userIds.length === 0) {
+           // Fetch global stats even when no search results
+           const statsResult = await this._adminWalletRepository.findAllWallets(1, 0, filters);
+           
            return {
                data: [],
                meta: { total: 0, page, limit },
-               stats: {
+               stats: statsResult.stats ? {
+                   totalWallets: statsResult.stats.total,
+                   activeWallets: statsResult.stats.active,
+                   suspendedWallets: statsResult.stats.suspended,
+                   lockedWallets: statsResult.stats.locked
+               } : {
                    totalWallets: 0,
                    activeWallets: 0,
                    suspendedWallets: 0,
@@ -74,16 +82,6 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
     const enrichedData = result.data.map(wallet => {
       const user = userMap.get(wallet.userId);
       let walletUser = user;
-
-      if (!walletUser && (wallet.userId === 'admin-platform-wallet-id' || wallet.userId === 'admin')) {
-          walletUser = {
-              id: wallet.userId,
-              name: 'Platform Storage',
-              username: 'System',
-              email: 'admin@artchain.com',
-              profileImage: null, 
-          };
-      }
 
       return {
         ...wallet,
