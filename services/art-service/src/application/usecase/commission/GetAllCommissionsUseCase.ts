@@ -25,7 +25,7 @@ export class GetAllCommissionsUseCase {
     });
 
     // Fetch user details
-    const users = await UserService.getUsersByIds(Array.from(userIds));
+    const users = await this._userService.getUsersByIds(Array.from(userIds));
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
     // Enrich DTOs

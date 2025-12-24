@@ -26,7 +26,7 @@ export class GetLikedUsersUseCase implements IGetLikedUsersUseCase {
 
     const userIds = likes.map((like) => like.userId);
 
-    const users = await UserService.getUsersByIds(userIds, currentUserId);
+    const users = await this._userService.getUsersByIds(userIds, currentUserId);
 
     const result = likes.map((like) => {
       const user = users.find((u) => u.id === like.userId);

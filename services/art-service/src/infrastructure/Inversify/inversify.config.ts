@@ -16,7 +16,7 @@ import { AIProviderService } from "../service/AIProviderService";
 import { IWalletService } from "../../domain/interfaces/IWalletService";
 import { WalletService } from "../service/WalletService";
 import { IUserService } from "../../application/interface/service/IUserService";
-import { UserServiceImpl } from "../service/UserServiceImpl";
+import { UserService } from "../service/UserService";
 
 import { GetCommissionStatsUseCase } from "../../application/usecase/commission/GetCommissionStatsUseCase";
 
@@ -225,7 +225,7 @@ container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAna
 container.bind<IDeleteAIGenerationUseCase>(TYPES.IDeleteAIGenerationUseCase).to(DeleteAIGenerationUseCase);
 container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
 container.bind<IWalletService>(TYPES.IWalletService).to(WalletService);
-container.bind<IUserService>(TYPES.IUserService).to(UserServiceImpl);
+container.bind<IUserService>(TYPES.IUserService).to(UserService);
 
 // AI Controllers
 container.bind<IAIController>(TYPES.IAIController).to(AIController);

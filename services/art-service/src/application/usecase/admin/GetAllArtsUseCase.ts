@@ -59,7 +59,7 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
 
     if (userIds.length > 0) {
       try {
-        const users = await UserService.getUsersByIds(userIds, token);
+        const users = await this._userService.getUsersByIds(userIds, token);
         userMap = new Map(users.map((u) => [u.id, u]));
       } catch (error) {
         console.error("Failed to fetch users", error);

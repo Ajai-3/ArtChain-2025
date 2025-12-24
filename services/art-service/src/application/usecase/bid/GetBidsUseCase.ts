@@ -28,7 +28,7 @@ export class GetBidsUseCase implements IGetBidsUseCase {
     }
 
     const userIds = [...new Set(bids.map((b) => b.bidderId))];
-    const users = await UserService.getUsersByIds(userIds);
+    const users = await this._userService.getUsersByIds(userIds);
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
     const mappedBids = bids.map((bid) => {

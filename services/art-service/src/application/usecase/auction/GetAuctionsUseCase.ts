@@ -63,7 +63,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
       })
     );
 
-    const users = await UserService.getUsersByIds([...allUserIds]);
+    const users = await this._userService.getUsersByIds([...allUserIds]);
     console.log(users)
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 

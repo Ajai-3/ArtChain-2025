@@ -30,7 +30,7 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
     );
     const userIds = favorites.map((fav) => fav.userId);
 
-    const users = await UserService.getUsersByIds(userIds, currentUserId);
+    const users = await this._userService.getUsersByIds(userIds, currentUserId);
 
     const result = favorites.map((fav) => {
       const user = users.find((u) => u.id === fav.userId);

@@ -7,6 +7,7 @@ import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetAllArtWithUserIdUseCase {
@@ -17,7 +18,9 @@ export class GetAllArtWithUserIdUseCase {
     @inject(TYPES.ICommentRepository)
     private readonly _commentRepo: ICommentRepository,
     @inject(TYPES.IFavoriteRepository)
-    private readonly _favoriteRepo: IFavoriteRepository
+    private readonly _favoriteRepo: IFavoriteRepository,
+    @inject(TYPES.IUserService)
+    private readonly _userService: IUserService
   ) {}
   async execute(
     page: number,
@@ -30,7 +33,7 @@ export class GetAllArtWithUserIdUseCase {
 
     console.log(currentUserId, userId);
 
-    const userRes = await UserService.getUserById(userId, currentUserId);
+    const userRes = await this._userService.getUserById(userId, currentUserId);
     if (!userRes) {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }

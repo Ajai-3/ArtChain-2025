@@ -1,6 +1,5 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
-import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
 import { IGetAllArtUseCase } from "../../interface/usecase/art/IGetAllArtUseCase";
@@ -8,6 +7,7 @@ import { ICommentRepository } from "../../../domain/repositories/ICommentReposit
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetAllArtUseCase implements IGetAllArtUseCase {
@@ -20,7 +20,9 @@ export class GetAllArtUseCase implements IGetAllArtUseCase {
     @inject(TYPES.ICategoryRepository)
     private readonly _categoryRepo: ICategoryRepository,
     @inject(TYPES.IFavoriteRepository)
-    private readonly _favoriteRepo: IFavoriteRepository
+    private readonly _favoriteRepo: IFavoriteRepository,
+    @inject(TYPES.IUserService)
+    private readonly _userService: IUserService
   ) {}
 
   async execute(
@@ -46,7 +48,7 @@ export class GetAllArtUseCase implements IGetAllArtUseCase {
     const userIds = Array.from(userIdsSet);
     const categoryIds = Array.from(categoryIdsSet);
 
-    const users = await UserService.getUsersByIds(userIds);
+    const users = await this._userService.getUsersByIds(userIds);
     const categories = await this._categoryRepo.getCategoriesByIds(categoryIds);
 
     const userMap = new Map(users.map((u: any) => [u.id, u]));

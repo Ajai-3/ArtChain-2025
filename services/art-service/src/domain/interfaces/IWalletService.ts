@@ -1,14 +1,7 @@
 export interface IWalletService {
-  processPurchase(
-    buyerId: string,
-    sellerId: string,
-    amount: number,
-    artId: string
-  ): Promise<boolean>;
   processSplitPurchase(
     buyerId: string,
     sellerId: string,
-    adminId: string,
     totalAmount: number,
     commissionAmount: number,
     artId: string
@@ -18,7 +11,6 @@ export interface IWalletService {
   settleAuction(
     winnerId: string,
     sellerId: string,
-    adminId: string,
     totalAmount: number,
     commissionAmount: number,
     auctionId: string

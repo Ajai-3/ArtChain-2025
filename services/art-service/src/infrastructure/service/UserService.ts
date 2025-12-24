@@ -1,8 +1,11 @@
 import axios from "axios";
 import { config } from "../config/env";
+import { injectable } from "inversify";
+import { IUserService } from "../../application/interface/service/IUserService";
 
-export class UserService {
-  static async getUserById(userId: string, currentUserId?: string): Promise<any> {
+@injectable()
+export class UserService implements IUserService {
+  async getUserById(userId: string, currentUserId?: string): Promise<any> {
     try {
      
       const response = await axios.get(
@@ -22,7 +25,7 @@ export class UserService {
     }
   }
 
-  static async getUsersByIds(userIds: string[], currentUserId?: string): Promise<any[]> {
+  async getUsersByIds(userIds: string[], currentUserId?: string): Promise<any[]> {
     try {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/user/batch`,
@@ -36,7 +39,7 @@ export class UserService {
     }
   }
 
-  static async getUserByUsername(username: string): Promise<any> {
+  async getUserByUsername(username: string): Promise<any> {
      try {
       const response = await axios.get(
         `${config.api_gateway_url}/api/v1/user/profile/${username}`);

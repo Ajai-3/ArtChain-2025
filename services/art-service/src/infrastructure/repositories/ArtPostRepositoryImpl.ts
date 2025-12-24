@@ -92,7 +92,7 @@ export class ArtPostRepositoryImpl
   }
 
   async update(id: string, post: Partial<ArtPost>): Promise<ArtPost> {
-    const updated = await ArtPostModel.findOneAndUpdate({ id }, post, {
+    const updated = await ArtPostModel.findOneAndUpdate({ _id: id }, post, {
       new: true,
     }).lean();
     if (!updated) throw new Error("Art not found");

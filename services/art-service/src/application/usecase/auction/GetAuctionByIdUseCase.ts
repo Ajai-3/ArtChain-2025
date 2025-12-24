@@ -35,7 +35,7 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
     if (auction.winnerId) userIds.add(auction.winnerId);
     bids.forEach(bid => userIds.add(bid.bidderId));
 
-    const users = await UserService.getUsersByIds([...userIds]);
+    const users = await this._userService.getUsersByIds([...userIds]);
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
     const host = userMap.get(auction.hostId);
