@@ -1,6 +1,6 @@
 import apiClient from "../../../../api/axios";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
-import type { Category } from "../../../../types/category/category";
+import type { Category } from "../../../../types/category/Category";
 
 
 
@@ -11,6 +11,12 @@ export interface GetAllCategoryResponse {
   total: number;
   page: number;
   limit: number;
+  stats: {
+    total: number;
+    active: number;
+    inactive: number;
+    lowUsage: number;
+  };
 }
 
 interface UseGetAllCategoryParams {

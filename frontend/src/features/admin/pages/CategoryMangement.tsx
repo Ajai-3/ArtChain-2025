@@ -11,7 +11,7 @@ const CategoryManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [useCountFilter, setUseCountFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const limit = 8;
+  const limit = 6;
 
   const debouncedSearch = useDebounce(searchQuery, 500);
 

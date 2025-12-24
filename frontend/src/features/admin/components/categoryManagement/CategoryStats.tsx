@@ -13,7 +13,7 @@ interface CategoryStatsProps {
 
 const CategoryStats: React.FC<CategoryStatsProps> = ({ stats }) => {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <StatsCard
         title="Total Categories"
         value={stats.total}

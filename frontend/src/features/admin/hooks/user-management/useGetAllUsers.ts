@@ -1,6 +1,21 @@
 import apiClient from "../../../../api/axios";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 
+export interface GetAllUsersResponse {
+  data: any[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+  stats: {
+    total: number;
+    active: number;
+    banned: number;
+    artists: number;
+  };
+}
+
 export const useGetAllUsers = ({
   page,
   limit,
@@ -19,10 +34,10 @@ export const useGetAllUsers = ({
   return useQuery({
     queryKey: ["admin-users", page, limit, search, role, status, plan],
     queryFn: async () => {
-      const response = await apiClient.get("/api/v1/admin/users", {
+      const response = await apiClient.get<GetAllUsersResponse>("/api/v1/admin/users", {
         params: { page, limit, role, status, plan, search },
       });
-      return response.data as any;
+      return response.data;
     },
     placeholderData: keepPreviousData,
   });
