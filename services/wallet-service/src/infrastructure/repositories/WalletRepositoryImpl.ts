@@ -26,13 +26,11 @@ export class WalletRepositoryImpl
   ): Promise<boolean> {
     try {
       await prisma.$transaction(async (tx) => {
-        // 1. Fetch
         const sender = await tx.wallet.findUnique({ where: { userId: fromId } });
         
         if (!sender) throw new Error("Sender wallet not found");
         if (sender.balance < amount) throw new Error("Insufficient funds");
 
-        // 2. Update Sender
         const senderQuickStats = (sender.quickStats as any) || { earned: 0, spent: 0 };
         const senderTxSummary = (sender.transactionSummary as any) || { earned: 0, spent: 0, netGain: 0 };
         senderQuickStats.spent += amount;
@@ -48,7 +46,6 @@ export class WalletRepositoryImpl
             }
         });
 
-        // 3. Update Receiver
         const receiver = await tx.wallet.upsert({
             where: { userId: toId },
             create: { userId: toId, balance: amount },
@@ -69,13 +66,10 @@ export class WalletRepositoryImpl
             }
         });
 
-        // Resolve Category
         const resolvedCategory = Object.values(TransactionCategory).includes(category as any) 
             ? (category as TransactionCategory) 
             : TransactionCategory.OTHER;
 
-        // 4. Create Transactions
-        // Debit Sender
         await tx.transaction.create({
             data: {
                 walletId: sender.id,
@@ -90,7 +84,7 @@ export class WalletRepositoryImpl
             }
         });
 
-        // Credit Receiver
+        //
         await tx.transaction.create({
             data: {
                 walletId: receiver.id,
@@ -140,6 +134,7 @@ export class WalletRepositoryImpl
     const breakdown = {
       auctions: 0,
       artSales: 0,
+      commissions: 0,
       aiGeneration: 0,
       other: 0
     };
@@ -151,19 +146,22 @@ export class WalletRepositoryImpl
       totalRevenue += amount;
 
       if (tx.category === TransactionCategory.COMMISSION) {
-         if (tx.description && tx.description.toLowerCase().includes("auction")) {
+         const desc = tx.description ? tx.description.toLowerCase() : "";
+         if (desc.includes("auction")) {
              breakdown.auctions += amount;
-         } else if (tx.description && (tx.description.toLowerCase().includes("sale") || tx.description.toLowerCase().includes("art"))) {
+         } else if (desc.includes("sale") || desc.includes("sold")) {
              breakdown.artSales += amount;
+         } else if (desc.includes("request") || desc.includes("custom")) {
+             breakdown.commissions += amount;
          } else {
-             breakdown.other += amount;
+             breakdown.commissions += amount;
          }
       } else if (tx.category === TransactionCategory.OTHER && tx.description && tx.description.toLowerCase().includes("ai")) {
           breakdown.aiGeneration += amount;
       } else {
           breakdown.other += amount;
       }
-
+      
       const date = tx.createdAt.toISOString().split('T')[0];
       const current = chartDataMap.get(date) || 0;
       chartDataMap.set(date, current + amount);
@@ -251,7 +249,6 @@ export class WalletRepositoryImpl
       startDate = new Date();
       startDate.setMonth(now.getMonth() - 1);
     }
-    // If timeRange is "all" or undefined, startDate remains undefined (no filter)
 
     const whereClause: any = { walletId };
     if (startDate) {
@@ -277,13 +274,7 @@ export class WalletRepositoryImpl
   }
 
   async getDailyStats(walletId: string, startDate?: Date): Promise<any[]> {
-    // Efficient aggregation using Raw SQL for Postgres
-    // Groups by date and type to get daily sums
     const dateFilter = startDate ? `AND "createdAt" >= ${startDate.toISOString() ? `'${startDate.toISOString()}'` : 'NOW()'}` : '';
-    
-    // Note: Prisma QueryRaw requires careful table name usage. 
-    // Assuming table name is "Transaction" based on standard Prisma mapping.
-    // Using CAST("createdAt" as DATE) for grouping.
     
     return await prisma.$queryRawUnsafe(`
       SELECT 
@@ -355,7 +346,6 @@ export class WalletRepositoryImpl
       const sellerAmount = totalAmount - commissionAmount;
 
       await prisma.$transaction(async (tx) => {
-        // 1. Deduct from Winner (Locked)
         const winnerWallet = await tx.wallet.update({
           where: { userId: winnerId },
           data: { 
@@ -363,22 +353,18 @@ export class WalletRepositoryImpl
           }
         });
 
-        // 2. Credit Seller
         const sellerWallet = await tx.wallet.upsert({
             where: { userId: sellerId },
             create: { userId: sellerId, balance: sellerAmount },
             update: { balance: { increment: sellerAmount } }
         });
 
-        // 3. Credit Admin
         const adminWallet = await tx.wallet.upsert({
             where: { userId: adminId },
             create: { userId: adminId, balance: commissionAmount },
             update: { balance: { increment: commissionAmount } }
         });
 
-        // 4. Create Transactions
-        // Debit Winner
         await tx.transaction.create({
             data: {
                 walletId: winnerWallet.id,
@@ -393,7 +379,6 @@ export class WalletRepositoryImpl
             }
         });
 
-        // Credit Seller
         await tx.transaction.create({
              data: {
                 walletId: sellerWallet.id,
@@ -408,7 +393,6 @@ export class WalletRepositoryImpl
              }
         });
 
-        // Credit Admin
         if (commissionAmount > 0) {
             await tx.transaction.create({
                 data: {
@@ -444,7 +428,6 @@ export class WalletRepositoryImpl
       const sellerAmount = totalAmount - commissionAmount;
 
       await prisma.$transaction(async (tx) => {
-        // 1. Fetch Wallets
         const buyerWallet = await tx.wallet.findUnique({ where: { userId: buyerId } });
         const sellerWallet = await tx.wallet.findUnique({ where: { userId: sellerId } });
         
@@ -455,22 +438,18 @@ export class WalletRepositoryImpl
           throw new Error("Insufficient funds");
         }
 
-        // 2. Calculate Stats (Buyer)
         const buyerQuickStats = (buyerWallet.quickStats as any) || { earned: 0, spent: 0, avgTransaction: 0, roi: 0, grade: "B" };
         const buyerTxSummary = (buyerWallet.transactionSummary as any) || { earned: 0, spent: 0, netGain: 0 };
         buyerQuickStats.spent += totalAmount;
         buyerTxSummary.spent += totalAmount;
         buyerTxSummary.netGain -= totalAmount;
 
-        // 3. Calculate Stats (Seller)
         const sellerQuickStats = (sellerWallet.quickStats as any) || { earned: 0, spent: 0, avgTransaction: 0, roi: 0, grade: "B" };
         const sellerTxSummary = (sellerWallet.transactionSummary as any) || { earned: 0, spent: 0, netGain: 0 };
         sellerQuickStats.earned += sellerAmount;
         sellerTxSummary.earned += sellerAmount;
         sellerTxSummary.netGain += sellerAmount;
 
-        // 4. Update Wallets
-        // Debit Buyer
         await tx.wallet.update({
           where: { userId: buyerId },
           data: {
@@ -480,7 +459,6 @@ export class WalletRepositoryImpl
           },
         });
 
-        // Credit Seller
         await tx.wallet.update({
           where: { userId: sellerId },
           data: {
@@ -490,7 +468,6 @@ export class WalletRepositoryImpl
           },
         });
 
-        // Credit Admin
         let adminWalletId;
         if (commissionAmount > 0) {
             const updatedAdmin = await tx.wallet.upsert({
@@ -501,8 +478,6 @@ export class WalletRepositoryImpl
             adminWalletId = updatedAdmin.id;
         }
 
-        // 5. Create Transactions
-        // Debit Buyer
         await tx.transaction.create({
           data: {
             walletId: buyerWallet.id,
@@ -517,7 +492,6 @@ export class WalletRepositoryImpl
           },
         });
 
-        // Credit Seller
         await tx.transaction.create({
           data: {
             walletId: sellerWallet.id,
@@ -532,7 +506,6 @@ export class WalletRepositoryImpl
           },
         });
 
-         // Credit Admin
         if (commissionAmount > 0 && adminWalletId) {
             await tx.transaction.create({
                 data: {
@@ -588,4 +561,29 @@ export class WalletRepositoryImpl
     return transactions;
   }
 
+  async getAllRecentTransactions(limit: number): Promise<any[]> {
+    const txs = await prisma.transaction.findMany({
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        wallet: {
+            select: {
+                userId: true
+            }
+        }
+      }
+    });
+
+    return txs.map((tx: any) => ({
+      id: tx.id,
+      userId: tx.wallet?.userId,
+      date: tx.createdAt.toISOString(),
+      type: tx.type === "credited" ? "Earned" : "Spent",
+      amount: tx.amount,
+      category: tx.category,
+      status: tx.status,
+      method: tx.method,
+      description: tx.description
+    }));
+  }
 }

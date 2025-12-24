@@ -9,6 +9,8 @@ import { IGetUserTransactionsUseCase } from '../../application/interface/usecase
 import { HttpStatus } from "art-chain-shared";
 import { GetRevenueStatsDTO } from "../../application/interface/dto/wallet/GetRevenueStatsDTO";
 import { IGetRevenueStatsUseCase } from '../../application/interface/usecase/wallet/IGetRevenueStatsUseCase';
+import { IGetAllRecentTransactionsUseCase } from '../../application/interface/usecases/admin/IGetAllRecentTransactionsUseCase';
+import { IGetTransactionStatsUseCase } from '../../application/interface/usecases/admin/IGetTransactionStatsUseCase';
 
 @injectable()
 export class AdminWalletController implements IAdminWalletController {
@@ -22,10 +24,14 @@ export class AdminWalletController implements IAdminWalletController {
     @inject(TYPES.IGetUserTransactionsUseCase)
     private readonly _getUserTransactionsUseCase: IGetUserTransactionsUseCase,
     @inject(TYPES.IGetRevenueStatsUseCase)
-    private readonly _getRevenueStatsUseCase: IGetRevenueStatsUseCase
+    private readonly _getRevenueStatsUseCase: IGetRevenueStatsUseCase,
+    @inject(TYPES.IGetAllRecentTransactionsUseCase)
+    private readonly _getAllRecentTransactionsUseCase: IGetAllRecentTransactionsUseCase,
+    @inject(TYPES.IGetTransactionStatsUseCase)
+    private readonly _getTransactionStatsUseCase: IGetTransactionStatsUseCase
   ) {}
 
-  getAllWallets = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getAllWallets = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -41,16 +47,20 @@ export class AdminWalletController implements IAdminWalletController {
         maxBalance,
       }, token);
 
-      res.status(HttpStatus.OK).json({
+
+
+      return res.status(HttpStatus.OK).json({
+        message: "Wallets retrieved successfully",
         data: result.data,
         meta: result.meta,
+        stats: result.stats
       });
     } catch (error) {
      next(error);
     }
   };
 
-  searchWallets = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  searchWallets = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const query = (req.query.query as string) || '';
       const page = parseInt(req.query.page as string) || 1;
@@ -65,7 +75,8 @@ export class AdminWalletController implements IAdminWalletController {
         maxBalance,
       });
 
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
+        message: "Wallets retrieved successfully",
         data: result.data,
         meta: result.meta,
       });
@@ -74,7 +85,7 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
-  updateWalletStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  updateWalletStatus = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { walletId } = req.params;
       const { status } = req.body;
@@ -89,7 +100,7 @@ export class AdminWalletController implements IAdminWalletController {
 
       const wallet = await this._updateWalletStatusUseCase.execute(walletId, status);
 
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         data: wallet,
         message: `Wallet status updated to ${status}`,
       });
@@ -98,7 +109,7 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
-  getUserTransactions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getUserTransactions = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { walletId } = req.params;
       const page = parseInt(req.query.page as string) || 1;
@@ -118,7 +129,8 @@ export class AdminWalletController implements IAdminWalletController {
         filters
       );
 
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
+        message: "User transactions retrieved successfully",
         data: result.data,
         meta: result.meta,
       });
@@ -127,7 +139,7 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
-  getRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const adminId = req.headers["x-admin-id"] as string;
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
@@ -141,9 +153,37 @@ export class AdminWalletController implements IAdminWalletController {
 
       const stats = await this._getRevenueStatsUseCase.execute(dto);
 
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
+        message: "Revenue stats retrieved successfully",
         data: stats,
         body: stats 
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAllRecentTransactions = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 5;
+      const result = await this._getAllRecentTransactionsUseCase.execute(limit);
+      
+      return res.status(HttpStatus.OK).json({
+        message: "Recent transactions retrieved successfully",
+        data: result
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+  getTransactionStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const timeRange = (req.query.timeRange as string) || '7d';
+      const stats = await this._getTransactionStatsUseCase.execute(timeRange);
+      
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        data: stats
       });
     } catch (error) {
       next(error);

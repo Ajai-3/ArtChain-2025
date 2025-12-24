@@ -15,4 +15,5 @@ export interface IWalletRepository extends IBaseRepository<Wallet> {
   transferFunds(fromId: string, toId: string, amount: number, description: string, referenceId: string, category: string): Promise<boolean>;
   getRevenueStats(adminId: string, startDate?: Date, endDate?: Date): Promise<any>;
   getAdminCommissionTransactions(walletId: string, startDate?: Date, endDate?: Date): Promise<any[]>;
+  getAllRecentTransactions(limit: number): Promise<any[]>;
 }

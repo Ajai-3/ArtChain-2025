@@ -13,7 +13,7 @@ export class UserServiceClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = config.api_gateway_url;
+    this.baseUrl = config.api_gateway_URL;
   }
 
   async getUsersByIds(userIds: string[], token?: string): Promise<UserProfile[]> {

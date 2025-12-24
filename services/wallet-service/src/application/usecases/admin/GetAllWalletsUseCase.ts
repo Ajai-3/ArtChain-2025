@@ -26,28 +26,36 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
     data: any[];
     meta: { total: number; page: number; limit: number };
   }> {
-    // Get wallets from repository
     const result = await this._adminWalletRepository.findAllWallets(
       page,
       limit,
       filters
     );
 
-    // Extract user IDs
     const userIds = result.data.map(wallet => wallet.userId);
 
-    // Fetch user profiles
     const users = await this._userServiceClient.getUsersByIds(userIds, token);
 
-    // Create a map for quick lookup
     const userMap = new Map(users.map(user => [user.id, user]));
 
-    // Enrich wallet data with user profiles
     const enrichedData = result.data.map(wallet => {
       const user = userMap.get(wallet.userId);
+      
+      let walletUser = user;
+
+      if (!walletUser && (wallet.userId === 'admin-platform-wallet-id' || wallet.userId === 'admin')) {
+          walletUser = {
+              id: wallet.userId,
+              name: 'Platform Storage',
+              username: 'System',
+              email: 'admin@artchain.com',
+              profileImage: null, 
+          };
+      }
+
       return {
         ...wallet,
-        user: user || {
+        user: walletUser || {
           id: wallet.userId,
           name: 'Unknown User',
           username: 'unknown',
@@ -60,6 +68,7 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
     return {
       data: enrichedData,
       meta: result.meta,
+      stats: result.stats
     };
   }
 }

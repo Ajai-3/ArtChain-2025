@@ -12,4 +12,5 @@ export interface ITransactionRepository extends IBaseRepository<Transaction> {
     status?: string,
     category?: string
   ): Promise<{ transactions: Transaction[]; total: number }>;
+  getStats(startDate: Date, endDate: Date): Promise<any[]>;
 }

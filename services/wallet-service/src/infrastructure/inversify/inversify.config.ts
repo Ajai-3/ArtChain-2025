@@ -200,6 +200,8 @@ import { IUpdateWalletStatusUseCase } from "../../application/interface/usecases
 import { UpdateWalletStatusUseCase } from "../../application/usecases/admin/UpdateWalletStatusUseCase";
 import { IGetUserTransactionsUseCase } from "../../application/interface/usecases/admin/IGetUserTransactionsUseCase";
 import { GetUserTransactionsUseCase } from "../../application/usecases/admin/GetUserTransactionsUseCase";
+import { IGetAllRecentTransactionsUseCase } from "../../application/interface/usecases/admin/IGetAllRecentTransactionsUseCase";
+import { GetAllRecentTransactionsUseCase } from "../../application/usecases/admin/GetAllRecentTransactionsUseCase";
 import { IAdminWalletController } from "../../presentation/interface/IAdminWalletController";
 import { AdminWalletController } from "../../presentation/controllers/AdminWalletController";
 
@@ -230,6 +232,15 @@ container
 container
   .bind<IGetUserTransactionsUseCase>(TYPES.IGetUserTransactionsUseCase)
   .to(GetUserTransactionsUseCase);
+container
+  .bind<IGetAllRecentTransactionsUseCase>(TYPES.IGetAllRecentTransactionsUseCase)
+  .to(GetAllRecentTransactionsUseCase);
+
+import { IGetTransactionStatsUseCase } from "../../application/interface/usecases/admin/IGetTransactionStatsUseCase";
+import { GetTransactionStatsUseCase } from "../../application/usecases/admin/GetTransactionStatsUseCase";
+container
+  .bind<IGetTransactionStatsUseCase>(TYPES.IGetTransactionStatsUseCase)
+  .to(GetTransactionStatsUseCase);
 
 // Admin Controller
 container

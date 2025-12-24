@@ -17,7 +17,6 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
   ): Promise<{ data: any[]; meta: { total: number; page: number; limit: number } }> {
     const skip = (page - 1) * limit;
 
-    // Build where clause
     const where: any = {};
     if (filters?.status) {
       where.status = filters.status;
@@ -29,10 +28,8 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
       where.balance = { ...where.balance, lte: filters.maxBalance };
     }
 
-    // Get total count
     const total = await prisma.wallet.count({ where });
 
-    // Get wallets with last transaction
     const wallets = await prisma.wallet.findMany({
       where,
       skip,
@@ -46,7 +43,14 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
       },
     });
 
-    // Format data
+    const stats = await prisma.wallet.aggregate({
+      where,
+      _sum: { balance: true },
+      _avg: { balance: true },
+      _min: { balance: true },
+      _max: { balance: true },
+    });
+
     const data = wallets.map(wallet => ({
       id: wallet.id,
       userId: wallet.userId,
@@ -60,6 +64,7 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
 
     return {
       data,
+      stats,
       meta: { total, page, limit },
     };
   }

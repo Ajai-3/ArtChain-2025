@@ -47,4 +47,6 @@ export const TYPES = {
   ISearchWalletsUseCase: Symbol.for("ISearchWalletsUseCase"),
   IUpdateWalletStatusUseCase: Symbol.for("IUpdateWalletStatusUseCase"),
   IGetUserTransactionsUseCase: Symbol.for("IGetUserTransactionsUseCase"),
+  IGetAllRecentTransactionsUseCase: Symbol.for("IGetAllRecentTransactionsUseCase"),
+  IGetTransactionStatsUseCase: Symbol.for("IGetTransactionStatsUseCase"),
 };
