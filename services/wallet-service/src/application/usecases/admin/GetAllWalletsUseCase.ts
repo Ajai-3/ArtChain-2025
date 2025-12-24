@@ -1,6 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
-import { IAdminWalletRepository } from '../../../domain/repository/IAdminWalletRepository';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
 import { IGetAllWalletsUseCase } from '../../interface/usecase/admin/IGetAllWalletsUseCase';
 import { UserServiceClient } from '../../../infrastructure/clients/UserServiceClient';
 import { ElasticsearchClient } from '../../../infrastructure/clients/ElasticsearchClient';
@@ -8,8 +8,8 @@ import { ElasticsearchClient } from '../../../infrastructure/clients/Elasticsear
 @injectable()
 export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
   constructor(
-    @inject(TYPES.IAdminWalletRepository)
-    private readonly _adminWalletRepository: IAdminWalletRepository,
+    @inject(TYPES.IWalletRepository)
+    private readonly _walletRepository: IWalletRepository,
     @inject(TYPES.UserServiceClient)
     private readonly _userServiceClient: UserServiceClient,
     @inject(TYPES.ElasticsearchClient)
@@ -42,7 +42,7 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
        
        if (userIds.length === 0) {
            // Fetch global stats even when no search results
-           const statsResult = await this._adminWalletRepository.findAllWallets(1, 0, filters);
+           const statsResult = await this._walletRepository.findAllWallets(1, 0, filters);
            
            return {
                data: [],
@@ -61,14 +61,14 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
            };
        }
 
-       result = await this._adminWalletRepository.findWalletsByUserIds(
+       result = await this._walletRepository.findWalletsByUserIds(
          userIds,
          page,
          limit,
          filters
        );
     } else {
-       result = await this._adminWalletRepository.findAllWallets(
+       result = await this._walletRepository.findAllWallets(
          page,
          limit,
          filters

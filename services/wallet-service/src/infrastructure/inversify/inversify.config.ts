@@ -183,8 +183,6 @@ container
 
 
 // Admin Wallet Management
-import { IAdminWalletRepository } from "../../domain/repository/IAdminWalletRepository";
-import { AdminWalletRepositoryImpl } from "../repositories/AdminWalletRepositoryImpl";
 import { ElasticsearchClient } from "../clients/ElasticsearchClient";
 import { UserServiceClient } from "../clients/UserServiceClient";
 import { IGetAllWalletsUseCase } from "../../application/interface/usecase/admin/IGetAllWalletsUseCase";
@@ -199,11 +197,7 @@ import { GetAllRecentTransactionsUseCase } from "../../application/usecases/admi
 import { IAdminWalletController } from "../../presentation/interface/IAdminWalletController";
 import { AdminWalletController } from "../../presentation/controllers/AdminWalletController";
 
-// Admin Repositories & Clients
-container
-  .bind<IAdminWalletRepository>(TYPES.IAdminWalletRepository)
-  .to(AdminWalletRepositoryImpl)
-  .inSingletonScope();
+// Admin Clients (no admin repository needed - using consolidated IWalletRepository)
 container
   .bind<ElasticsearchClient>(TYPES.ElasticsearchClient)
   .to(ElasticsearchClient)

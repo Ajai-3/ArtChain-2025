@@ -39,8 +39,7 @@ export const TYPES = {
   IWithdrawalController: Symbol.for("IWithdrawalController"),
   IAdminWithdrawalController: Symbol.for("IAdminWithdrawalController"),
 
-  // Admin Wallet
-  IAdminWalletRepository: Symbol.for("IAdminWalletRepository"),
+  // Admin Wallet (using consolidated IWalletRepository)
   ElasticsearchClient: Symbol.for("ElasticsearchClient"),
   UserServiceClient: Symbol.for("UserServiceClient"),
   IGetAllWalletsUseCase: Symbol.for("IGetAllWalletsUseCase"),

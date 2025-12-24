@@ -1,7 +1,23 @@
 import { Wallet } from "../entities/Wallet";
+import { Transaction } from "../entities/Transaction";
 import { IBaseRepository } from "./IBaseRepository.js";
 
+export interface WalletFilters {
+  status?: 'active' | 'locked' | 'suspended';
+  minBalance?: number;
+  maxBalance?: number;
+}
+
+export interface TransactionFilters {
+  type?: 'credited' | 'debited';
+  category?: 'TOP_UP' | 'SALE' | 'PURCHASE' | 'WITHDRAWAL' | 'COMMISSION' | 'REFUND' | 'OTHER';
+  status?: 'pending' | 'success' | 'failed';
+  startDate?: Date;
+  endDate?: Date;
+}
+
 export interface IWalletRepository extends IBaseRepository<Wallet> {
+  // User-facing methods
   getByUserId(userId: string): Promise<Wallet | null>;
   getTransactionStats(walletId: string): Promise<any>;
   getRecentTransactions(walletId: string, limit: number): Promise<any[]>;
@@ -30,4 +46,50 @@ export interface IWalletRepository extends IBaseRepository<Wallet> {
   lockCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean>;
   
   refundCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean>;
+
+  // Admin wallet management methods (merged from IAdminWalletRepository)
+  findAllWallets(
+    page: number,
+    limit: number,
+    filters?: WalletFilters
+  ): Promise<{ 
+    data: any[]; 
+    meta: { total: number; page: number; limit: number };
+    stats?: {
+      total: number;
+      active: number;
+      suspended: number;
+      locked: number;
+    }
+  }>;
+
+  findWalletsByUserIds(
+    userIds: string[],
+    page: number,
+    limit: number,
+    filters?: WalletFilters
+  ): Promise<{ 
+    data: any[]; 
+    meta: { total: number; page: number; limit: number };
+    stats?: {
+      total: number;
+      active: number;
+      suspended: number;
+      locked: number;
+    }
+  }>;
+
+  findWalletByUserId(userId: string): Promise<any | null>;
+
+  updateWalletStatus(
+    walletId: string,
+    status: 'active' | 'locked' | 'suspended'
+  ): Promise<Wallet>;
+
+  getTransactionsByWalletId(
+    walletId: string,
+    page: number,
+    limit: number,
+    filters?: TransactionFilters
+  ): Promise<{ data: Transaction[]; meta: { total: number; page: number; limit: number } }>;
 }

@@ -1,14 +1,14 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
-import { IAdminWalletRepository, TransactionFilters } from '../../../domain/repository/IAdminWalletRepository';
+import { IWalletRepository, TransactionFilters } from '../../../domain/repository/IWalletRepository';
 import { IGetUserTransactionsUseCase } from '../../interface/usecase/admin/IGetUserTransactionsUseCase';
 import { Transaction } from '../../../domain/entities/Transaction';
 
 @injectable()
 export class GetUserTransactionsUseCase implements IGetUserTransactionsUseCase {
   constructor(
-    @inject(TYPES.IAdminWalletRepository)
-    private readonly _adminWalletRepository: IAdminWalletRepository
+    @inject(TYPES.IWalletRepository)
+    private readonly _walletRepository: IWalletRepository
   ) {}
 
   async execute(
@@ -26,7 +26,7 @@ export class GetUserTransactionsUseCase implements IGetUserTransactionsUseCase {
     data: Transaction[];
     meta: { total: number; page: number; limit: number };
   }> {
-    return await this._adminWalletRepository.getTransactionsByWalletId(
+    return await this._walletRepository.getTransactionsByWalletId(
       walletId,
       page,
       limit,
