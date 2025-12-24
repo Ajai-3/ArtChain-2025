@@ -13,7 +13,7 @@ import {
   TransactionStatus,
   TransactionType,
 } from "../../domain/entities/Transaction";
-import { IHandleStripeWebhookUseCase } from "../interface/usecase/IHandleStripeWebhookUseCase";
+import { IHandleStripeWebhookUseCase } from "../interface/usecase/stripe/IHandleStripeWebhookUseCase";
 
 @injectable()
 export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {

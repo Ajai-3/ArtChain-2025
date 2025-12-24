@@ -110,7 +110,13 @@ export class WalletRepositoryImpl
     const whereClause: any = {
       wallet: { userId: adminId },
       type: "credited",
-      category: { in: [TransactionCategory.COMMISSION, TransactionCategory.OTHER] } 
+      category: { in: [
+        TransactionCategory.COMMISSION, 
+        TransactionCategory.OTHER,
+        TransactionCategory.AUCTION_FEE,
+        TransactionCategory.SALE_FEE,
+        TransactionCategory.COMMISSION_FEE
+      ] } 
     };
 
     if (startDate || endDate) {
@@ -145,7 +151,14 @@ export class WalletRepositoryImpl
       const amount = tx.amount;
       totalRevenue += amount;
 
-      if (tx.category === TransactionCategory.COMMISSION) {
+      if (tx.category === TransactionCategory.AUCTION_FEE) {
+        breakdown.auctions += amount;
+      } else if (tx.category === TransactionCategory.SALE_FEE) {
+        breakdown.artSales += amount;
+      } else if (tx.category === TransactionCategory.COMMISSION_FEE) {
+         breakdown.commissions += amount;
+      } else if (tx.category === TransactionCategory.COMMISSION) {
+         // Legacy fallback
          const desc = tx.description ? tx.description.toLowerCase() : "";
          if (desc.includes("auction")) {
              breakdown.auctions += amount;
@@ -399,7 +412,7 @@ export class WalletRepositoryImpl
                     walletId: adminWallet.id,
                     type: "credited",
                     amount: commissionAmount,
-                    category: "COMMISSION",
+                    category: "AUCTION_FEE",
                     method: "art_coin",
                     status: "success",
                     description: `Commission from auction ${auctionId}`,
@@ -512,7 +525,7 @@ export class WalletRepositoryImpl
                     walletId: adminWalletId,
                     type: "credited",
                     amount: commissionAmount,
-                    category: "COMMISSION",
+                    category: "SALE_FEE",
                     method: "art_coin",
                     status: "success",
                     description: `Commission from art sale ${artId}`,
@@ -585,5 +598,185 @@ export class WalletRepositoryImpl
       method: tx.method,
       description: tx.description
     }));
+  }
+
+  async distributeCommissionFunds(params: {
+    userId: string;
+    artistId: string;
+    commissionId: string;
+    totalAmount: number;
+    artistAmount: number;
+    platformFee: number;
+  }): Promise<boolean> {
+    const { userId, artistId, commissionId, totalAmount, artistAmount, platformFee } = params;
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        const userWallet = await tx.wallet.findUnique({ where: { userId } });
+        const artistWallet = await tx.wallet.findUnique({ where: { userId: artistId } });
+
+        if (!userWallet) throw new Error("User wallet not found");
+        if (!artistWallet) throw new Error("Artist wallet not found");
+        if (userWallet.lockedAmount < totalAmount) throw new Error("Insufficient locked funds");
+
+        // 1. Update User Wallet (Deduct from lockedAmount)
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            lockedAmount: { decrement: totalAmount },
+          },
+        });
+
+        // 2. Update Artist Wallet (Increment balance)
+        await tx.wallet.update({
+          where: { userId: artistId },
+          data: {
+            balance: { increment: artistAmount },
+            transactionSummary: {
+               upsert: {
+                  update: { earned: { increment: artistAmount }, netGain: { increment: artistAmount } },
+                  set: { earned: artistAmount, netGain: artistAmount, spent: 0 }
+               }
+            } as any 
+          },
+        });
+
+        // 3. Create Transactions
+        // Artist Credit
+        await tx.transaction.create({
+          data: {
+            walletId: artistWallet.id,
+            type: "credited",
+            category: TransactionCategory.COMMISSION,
+            amount: artistAmount,
+            method: "art_coin",
+            status: "success",
+            description: `Commission payment received for ${commissionId}`,
+            meta: { commissionId, type: "RELEASE" }
+          },
+        });
+
+        // Admin/Platform Fee
+        const adminId = "admin-platform-wallet-id"; // Constant or injected config
+        
+        const adminWallet = await tx.wallet.upsert({
+            where: { userId: adminId },
+            create: { userId: adminId, balance: platformFee },
+            update: { balance: { increment: platformFee } }
+        });
+
+        // Create Credit Transaction for Admin
+        await tx.transaction.create({
+            data: {
+              walletId: adminWallet.id,
+              type: "credited",
+              category: TransactionCategory.COMMISSION_FEE,
+              amount: platformFee,
+              method: "art_coin",
+              status: "success",
+              description: `Commission from commission work ${commissionId}`,
+              externalId: commissionId,
+              meta: { buyerId: userId, artistId }
+            }
+        });
+
+        // Log the fee deduction in User's history
+        await tx.transaction.create({
+            data: {
+              walletId: userWallet.id,
+              type: "debited",
+              category: TransactionCategory.COMMISSION_FEE,
+              amount: platformFee,
+              method: "art_coin",
+              status: "success",
+              description: `Platform fee for commission ${commissionId}`,
+              meta: { commissionId, type: "FEE" }
+            },
+        });
+      });
+
+      return true;
+    } catch (error) {
+      console.error("DistributeCommissionFunds failed:", error);
+      return false;
+    }
+  }
+
+  async lockCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean> {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const wallet = await tx.wallet.findUnique({ where: { userId } });
+
+        if (!wallet) throw new Error("Wallet not found");
+        if (wallet.balance < amount) throw new Error("Insufficient funds");
+
+        // 1. Update wallet (Deduct balance, ADD to lockedAmount)
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            balance: { decrement: amount },
+            lockedAmount: { increment: amount },
+          },
+        });
+
+        // 2. Create transaction record for audit
+        await tx.transaction.create({
+          data: {
+            walletId: wallet.id,
+            type: "debited",
+            category: TransactionCategory.COMMISSION,
+            amount: amount,
+            method: "art_coin",
+            status: "success",
+            description: `Funds locked for commission agreement ${commissionId}`,
+            meta: { commissionId, type: "LOCK" }
+          },
+        });
+      });
+
+      return true;
+    } catch (error) {
+      console.error("LockCommissionFunds failed:", error);
+      return false;
+    }
+  }
+
+  async refundCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean> {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const wallet = await tx.wallet.findUnique({ where: { userId } });
+
+        if (!wallet) throw new Error("Wallet not found");
+        if (wallet.lockedAmount < amount) throw new Error("Insufficient locked funds for refund");
+
+        // 1. Update wallet (Reduce lockedAmount, increase balance)
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            balance: { increment: amount },
+            lockedAmount: { decrement: amount },
+          },
+        });
+
+        // 2. Create transaction record for audit
+        await tx.transaction.create({
+          data: {
+            walletId: wallet.id,
+            type: "credited",
+            category: TransactionCategory.COMMISSION,
+            amount: amount,
+            method: "art_coin",
+            status: "success",
+            description: `Refund for commission dispute ${commissionId}`,
+            meta: { commissionId, type: "REFUND" }
+          },
+        });
+      });
+
+      return true;
+    } catch (error) {
+      console.error("RefundCommissionFunds failed:", error);
+      return false;
+    }
   }
 }

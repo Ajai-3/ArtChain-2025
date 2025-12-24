@@ -1,7 +1,7 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "../../../infrastructure/inversify/types";
 import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
-import { IGetAllRecentTransactionsUseCase } from "../../interface/usecases/admin/IGetAllRecentTransactionsUseCase";
+import { IGetAllRecentTransactionsUseCase } from "../../interface/usecase/admin/IGetAllRecentTransactionsUseCase";
 
 @injectable()
 export class GetAllRecentTransactionsUseCase implements IGetAllRecentTransactionsUseCase {

@@ -26,6 +26,9 @@ export const TransactionCategory = {
   COMMISSION: "COMMISSION",
   REFUND: "REFUND",
   GIFT: "GIFT",
+  AUCTION_FEE: "AUCTION_FEE",      
+  SALE_FEE: "SALE_FEE",          
+  COMMISSION_FEE: "COMMISSION_FEE",
   OTHER: "OTHER",
 } as const;
 export type TransactionCategory = typeof TransactionCategory[keyof typeof TransactionCategory];

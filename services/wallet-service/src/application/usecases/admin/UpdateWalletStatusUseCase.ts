@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { IAdminWalletRepository } from '../../../domain/repository/IAdminWalletRepository';
-import { IUpdateWalletStatusUseCase } from '../../interface/usecases/admin/IUpdateWalletStatusUseCase';
+import { IUpdateWalletStatusUseCase } from '../../interface/usecase/admin/IUpdateWalletStatusUseCase';
 import { Wallet } from '../../../domain/entities/Wallet';
 
 @injectable()

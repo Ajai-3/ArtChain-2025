@@ -2,23 +2,22 @@ import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../infrastructure/inversify/types';
 import { IAdminWalletController } from '../interface/IAdminWalletController';
-import { IGetAllWalletsUseCase } from '../../application/interface/usecases/admin/IGetAllWalletsUseCase';
-import { ISearchWalletsUseCase } from '../../application/interface/usecases/admin/ISearchWalletsUseCase';
-import { IUpdateWalletStatusUseCase } from '../../application/interface/usecases/admin/IUpdateWalletStatusUseCase';
-import { IGetUserTransactionsUseCase } from '../../application/interface/usecases/admin/IGetUserTransactionsUseCase';
+import { IGetAllWalletsUseCase } from '../../application/interface/usecase/admin/IGetAllWalletsUseCase';
+
+import { IUpdateWalletStatusUseCase } from '../../application/interface/usecase/admin/IUpdateWalletStatusUseCase';
+import { IGetUserTransactionsUseCase } from '../../application/interface/usecase/admin/IGetUserTransactionsUseCase';
 import { HttpStatus } from "art-chain-shared";
 import { GetRevenueStatsDTO } from "../../application/interface/dto/wallet/GetRevenueStatsDTO";
 import { IGetRevenueStatsUseCase } from '../../application/interface/usecase/wallet/IGetRevenueStatsUseCase';
-import { IGetAllRecentTransactionsUseCase } from '../../application/interface/usecases/admin/IGetAllRecentTransactionsUseCase';
-import { IGetTransactionStatsUseCase } from '../../application/interface/usecases/admin/IGetTransactionStatsUseCase';
+import { IGetAllRecentTransactionsUseCase } from '../../application/interface/usecase/admin/IGetAllRecentTransactionsUseCase';
+import { IGetTransactionStatsUseCase } from '../../application/interface/usecase/admin/IGetTransactionStatsUseCase';
+import { config } from '../../infrastructure/config/env';
 
 @injectable()
 export class AdminWalletController implements IAdminWalletController {
   constructor(
     @inject(TYPES.IGetAllWalletsUseCase)
     private readonly _getAllWalletsUseCase: IGetAllWalletsUseCase,
-    @inject(TYPES.ISearchWalletsUseCase)
-    private readonly _searchWalletsUseCase: ISearchWalletsUseCase,
     @inject(TYPES.IUpdateWalletStatusUseCase)
     private readonly _updateWalletStatusUseCase: IUpdateWalletStatusUseCase,
     @inject(TYPES.IGetUserTransactionsUseCase)
@@ -35,19 +34,25 @@ export class AdminWalletController implements IAdminWalletController {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
+      const query = (req.query.query as string) || undefined;
       const status = req.query.status as 'active' | 'locked' | 'suspended' | undefined;
       const minBalance = req.query.minBalance ? parseFloat(req.query.minBalance as string) : undefined;
       const maxBalance = req.query.maxBalance ? parseFloat(req.query.maxBalance as string) : undefined;
       
       const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
 
-      const result = await this._getAllWalletsUseCase.execute(page, limit, {
-        status,
-        minBalance,
-        maxBalance,
-      }, token);
 
-
+      const result = await this._getAllWalletsUseCase.execute(
+        page, 
+        limit, 
+        {
+          status,
+          minBalance,
+          maxBalance,
+        }, 
+        query,
+        token
+      );
 
       return res.status(HttpStatus.OK).json({
         message: "Wallets retrieved successfully",
@@ -60,43 +65,10 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
-  searchWallets = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
-    try {
-      const query = (req.query.query as string) || '';
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-      const status = req.query.status as 'active' | 'locked' | 'suspended' | undefined;
-      const minBalance = req.query.minBalance ? parseFloat(req.query.minBalance as string) : undefined;
-      const maxBalance = req.query.maxBalance ? parseFloat(req.query.maxBalance as string) : undefined;
-
-      const result = await this._searchWalletsUseCase.execute(query, page, limit, {
-        status,
-        minBalance,
-        maxBalance,
-      });
-
-      return res.status(HttpStatus.OK).json({
-        message: "Wallets retrieved successfully",
-        data: result.data,
-        meta: result.meta,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
   updateWalletStatus = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { walletId } = req.params;
       const { status } = req.body;
-
-      if (!status || !['active', 'locked', 'suspended'].includes(status)) {
-        res.status(400).json({
-          success: false,
-          message: 'Invalid status. Must be active, locked, or suspended',
-        });
-        return;
-      }
 
       const wallet = await this._updateWalletStatusUseCase.execute(walletId, status);
 

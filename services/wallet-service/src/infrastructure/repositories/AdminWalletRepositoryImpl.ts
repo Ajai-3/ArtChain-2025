@@ -95,7 +95,16 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
     page: number,
     limit: number,
     filters?: WalletFilters
-  ): Promise<{ data: any[]; meta: { total: number; page: number; limit: number } }> {
+  ): Promise<{ 
+    data: any[]; 
+    meta: { total: number; page: number; limit: number };
+    stats?: {
+      total: number;
+      active: number;
+      suspended: number;
+      locked: number;
+    }
+  }> {
     const skip = (page - 1) * limit;
 
     // Build where clause
@@ -129,6 +138,25 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
       },
     });
 
+    // Calculate global stats (ignoring view filters but excluding admins)
+    const baseWhere: any = {
+      userId: { notIn: ['admin', 'admin-platform-wallet-id'] },
+    };
+
+    const [active, suspended, locked, totalWallets] = await Promise.all([
+      prisma.wallet.count({ where: { ...baseWhere, status: 'active' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'suspended' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'locked' } }),
+      prisma.wallet.count({ where: baseWhere }),
+    ]);
+
+    const stats = {
+      total: totalWallets,
+      active,
+      suspended,
+      locked
+    };
+
     // Format data
     const data = wallets.map(wallet => ({
       id: wallet.id,
@@ -143,6 +171,7 @@ export class AdminWalletRepositoryImpl implements IAdminWalletRepository {
 
     return {
       data,
+      stats,
       meta: { total, page, limit },
     };
   }

@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/inversify/types";
-import { IUpdateWithdrawalStatusUseCase } from "../../interface/usecases/withdrawal/IUpdateWithdrawalStatusUseCase";
+import { IUpdateWithdrawalStatusUseCase } from "../../interface/usecase/withdrawal/IUpdateWithdrawalStatusUseCase";
 import { IWithdrawalRepository } from "../../../domain/repository/IWithdrawalRepository";
 import { WithdrawalRequest, WithdrawalStatus } from "../../../domain/entities/WithdrawalRequest";
 import { UpdateWithdrawalStatusDTO } from "../../interface/dto/withdrawal/UpdateWithdrawalStatusDTO";

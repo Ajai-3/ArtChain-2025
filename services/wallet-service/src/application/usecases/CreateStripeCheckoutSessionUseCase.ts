@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { inject, injectable } from "inversify";
 import { config } from "../../infrastructure/config/env";
 import { TYPES } from "../../infrastructure/inversify/types";
-import { ICreateStripeCheckoutSessionUseCase } from "../interface/usecase/ICreateStripeCheckoutSessionUseCase";
+import { ICreateStripeCheckoutSessionUseCase } from "../interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase";
 
 @injectable()
 export class CreateStripeCheckoutSessionUseCase

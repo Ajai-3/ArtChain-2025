@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/inversify/types";
-import { ICreateWithdrawalRequestUseCase } from "../../interface/usecases/withdrawal/ICreateWithdrawalRequestUseCase";
+import { ICreateWithdrawalRequestUseCase } from "../../interface/usecase/withdrawal/ICreateWithdrawalRequestUseCase";
 import { IWithdrawalRepository } from "../../../domain/repository/IWithdrawalRepository";
 import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
 import { WithdrawalRequest, WithdrawalMethod, WithdrawalStatus } from "../../../domain/entities/WithdrawalRequest";

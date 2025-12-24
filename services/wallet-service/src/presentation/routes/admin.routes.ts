@@ -14,7 +14,7 @@ const adminWalletController = container.get<IAdminWalletController>(
 router.get(ROUTES.ADMIN.WALLETS, adminWalletController.getAllWallets);
 
 // Search wallets
-router.get(ROUTES.ADMIN.SEARCH_WALLETS, adminWalletController.searchWallets);
+
 
 // Update wallet status
 router.patch(ROUTES.ADMIN.UPDATE_STATUS, adminWalletController.updateWalletStatus);

@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/inversify/types";
 import { ITransactionRepository } from "../../../domain/repository/ITransactionRepository";
-import { IGetTransactionStatsUseCase } from "../../interface/usecases/admin/IGetTransactionStatsUseCase";
+import { IGetTransactionStatsUseCase } from "../../interface/usecase/admin/IGetTransactionStatsUseCase";
 
 @injectable()
 export class GetTransactionStatsUseCase implements IGetTransactionStatsUseCase {

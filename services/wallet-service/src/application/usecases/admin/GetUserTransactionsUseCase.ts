@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { IAdminWalletRepository, TransactionFilters } from '../../../domain/repository/IAdminWalletRepository';
-import { IGetUserTransactionsUseCase } from '../../interface/usecases/admin/IGetUserTransactionsUseCase';
+import { IGetUserTransactionsUseCase } from '../../interface/usecase/admin/IGetUserTransactionsUseCase';
 import { Transaction } from '../../../domain/entities/Transaction';
 
 @injectable()

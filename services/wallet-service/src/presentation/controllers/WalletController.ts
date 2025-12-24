@@ -13,7 +13,7 @@ import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFun
 import { SettleAuctionDTO } from "../../application/interface/dto/wallet/SettleAuctionDTO";
 import { ISettleAuctionUseCase } from "../../application/interface/usecase/wallet/ISettleAuctionUseCase";
 import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
-import { IGiftArtCoinsUseCase } from "../../application/interface/usecases/wallet/IGiftArtCoinsUseCase";
+import { IGiftArtCoinsUseCase } from "../../application/interface/usecase/wallet/IGiftArtCoinsUseCase";
 
 @injectable()
 export class WalletController implements IWalletController {

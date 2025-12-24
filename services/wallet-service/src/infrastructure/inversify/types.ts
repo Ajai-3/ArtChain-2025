@@ -14,7 +14,7 @@ export const TYPES = {
   ICreateStripeCheckoutSessionUseCase: Symbol.for(
     "ICreateStripeCheckoutSessionUseCase"
   ),
-  IProcessPurchaseUseCase: Symbol.for("IProcessPurchaseUseCase"),
+
   IProcessSplitPurchaseUseCase: Symbol.for("IProcessSplitPurchaseUseCase"),
   IProcessPaymentUseCase: Symbol.for("IProcessPaymentUseCase"),
   ILockFundsUseCase: Symbol.for("ILockFundsUseCase"),
