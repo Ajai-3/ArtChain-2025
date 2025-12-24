@@ -408,4 +408,8 @@ import { IGetCommissionStatsUseCase } from "../../application/interface/usecase/
 
 container.bind<IGetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
 
+// Elasticsearch Client
+import { ElasticSearchClient } from "../clients/ElasticSearchClient";
+container.bind<ElasticSearchClient>(TYPES.IElasticSearchClient).to(ElasticSearchClient);
+
 export { container };

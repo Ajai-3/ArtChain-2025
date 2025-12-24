@@ -6,6 +6,7 @@ import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
+import { IElasticSearchClient } from "../../../application/interface/clients/IElasticSearchClient";
 
 @injectable()
 export class GetAllArtsUseCase implements IGetAllArtsUseCase {
@@ -13,7 +14,8 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
     @inject(TYPES.IAdminArtRepository) private readonly _repository: IAdminArtRepository,
     @inject(TYPES.ILikeRepository) private readonly _likeRepository: ILikeRepository,
     @inject(TYPES.ICommentRepository) private readonly _commentRepository: ICommentRepository,
-    @inject(TYPES.IFavoriteRepository) private readonly _favoriteRepository: IFavoriteRepository
+    @inject(TYPES.IFavoriteRepository) private readonly _favoriteRepository: IFavoriteRepository,
+    @inject(TYPES.IElasticSearchClient) private readonly _elasticsearchClient: IElasticSearchClient
   ) {}
 
   async execute(
@@ -22,7 +24,35 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
     filters: any,
     token?: string
   ): Promise<{ data: any[]; meta: any }> {
-    const { arts, total } = await this._repository.findAll(page, limit, filters);
+    let arts: any[];
+    let total: number;
+
+    // If search query is provided, use Elasticsearch
+    if (filters?.search && filters.search.trim() !== '') {
+      const artIds = await this._elasticsearchClient.searchArts(filters.search);
+      
+      if (artIds.length === 0) {
+        return {
+          data: [],
+          meta: {
+            total: 0,
+            page,
+            limit,
+            totalPages: 0,
+          },
+        };
+      }
+
+      // Remove search from filters and add artIds
+      const { search, ...otherFilters } = filters;
+      const result = await this._repository.findAll(page, limit, { ...otherFilters, artIds });
+      arts = result.arts;
+      total = result.total;
+    } else {
+      const result = await this._repository.findAll(page, limit, filters);
+      arts = result.arts;
+      total = result.total;
+    }
 
     const userIds = [...new Set(arts.map((art) => art.userId).filter((id) => id))];
     let userMap = new Map();

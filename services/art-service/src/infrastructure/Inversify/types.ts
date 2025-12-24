@@ -116,8 +116,11 @@ export const TYPES = {
   IGetPlatformConfigUseCase: Symbol.for("IGetPlatformConfigUseCase"),
   IUpdatePlatformConfigUseCase: Symbol.for("IUpdatePlatformConfigUseCase"),
 
+
   RabbitMQService: Symbol.for("RabbitMQService"),
   IEndAuctionUseCase: Symbol.for("IEndAuctionUseCase"),
+  ElasticsearchClient: Symbol.for("ElasticsearchClient"),
+  IElasticSearchClient: Symbol.for("IElasticSearchClient"),
   AuctionEndedConsumer: Symbol.for("AuctionEndedConsumer"),
   ICommissionController: Symbol.for("ICommissionController"),
 };

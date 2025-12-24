@@ -14,6 +14,7 @@ export class AdminArtRepositoryImpl implements IAdminArtRepository {
       priceType?: PriceType;
       search?: string;
       userId?: string;
+      artIds?: string[];
     }
   ): Promise<{ arts: any[]; total: number }> {
     const query: any = {};
@@ -23,13 +24,13 @@ export class AdminArtRepositoryImpl implements IAdminArtRepository {
     if (filters?.priceType && filters.priceType !== ('all' as any)) query.priceType = filters.priceType;
     if (filters?.userId) query.userId = filters.userId;
     
-    if (filters?.search) {
-      query.$or = [
-        { title: { $regex: filters.search, $options: "i" } },
-        { artName: { $regex: filters.search, $options: "i" } },
-        { description: { $regex: filters.search, $options: "i" } },
-      ];
+    // If artIds are provided (from Elasticsearch), use them
+    if (filters?.artIds && filters.artIds.length > 0) {
+      query._id = { $in: filters.artIds };
     }
+    
+    // Note: search is now handled by Elasticsearch, not here
+    // The old regex search logic has been removed
 
     const skip = (page - 1) * limit;
 
