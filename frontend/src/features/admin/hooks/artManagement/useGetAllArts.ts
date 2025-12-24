@@ -4,6 +4,12 @@ import apiClient from "../../../../api/axios";
 interface ArtResponse {
   data: any[];
   meta: any;
+  stats?: {
+    total: number;
+    free: number;
+    premium: number;
+    aiGenerated: number;
+  };
 }
 
 interface Filters {

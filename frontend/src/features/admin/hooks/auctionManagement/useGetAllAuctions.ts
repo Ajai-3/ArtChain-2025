@@ -5,6 +5,12 @@ interface AuctionResponse {
   data: {
       auctions: any[];
       total: number;
+      stats?: {
+        active: number;
+        ended: number;
+        sold: number;
+        unsold: number;
+      };
   };
 }
 

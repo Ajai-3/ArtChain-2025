@@ -3,6 +3,7 @@ import AdminPageLayout from "../components/common/AdminPageLayout";
 import { useDebounce } from "../../../hooks/useDebounce";
 import WalletFilters from "../components/walletManagement/WalletFilters";
 import WalletTable from "../components/walletManagement/WalletTable";
+import WalletStats from "../components/walletManagement/WalletStats";
 import { useGetAllWallets } from "../hooks/walletManagement/useGetAllWallets";
 
 const WalletManagement: React.FC = () => {
@@ -36,6 +37,8 @@ const WalletManagement: React.FC = () => {
       title="Wallet Management"
       description="Manage user wallets, view balances, and monitor transactions"
     >
+      {data?.stats && <WalletStats stats={data.stats} />}
+      
       <WalletFilters
         search={rawSearch}
         onSearchChange={(value) => {

@@ -64,7 +64,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[70vw] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-[75vw] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Transactions for {userName}</DialogTitle>
         </DialogHeader>

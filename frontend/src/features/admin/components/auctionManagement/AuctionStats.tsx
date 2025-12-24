@@ -4,45 +4,45 @@ import StatsCard from "../common/StatsCard";
 
 interface AuctionStatsProps {
   stats: {
-    total: number;
     active: number;
-    scheduled: number;
     ended: number;
-    cancelled: number; // API might return this
+    sold: number;
+    unsold: number;
   };
 }
 
 const AuctionStats: React.FC<AuctionStatsProps> = ({ stats }) => {
+  const total = (stats.active || 0) + (stats.ended || 0);
+  
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <StatsCard
-        title="Active Auctions"
-        value={stats.active || 0}
+        title="Total Auctions"
+        value={total}
         icon={Gavel}
+        iconColor="text-purple-500"
+        iconBgColor="bg-purple-500/10"
+      />
+      <StatsCard
+        title="Active"
+        value={stats.active || 0}
+        icon={Clock}
         iconColor="text-green-500"
         iconBgColor="bg-green-500/10"
       />
       <StatsCard
-        title="Scheduled"
-        value={stats.scheduled || 0}
-        icon={Clock}
+        title="Sold"
+        value={stats.sold || 0}
+        icon={CheckCircle}
         iconColor="text-blue-500"
         iconBgColor="bg-blue-500/10"
       />
       <StatsCard
-        title="Ended"
-        value={stats.ended || 0}
-        icon={CheckCircle}
+        title="Unsold"
+        value={stats.unsold || 0}
+        icon={Ban}
         iconColor="text-zinc-500"
         iconBgColor="bg-zinc-500/10"
-      />
-      <StatsCard
-        title="Total Auctions"
-         // Using 'total' as a fallback if stats object structure differs, or specific cancelled field
-        value={stats.total || 0}
-        icon={Ban}
-        iconColor="text-purple-500"
-        iconBgColor="bg-purple-500/10"
       />
     </div>
   );

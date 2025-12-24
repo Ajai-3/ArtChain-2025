@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AdminPageLayout from "../components/common/AdminPageLayout";
 import CategoryFilters from "../components/categoryManagement/CategoryFilters";
 import CategoryTable from "../components/categoryManagement/CategoryTable";
+import CategoryStats from "../components/categoryManagement/CategoryStats";
 import { useGetAllCategory } from "../hooks/category-management/useGetAllCategory";
 import { useDebounce } from "../../../hooks/useDebounce";
 
@@ -40,6 +41,8 @@ const CategoryManagement: React.FC = () => {
       title="Category Management"
       description="Create, edit, and control categories easily."
     >
+      {data?.stats && <CategoryStats stats={data.stats} />}
+      
       <CategoryFilters
         search={searchQuery}
         onSearchChange={setSearchQuery}

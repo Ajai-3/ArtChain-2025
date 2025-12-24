@@ -3,7 +3,6 @@ import ArtStats from "../components/artManagement/ArtStats";
 import ArtFilters from "../components/artManagement/ArtFilters";
 import ArtTable from "../components/artManagement/ArtTable";
 import { useGetAllArts } from "../hooks/artManagement/useGetAllArts";
-import { useGetArtStats } from "../hooks/artManagement/useGetArtStats";
 import { useDebounce } from "../../../hooks/useDebounce";
 import AdminPageLayout from "../components/common/AdminPageLayout";
 
@@ -24,14 +23,13 @@ const ArtManagement = () => {
     priceType,
   });
 
-  const { data: statsData } = useGetArtStats();
 
   return (
     <AdminPageLayout
       title="Art Management"
       description="Manage art posts, monitor engagement, and enforce content policies"
     >
-      {statsData && <ArtStats stats={statsData.data} />}
+      {artsData?.stats && <ArtStats stats={artsData.stats} />}
 
         <ArtFilters
           search={search}
