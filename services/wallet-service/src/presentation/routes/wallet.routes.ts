@@ -35,7 +35,8 @@ router.post(ROUTES.WALLET.GIFT, walletController.giftArtCoins);
 router.get(ROUTES.TRANSACTION.GET_TRANSACTIONS, transactionController.getTransactions);
 router.post(ROUTES.TRANSACTION.CREATE_TRANSACTION, transactionController.createTransaction);
 
-router.post(ROUTES.TRANSACTION.SPLIT_PURCHASE, transactionController.processSplitPurchase);
+
+router.post(ROUTES.TRANSACTION.SPLIT_PURCHASE, walletController.processSplitPurchase);
 router.post(ROUTES.TRANSACTION.PAYMENT, transactionController.processPayment);
 router.post(ROUTES.TRANSACTION.COMMISSION_LOCK, transactionController.lockCommissionFunds);
 router.post(ROUTES.TRANSACTION.COMMISSION_DISTRIBUTE, transactionController.distributeCommissionFunds);

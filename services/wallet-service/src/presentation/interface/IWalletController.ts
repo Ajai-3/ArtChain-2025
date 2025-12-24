@@ -7,6 +7,11 @@ export interface IWalletController {
   lockAmount: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
   unlockAmount: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
   settleAuction: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  processSplitPurchase: (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => Promise<Response | void>;
   getChartData: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
   giftArtCoins: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 }

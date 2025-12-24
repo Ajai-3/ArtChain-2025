@@ -23,7 +23,7 @@ import { GetStripeSessionUseCase } from "../../application/usecases/GetStripeSes
 import { HandleStripeWebhookUseCase } from "../../application/usecases/HandleStripeWebhookUseCase";
 import { GetTransactionsUseCase } from "../../application/usecases/transaction/GetTransactionsUseCase";
 import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase";
-import { ProcessSplitPurchaseUseCase } from "../../application/usecases/transaction/ProcessSplitPurchaseUseCase";
+import { ProcessSplitPurchaseUseCase } from "../../application/usecases/wallet/ProcessSplitPurchaseUseCase";
 import { IProcessPaymentUseCase } from "../../application/interface/usecase/transaction/IProcessPaymentUseCase";
 import { ProcessPaymentUseCase } from "../../application/usecases/transaction/ProcessPaymentUseCase";
 import { CreateStripeCheckoutSessionUseCase } from "../../application/usecases/CreateStripeCheckoutSessionUseCase";

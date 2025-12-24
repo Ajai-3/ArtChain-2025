@@ -1,4 +1,5 @@
 import { prisma } from "../db/prisma";
+import { logger } from "../../utils/logger";
 import { injectable } from "inversify";
 import { config } from "../config/env";
 import { Wallet } from "../../domain/entities/Wallet";
@@ -447,6 +448,15 @@ export class WalletRepositoryImpl
         
         if (!buyerWallet) throw new Error("Buyer wallet not found");
         if (!sellerWallet) throw new Error("Seller wallet not found");
+
+        const existingTx = await tx.transaction.findUnique({
+          where: { externalId: `${artId}-purchase` }
+        });
+
+        if (existingTx) {
+          logger.info(`Transaction ${artId}-purchase already exists, skipping wallet updates.`);
+          return;
+        }
         
         if (buyerWallet.balance < totalAmount) {
           throw new Error("Insufficient funds");
@@ -501,7 +511,7 @@ export class WalletRepositoryImpl
             method: "art_coin",
             status: "success",
             description: `Purchased art ${artId}`,
-            externalId: artId,
+            externalId: `${artId}-purchase`,
              meta: { sellerId, adminId, commissionAmount }
           },
         });
@@ -515,7 +525,7 @@ export class WalletRepositoryImpl
             method: "art_coin",
             status: "success",
             description: `Sold art ${artId}`,
-            externalId: artId,
+            externalId: `${artId}-sale`,
              meta: { buyerId }
           },
         });
@@ -530,7 +540,7 @@ export class WalletRepositoryImpl
                     method: "art_coin",
                     status: "success",
                     description: `Commission from art sale ${artId}`,
-                    externalId: artId,
+                    externalId: `${artId}-commission`,
                     meta: { buyerId, sellerId }
                 }
             });
