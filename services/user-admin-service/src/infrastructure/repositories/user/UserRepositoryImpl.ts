@@ -52,10 +52,21 @@ export class UserRepositoryImpl
     role?: string;
     status?: string;
     plan?: string;
-  }): Promise<{ meta: { page: number; limit: number; total: number }; data: SafeUser[] }> {
-    const where: any = {
+  }): Promise<{ 
+    meta: { page: number; limit: number; total: number }; 
+    data: SafeUser[];
+    stats?: {
+      total: number;
+      active: number;
+      banned: number;
+      artists: number;
+    }
+  }> {
+    const baseWhere: any = {
       role: { in: [Role.user, Role.artist] },
     };
+
+    const where: any = { ...baseWhere };
 
     if (role && role !== 'all') {
       if (role === 'user') where.role = Role.user;
@@ -67,9 +78,12 @@ export class UserRepositoryImpl
 
     const skip = (page - 1) * limit;
 
-    const [users, total] = await Promise.all([
+    const [users, total, active, banned, artists] = await Promise.all([
       this.model.findMany({ where, skip, take: limit }),
       this.model.count({ where }),
+      this.model.count({ where: { ...baseWhere, status: 'active' } }),
+      this.model.count({ where: { ...baseWhere, status: 'banned' } }),
+      this.model.count({ where: { ...baseWhere, role: Role.artist } }),
     ]);
 
     const sanitizedUsers: SafeUser[] = users.map((user: User) => {
@@ -77,7 +91,16 @@ export class UserRepositoryImpl
         return rest;
     });
 
-    return { meta: { page, limit, total }, data: sanitizedUsers };
+    return { 
+      meta: { page, limit, total }, 
+      data: sanitizedUsers,
+      stats: {
+        total: await this.model.count({ where: baseWhere }), // Total Global
+        active,
+        banned,
+        artists
+      }
+    };
   }
 
   async findManyByIds(

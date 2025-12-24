@@ -59,6 +59,7 @@ export class UserManageMentController implements IUserManageMentController {
         message: USER_MESSAGES.GET_ALL_USERS_SUCCESS,
         meta: result.meta,
         data: result.data,
+        stats: result.stats,
       });
     } catch (error) {
       next(error);
