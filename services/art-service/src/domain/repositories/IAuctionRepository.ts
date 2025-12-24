@@ -4,6 +4,7 @@ import { Auction } from "../entities/Auction";
 export interface IAuctionRepository extends IBaseRepository<Auction> {
   findByStatus(status: string): Promise<Auction[]>;
   findByHostId(hostId: string): Promise<Auction[]>;
+  findRecent(limit: number): Promise<Auction[]>;
   findActiveAuctions(
       page?: number, 
       limit?: number, 
@@ -13,11 +14,10 @@ export interface IAuctionRepository extends IBaseRepository<Auction> {
       hostId?: string
     ): Promise<{ auctions: Auction[]; total: number }>;
   updateStatus(id: string, status: string): Promise<void>;
-  getStats(): Promise<{
-    total: number;
+  getStats(startDate?: Date, endDate?: Date): Promise<{
     active: number;
-    scheduled: number;
     ended: number;
-    cancelled: number;
+    sold: number;
+    unsold: number;
   }>;
 }

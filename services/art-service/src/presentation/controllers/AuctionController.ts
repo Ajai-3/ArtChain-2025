@@ -9,6 +9,7 @@ import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction
 import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
 import { IGetAuctionStatsUseCase } from "../../application/interface/usecase/auction/IGetAuctionStatsUseCase";
 import { ICancelAuctionUseCase } from "../../application/interface/usecase/auction/ICancelAuctionUseCase";
+import { IGetRecentAuctionsUseCase } from "../../application/interface/usecase/admin/IGetRecentAuctionsUseCase";
 import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
 
 import { createAuctionSchema } from "../validators/auction.schema";
@@ -29,7 +30,9 @@ export class AuctionController implements IAuctionController {
     @inject(TYPES.IGetAuctionStatsUseCase)
     private readonly _getAuctionStatsUseCase: IGetAuctionStatsUseCase,
     @inject(TYPES.ICancelAuctionUseCase)
-    private readonly _cancelAuctionUseCase: ICancelAuctionUseCase
+    private readonly _cancelAuctionUseCase: ICancelAuctionUseCase,
+    @inject(TYPES.IGetRecentAuctionsUseCase)
+    private readonly _getRecentAuctionsUseCase: IGetRecentAuctionsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -126,6 +129,64 @@ export class AuctionController implements IAuctionController {
   };
 
   //# ================================================================================================================
+  //# GET AUCTIONS WITH STATS (ADMIN ONLY)
+  //# ================================================================================================================
+  //# GET /api/v1/art/admin/auctions (with includeStats=true query param)
+  //# This returns both auctions list AND stats in one response for admin
+  //# ================================================================================================================
+  getAuctionsWithStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const status = req.query.status as string;
+
+      let startDate: Date | undefined;
+      let endDate: Date | undefined;
+
+      if (req.query.startDate) {
+        startDate = new Date(req.query.startDate as string);
+      }
+      if (req.query.endDate) {
+        endDate = new Date(req.query.endDate as string);
+      }
+
+      logger.info(
+        `Fetching auctions with stats page=${page} limit=${limit} status=${status}`
+      );
+
+      const dto: GetAuctionsDTO = {
+        page,
+        limit,
+        filterStatus: status,
+        startDate,
+        endDate,
+        hostId: req.query.hostId as string
+      };
+
+      // Fetch both auctions and stats in parallel
+      const [auctionsResult, stats] = await Promise.all([
+        this._getAuctionsUseCase.execute(dto),
+        this._getAuctionStatsUseCase.execute('all')
+      ]);
+
+      return res.status(HttpStatus.OK).json({
+        message: AUCTION_MESSAGES.AUCTIONS_FETCHED,
+        data: {
+          ...auctionsResult,
+          stats
+        },
+      });
+    } catch (error) {
+      logger.error("Error in getAuctionsWithStats", error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
   //# GET AUCTION BY ID
   //# ================================================================================================================
   //# GET /api/v1/art/auctions/:id
@@ -166,8 +227,9 @@ export class AuctionController implements IAuctionController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      logger.info("Fetching auction stats");
-      const stats = await this._getAuctionStatsUseCase.execute();
+      const timeRange = (req.query.timeRange as string) || '7d';
+      logger.info(`Fetching auction stats for range: ${timeRange}`);
+      const stats = await this._getAuctionStatsUseCase.execute(timeRange);
       return res.status(HttpStatus.OK).json({
         message: AUCTION_MESSAGES.AUCTIONS_FETCHED,
         data: stats,
@@ -201,6 +263,24 @@ export class AuctionController implements IAuctionController {
       });
     } catch (error) {
       logger.error("Error in cancelAuction", error);
+      next(error);
+    }
+  };
+
+  getRecentAuctions = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 5;
+      const auctions = await this._getRecentAuctionsUseCase.execute(limit);
+      return res.status(HttpStatus.OK).json({
+        message: "Recent auctions fetched successfully",
+        data: auctions,
+      });
+    } catch (error) {
+      logger.error("Error in getRecentAuctions", error);
       next(error);
     }
   };

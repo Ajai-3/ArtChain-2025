@@ -164,6 +164,14 @@ import { IGetAllArtsUseCase } from "../../application/interface/usecase/admin/IG
 import { GetAllArtsUseCase } from "../../application/usecase/admin/GetAllArtsUseCase";
 import { IGetArtStatsUseCase } from "../../application/interface/usecase/admin/IGetArtStatsUseCase";
 import { GetArtStatsUseCase } from "../../application/usecase/admin/GetArtStatsUseCase";
+import { IGetTopArtsUseCase } from "../../application/interface/usecase/admin/IGetTopArtsUseCase";
+import { GetTopArtsUseCase } from "../../application/usecase/admin/GetTopArtsUseCase";
+import { IGetCategoryStatsUseCase } from "../../application/interface/usecase/admin/IGetCategoryStatsUseCase";
+import { GetCategoryStatsUseCase } from "../../application/usecase/admin/GetCategoryStatsUseCase";
+import { IGetRecentAuctionsUseCase } from "../../application/interface/usecase/admin/IGetRecentAuctionsUseCase";
+import { GetRecentAuctionsUseCase } from "../../application/usecase/admin/GetRecentAuctionsUseCase";
+import { IGetRecentCommissionsUseCase } from "../../application/interface/usecase/admin/IGetRecentCommissionsUseCase";
+import { GetRecentCommissionsUseCase } from "../../application/usecase/admin/GetRecentCommissionsUseCase";
 import { IUpdateArtStatusUseCase } from "../../application/interface/usecase/admin/IUpdateArtStatusUseCase";
 import { UpdateArtStatusUseCase } from "../../application/usecase/admin/UpdateArtStatusUseCase";
 import { IAdminArtController } from "../../presentation/interface/IAdminArtController";
@@ -332,6 +340,11 @@ container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryContro
 container.bind<IAdminArtRepository>(TYPES.IAdminArtRepository).to(AdminArtRepositoryImpl);
 container.bind<IGetAllArtsUseCase>(TYPES.IGetAllArtsUseCase).to(GetAllArtsUseCase);
 container.bind<IGetArtStatsUseCase>(TYPES.IGetArtStatsUseCase).to(GetArtStatsUseCase);
+
+container.bind<IGetTopArtsUseCase>(TYPES.IGetTopArtsUseCase).to(GetTopArtsUseCase);
+container.bind<IGetCategoryStatsUseCase>(TYPES.IGetCategoryStatsUseCase).to(GetCategoryStatsUseCase);
+container.bind<IGetRecentAuctionsUseCase>(TYPES.IGetRecentAuctionsUseCase).to(GetRecentAuctionsUseCase);
+container.bind<IGetRecentCommissionsUseCase>(TYPES.IGetRecentCommissionsUseCase).to(GetRecentCommissionsUseCase);
 container.bind<IUpdateArtStatusUseCase>(TYPES.IUpdateArtStatusUseCase).to(UpdateArtStatusUseCase);
 container.bind<IAdminArtController>(TYPES.IAdminArtController).to(AdminArtController);
 
@@ -391,6 +404,8 @@ import { AuctionEndedConsumer } from "../messaging/consumers/AuctionEndedConsume
 container.bind<RabbitMQService>(TYPES.RabbitMQService).to(RabbitMQService).inSingletonScope();
 container.bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase).to(EndAuctionUseCase);
 container.bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer).to(AuctionEndedConsumer).inSingletonScope();
-container.bind<GetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
+import { IGetCommissionStatsUseCase } from "../../application/interface/usecase/commission/IGetCommissionStatsUseCase";
+
+container.bind<IGetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
 
 export { container };

@@ -15,11 +15,13 @@ export interface IAdminArtRepository {
   
   countStats(): Promise<{
     total: number;
-    active: number;
-    archived: number;
-    deleted: number;
+    free: number;
+    premium: number;
+    aiGenerated: number;
   }>;
   
   updateStatus(id: string, status: PostStatus): Promise<ArtPost | null>;
   findById(id: string): Promise<ArtPost | null>;
+  getTopArts(limit: number, type: 'likes' | 'price'): Promise<ArtPost[]>;
+  getCategoryStats(): Promise<{ category: string; count: number }[]>;
 }

@@ -16,7 +16,7 @@ const CategorySchema = new Schema<CategoryDocument>(
   { timestamps: true }
 );
 
-export const CategorytModel = model<CategoryDocument>(
+export const CategoryModel = model<CategoryDocument>(
   "Category",
   CategorySchema
 );

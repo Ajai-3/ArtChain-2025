@@ -1,41 +1,76 @@
-import { inject, injectable } from "inversify";
+import { injectable, inject } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
-import { CommissionStatus } from "../../../domain/entities/Commission";
-import { IGetPlatformConfigUseCase } from "../../interface/usecase/admin/IGetPlatformConfigUseCase";
+import { IGetCommissionStatsUseCase } from "../../interface/usecase/commission/IGetCommissionStatsUseCase";
+
+import { IPlatformConfigRepository } from "../../../domain/repositories/IPlatformConfigRepository";
 
 @injectable()
-export class GetCommissionStatsUseCase {
+export class GetCommissionStatsUseCase implements IGetCommissionStatsUseCase {
   constructor(
-    @inject(TYPES.ICommissionRepository)
-    private readonly _commissionRepository: ICommissionRepository,
-    @inject(TYPES.IGetPlatformConfigUseCase)
-    private readonly _getPlatformConfigUseCase: IGetPlatformConfigUseCase
+    @inject(TYPES.ICommissionRepository) private _repository: ICommissionRepository,
+    @inject(TYPES.IPlatformConfigRepository) private _configRepository: IPlatformConfigRepository
   ) {}
 
-  async execute(): Promise<any> {
-    // 1. Get all commissions (or aggregated stats from repo)
-    const commissions = await this._commissionRepository.findAllFiltered({}, 1, 100000); // Fetch mostly all for stats, ideally repo should do aggregation
+  async execute(timeRange: string = '7d'): Promise<{
+    REQUESTED: number;
+    NEGOTIATING: number;
+    AGREED: number;
+    IN_PROGRESS: number;
+    COMPLETED: number;
+    CANCELLED: number;
+    REJECTED: number;
+    totalRevenue: number;
+    activeDisputes: number;
+    totalRequests: number;
+    completedRequests: number;
+    inProgressRequests: number;
+    currentCommissionPercentage: number;
+  }> {
+    const endDate = new Date();
+    let startDate: Date | undefined;
 
-    const totalRequests = commissions.total;
-    const completed = commissions.commissions.filter(c => c.status === CommissionStatus.COMPLETED).length;
-    const disputed = commissions.commissions.filter(c => c.status === CommissionStatus.DISPUTE_RAISED).length;
-    const inProgress = commissions.commissions.filter(c => c.status === CommissionStatus.IN_PROGRESS).length;
+    switch (timeRange) {
+      case 'today':
+        startDate = new Date();
+        startDate.setHours(0, 0, 0, 0);
+        break;
+      case '7d':
+        startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+        break;
+      case '30d':
+        startDate = new Date();
+        startDate.setDate(endDate.getDate() - 30);
+        break;
+      case 'all':
+        startDate = undefined;
+        break;
+      default:
+        startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+    }
 
-    // Calculate revenue from completed commissions
-    // platformFee is stored in completed commissions
-    const totalRevenue = commissions.commissions.reduce((sum, c) => sum + (c.platformFee || 0), 0);
+    const [stats, config] = await Promise.all([
+        this._repository.getStats(startDate, startDate ? endDate : undefined),
+        this._configRepository.getConfig()
+    ]);
 
-    // Get current config
-    const config = await this._getPlatformConfigUseCase.execute();
+    const totalRequests = 
+        stats.REQUESTED + 
+        stats.NEGOTIATING + 
+        stats.AGREED + 
+        stats.IN_PROGRESS + 
+        stats.COMPLETED + 
+        stats.CANCELLED + 
+        stats.REJECTED;
 
     return {
-      totalRequests,
-      completedRequests: completed,
-      activeDisputes: disputed,
-      inProgressRequests: inProgress,
-      totalRevenue: totalRevenue,
-      currentCommissionPercentage: config?.commissionArtPercentage || 0
+        ...stats,
+        totalRequests,
+        completedRequests: stats.COMPLETED,
+        inProgressRequests: stats.IN_PROGRESS,
+        currentCommissionPercentage: config ? config.commissionArtPercentage : 0
     };
   }
 }

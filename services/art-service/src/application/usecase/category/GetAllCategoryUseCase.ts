@@ -17,14 +17,23 @@ export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {
     search?: string,
     status?: string,
     countFilter?: number
-  ): Promise<{ data: Category[]; total: number }> {
-    const { data, total } = await this._categoryRepo.getAllCategory(
+  ): Promise<{ 
+    data: Category[]; 
+    total: number;
+    stats: {
+      total: number;
+      active: number;
+      inactive: number;
+      lowUsage: number;
+    };
+  }> {
+    const { data, total, stats } = await this._categoryRepo.getAllCategory(
       page,
       limit,
       search,
       status,
       countFilter
     );
-    return { data, total };
+    return { data, total, stats };
   }
 }

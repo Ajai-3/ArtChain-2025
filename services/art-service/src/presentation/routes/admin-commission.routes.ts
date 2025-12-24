@@ -8,6 +8,7 @@ const controller = container.get<AdminCommissionController>(AdminCommissionContr
 
 router.get(ROUTES.ADMIN_COMMISSION.BASE + ROUTES.ADMIN_COMMISSION.ALL, controller.getAllCommissions);
 router.get(ROUTES.ADMIN_COMMISSION.BASE + ROUTES.ADMIN_COMMISSION.STATS, controller.getStats);
+router.get(ROUTES.ADMIN_COMMISSION.BASE + ROUTES.ADMIN_COMMISSION.RECENT, controller.getRecentCommissions);
 router.post(ROUTES.ADMIN_COMMISSION.BASE + ROUTES.ADMIN_COMMISSION.RESOLVE, controller.resolveDispute);
 
 export default router;

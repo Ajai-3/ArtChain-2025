@@ -82,6 +82,8 @@ export const ROUTES = {
   ADMIN_ART: {
     BASE: "/admin/art",
     STATS: "/stats",
+    STATS_TOP: "/stats/top",
+    STATS_CATEGORIES: "/stats/categories",
     STATUS: "/:id/status",
   },
   
@@ -100,6 +102,7 @@ export const ROUTES = {
     BY_ID: "/admin/auctions/:id",
     STATS: "/admin/auctions/stats",
     CANCEL: "/admin/auctions/:id/cancel",
+    RECENT: "/admin/auctions/recent",
   },
 
   // Admin Config routes
@@ -123,6 +126,7 @@ export const ROUTES = {
     ALL: "/all",
     STATS: "/stats",
     RESOLVE: "/resolve/:id",
+    RECENT: "/recent",
   }
 } as const;
 

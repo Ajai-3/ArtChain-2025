@@ -53,18 +53,23 @@ export class AdminArtRepositoryImpl implements IAdminArtRepository {
 
   async countStats(): Promise<{
     total: number;
-    active: number;
-    archived: number;
-    deleted: number;
+    free: number;
+    premium: number;
+    aiGenerated: number;
   }> {
-    const [total, active, archived, deleted] = await Promise.all([
+    const [total, free, premium, aiGenerated] = await Promise.all([
       ArtPostModel.countDocuments(),
-      ArtPostModel.countDocuments({ status: "active" }),
-      ArtPostModel.countDocuments({ status: "archived" }),
-      ArtPostModel.countDocuments({ status: "deleted" }),
+      ArtPostModel.countDocuments({ isForSale: false }),
+      ArtPostModel.countDocuments({ isForSale: true }),
+      ArtPostModel.countDocuments({
+        $or: [
+          { artType: { $regex: 'ai', $options: 'i' } },
+          { category: { $regex: 'ai', $options: 'i' } }
+        ]
+      })
     ]);
 
-    return { total, active, archived, deleted };
+    return { total, free, premium, aiGenerated };
   }
 
   async updateStatus(id: string, status: PostStatus): Promise<ArtPost | null> {
@@ -91,5 +96,91 @@ export class AdminArtRepositoryImpl implements IAdminArtRepository {
       ...art,
       id: (art as any)._id.toString(),
     } as unknown as ArtPost;
+  }
+
+  async getTopArts(limit: number, type: 'likes' | 'price'): Promise<ArtPost[]> {
+    if (type === 'price') {
+        const arts = await ArtPostModel.find({ status: 'active', isSold: false })
+          .sort({ artcoins: -1 })
+          .limit(limit)
+          .lean();
+        return arts.map((art: any) => ({
+          ...art,
+          id: art._id.toString(),
+          likes: 0
+        })) as unknown as ArtPost[];
+    }
+
+    // Aggregation for likes
+    const arts = await ArtPostModel.aggregate([
+      { $match: { status: 'active', isSold: false } },
+      { 
+          $addFields: { 
+              strId: { $toString: "$_id" } 
+          } 
+      },
+      {
+        $lookup: {
+          from: 'likes',
+          localField: 'strId',
+          foreignField: 'postId',
+          as: 'likesData'
+        }
+      },
+      { $addFields: { likes: { $size: "$likesData" } } },
+      { $sort: { likes: -1 } },
+      { $limit: limit },
+      { $project: { likesData: 0, strId: 0 } } // Remove internal fields
+    ]);
+
+    return arts.map((art: any) => ({
+      ...art,
+      id: art._id.toString(),
+    })) as unknown as ArtPost[];
+  }
+
+  async getCategoryStats(): Promise<{ category: string; count: number }[]> {
+    const stats = await ArtPostModel.aggregate([
+      { $match: { status: 'active' } },
+      { $group: { _id: '$artType', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+      {
+         $addFields: {
+             catId: { 
+                 $cond: {
+                     if: { $regexMatch: { input: "$_id", regex: /^[0-9a-fA-F]{24}$/ } },
+                     then: { $toObjectId: "$_id" },
+                     else: null
+                 }
+             }
+         }
+      },
+      {
+          $lookup: {
+              from: 'categories',
+              localField: 'catId',
+              foreignField: '_id',
+              as: 'catDocs'
+          }
+      },
+      {
+          $project: {
+              category: {
+                  $cond: {
+                      if: { $gt: [{ $size: "$catDocs" }, 0] },
+                      then: { $arrayElemAt: ["$catDocs.name", 0] },
+                      else: "$_id"
+                  }
+              },
+              count: 1
+          }
+      }
+    ]);
+
+    return stats.map((stat: any) => ({
+      category: stat.category || 'Uncategorized',
+      count: stat.count
+    }));
   }
 }

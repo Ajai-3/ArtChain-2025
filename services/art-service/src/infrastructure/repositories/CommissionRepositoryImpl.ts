@@ -38,6 +38,14 @@ export class CommissionRepositoryImpl
     return (docs as unknown) as Commission[];
   }
 
+  async findRecent(limit: number): Promise<Commission[]> {
+    const docs = await CommissionModel.find({})
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+    return (docs as unknown) as Commission[];
+  }
+
   async findAllFiltered(filter: any, page: number, limit: number): Promise<{ commissions: Commission[], total: number }> {
     const query = CommissionModel.find(filter);
     const total = await CommissionModel.countDocuments(filter);
@@ -50,6 +58,52 @@ export class CommissionRepositoryImpl
     return {
         commissions: (docs as unknown) as Commission[],
         total
+    };
+  }
+  async getStats(startDate?: Date, endDate?: Date): Promise<{
+    REQUESTED: number;
+    NEGOTIATING: number;
+    AGREED: number;
+    IN_PROGRESS: number;
+    COMPLETED: number;
+    CANCELLED: number;
+    REJECTED: number;
+    totalRevenue: number;
+    activeDisputes: number;
+  }> {
+    const query: any = {};
+    if (startDate || endDate) {
+        query.createdAt = {};
+        if (startDate) query.createdAt.$gte = startDate;
+        if (endDate) query.createdAt.$lte = endDate;
+    }
+
+    const [requested, negotiating, agreed, in_progress, completed, cancelled, disputes, revenueResult] = await Promise.all([
+      CommissionModel.countDocuments({ ...query, status: 'REQUESTED' }),
+      CommissionModel.countDocuments({ ...query, status: 'NEGOTIATING' }),
+      CommissionModel.countDocuments({ ...query, status: 'AGREED' }),
+      CommissionModel.countDocuments({ ...query, status: 'IN_PROGRESS' }),
+      CommissionModel.countDocuments({ ...query, status: 'COMPLETED' }),
+      CommissionModel.countDocuments({ ...query, status: 'CANCELLED' }),
+      CommissionModel.countDocuments({ ...query, status: 'DISPUTE_RAISED' }),
+      CommissionModel.aggregate([
+        { $match: { ...query, status: 'COMPLETED' } },
+        { $group: { _id: null, total: { $sum: "$platformFee" } } }
+      ])
+    ]);
+
+    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+
+    return { 
+        REQUESTED: requested, 
+        NEGOTIATING: negotiating, 
+        AGREED: agreed, 
+        IN_PROGRESS: in_progress, 
+        COMPLETED: completed, 
+        CANCELLED: cancelled, 
+        REJECTED: 0,
+        activeDisputes: disputes,
+        totalRevenue
     };
   }
 }

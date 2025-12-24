@@ -1,9 +1,8 @@
 export interface IGetAuctionStatsUseCase {
-  execute(): Promise<{
-    total: number;
+  execute(timeRange?: string): Promise<{
     active: number;
-    scheduled: number;
     ended: number;
-    cancelled: number;
+    sold: number;
+    unsold: number;
   }>;
 }

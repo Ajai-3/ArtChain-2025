@@ -18,6 +18,13 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     return AuctionModel.find({ hostId }).sort({ createdAt: -1 }).lean() as unknown as Auction[];
   }
 
+  async findRecent(limit: number): Promise<Auction[]> {
+    return AuctionModel.find({})
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean() as unknown as Auction[];
+  }
+
   async findActiveAuctions(
       page = 1, 
       limit = 10,
@@ -66,33 +73,26 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
       await AuctionModel.updateOne({ _id: id }, { status });
   }
 
-  async getStats(): Promise<{ total: number; active: number; scheduled: number; ended: number; cancelled: number }> {
-    const stats = await AuctionModel.aggregate([
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 }
-        }
-      }
+  async getStats(startDate?: Date, endDate?: Date): Promise<{
+    active: number;
+    ended: number;
+    sold: number;
+    unsold: number;
+  }> {
+    const query: any = {};
+    if (startDate || endDate) {
+        query.startTime = {};
+        if (startDate) query.startTime.$gte = startDate;
+        if (endDate) query.startTime.$lte = endDate;
+    }
+
+    const [active, ended, sold, unsold] = await Promise.all([
+      AuctionModel.countDocuments({ ...query, status: 'ACTIVE' }),
+      AuctionModel.countDocuments({ ...query, status: 'ENDED' }),
+      AuctionModel.countDocuments({ ...query, status: 'ENDED', winnerId: { $ne: null } }),
+      AuctionModel.countDocuments({ ...query, status: 'ENDED', winnerId: null })
     ]);
 
-    const result = {
-      total: 0,
-      active: 0,
-      scheduled: 0,
-      ended: 0,
-      cancelled: 0
-    };
-
-    stats.forEach((stat: any) => {
-      const count = stat.count;
-      result.total += count;
-      if (stat._id === 'ACTIVE') result.active = count;
-      if (stat._id === 'SCHEDULED') result.scheduled = count;
-      if (stat._id === 'ENDED') result.ended = count;
-      if (stat._id === 'CANCELLED') result.cancelled = count;
-    });
-
-    return result;
+    return { active, ended, sold, unsold };
   }
 }
