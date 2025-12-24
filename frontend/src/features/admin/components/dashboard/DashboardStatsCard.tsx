@@ -46,7 +46,7 @@ const DashboardStatsCard: React.FC<DashboardStatsCardProps> = ({
       {(subValue || trend) && (
         <div className="mt-4 flex items-center justify-between text-xs">
            {subValue ? (
-               <span className="text-muted-foreground truncate max-w-[65%] text-[11px] sm:text-xs">
+               <span className="text-muted-foreground truncate max-w-[85%] text-[11px] sm:text-xs">
                 {subValue}
                </span>
            ) : <span />}

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useUnifiedSearch } from "../../../../api/user/search/queries";
+import { useUnifiedSearch } from "../search/useUnifiedSearch";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../../../redux/selectors/userSelectors";
 import apiClient from "../../../../api/axios";

@@ -20,6 +20,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, A
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs';
 import CustomLoader from '../../../components/CustomLoader';
 import { Coins, Users, Gavel, Palette } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../redux/store';
 
 const Dashboard: React.FC = () => {
     // Independent Filters
@@ -27,6 +29,9 @@ const Dashboard: React.FC = () => {
     const [transactionFilter, setTransactionFilter] = useState('7d');
     const [commissionFilter, setCommissionFilter] = useState('7d');
     const [auctionFilter, setAuctionFilter] = useState('7d');
+
+    // Get ArtCoin rate from Redux
+    const artCoinRate = useSelector((state: RootState) => state.platform.artCoinRate);
 
     // Data Fetching
     const { stats: dashboardStats, loading: dashboardLoading, error: dashboardError } = useDashboardStats(); // General stats (tables)
@@ -49,6 +54,9 @@ const Dashboard: React.FC = () => {
     const auctionRevenue = revenueStats?.revenueBySource?.auctions || 0;
     const artSalesRevenue = revenueStats?.revenueBySource?.artSales || 0;
     const commissionRevenue = revenueStats?.revenueBySource?.commissions || 0;
+    
+    // Convert to Rupees
+    const totalRevenueInRupees = totalRevenue * artCoinRate;
 
     const pieData = [
         { name: 'Auctions', value: auctionRevenue },
@@ -83,11 +91,11 @@ const Dashboard: React.FC = () => {
                     badge="Assets"
                 />
                 <DashboardStatsCard
-                    title="ArtCoin Revenue"
-                    value={`${totalRevenue.toFixed(0)} AC`}
-                    subValue={`Auc: ${auctionRevenue.toFixed(0)} | Sales: ${artSalesRevenue.toFixed(0)} | Comm: ${commissionRevenue.toFixed(0)}`}
+                    title="Platform Revenue"
+                    value={`₹${totalRevenueInRupees.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`}
+                    subValue={`${totalRevenue.toFixed(0)} AC | Auc: ${auctionRevenue.toFixed(0)} | Sales: ${artSalesRevenue.toFixed(0)} | Comm: ${commissionRevenue.toFixed(0)}`}
                     icon={Coins}
-                    badge="AC"
+                    badge="Revenue"
                 />
                 <DashboardStatsCard
                     title="Auctions"

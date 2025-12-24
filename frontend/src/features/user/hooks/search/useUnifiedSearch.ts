@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import apiClient from "../../axios";
+import apiClient from "../../../../api/axios";
 
 export const useUnifiedSearch = (query: string, type: "user" | "art" | "all") => {
   return useQuery({
