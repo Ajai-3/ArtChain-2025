@@ -102,7 +102,8 @@ const Dashboard: React.FC = () => {
             <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-7 mb-6">
                 {/* Revenue Area Chart */}
                 <Card className="col-span-4 shadow-sm border-zinc-200 dark:border-zinc-800">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
+                    <CardHeader>
+                        <div className="flex justify-between"> 
                         <div className="space-y-1">
                             <CardTitle>Revenue Trends</CardTitle>
                             <CardDescription>Performance over time</CardDescription>
@@ -115,6 +116,7 @@ const Dashboard: React.FC = () => {
                                 <TabsTrigger value="all" className="text-[10px] px-2 h-6 data-[state=active]:bg-background">All</TabsTrigger>
                             </TabsList>
                         </Tabs>
+                        </div>
                     </CardHeader>
                     <CardContent className="pl-0">
                         <div className="h-[300px] w-full">
