@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../../infrastructure/inversify/types";
 import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
 import { GetAllUsersQueryDto } from "../../../interface/dtos/admin/GetAllUsersQueryDto";
-import { IUserSearchRepository } from "../../../../domain/repositories/user/IUserSearchRepository";
+import { IElasticSearchService } from "../../../interface/http/IElasticSearchService";
 import { IGetAllUsersUseCase } from "../../../interface/usecases/admin/user-management/IGetAllUsersUseCase";
 import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
 
@@ -10,8 +10,8 @@ import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private _userRepo: IUserRepository,
-    @inject(TYPES.IUserSearchRepository)
-    private readonly _searchRepo: IUserSearchRepository
+    @inject(TYPES.IElasticSearchService)
+    private readonly _elasticSearchService: IElasticSearchService
   ) {}
 
   async execute(query: GetAllUsersQueryDto): Promise<any> {
@@ -19,7 +19,7 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
 
     let userIds: string[] | undefined;
     if (search) {
-      userIds = await this._searchRepo.searchUserIds(search);
+      userIds = await this._elasticSearchService.searchUserIds(search);
     }
 
     if (userIds && userIds.length > 0) {

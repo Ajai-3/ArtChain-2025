@@ -33,14 +33,12 @@ import { PasswordResetRabbitHandler } from '../../application/events/handlers/Pa
 import { IArtService } from '../../application/interface/http/IArtService';
 import { IUserRepository } from '../../domain/repositories/user/IUserRepository';
 import { ISupporterRepository } from '../../domain/repositories/user/ISupporterRepository';
-import { IUserSearchRepository } from '../../domain/repositories/user/IUserSearchRepository';
 import { IArtistRequestRepository } from '../../domain/repositories/user/IArtistRequestRepository';
 
 import { ArtService } from '../http/ArtService';
 import { UserRepositoryImpl } from '../repositories/user/UserRepositoryImpl';
 import { SupporterRepositoryImpl } from '../repositories/user/SupporterRepositoryIml';
 import { ArtistRequestRepositoryImpl } from '../repositories/user/ArtistRequestRepositoryImpl';
-import { ElasticUserSearchRepositoryImpl } from '../repositories/user/ElasticUserSearchRepositoryImpl';
 
 // Use cases - Artist Request
 import { CreateArtistRequestUseCase } from '../../application/usecases/user/artist-request/CreateArtistRequestUseCase';
@@ -158,6 +156,8 @@ import { IGetDashboardStatsUseCase } from '../../application/interface/usecases/
 import { GetDashboardStatsUseCase } from '../../application/usecases/admin/dashboard/GetDashboardStatsUseCase';
 import { IAdminDashboardController } from '../../presentation/interfaces/admin/IAdminDashboardController';
 import { AdminDashboardController } from '../../presentation/controllers/admin/AdminDashboardController';
+import { IElasticSearchService } from '../../application/interface/http/IElasticSearchService';
+import { ElasticSearchService } from '../http/ElasticSearchService';
 
 
 
@@ -185,8 +185,8 @@ container
   .to(UserRepositoryImpl)
   .inSingletonScope();
 container
-  .bind<IUserSearchRepository>(TYPES.IUserSearchRepository)
-  .to(ElasticUserSearchRepositoryImpl)
+  .bind<IElasticSearchService>(TYPES.IElasticSearchService)
+  .to(ElasticSearchService)
   .inSingletonScope();
 
 container

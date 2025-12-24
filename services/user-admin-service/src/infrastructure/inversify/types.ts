@@ -16,8 +16,8 @@ export const TYPES = {
   
   // Services
   IArtService: Symbol.for('IArtService'),
-  IUserService: Symbol.for('IUserService'),
   IWalletService: Symbol.for('IWalletService'),
+  IElasticSearchService: Symbol.for('IElasticSearchService'),
   
   // Use cases - Artist Request
   ICreateArtistRequestUseCase: Symbol.for('ICreateArtistRequestUseCase'),
