@@ -1,6 +1,6 @@
 import { injectable, inject } from "inversify";
 import { IGetAllArtsUseCase } from "../../interface/usecase/admin/IGetAllArtsUseCase";
-import { IAdminArtRepository } from "../../../domain/repositories/IAdminArtRepository";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
@@ -11,7 +11,7 @@ import { IElasticSearchClient } from "../../../application/interface/clients/IEl
 @injectable()
 export class GetAllArtsUseCase implements IGetAllArtsUseCase {
   constructor(
-    @inject(TYPES.IAdminArtRepository) private readonly _repository: IAdminArtRepository,
+    @inject(TYPES.IArtPostRepository) private readonly _repository: IArtPostRepository,
     @inject(TYPES.ILikeRepository) private readonly _likeRepository: ILikeRepository,
     @inject(TYPES.ICommentRepository) private readonly _commentRepository: ICommentRepository,
     @inject(TYPES.IFavoriteRepository) private readonly _favoriteRepository: IFavoriteRepository,

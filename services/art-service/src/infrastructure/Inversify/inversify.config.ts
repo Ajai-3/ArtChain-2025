@@ -158,8 +158,7 @@ import { ICommentController } from "../../presentation/interface/ICommentControl
 import { IFavoriteController } from "../../presentation/interface/IFavoriteController";
 import { ICategoryController } from "../../presentation/interface/ICategoryController";
 
-import { IAdminArtRepository } from "../../domain/repositories/IAdminArtRepository";
-import { AdminArtRepositoryImpl } from "../repositories/AdminArtRepositoryImpl";
+// Admin Art Use Cases (using consolidated IArtPostRepository)
 import { IGetAllArtsUseCase } from "../../application/interface/usecase/admin/IGetAllArtsUseCase";
 import { GetAllArtsUseCase } from "../../application/usecase/admin/GetAllArtsUseCase";
 import { IGetArtStatsUseCase } from "../../application/interface/usecase/admin/IGetArtStatsUseCase";
@@ -336,8 +335,8 @@ container
 container
 container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryController);
 
-// Admin Art
-container.bind<IAdminArtRepository>(TYPES.IAdminArtRepository).to(AdminArtRepositoryImpl);
+
+// Admin Art (using consolidated IArtPostRepository)
 container.bind<IGetAllArtsUseCase>(TYPES.IGetAllArtsUseCase).to(GetAllArtsUseCase);
 container.bind<IGetArtStatsUseCase>(TYPES.IGetArtStatsUseCase).to(GetArtStatsUseCase);
 

@@ -95,8 +95,7 @@ export const TYPES = {
   IAdminPlatformConfigController: Symbol.for("IAdminPlatformConfigController"),
   IBidController: Symbol.for("IBidController"),
 
-  // Admin Art
-  IAdminArtRepository: Symbol.for("IAdminArtRepository"),
+  // Admin Art (using consolidated IArtPostRepository)
   IGetAllArtsUseCase: Symbol.for("IGetAllArtsUseCase"),
   IGetArtStatsUseCase: Symbol.for("IGetArtStatsUseCase"),
   IGetTopArtsUseCase: Symbol.for("IGetTopArtsUseCase"),
