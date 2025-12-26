@@ -3,9 +3,9 @@ import { PrismaClient, TransactionType, TransactionCategory, TransactionStatus, 
 
 const prisma = new PrismaClient();
 
-const USER_1 = 'cmexta8ae0000bs8ktuvvq5qd';
-const USER_2 = 'cmf6luw8t0000bsz8s7fhj3hh';
-const ADMIN_ID = 'admin-platform-wallet-id';
+const USER_1: string = 'cmexta8ae0000bs8ktuvvq5qd';
+const USER_2: string = 'cmf6luw8t0000bsz8s7fhj3hh';
+const ADMIN_ID: string = 'cmexta8ae0000bs8ktuvvq5qd';
 
 async function main() {
   console.log('Seeding Wallets...');
@@ -30,7 +30,7 @@ async function main() {
 
   console.log('Seeding Transactions...');
   
-  // Clear recent transactions to avoid clutter if re-running
+  // Note: To start with a clean state, uncomment the line below:
   // await prisma.transaction.deleteMany({});
 
   const transactionScenarios = [
@@ -40,6 +40,8 @@ async function main() {
       { type: 'COMMISSION_PAYMENT', category: TransactionCategory.COMMISSION, transType: TransactionType.credited }
   ];
   
+  const timestamp = Date.now();
+
   for (let i = 0; i < 20; i++) {
     const scenario = transactionScenarios[Math.floor(Math.random() * transactionScenarios.length)];
     const amount = Math.floor(Math.random() * 500) + 10;
@@ -52,16 +54,23 @@ async function main() {
         const adminWallet = await prisma.wallet.findUnique({ where: { userId: ADMIN_ID } });
         if (!adminWallet) continue;
 
+        const feeCategories = [
+            TransactionCategory.SALE_FEE,
+            TransactionCategory.AUCTION_FEE,
+            TransactionCategory.COMMISSION_FEE
+        ];
+        const category = feeCategories[Math.floor(Math.random() * feeCategories.length)];
+
          await prisma.transaction.create({
             data: {
                 walletId: adminWallet.id,
                 amount: amount * 0.05, // Fee
                 type: TransactionType.credited, // Receiving fee
-                category: TransactionCategory.COMMISSION,
+                category: category,
                 status: TransactionStatus.success,
                 method: Method.art_coin,
-                externalId: `ref_fee_${i}`,
-                description: `Platform fee for transaction ${i}`,
+                externalId: `ref_fee_${i}_${timestamp}`,
+                description: `Platform fee (${category}) for transaction ${i}`,
                 createdAt: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
             }
         });
@@ -79,7 +88,7 @@ async function main() {
         category: scenario.category,
         status: TransactionStatus.success,
         method: Method.art_coin,
-        externalId: `ref_${i}`,
+        externalId: `ref_${i}_${timestamp}`,
         description: `${scenario.category} transaction`,
         createdAt: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
       }
@@ -98,7 +107,7 @@ async function main() {
                     category: TransactionCategory.SALE,
                     status: TransactionStatus.success,
                     method: Method.art_coin,
-                    externalId: `ref_${i}_sale`,
+                    externalId: `ref_${i}_sale_${timestamp}`,
                     description: `Sale proceeds`,
                     createdAt: new Date(Date.now() - Math.floor(Math.random() * 30 * 24 * 60 * 60 * 1000))
                 }

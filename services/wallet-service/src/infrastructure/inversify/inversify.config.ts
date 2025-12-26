@@ -192,6 +192,8 @@ import { IUpdateWalletStatusUseCase } from "../../application/interface/usecase/
 import { UpdateWalletStatusUseCase } from "../../application/usecases/admin/UpdateWalletStatusUseCase";
 import { IGetUserTransactionsUseCase } from "../../application/interface/usecase/admin/IGetUserTransactionsUseCase";
 import { GetUserTransactionsUseCase } from "../../application/usecases/admin/GetUserTransactionsUseCase";
+import { IGetAdminTransactionsUseCase } from "../../application/interface/usecase/admin/IGetAdminTransactionsUseCase";
+import { GetAdminTransactionsUseCase } from "../../application/usecases/admin/GetAdminTransactionsUseCase";
 import { IGetAllRecentTransactionsUseCase } from "../../application/interface/usecase/admin/IGetAllRecentTransactionsUseCase";
 import { GetAllRecentTransactionsUseCase } from "../../application/usecases/admin/GetAllRecentTransactionsUseCase";
 import { IAdminWalletController } from "../../presentation/interface/IAdminWalletController";
@@ -227,6 +229,10 @@ import { GetTransactionStatsUseCase } from "../../application/usecases/admin/Get
 container
   .bind<IGetTransactionStatsUseCase>(TYPES.IGetTransactionStatsUseCase)
   .to(GetTransactionStatsUseCase);
+
+container
+  .bind<IGetAdminTransactionsUseCase>(TYPES.IGetAdminTransactionsUseCase)
+  .to(GetAdminTransactionsUseCase);
 
 // Admin Controller
 container

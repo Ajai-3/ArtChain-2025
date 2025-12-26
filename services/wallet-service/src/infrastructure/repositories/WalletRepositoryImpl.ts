@@ -109,72 +109,74 @@ export class WalletRepositoryImpl
   }
 
   async getRevenueStats(adminId: string, startDate?: Date, endDate?: Date): Promise<any> {
-    const whereClause: any = {
+    const baseWhere: any = {
       wallet: { userId: adminId },
       type: "credited",
       category: { in: [
-        TransactionCategory.COMMISSION, 
-        TransactionCategory.OTHER,
         TransactionCategory.AUCTION_FEE,
         TransactionCategory.SALE_FEE,
         TransactionCategory.COMMISSION_FEE
       ] } 
     };
 
-    if (startDate || endDate) {
-      whereClause.createdAt = {};
-      if (startDate) whereClause.createdAt.gte = startDate;
-      if (endDate) whereClause.createdAt.lte = endDate;
-    }
-
-    const transactions = await prisma.transaction.findMany({
-      where: whereClause,
+    const allTransactions = await prisma.transaction.findMany({
+      where: baseWhere,
       select: {
         amount: true,
         category: true,
-        description: true,
         createdAt: true
-      },
-      orderBy: { createdAt: 'asc' }
+      }
     });
 
-    let totalRevenue = 0;
-    const breakdown = {
-      auctions: 0,
-      artSales: 0,
-      commissions: 0,
-      aiGeneration: 0,
-      other: 0
+    let overallTotalRevenue = 0;
+    const overallBreakdown = {
+      auctions: { amount: 0, count: 0 },
+      artSales: { amount: 0, count: 0 },
+      commissions: { amount: 0, count: 0 }
     };
 
+    for (const tx of allTransactions) {
+      const amount = tx.amount;
+      overallTotalRevenue += amount;
+      if (tx.category === TransactionCategory.AUCTION_FEE) {
+        overallBreakdown.auctions.amount += amount;
+        overallBreakdown.auctions.count += 1;
+      } else if (tx.category === TransactionCategory.SALE_FEE) {
+        overallBreakdown.artSales.amount += amount;
+        overallBreakdown.artSales.count += 1;
+      } else if (tx.category === TransactionCategory.COMMISSION_FEE) {
+        overallBreakdown.commissions.amount += amount;
+        overallBreakdown.commissions.count += 1;
+      }
+    }
+
+    const trendTransactions = allTransactions.filter(tx => {
+      if (startDate && tx.createdAt < startDate) return false;
+      if (endDate && tx.createdAt > endDate) return false;
+      return true;
+    });
+
+    let trendTotalRevenue = 0;
+    const trendBreakdown = {
+      auctions: { amount: 0, count: 0 },
+      artSales: { amount: 0, count: 0 },
+      commissions: { amount: 0, count: 0 }
+    };
     const chartDataMap = new Map<string, number>();
 
-    for (const tx of transactions) {
+    for (const tx of trendTransactions) {
       const amount = tx.amount;
-      totalRevenue += amount;
+      trendTotalRevenue += amount;
 
       if (tx.category === TransactionCategory.AUCTION_FEE) {
-        breakdown.auctions += amount;
+        trendBreakdown.auctions.amount += amount;
+        trendBreakdown.auctions.count += 1;
       } else if (tx.category === TransactionCategory.SALE_FEE) {
-        breakdown.artSales += amount;
+        trendBreakdown.artSales.amount += amount;
+        trendBreakdown.artSales.count += 1;
       } else if (tx.category === TransactionCategory.COMMISSION_FEE) {
-         breakdown.commissions += amount;
-      } else if (tx.category === TransactionCategory.COMMISSION) {
-         // Legacy fallback
-         const desc = tx.description ? tx.description.toLowerCase() : "";
-         if (desc.includes("auction")) {
-             breakdown.auctions += amount;
-         } else if (desc.includes("sale") || desc.includes("sold")) {
-             breakdown.artSales += amount;
-         } else if (desc.includes("request") || desc.includes("custom")) {
-             breakdown.commissions += amount;
-         } else {
-             breakdown.commissions += amount;
-         }
-      } else if (tx.category === TransactionCategory.OTHER && tx.description && tx.description.toLowerCase().includes("ai")) {
-          breakdown.aiGeneration += amount;
-      } else {
-          breakdown.other += amount;
+        trendBreakdown.commissions.amount += amount;
+        trendBreakdown.commissions.count += 1;
       }
       
       const date = tx.createdAt.toISOString().split('T')[0];
@@ -187,8 +189,10 @@ export class WalletRepositoryImpl
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return {
-      totalRevenue,
-      breakdown,
+      totalRevenue: overallTotalRevenue, 
+      breakdown: overallBreakdown,       
+      trendRevenue: trendTotalRevenue,
+      trendBreakdown,
       chartData
     };
   }
@@ -554,6 +558,37 @@ export class WalletRepositoryImpl
     }
   }
 
+  async getAdminTransactions(
+    adminId: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any[]> {
+    const whereClause: any = {
+      wallet: { userId: adminId },
+      type: 'credited',
+      category: { in: [TransactionCategory.COMMISSION, TransactionCategory.OTHER, TransactionCategory.TOP_UP, TransactionCategory.AUCTION_FEE, TransactionCategory.SALE_FEE, TransactionCategory.COMMISSION_FEE] },
+    };
+
+    if (startDate || endDate) {
+      whereClause.createdAt = {};
+      if (startDate) whereClause.createdAt.gte = startDate;
+      if (endDate) whereClause.createdAt.lte = endDate;
+    }
+
+    const transactions = await prisma.transaction.findMany({
+      where: whereClause,
+      select: {
+        amount: true,
+        category: true,
+        description: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return transactions;
+  }
+
   async getAdminCommissionTransactions(
     walletId: string,
     startDate?: Date,
@@ -684,22 +719,22 @@ export class WalletRepositoryImpl
               amount: platformFee,
               method: "art_coin",
               status: "success",
-              description: `Commission from commission work ${commissionId}`,
+              description: `Platform fee from commission ${commissionId}`,
               externalId: commissionId,
               meta: { buyerId: userId, artistId }
             }
         });
 
-        // Log the fee deduction in User's history
+        // Log the fee deduction in User's history as a part of the COMMISSION expense
         await tx.transaction.create({
             data: {
               walletId: userWallet.id,
               type: "debited",
-              category: TransactionCategory.COMMISSION_FEE,
+              category: TransactionCategory.COMMISSION,
               amount: platformFee,
               method: "art_coin",
               status: "success",
-              description: `Platform fee for commission ${commissionId}`,
+              description: `Service fee for commission ${commissionId}`,
               meta: { commissionId, type: "FEE" }
             },
         });

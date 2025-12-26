@@ -31,6 +31,9 @@ router.get(ROUTES.ADMIN.RECENT_TRANSACTIONS, adminWalletController.getAllRecentT
 // Get transaction stats
 router.get(ROUTES.ADMIN.TRANSACTION_STATS, adminWalletController.getTransactionStats);
 
+// Get admin transactions (all commissions)
+router.get(ROUTES.ADMIN.ADMIN_TRANSACTIONS, adminWalletController.getAdminTransactions);
+
 // Admin Withdrawal Management
 import { IAdminWithdrawalController } from "../interface/IAdminWithdrawalController";
 const adminWithdrawalController = container.get<IAdminWithdrawalController>(

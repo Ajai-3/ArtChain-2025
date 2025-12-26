@@ -16,7 +16,7 @@ export class GetTransactionStatsUseCase implements IGetTransactionStatsUseCase {
 
     switch (timeRange) {
       case 'today':
-        startDate.setHours(0, 0, 0, 0); // Start of today
+        startDate.setHours(0, 0, 0, 0);
         break;
       case '7d':
         startDate.setDate(endDate.getDate() - 7);
@@ -25,10 +25,10 @@ export class GetTransactionStatsUseCase implements IGetTransactionStatsUseCase {
         startDate.setDate(endDate.getDate() - 30);
         break;
       case 'all':
-        startDate = new Date(0); // Epoch
+        startDate = new Date(0);
         break;
       default:
-        startDate.setDate(endDate.getDate() - 7); // Default to 7d
+        startDate.setDate(endDate.getDate() - 7);
     }
 
     return await this._transactionRepository.getStats(startDate, endDate);

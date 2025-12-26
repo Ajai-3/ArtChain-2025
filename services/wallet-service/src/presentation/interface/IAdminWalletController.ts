@@ -8,4 +8,5 @@ export interface IAdminWalletController {
   getRevenueStats: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
   getTransactionStats: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
   getAllRecentTransactions: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  getAdminTransactions: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 }

@@ -81,7 +81,7 @@ export class CreateWithdrawalRequestUseCase implements ICreateWithdrawalRequestU
           category: TransactionCategory.WITHDRAWAL,
           amount: dto.amount,
           method: TransactionMethod.ART_COIN,
-          status: TransactionStatus.SUCCESS,
+          status: TransactionStatus.PENDING,
           description: `Withdrawal request - ${dto.method === WithdrawalMethod.BANK_TRANSFER ? "Bank Transfer" : "UPI"}`,
           meta: {
             withdrawalMethod: dto.method,

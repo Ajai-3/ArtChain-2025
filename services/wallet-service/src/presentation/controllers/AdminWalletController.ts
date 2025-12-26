@@ -11,6 +11,7 @@ import { GetRevenueStatsDTO } from "../../application/interface/dto/wallet/GetRe
 import { IGetRevenueStatsUseCase } from '../../application/interface/usecase/wallet/IGetRevenueStatsUseCase';
 import { IGetAllRecentTransactionsUseCase } from '../../application/interface/usecase/admin/IGetAllRecentTransactionsUseCase';
 import { IGetTransactionStatsUseCase } from '../../application/interface/usecase/admin/IGetTransactionStatsUseCase';
+import { IGetAdminTransactionsUseCase } from '../../application/interface/usecase/admin/IGetAdminTransactionsUseCase';
 import { config } from '../../infrastructure/config/env';
 
 @injectable()
@@ -27,7 +28,9 @@ export class AdminWalletController implements IAdminWalletController {
     @inject(TYPES.IGetAllRecentTransactionsUseCase)
     private readonly _getAllRecentTransactionsUseCase: IGetAllRecentTransactionsUseCase,
     @inject(TYPES.IGetTransactionStatsUseCase)
-    private readonly _getTransactionStatsUseCase: IGetTransactionStatsUseCase
+    private readonly _getTransactionStatsUseCase: IGetTransactionStatsUseCase,
+    @inject(TYPES.IGetAdminTransactionsUseCase)
+    private readonly _getAdminTransactionsUseCase: IGetAdminTransactionsUseCase
   ) {}
 
   getAllWallets = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
@@ -54,6 +57,7 @@ export class AdminWalletController implements IAdminWalletController {
         token
       );
 
+      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
         message: "Wallets retrieved successfully",
         data: result.data,
@@ -72,6 +76,7 @@ export class AdminWalletController implements IAdminWalletController {
 
       const wallet = await this._updateWalletStatusUseCase.execute(walletId, status);
 
+      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
         data: wallet,
         message: `Wallet status updated to ${status}`,
@@ -101,6 +106,7 @@ export class AdminWalletController implements IAdminWalletController {
         filters
       );
 
+      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
         message: "User transactions retrieved successfully",
         data: result.data,
@@ -113,7 +119,7 @@ export class AdminWalletController implements IAdminWalletController {
 
   getRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const adminId = req.headers["x-admin-id"] as string;
+      const adminId = (req.headers["x-admin-id"] as string) || config.platform_admin_id;
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
@@ -125,6 +131,7 @@ export class AdminWalletController implements IAdminWalletController {
 
       const stats = await this._getRevenueStatsUseCase.execute(dto);
 
+      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
         message: "Revenue stats retrieved successfully",
         data: stats,
@@ -140,6 +147,7 @@ export class AdminWalletController implements IAdminWalletController {
       const limit = parseInt(req.query.limit as string) || 5;
       const result = await this._getAllRecentTransactionsUseCase.execute(limit);
       
+      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
         message: "Recent transactions retrieved successfully",
         data: result
@@ -154,8 +162,29 @@ export class AdminWalletController implements IAdminWalletController {
       const stats = await this._getTransactionStatsUseCase.execute(timeRange);
       
       return res.status(HttpStatus.OK).json({
-        success: true,
         data: stats
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getAdminTransactions = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+      const adminId = config.platform_admin_id;
+      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+
+      const transactions = await this._getAdminTransactionsUseCase.execute(
+        adminId,
+        startDate,
+        endDate
+      );
+
+      // be - message must be use constant 
+      return res.status(HttpStatus.OK).json({
+        data: transactions,
+        transactions: transactions
       });
     } catch (error) {
       next(error);

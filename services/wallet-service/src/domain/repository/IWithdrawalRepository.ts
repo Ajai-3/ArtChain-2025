@@ -32,4 +32,13 @@ export interface IWithdrawalRepository extends IBaseRepository<WithdrawalRequest
   ): Promise<WithdrawalRequest>;
 
   getStatusCounts(): Promise<Record<string, number>>;
+
+  processWithdrawal(params: {
+    withdrawalId: string;
+    status: string;
+    amount: number;
+    walletId: string;
+    rejectionReason?: string;
+    originalTransactionId?: string;
+  }): Promise<WithdrawalRequest>;
 }

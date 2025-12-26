@@ -7,6 +7,7 @@ import { UpdateWithdrawalStatusDTO } from "../../interface/dto/withdrawal/Update
 import { BadRequestError } from "art-chain-shared";
 import { WALLET_MESSAGES } from "../../../constants/WalletMessages";
 
+
 @injectable()
 export class UpdateWithdrawalStatusUseCase implements IUpdateWithdrawalStatusUseCase {
   constructor(
@@ -15,38 +16,44 @@ export class UpdateWithdrawalStatusUseCase implements IUpdateWithdrawalStatusUse
   ) {}
 
   async execute(dto: UpdateWithdrawalStatusDTO): Promise<WithdrawalRequest> {
-    // Validate status
     const validStatuses = Object.values(WithdrawalStatus);
     if (!validStatuses.includes(dto.status as WithdrawalStatus)) {
-      throw new BadRequestError("Invalid withdrawal status");
+      throw new BadRequestError(WALLET_MESSAGES.INVALID_WITHDRAWAL_STATUS);
     }
 
-    // Get existing withdrawal request
     const existingWithdrawal = await this._withdrawalRepository.getWithdrawalRequestById(dto.withdrawalId);
     if (!existingWithdrawal) {
       throw new BadRequestError(WALLET_MESSAGES.WITHDRAWAL_REQUEST_NOT_FOUND);
     }
 
-    // Check if already processed
     if (
       existingWithdrawal.status === WithdrawalStatus.COMPLETED ||
-      existingWithdrawal.status === WithdrawalStatus.REJECTED
+      existingWithdrawal.status === WithdrawalStatus.REJECTED ||
+      existingWithdrawal.status === WithdrawalStatus.FAILED
     ) {
       throw new BadRequestError(WALLET_MESSAGES.WITHDRAWAL_ALREADY_PROCESSED);
     }
 
-    // If rejecting, require rejection reason
     if (dto.status === WithdrawalStatus.REJECTED && !dto.rejectionReason) {
-      throw new BadRequestError("Rejection reason is required");
+      throw new BadRequestError(WALLET_MESSAGES.REJECTION_REASON_REQUIRED);
     }
 
-    // Update withdrawal status
-    const updatedWithdrawal = await this._withdrawalRepository.updateStatus(
-      dto.withdrawalId,
-      dto.status as WithdrawalStatus,
-      dto.rejectionReason
-    );
 
-    return updatedWithdrawal;
+    if (existingWithdrawal.status === WithdrawalStatus.PENDING) {
+      return this._withdrawalRepository.processWithdrawal({
+        withdrawalId: dto.withdrawalId,
+        status: dto.status,
+        amount: existingWithdrawal.amount,
+        walletId: existingWithdrawal.walletId,
+        rejectionReason: dto.rejectionReason,
+        originalTransactionId: existingWithdrawal.transactionId || undefined
+      });
+    } else {
+      return this._withdrawalRepository.updateStatus(
+        dto.withdrawalId,
+        dto.status,
+        dto.rejectionReason
+      );
+    }
   }
 }

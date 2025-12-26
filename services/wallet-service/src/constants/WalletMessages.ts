@@ -26,4 +26,6 @@ export enum WALLET_MESSAGES {
   INVALID_UPI_ID = "Invalid UPI ID format",
   INVALID_IFSC_CODE = "Invalid IFSC code format",
   INVALID_ACCOUNT_NUMBER = "Invalid account number format",
+  INVALID_WITHDRAWAL_STATUS = "Invalid withdrawal status",
+  REJECTION_REASON_REQUIRED = "Rejection reason is required",
 }
