@@ -4,10 +4,14 @@ import { UserPreview } from "../../../../types/UserPreview";
 import { TYPES } from "../../../../infrastructure/inversify/types";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { IGetUserSupportingUseCase } from "../../../interface/usecases/user/user-intraction/IGetUserSupportingUseCase";
+import { logger } from "../../../../utils/logger";
+import { ILogoutUserUseCase } from "../../../interface/usecases/user/auth/ILogoutUserUseCase";
+import { ILogger } from "../../../interface/ILogger";
 
 @injectable()
 export class GetUserSupportingUseCase implements IGetUserSupportingUseCase {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.ISupporterRepository)
     private readonly _supporterRepo: ISupporterRepository
   ) {}
@@ -29,6 +33,8 @@ export class GetUserSupportingUseCase implements IGetUserSupportingUseCase {
     );
 
     const currentUserSupportSet = new Set(currentUserSupportIds);
+
+    this._logger.info("sdfsdf")
 
     return supportings.map((user) => ({
       ...user,

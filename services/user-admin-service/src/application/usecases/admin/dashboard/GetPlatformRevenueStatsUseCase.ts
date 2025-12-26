@@ -12,51 +12,41 @@ export class GetPlatformRevenueStatsUseCase implements IGetPlatformRevenueStatsU
   ) {}
 
   async execute(dto: GetPlatformRevenueStatsDTO): Promise<PlatformRevenueStats> {
-    // Fetch all admin transactions (commissions) from wallet service
-    const { transactions } = await this._walletService.getAdminTransactions(
+    const stats = await this._walletService.getRevenueStats(
       dto.adminId,
+      dto.token,
       dto.startDate,
       dto.endDate
     );
 
-    let totalRevenue = 0;
-    const revenueBySource = {
-      auctions: 0,
-      artSales: 0,
-    };
-    const revenueByDateMap = new Map<string, number>();
-
-    // Process each transaction and categorize by source
-    for (const tx of transactions) {
-      const amount = tx.amount;
-      totalRevenue += amount;
-
-      // Categorize based on description
-      const desc = tx.description?.toLowerCase() || '';
-
-      if (desc.includes('auction') || desc.includes('bid')) {
-        revenueBySource.auctions += amount;
-      } else {
-        // Everything else is art sales commission
-        revenueBySource.artSales += amount;
-      }
-
-      // Group by date
-      const date = new Date(tx.createdAt).toISOString().split('T')[0];
-      const current = revenueByDateMap.get(date) || 0;
-      revenueByDateMap.set(date, current + amount);
+    if (!stats) {
+      return {
+        totalRevenue: 0,
+        revenueBySource: { 
+          auctions: { amount: 0, count: 0 }, 
+          artSales: { amount: 0, count: 0 }, 
+          commissions: { amount: 0, count: 0 } 
+        },
+        revenueByDate: {}
+      };
     }
 
-    // Convert map to object
+    // Map the chartData array back to the Record type if needed
     const revenueByDate: Record<string, number> = {};
-    revenueByDateMap.forEach((value, key) => {
-      revenueByDate[key] = value;
-    });
+    if (stats.chartData && Array.isArray(stats.chartData)) {
+      stats.chartData.forEach((item: any) => {
+        revenueByDate[item.date] = item.revenue;
+      });
+    }
 
     return {
-      totalRevenue,
-      revenueBySource,
-      revenueByDate,
+      totalRevenue: stats.totalRevenue,
+      revenueBySource: {
+        auctions: stats.breakdown.auctions,
+        artSales: stats.breakdown.artSales,
+        commissions: stats.breakdown.commissions
+      },
+      revenueByDate
     };
   }
 }

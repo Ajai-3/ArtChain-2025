@@ -5,6 +5,6 @@ export interface IArtService {
     getRecentAuctions(token: string, limit?: number): Promise<any[]>;
     getRecentCommissions(token: string, limit?: number): Promise<any[]>;
     getArtworkCounts(token: string): Promise<any>;
-    getAuctionCounts(token: string): Promise<any>;
-    getCommissionCounts(token: string): Promise<any>;
+    getAuctionCounts(token: string, timeRange?: string): Promise<any>;
+    getCommissionCounts(token: string, timeRange?: string): Promise<any>;
 }

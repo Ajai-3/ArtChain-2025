@@ -1,6 +1,7 @@
 export interface IWalletService {
   getAdminTransactions(
     adminId: string,
+    token: string,
     startDate?: Date,
     endDate?: Date
   ): Promise<{
@@ -13,4 +14,10 @@ export interface IWalletService {
   }>;
   getRecentTransactions(token: string, limit?: number): Promise<any[]>;
   getTransactionStats(token: string): Promise<any[]>;
+  getRevenueStats(
+    adminId: string,
+    token: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any>;
 }

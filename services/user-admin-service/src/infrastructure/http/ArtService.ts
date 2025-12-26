@@ -89,10 +89,11 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getAuctionCounts(token: string): Promise<any> {
+  async getAuctionCounts(token: string, timeRange?: string): Promise<any> {
     try {
         const res = await axios.get(`${this.baseUrl}/api/v1/art/admin/auctions/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
+            params: { timeRange }
         });
         return res.data.data;
     } catch (err) {
@@ -101,10 +102,11 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getCommissionCounts(token: string): Promise<any> {
+  async getCommissionCounts(token: string, timeRange?: string): Promise<any> {
     try {
         const res = await axios.get(`${this.baseUrl}/api/v1/art/admin/commissions/stats`, {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
+            params: { timeRange }
         });
         return res.data.data;
     } catch (err) {

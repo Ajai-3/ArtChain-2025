@@ -1,12 +1,12 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
-import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
 import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
 import { IGetPlatformRevenueStatsUseCase } from '../../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
 import { IGetDashboardStatsUseCase } from '../../../application/interface/usecases/admin/IGetDashboardStatsUseCase';
 import { GetPlatformRevenueStatsDTO } from '../../../application/interface/dtos/admin/GetPlatformRevenueStatsDTO';
 import { HttpStatus } from 'art-chain-shared';
+import { logger } from '../../../utils/logger';
 
 @injectable()
 export class AdminDashboardController implements IAdminDashboardController {
@@ -17,64 +17,52 @@ export class AdminDashboardController implements IAdminDashboardController {
     private readonly _getDashboardStatsUseCase: IGetDashboardStatsUseCase
   ) {}
 
-  getPlatformRevenueStats = async (req: Request, res: Response): Promise<void> => {
+  getPlatformRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const adminId = req.headers['x-admin-id'] as string;
-      const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
-      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
+      const timeRange = (req.query.timeRange as string) || '7d';
+      let startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
+      const endDate = req.query.endDate ? new Date(req.query.endDate as string) : new Date();
+      const token = req.headers.authorization?.split(' ')[1] || "";
 
-      if (!adminId) {
-        res.status(HttpStatus.BAD_REQUEST).json({
-          success: false,
-          message: 'Admin ID is required in headers',
-        });
-        return;
+      if (!startDate && timeRange !== 'all') {
+        startDate = new Date();
+        if (timeRange === 'today') startDate.setHours(0, 0, 0, 0);
+        else if (timeRange === '7d') startDate.setDate(endDate.getDate() - 7);
+        else if (timeRange === '30d') startDate.setDate(endDate.getDate() - 30);
+        else startDate.setDate(endDate.getDate() - 7); // Default
       }
 
       const dto: GetPlatformRevenueStatsDTO = {
         adminId,
         startDate,
         endDate,
+        token
       };
 
       const stats = await this._getPlatformRevenueStatsUseCase.execute(dto);
 
       res.status(HttpStatus.OK).json({
-        success: true,
         data: stats,
       });
-    } catch (error: any) {
-      console.error('Error in getPlatformRevenueStats:', error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: error.message || 'Failed to fetch platform revenue stats',
-      });
+    } catch (error) {
+      logger.error('Error in getPlatformRevenueStats:', error);
+      next(error)
     }
   };
 
-  getDashboardStats = async (req: Request, res: Response): Promise<void> => {
+  getDashboardStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const token = req.headers.authorization?.split(' ')[1];
-      if (!token) {
-        res.status(HttpStatus.UNAUTHORIZED).json({
-          success: false,
-          message: 'Authorization token is required',
-        });
-        return;
-      }
+      const token = req.headers.authorization?.split(' ')[1] || "";
 
       const stats = await this._getDashboardStatsUseCase.execute(token);
 
-      res.status(HttpStatus.OK).json({
-        success: true,
+      return res.status(HttpStatus.OK).json({
         data: stats,
       });
-    } catch (error: any) {
-      console.error('Error in getDashboardStats:', error);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: error.message || 'Failed to fetch dashboard stats',
-      });
+    } catch (error) {
+      logger.error('Error in getDashboardStats:', error);
+      next(error)
     }
   };
 }

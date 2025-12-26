@@ -13,6 +13,7 @@ export class WalletService implements IWalletService {
 
   async getAdminTransactions(
     adminId: string,
+    token: string,
     startDate?: Date,
     endDate?: Date
   ): Promise<{
@@ -30,7 +31,12 @@ export class WalletService implements IWalletService {
 
       const res = await axios.get(
         `${this.baseUrl}/api/v1/wallet/admin/${adminId}/transactions`,
-        { params }
+        { 
+          params,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       
       return { transactions: res.data.data || res.data.transactions || [] };
@@ -62,6 +68,31 @@ export class WalletService implements IWalletService {
     } catch (err) {
       console.error('Error getting transaction stats:', err);
       return [];
+    }
+  }
+
+  async getRevenueStats(
+    adminId: string,
+    token: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any> {
+    try {
+      const params: any = {};
+      if (startDate) params.startDate = startDate.toISOString();
+      if (endDate) params.endDate = endDate.toISOString();
+
+      const res = await axios.get(`${this.baseUrl}/api/v1/wallet/admin/revenue-stats`, {
+        params,
+        headers: {
+          'x-admin-id': adminId,
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      return res.data.data;
+    } catch (err) {
+      console.error('Error fetching revenue stats from wallet-service:', err);
+      return null;
     }
   }
 }

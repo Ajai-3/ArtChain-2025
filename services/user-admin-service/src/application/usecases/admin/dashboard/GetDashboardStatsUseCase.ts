@@ -33,19 +33,17 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
       this._artService.getRecentAuctions(token, 5),
       this._artService.getRecentCommissions(token, 5),
       this._walletService.getRecentTransactions(token, 5),
-      this._userRepository.findAllUsers({ page: 1, limit: 1 }), // Total
-      this._userRepository.findAllUsers({ page: 1, limit: 1, role: 'artist' }), // Artists
-      this._userRepository.findAllUsers({ page: 1, limit: 1, status: 'banned' }), // Banned
+      this._userRepository.findAllUsers({ page: 1, limit: 1 }), 
+      this._userRepository.findAllUsers({ page: 1, limit: 1, role: 'artist' }), 
+      this._userRepository.findAllUsers({ page: 1, limit: 1, status: 'banned' }), 
       this._artService.getArtworkCounts(token),
-      this._artService.getAuctionCounts(token),
-      this._artService.getCommissionCounts(token),
+      this._artService.getAuctionCounts(token, 'all'),
+      this._artService.getCommissionCounts(token, 'all'),
       this._walletService.getTransactionStats(token)
     ]);
 
-    // 1. Process Categories
     const categoryStats = rawCategoryStats.filter((c: any) => c.category && c.category !== 'Uncategorized');
 
-    // 2. Populate Top Arts with User Data
     const artistIds = [...new Set(rawTopArts.map((art: any) => art.userId))];
     const topArtUsers = await this._userRepository.findManyByIdsBatch(artistIds);
     const userMap = new Map(topArtUsers.map((u: any) => [u.id, u]));
@@ -55,7 +53,6 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
       artist: userMap.get(art.userId) || { name: 'Unknown', username: 'unknown' }
     }));
 
-    // 3. Populate Recent Auctions with Host Data
     const hostIds = [...new Set(rawRecentAuctions.map((auc: any) => auc.hostId))];
     const hostUsers = await this._userRepository.findManyByIdsBatch(hostIds);
     const hostMap = new Map(hostUsers.map((u: any) => [u.id, u]));
@@ -63,10 +60,9 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
     const recentAuctions = rawRecentAuctions.map((auc: any) => ({
       ...auc,
       host: hostMap.get(auc.hostId),
-      startPrice: auc.startPrice // Ensure startPrice is passed
+      startPrice: auc.startPrice 
     }));
 
-    // 4. Populate Recent Commissions with User Data
     const commArtistIds = recentCommissions.map((c: any) => c.artistId);
     const commClientIds = recentCommissions.map((c: any) => c.requesterId);
     const allCommUserIds = [...new Set([...commArtistIds, ...commClientIds])];
@@ -79,7 +75,7 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
 
     const populatedCommissions = recentCommissions.map((c: any) => ({
         id: c._id || c.id,
-        amount: c.budget || c.price || 0, // Handle field mismatch
+        amount: c.budget || c.price || 0,
         status: c.status,
         artistName: commUserMap.get(c.artistId)?.name || 'Unknown Artist',
         artistProfileImage: commUserMap.get(c.artistId)?.profileImage,
@@ -89,7 +85,6 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
         createdAt: c.createdAt
     }));
     
-    // 5. Populate Recent Transactions with User Data
     const txUserIds = [...new Set(recentTransactions.map((tx: any) => tx.userId))];
     let txUserMap = new Map();
     if (txUserIds.length > 0) {
@@ -126,8 +121,8 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
         banned: totalBanned
       },
       artworkCounts,
-      auctionCounts,
-      commissionCounts: commissionCounts || { REQUESTED: 0, AGREED: 0, IN_PROGRESS: 0, COMPLETED: 0 },
+      auctionCounts: auctionCounts?.overall || auctionCounts || { active: 0, ended: 0, sold: 0, unsold: 0 },
+      commissionCounts: commissionCounts?.overall || commissionCounts || { REQUESTED: 0, AGREED: 0, IN_PROGRESS: 0, COMPLETED: 0 },
       transactionStats: transactionStats || []
     };
   }

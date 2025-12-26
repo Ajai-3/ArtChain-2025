@@ -3,8 +3,9 @@ import { GetPlatformRevenueStatsDTO } from "../../dtos/admin/GetPlatformRevenueS
 export interface PlatformRevenueStats {
   totalRevenue: number;
   revenueBySource: {
-    auctions: number;
-    artSales: number;
+    auctions: { amount: number; count: number };
+    artSales: { amount: number; count: number };
+    commissions: { amount: number; count: number };
   };
   revenueByDate: Record<string, number>;
 }
