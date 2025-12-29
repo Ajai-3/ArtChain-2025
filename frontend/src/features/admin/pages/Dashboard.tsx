@@ -51,9 +51,9 @@ const Dashboard: React.FC = () => {
 
     // Revenue calculations
     const totalRevenue = revenueStats?.totalRevenue || 0;
-    const auctionRevenue = revenueStats?.revenueBySource?.auctions || 0;
-    const artSalesRevenue = revenueStats?.revenueBySource?.artSales || 0;
-    const commissionRevenue = revenueStats?.revenueBySource?.commissions || 0;
+    const auctionRevenue = revenueStats?.revenueBySource?.auctions?.amount || 0;
+    const artSalesRevenue = revenueStats?.revenueBySource?.artSales?.amount || 0;
+    const commissionRevenue = revenueStats?.revenueBySource?.commissions?.amount || 0;
     
     // Convert to Rupees
     const totalRevenueInRupees = totalRevenue * artCoinRate;

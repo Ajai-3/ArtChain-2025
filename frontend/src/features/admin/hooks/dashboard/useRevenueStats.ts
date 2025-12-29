@@ -6,9 +6,9 @@ import type { RootState } from '../../../../redux/store';
 interface RevenueStats {
   totalRevenue: number;
   revenueBySource: {
-    auctions: number;
-    artSales: number;
-    commissions: number;
+    auctions: { amount: number; count: number };
+    artSales: { amount: number; count: number };
+    commissions: { amount: number; count: number };
   };
   revenueByDate: Record<string, number>;
 }
