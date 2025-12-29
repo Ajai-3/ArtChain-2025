@@ -87,3 +87,5 @@ export const createWithdrawalRequestSchema = z.object({
     }
   }
 });
+
+export type CreateWithdrawalRequestSchema = z.infer<typeof createWithdrawalRequestSchema>;
