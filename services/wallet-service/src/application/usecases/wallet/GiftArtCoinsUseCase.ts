@@ -3,9 +3,13 @@ import { TYPES } from "../../../infrastructure/inversify/types";
 import { IGiftArtCoinsUseCase } from "../../interface/usecase/wallet/IGiftArtCoinsUseCase";
 import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
 import { WalletProducer } from "../../../infrastructure/rabbitmq/producers/WalletProducer";
+import { WALLET_MESSAGES } from "../../../constants/WalletMessages";
 import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { v4 as uuidv4 } from 'uuid';
 import { TransactionCategory } from "@prisma/client";
+
+import { GiftArtCoinsDTO } from "../../interface/dto/wallet/GiftArtCoinsDTO";
+import { WalletStatus } from "../../../domain/entities/Wallet";
 
 @injectable()
 export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
@@ -18,41 +22,29 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
         this._walletProducer = new WalletProducer();
     }
 
-    async execute(data: {
-        senderId: string;
-        receiverId: string;
-        amount: number;
-        message?: string;
-        senderName?: string;
-        senderImage?: string;
-    }): Promise<{ newBalance: number; lockedAmount: number; }> {
+    async execute(data: GiftArtCoinsDTO): Promise<{ newBalance: number; lockedAmount: number; }> {
         const { senderId, receiverId, amount, message, senderName, senderImage } = data;
 
         const senderWallet = await this._walletRepository.getByUserId(senderId);
         if (!senderWallet) {
-            // be - messages must be constants
-            throw new NotFoundError("Sender wallet not found.");
+            throw new NotFoundError(WALLET_MESSAGES.NOT_FOUND_WALLET);
         }
 
-        if (senderWallet.status === "locked" || senderWallet.status === "suspended") {
-            // be - messages must be constants
-             throw new BadRequestError("Your wallet is locked or suspended.");
+        if (senderWallet.status === WalletStatus.LOCKED || senderWallet.status === WalletStatus.SUSPENDED) {
+             throw new BadRequestError(WALLET_MESSAGES.LOCKED_OR_SUSPENDED);
         }
 
-        if (senderWallet.status !== "active") {
-            // be - messages must be constants
-             throw new BadRequestError("Your wallet is not active.");
+        if (senderWallet.status !== WalletStatus.ACTIVE) {
+             throw new BadRequestError(WALLET_MESSAGES.NOT_ACTIVE);
         }
 
         if (senderWallet.balance < amount) {
-            // be - messages must be constants
-            throw new BadRequestError("Insufficient Art Coins.");
+            throw new BadRequestError(WALLET_MESSAGES.INSUFFICIENT_FUNDS);
         }
 
         const receiverWallet = await this._walletRepository.getByUserId(receiverId);
-        if (receiverWallet && receiverWallet.status !== "active") {
-            // be - messages must be constants
-             throw new BadRequestError("Receiver wallet is not active.");
+        if (receiverWallet && receiverWallet.status !== WalletStatus.ACTIVE) {
+             throw new BadRequestError(WALLET_MESSAGES.RECEIVER_NOT_ACTIVE);
         }
 
         const referenceId = uuidv4();
@@ -79,7 +71,7 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
             message,
             timestamp: new Date(),
             senderName,
-            senderImage
+            senderImage: senderImage || ""
         });
 
         const updatedSenderWallet = await this._walletRepository.getByUserId(senderId);

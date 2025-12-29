@@ -18,6 +18,10 @@ import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecas
 import { ProcessSplitPurchaseDTO } from "../../application/interface/dto/transaction/ProcessSplitPurchaseDTO";
 import { validateWithZod } from "../../utils/zodValidator";
 import { giftArtCoinsSchema } from "../../application/validation/giftArtCoinsSchema";
+import { lockUnlockFundsSchema } from "../../application/validation/lockUnlockFundsSchema";
+import { settleAuctionSchema } from "../../application/validation/settleAuctionSchema";
+import { processSplitPurchaseSchema } from "../../application/validation/processSplitPurchaseSchema";
+import { GiftArtCoinsDTO } from "../../application/interface/dto/wallet/GiftArtCoinsDTO";
 
 @injectable()
 export class WalletController implements IWalletController {
@@ -60,9 +64,8 @@ export class WalletController implements IWalletController {
 
       const chartData = await this._getWalletChartDataUseCase.execute(userId, timeRange);
 
-      // be - message must eb constant
       return res.status(HttpStatus.OK).json({
-        message: "Chart data fetched successfully",
+        message: WALLET_MESSAGES.CHART_DATA_FETCH_SUCCESS,
         data: chartData
       });
     } catch (error) {
@@ -89,12 +92,6 @@ export class WalletController implements IWalletController {
       logger.info(`[WalletController] Fetching wallet for userId: ${userId}`);
 
       const walletData = await this._getWalletUseCase.execute(userId);
-
-      if (!walletData) {
-        return res.status(HttpStatus.NOT_FOUND).json({
-          message: WALLET_MESSAGES.NOT_FOUND,
-        });
-      }
 
       logger.info(
         `[WalletController] Successfully fetched wallet for userId: ${userId}`
@@ -183,18 +180,14 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { userId, amount, auctionId } = req.body;
-      logger.info(`[WalletController] Locking ${amount} for user ${userId}`);
-
-      const dto: LockFundsDTO = {
-        userId,
-        amount,
-        auctionId
-      };
+      const dto: LockFundsDTO = validateWithZod(lockUnlockFundsSchema, req.body);
 
       const result = await this._lockFundsUseCase.execute(dto);
       
-      return res.status(HttpStatus.OK).json({ success: result });
+      return res.status(HttpStatus.OK).json({ 
+        success: result,
+        message: WALLET_MESSAGES.FUNDS_LOCKED_SUCCESS
+      });
     } catch (error) {
       logger.error(`[WalletController] Error locking funds: ${error}`);
       next(error);
@@ -214,19 +207,16 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { userId, amount, auctionId } = req.body;
-      // be - add a zod validation here
-      logger.info(`[WalletController] Unlocking ${amount} for user ${userId}`);
-
-      const dto: UnlockFundsDTO = {
-        userId,
-        amount,
-        auctionId
-      };
+      const dto: UnlockFundsDTO = validateWithZod(lockUnlockFundsSchema, req.body);
+      
+      logger.info(`[WalletController] Unlocking ${dto.amount} for user ${dto.userId}`);
 
       const result = await this._unlockFundsUseCase.execute(dto);
       
-      return res.status(HttpStatus.OK).json({ success: result });
+      return res.status(HttpStatus.OK).json({ 
+        success: result,
+        message: WALLET_MESSAGES.FUNDS_UNLOCKED_SUCCESS
+      });
     } catch (error) {
       logger.error(`[WalletController] Error unlocking funds: ${error}`);
       next(error);
@@ -246,28 +236,11 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { winnerId, sellerId, totalAmount, commissionAmount, auctionId } = req.body;
-      // be - use a zod validation here winner and seller cannot be same id 
-      
-      logger.info(`[WalletController] Settling auction ${auctionId}`);
+      const dto: SettleAuctionDTO = validateWithZod(settleAuctionSchema, req.body);
 
-      const dto: SettleAuctionDTO = {
-        winnerId,
-        sellerId,
-        totalAmount,
-        commissionAmount,
-        auctionId
-      };
+      await this._settleAuctionUseCase.execute(dto);
 
-      const result = await this._settleAuctionUseCase.execute(dto);
-
-      // be - remove the !result form her controller dose nto use this thing it violationg the clean arcitecture rules
-      if (!result) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to settle auction funds" });
-      }
-
-      //  be - message must be contsnts
-      return res.status(HttpStatus.OK).json({ message: "Auction funds settled successfully" });
+      return res.status(HttpStatus.OK).json({ message: WALLET_MESSAGES.AUCTION_SETTLED_SUCCESS });
     } catch (error) {
        logger.error(`[WalletController] Error settling auction: ${error}`);
        next(error);
@@ -287,38 +260,13 @@ export class WalletController implements IWalletController {
       next: NextFunction
     ): Promise<Response | void> => {
       try {
-        const { buyerId, sellerId, totalAmount, commissionAmount, artId } = req.body;
+        const dto: ProcessSplitPurchaseDTO = validateWithZod(processSplitPurchaseSchema, req.body);
   
-        logger.info(
-          `[WalletController] Processing split purchase for art: ${artId} | buyer: ${buyerId} | seller: ${sellerId}`
-        );
-
-        // be - add zod validation here 
-        
-        const dto: ProcessSplitPurchaseDTO = {
-          buyerId, 
-          sellerId, 
-          totalAmount, 
-          commissionAmount, 
-          artId
-        };
+        await this._processSplitPurchaseUseCase.execute(dto);
   
-        const success = await this._processSplitPurchaseUseCase.execute(dto);
-  
-        if (success) {
-          logger.info(
-            `[WalletController] Split purchase processed successfully for art: ${artId}`
-          );
-          return res
-            .status(HttpStatus.OK)
-            //be - message must be constant
-            .json({ message: "Purchase successful" });
-        } else {
-          return res
-            .status(HttpStatus.BAD_REQUEST)
-            // be - message must be constants
-            .json({ message: "Purchase failed" });
-        }
+        return res
+          .status(HttpStatus.OK)
+          .json({ message: WALLET_MESSAGES.PURCHASE_SUCCESS });
       } catch (error) {
         logger.error(
           `[WalletController] Error processing split purchase: ${error}`
@@ -342,22 +290,13 @@ export class WalletController implements IWalletController {
     try {
       const senderId = req.headers["x-user-id"] as string;
 
-      // be - send the senderId also to the  zod validation ust check th sender and reciver id not same also the amoutn must be between greter than 0 and less than or equals 10000 okay no desimal values message max lenght must be 100 charecters message also optional 
-      const { receiverId, amount, message } = validateWithZod(giftArtCoinsSchema, req.body);
+      const dto: GiftArtCoinsDTO = validateWithZod(giftArtCoinsSchema, { ...req.body, senderId });
 
-      logger.info(`[WalletController] Gifting ${amount} from ${senderId} to ${receiverId}`);
 
-      // be - use propper dto to pass th values to the use case 
-      const result = await this._giftArtCoinsUseCase.execute({
-        senderId,
-        receiverId,
-        amount,
-        message,
-      });
+      const result = await this._giftArtCoinsUseCase.execute(dto);
 
       return res.status(HttpStatus.OK).json({ 
-        // be - message must be in contsnts
-        message: "Art coins gifted successfully", 
+        message: WALLET_MESSAGES.GIFT_SUCCESS, 
         newBalance: result.newBalance,
         lockedAmount: result.lockedAmount
       });

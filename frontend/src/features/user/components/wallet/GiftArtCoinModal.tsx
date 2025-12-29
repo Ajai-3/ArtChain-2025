@@ -29,6 +29,7 @@ export const GiftArtCoinModal: React.FC<GiftArtCoinModalProps> = ({
     const [message, setMessage] = useState<string>("");
     const [error, setError] = useState<string>("");
 
+    const { user } = useSelector((state: RootState) => state.user);
     const wallet = useSelector((state: RootState) => state.wallet);
     const platform = useSelector((state: RootState) => state.platform);
     const balance = wallet.balance || 0;
@@ -76,7 +77,9 @@ export const GiftArtCoinModal: React.FC<GiftArtCoinModalProps> = ({
             await giftMutation.mutateAsync({
                 receiverId,
                 amount: numAmount,
-                message
+                message,
+                senderName: user?.name || user?.username || "Someone",
+                senderImage: user?.profileImage || ""
             });
             onClose();
             setAmount("");

@@ -27,7 +27,7 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
 
   // Determine which user info to display
   const userName = n.senderName || "Unknown";
-  const userProfile = n.senderImage || "/avatar-icon.png";
+  const userProfile = n.senderImage || "";
 
   return (
     <div

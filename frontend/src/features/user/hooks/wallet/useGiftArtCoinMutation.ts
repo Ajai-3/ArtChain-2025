@@ -8,6 +8,8 @@ interface GiftArtCoinData {
   receiverId: string;
   amount: number;
   message?: string;
+  senderName: string;
+  senderImage: string;
 }
 
 export const useGiftArtCoinMutation = () => {
