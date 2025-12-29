@@ -9,4 +9,9 @@ export interface Notification {
   createdAt: string;
   senderName?: string;
   senderImage?: string;
+  metadata?: {
+    amount?: number;
+    message?: string;
+    [key: string]: any;
+  };
 }

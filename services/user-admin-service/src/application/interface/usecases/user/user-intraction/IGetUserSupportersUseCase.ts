@@ -1,5 +1,6 @@
 import { UserPreview } from '../../../../../types/UserPreview';
+import { GetSupportersRequestDto } from '../../../dtos/user/user-intraction/GetSupportersRequestDto';
 
 export interface IGetUserSupportersUseCase {
-  execute(currentUserId: string, userId: string, page?: number, limit?: number): Promise<UserPreview[]>;
+  execute(dto: GetSupportersRequestDto): Promise<UserPreview[]>;
 }

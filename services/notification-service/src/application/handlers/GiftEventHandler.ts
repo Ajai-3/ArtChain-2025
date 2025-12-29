@@ -16,23 +16,28 @@ export class GiftEventHandler implements IGiftEventHandler {
   ) {}
 
   async handle(event: {
-    userId: string;
+    receiverId: string;
     senderId: string;
     amount: number;
+    message?: string;
     senderName?: string;
     senderImage?: string;
   }): Promise<void> {
     try {
        const notification = new Notification(
-        event.userId,
+        event.receiverId,
         event.senderId,
         NotificationType.GIFT_RECEIVED,
         false, 
+        {
+          amount: event.amount,
+          message: event.message
+        }
       );
 
       const savedNotification = await this._notificationRepo.create(notification);
 
-      logger.info(`🎁 Gift Notification saved for ${event.userId}`);
+      logger.info(`🎁 Gift Notification saved for ${event.receiverId}`);
 
 
       const realTimeData = {
@@ -41,7 +46,7 @@ export class GiftEventHandler implements IGiftEventHandler {
         senderImage: event.senderImage
       };
 
-      await emitToUser(event.userId, "notification", realTimeData);
+      await emitToUser(event.receiverId, "notification", realTimeData);
     } catch (error) {
       logger.error("Error handling gift event", error);
       throw error;

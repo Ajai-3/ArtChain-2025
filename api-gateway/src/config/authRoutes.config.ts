@@ -43,6 +43,7 @@ export const authRoutesConfig = {
     { path: ROUTES.WALLET.GET_TRANSACTIONS, methods: ["GET"] },
     { path: ROUTES.WALLET.CREATE_TRANSACTIONS, methods: ["POST"] },
     { path: ROUTES.WALLET.STATS_CHART, methods: ["GET"] },
+    { path: ROUTES.WALLET.GIFT, methods: ["POST"] },
     
     // Withdrawal routes
     { path: ROUTES.WALLET.WITHDRAWAL_CREATE, methods: ["POST"] },

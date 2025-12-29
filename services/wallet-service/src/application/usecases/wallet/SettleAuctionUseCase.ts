@@ -4,6 +4,7 @@ import { SettleAuctionDTO } from "../../interface/dto/wallet/SettleAuctionDTO";
 import { TYPES } from "../../../infrastructure/inversify/types";
 import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
 import { logger } from "../../../utils/logger";
+import { config } from "../../../infrastructure/config/env";
 
 @injectable()
 export class SettleAuctionUseCase implements ISettleAuctionUseCase {
@@ -13,14 +14,15 @@ export class SettleAuctionUseCase implements ISettleAuctionUseCase {
   ) {}
 
   async execute(dto: SettleAuctionDTO): Promise<boolean> {
+    const adminId = config.platform_admin_id;
     logger.info(
-      `Settling auction ${dto.auctionId}: Winner=${dto.winnerId}, Seller=${dto.sellerId}, Admin=${dto.adminId}, Total=${dto.totalAmount}, Commission=${dto.commissionAmount}`
+      `Settling auction ${dto.auctionId}: Winner=${dto.winnerId}, Seller=${dto.sellerId}, Admin=${adminId}, Total=${dto.totalAmount}, Commission=${dto.commissionAmount}`
     );
 
     return this._walletRepository.settleAuctionFunds(
       dto.winnerId,
       dto.sellerId,
-      dto.adminId,
+      adminId,
       dto.totalAmount,
       dto.commissionAmount,
       dto.auctionId

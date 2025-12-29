@@ -16,6 +16,7 @@ export class NotificationRepositoryImp extends BaseRepository<Notification, Noti
         doc.senderId,
         doc.type,
         doc.read,
+        doc.metadata,
         doc.createdAt,
         doc._id.toString()
     );

@@ -4,7 +4,7 @@ import { injectable } from "inversify";
 import { config } from "../config/env";
 import { Wallet } from "../../domain/entities/Wallet";
 import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { Transaction, TransactionCategory } from "../../domain/entities/Transaction";
+import { Transaction, TransactionCategory, TransactionMethod, TransactionStatus, TransactionType } from "../../domain/entities/Transaction";
 import { IWalletRepository } from "../../domain/repository/IWalletRepository.js";
 
 @injectable()
@@ -75,13 +75,13 @@ export class WalletRepositoryImpl
         await tx.transaction.create({
             data: {
                 walletId: sender.id,
-                type: "debited",
+                type: TransactionType.DEBITED,
                 category: resolvedCategory,
                 amount: amount,
-                method: "art_coin",
-                status: "success",
+                method: TransactionMethod.ART_COIN,
+                status: TransactionStatus.SUCCESS,
                 description: description,
-                externalId: referenceId,
+                externalId: `${referenceId}-debit`,
                 meta: { recipientId: toId }
             }
         });
@@ -90,13 +90,13 @@ export class WalletRepositoryImpl
         await tx.transaction.create({
             data: {
                 walletId: receiver.id,
-                type: "credited",
+                type: TransactionType.CREDITED,
                 category: resolvedCategory, 
                 amount: amount,
-                method: "art_coin",
-                status: "success",
+                method: TransactionMethod.ART_COIN,
+                status: TransactionStatus.SUCCESS,
                 description: description,
-                externalId: referenceId,
+                externalId: `${referenceId}-credit`,
                 meta: { senderId: fromId }
             }
         });

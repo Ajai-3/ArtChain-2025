@@ -6,6 +6,7 @@ export interface NotificationDoc extends Document {
   senderId: string;
   type: string;
   read: boolean;
+  metadata: any;
   createdAt: Date;
 }
 
@@ -14,6 +15,7 @@ const NotificationSchema: Schema = new Schema({
   senderId: { type: String, required: true },
   type: { type: String, required: true },
   read: { type: Boolean, default: false },
+  metadata: { type: Schema.Types.Mixed, default: {} },
   createdAt: { type: Date, default: Date.now },
 });
 

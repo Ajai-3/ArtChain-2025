@@ -13,6 +13,7 @@ import { IGetAllRecentTransactionsUseCase } from '../../application/interface/us
 import { IGetTransactionStatsUseCase } from '../../application/interface/usecase/admin/IGetTransactionStatsUseCase';
 import { IGetAdminTransactionsUseCase } from '../../application/interface/usecase/admin/IGetAdminTransactionsUseCase';
 import { config } from '../../infrastructure/config/env';
+import { WALLET_MESSAGES } from '../../constants/WalletMessages';
 
 @injectable()
 export class AdminWalletController implements IAdminWalletController {
@@ -57,9 +58,8 @@ export class AdminWalletController implements IAdminWalletController {
         token
       );
 
-      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
-        message: "Wallets retrieved successfully",
+        message: WALLET_MESSAGES.WALLETS_FETCH_SUCCESS,
         data: result.data,
         meta: result.meta,
         stats: result.stats
@@ -76,10 +76,9 @@ export class AdminWalletController implements IAdminWalletController {
 
       const wallet = await this._updateWalletStatusUseCase.execute(walletId, status);
 
-      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
         data: wallet,
-        message: `Wallet status updated to ${status}`,
+        message: WALLET_MESSAGES.WALLET_STATUS_UPDATED,
       });
     } catch (error) {
       next(error);
@@ -106,9 +105,8 @@ export class AdminWalletController implements IAdminWalletController {
         filters
       );
 
-      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
-        message: "User transactions retrieved successfully",
+        message: WALLET_MESSAGES.TRANSACTIONS_FETCH_SUCCESS,
         data: result.data,
         meta: result.meta,
       });
@@ -131,9 +129,8 @@ export class AdminWalletController implements IAdminWalletController {
 
       const stats = await this._getRevenueStatsUseCase.execute(dto);
 
-      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
-        message: "Revenue stats retrieved successfully",
+        message: WALLET_MESSAGES.REVENUE_STATS_FETCH_SUCCESS,
         data: stats,
         body: stats 
       });
@@ -147,9 +144,8 @@ export class AdminWalletController implements IAdminWalletController {
       const limit = parseInt(req.query.limit as string) || 5;
       const result = await this._getAllRecentTransactionsUseCase.execute(limit);
       
-      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
-        message: "Recent transactions retrieved successfully",
+        message: WALLET_MESSAGES.RECENT_TRANSACTIONS_FETCH_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -181,8 +177,8 @@ export class AdminWalletController implements IAdminWalletController {
         endDate
       );
 
-      // be - message must be use constant 
       return res.status(HttpStatus.OK).json({
+        message: WALLET_MESSAGES.ADMIN_TRANSACTIONS_FETCH_SUCCESS,
         data: transactions,
         transactions: transactions
       });

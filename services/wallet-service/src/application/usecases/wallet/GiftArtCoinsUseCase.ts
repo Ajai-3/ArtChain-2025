@@ -25,36 +25,33 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
         message?: string;
         senderName?: string;
         senderImage?: string;
-    }): Promise<{ success: boolean; newBalance: number; lockedAmount: number; message: string }> {
+    }): Promise<{ newBalance: number; lockedAmount: number; }> {
         const { senderId, receiverId, amount, message, senderName, senderImage } = data;
-
-        if (senderId === receiverId) {
-            throw new BadRequestError("You cannot gift Art Coins to yourself.");
-        }
-
-        if (amount <= 0) {
-            throw new BadRequestError("Gift amount must be greater than 0.");
-        }
 
         const senderWallet = await this._walletRepository.getByUserId(senderId);
         if (!senderWallet) {
+            // be - messages must be constants
             throw new NotFoundError("Sender wallet not found.");
         }
 
         if (senderWallet.status === "locked" || senderWallet.status === "suspended") {
+            // be - messages must be constants
              throw new BadRequestError("Your wallet is locked or suspended.");
         }
 
         if (senderWallet.status !== "active") {
+            // be - messages must be constants
              throw new BadRequestError("Your wallet is not active.");
         }
 
         if (senderWallet.balance < amount) {
+            // be - messages must be constants
             throw new BadRequestError("Insufficient Art Coins.");
         }
 
         const receiverWallet = await this._walletRepository.getByUserId(receiverId);
         if (receiverWallet && receiverWallet.status !== "active") {
+            // be - messages must be constants
              throw new BadRequestError("Receiver wallet is not active.");
         }
 
@@ -88,10 +85,8 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
         const updatedSenderWallet = await this._walletRepository.getByUserId(senderId);
 
         return {
-            success: true,
             newBalance: updatedSenderWallet!.balance,
             lockedAmount: updatedSenderWallet!.lockedAmount,
-            message: "Gift sent successfully!"
         };
     }
 }

@@ -4,6 +4,7 @@ import { UserPreview } from "../../../../types/UserPreview";
 import { TYPES } from "../../../../infrastructure/inversify/types";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { IGetUserSupportersUseCase } from "../../../interface/usecases/user/user-intraction/IGetUserSupportersUseCase";
+import { GetSupportersRequestDto } from "../../../interface/dtos/user/user-intraction/GetSupportersRequestDto";
 
 @injectable()
 export class GetUserSupportersUseCase implements IGetUserSupportersUseCase {
@@ -12,12 +13,9 @@ export class GetUserSupportersUseCase implements IGetUserSupportersUseCase {
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(
-    currentUserId: string,
-    userId: string,
-    page = 1,
-    limit = 10
-  ): Promise<UserPreview[]> {
+  async execute(dto: GetSupportersRequestDto): Promise<UserPreview[]> {
+    const { currentUserId, userId, page, limit } = dto;
+
     const supporters = await this._supporterRepo.getSupporters(
       userId,
       page,
@@ -30,10 +28,16 @@ export class GetUserSupportersUseCase implements IGetUserSupportersUseCase {
 
     const currentUserSupportSet = new Set(currentUserSupportIds);
 
-    return supporters.map((user) => ({
+    const result = supporters.map((user) => ({
       ...user,
       profileImage: mapCdnUrl(user.profileImage) ?? null,
       isSupporting: currentUserSupportSet.has(user.id),
     }));
+
+    if (userId === currentUserId) {
+        return result.filter(s => s.id !== currentUserId);
+    }
+
+    return result;
   }
 }
