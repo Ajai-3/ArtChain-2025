@@ -28,4 +28,11 @@ export enum WALLET_MESSAGES {
   INVALID_ACCOUNT_NUMBER = "Invalid account number format",
   INVALID_WITHDRAWAL_STATUS = "Invalid withdrawal status",
   REJECTION_REASON_REQUIRED = "Rejection reason is required",
+  WALLETS_FETCH_SUCCESS = "Wallets retrieved successfully",
+  TRANSACTIONS_FETCH_SUCCESS = "Transactions retrieved successfully",
+  REVENUE_STATS_FETCH_SUCCESS = "Revenue stats retrieved successfully",
+  RECENT_TRANSACTIONS_FETCH_SUCCESS = "Recent transactions retrieved successfully",
+  TRANSACTION_STATS_FETCH_SUCCESS = "Transaction stats retrieved successfully",
+  WALLET_STATUS_UPDATED = "Wallet status updated successfully",
+  ADMIN_TRANSACTIONS_FETCH_SUCCESS = "Admin transactions retrieved successfully",
 }

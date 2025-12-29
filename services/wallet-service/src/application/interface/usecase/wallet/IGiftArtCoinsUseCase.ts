@@ -6,5 +6,5 @@ export interface IGiftArtCoinsUseCase {
     message?: string;
     senderName?: string;
     senderImage?: string;
-  }): Promise<{ success: boolean; newBalance: number; lockedAmount: number; message: string }>;
+  }): Promise<{newBalance: number; lockedAmount: number; }>;
 }

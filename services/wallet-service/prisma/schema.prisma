@@ -8,37 +8,59 @@ datasource db {
 }
 
 model Wallet {
-  id        String       @id @default(uuid())
-  userId    String       @unique
-  balance   Float        @default(0)
-  lockedAmount    Float        @default(0)
-  status    WalletStatus @default(active)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
-  quickStats Json?
+  id                 String        @id @default(uuid())
+  userId             String        @unique
+  balance            Float         @default(0)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  lockedAmount       Float         @default(0)
+  status             WalletStatus  @default(active)
+  quickStats         Json?
   transactionSummary Json?
-  transactions Transaction[]
+  transactions       Transaction[]
 }
 
 model Transaction {
-  id          String           @id @default(uuid())
+  id          String              @id @default(uuid())
   walletId    String
-  type        TransactionType  // credited or debited
-  category    TransactionCategory @default(OTHER) // Distinguish between top-ups, sales, etc.
-  amount      Float           // safer than Float for money
-  method      Method           // stripe or razorpay
-  status      TransactionStatus @default(pending)
-  externalId  String?           @unique  // stripeSessionId / razorpayOrderId
+  type        TransactionType
+  amount      Float
+  method      Method
   description String
-  meta        Json?            // flexible storage for raw payload (optional)
-  createdAt   DateTime         @default(now())
-  updatedAt DateTime @default(now())
-  wallet Wallet @relation(fields: [walletId], references: [id])
+  createdAt   DateTime            @default(now())
+  externalId  String?             @unique
+  meta        Json?
+  status      TransactionStatus   @default(pending)
+  updatedAt   DateTime            @default(now())
+  category    TransactionCategory @default(OTHER)
+  wallet      Wallet              @relation(fields: [walletId], references: [id])
+}
+
+model WithdrawalRequest {
+  id                String           @id @default(uuid())
+  userId            String
+  walletId          String
+  amount            Float
+  method            WithdrawalMethod
+  status            WithdrawalStatus @default(PENDING)
+  accountHolderName String?
+  accountNumber     String?
+  ifscCode          String?
+  upiId             String?
+  transactionId     String?          @unique
+  rejectionReason   String?
+  processedAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([walletId])
+  @@index([status])
 }
 
 enum WalletStatus {
-  active      
-  locked   
+  active
+  locked
   suspended
 }
 
@@ -48,17 +70,17 @@ enum TransactionType {
 }
 
 enum TransactionCategory {
-  TOP_UP       // User adding money
-  SALE         // Earnings from selling art
-  PURCHASE     // Spending on purchases
-  WITHDRAWAL   // Taking money out
-  COMMISSION   // Platform earnings
-  REFUND       // Money returned
-  GIFT         // Gift from another user
-  AUCTION_FEE  // Platform fee from Auctions
-  SALE_FEE     // Platform fee from Direct Sales
-  COMMISSION_FEE // Platform fee from Commission Artworks
-  OTHER        // Miscellaneous
+  TOP_UP
+  SALE
+  PURCHASE
+  WITHDRAWAL
+  COMMISSION
+  REFUND
+  OTHER
+  AUCTION_FEE
+  SALE_FEE
+  COMMISSION_FEE
+  GIFT
 }
 
 enum Method {
@@ -71,34 +93,6 @@ enum TransactionStatus {
   pending
   success
   failed
-}
-
-model WithdrawalRequest {
-  id              String                @id @default(uuid())
-  userId          String
-  walletId        String
-  amount          Float
-  method          WithdrawalMethod
-  status          WithdrawalStatus      @default(PENDING)
-  
-  // Bank Transfer Details
-  accountHolderName String?
-  accountNumber     String?
-  ifscCode          String?
-  
-  // UPI Details
-  upiId           String?
-  
-  // Metadata
-  transactionId   String?               @unique  // Reference to Transaction after processing
-  rejectionReason String?
-  processedAt     DateTime?
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
-  
-  @@index([userId])
-  @@index([walletId])
-  @@index([status])
 }
 
 enum WithdrawalMethod {
@@ -114,4 +108,3 @@ enum WithdrawalStatus {
   REJECTED
   FAILED
 }
-
