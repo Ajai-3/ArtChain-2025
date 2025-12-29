@@ -66,12 +66,16 @@ const NotificationUserProfile: React.FC<NotificationUserProfileProps> = ({
             <strong>{userName}</strong> liked your post.
           </p>
         ) : n.type === NotificationType.GIFT_RECEIVED ? (
-           <p
-            className="dark:text-white text-black text-sm truncate w-64"
-            title={`${userName} sent you a gift.`}
-          >
-            <strong>{userName}</strong> sent you a gift.
-          </p>
+           <div className="flex flex-col">
+            <p className="dark:text-white text-black text-sm">
+              <strong>{userName}</strong> sent you <strong>{n.metadata?.amount || 0} Art Coins</strong>!
+            </p>
+            {n.metadata?.message && (
+              <p className="text-zinc-500 text-xs italic mt-0.5 line-clamp-1">
+                "{n.metadata.message}"
+              </p>
+            )}
+           </div>
         ) : (
           <p className="text-white">You have a new notification.</p>
         )}

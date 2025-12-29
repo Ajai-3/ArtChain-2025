@@ -16,7 +16,7 @@ export const useGiftArtCoinMutation = () => {
   
     return useMutation({
       mutationFn: async (data: GiftArtCoinData) => {
-        const response = await apiClient.post("/wallet/gift", data);
+        const response = await apiClient.post("/api/v1/wallet/gift", data);
         return response.data;
       },
       onSuccess: (data) => {
