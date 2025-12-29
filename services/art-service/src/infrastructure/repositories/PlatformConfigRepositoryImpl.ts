@@ -8,7 +8,6 @@ export class PlatformConfigRepositoryImpl implements IPlatformConfigRepository {
   async getConfig(): Promise<PlatformConfig> {
     const config = await PlatformConfigModel.findOne();
     if (!config) {
-      // Create default if not exists
       const newConfig = await PlatformConfigModel.create({});
       return this.toEntity(newConfig);
     }
@@ -22,7 +21,6 @@ export class PlatformConfigRepositoryImpl implements IPlatformConfigRepository {
        return this.toEntity(newConfig);
     }
     
-    // Only update fields that are present in data
     if (data.auctionCommissionPercentage !== undefined) config.auctionCommissionPercentage = data.auctionCommissionPercentage;
     if (data.artSaleCommissionPercentage !== undefined) config.artSaleCommissionPercentage = data.artSaleCommissionPercentage;
     if (data.commissionArtPercentage !== undefined) config.commissionArtPercentage = data.commissionArtPercentage;

@@ -52,5 +52,6 @@ router.patch('/reports/bulk-status', adminReportController.updateReportStatusBul
 
 // Dashboard Routes
 router.get(ROUTES.ADMIN.REVENUE_STATS, adminDashboardController.getPlatformRevenueStats);
+router.get(ROUTES.ADMIN.DASHBOARD_STATS, adminDashboardController.getDashboardStats);
 
 export default router;

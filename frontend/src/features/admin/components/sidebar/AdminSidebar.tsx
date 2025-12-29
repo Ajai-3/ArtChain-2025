@@ -48,7 +48,7 @@ const AdminSideBar: React.FC = () => {
 
   return (
     <>
-      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-screen w-16 sm:w-64 flex flex-col bg-slate-100 dark:bg-secondary-color flex-shrink-0 transition-width duration-300">
+      <div className="border-r text-sm border-zinc-200 dark:border-zinc-800 p-2 h-full w-16 sm:w-64 flex flex-col bg-slate-100 dark:bg-secondary-color flex-shrink-0 transition-width duration-300">
         {/* Logo */}
         <div className="mb-4 hidden sm:flex p-2 border-b border-zinc-200 dark:border-zinc-800 justify-center sm:justify-start">
           <Logo />

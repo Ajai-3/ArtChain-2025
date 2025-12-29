@@ -20,6 +20,12 @@ export interface IUserRepository<U = User, S = SafeUser>
   }): Promise<{
     meta: { page: number; limit: number; total: number };
     data: SafeUser[];
+    stats?: {
+      total: number;
+      active: number;
+      banned: number;
+      artists: number;
+    }
   }>;
 
   findManyByIds(
@@ -30,6 +36,12 @@ export interface IUserRepository<U = User, S = SafeUser>
   ): Promise<{
     meta: { page: number; limit: number; total: number };
     data: SafeUser[];
+    stats?: {
+      total: number;
+      active: number;
+      banned: number;
+      artists: number;
+    }
   }>;
 
   findManyByIdsBatch(ids: string[]): Promise<ArtUser[]>;

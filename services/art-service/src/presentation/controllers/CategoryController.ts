@@ -44,7 +44,7 @@ export class CategoryController implements ICategoryController {
         ? parseInt(req.query.count as string)
         : undefined;
 
-      const { data, total } = await this._getAllCategoryUseCase.execute(
+      const { data, total, stats } = await this._getAllCategoryUseCase.execute(
         page,
         limit,
         search,
@@ -54,7 +54,7 @@ export class CategoryController implements ICategoryController {
 
       return res
         .status(HttpStatus.OK)
-        .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS, data, total });
+        .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS, data, total, stats });
     } catch (error) {
       logger.error("Error in getting categories", error);
       next(error);

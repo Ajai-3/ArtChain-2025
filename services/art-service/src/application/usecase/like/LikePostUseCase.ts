@@ -13,10 +13,12 @@ import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 import { ILikePostUseCase } from "../../interface/usecase/like/ILikePostUseCase";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class LikePostUseCase implements ILikePostUseCase {
   constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
     @inject(TYPES.ILikeRepository)
@@ -46,7 +48,7 @@ export class LikePostUseCase implements ILikePostUseCase {
     if (post.userId !== userId) {
       console.log(post.userId, userId);
       const userIds = [post.userId, userId];
-      const users = await UserService.getUsersByIds(userIds);
+      const users = await this._userService.getUsersByIds(userIds);
       const userMap = new Map(users.map((u: any) => [u.id, u]));
 
       const likedUser = userMap.get(post.userId);

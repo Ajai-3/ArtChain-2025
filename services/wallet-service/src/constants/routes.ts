@@ -64,6 +64,8 @@ export const ROUTES = {
     UPDATE_STATUS: "/admin/wallets/:walletId/status",
     GET_USER_TRANSACTIONS: "/admin/wallets/:walletId/transactions",
     REVENUE_STATS: "/admin/revenue-stats",
+    RECENT_TRANSACTIONS: "/admin/transactions/recent",
+    TRANSACTION_STATS: "/admin/transactions/stats",
     ADMIN_TRANSACTIONS: "/admin/:adminId/transactions",
     // Withdrawal management
     WITHDRAWAL_REQUESTS: "/admin/withdrawal/requests",

@@ -3,7 +3,8 @@ import { prisma } from "../db/prisma";
 import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
 import { IWithdrawalRepository } from "../../domain/repository/IWithdrawalRepository";
 import { WithdrawalRequest } from "../../domain/entities/WithdrawalRequest";
-import { CreateWithdrawalRequestDTO } from "../../application/interface/dto/withdrawal/CreateWithdrawalRequestDTO";
+import { WithdrawalStatus } from "../../domain/entities/WithdrawalRequest";
+import { TransactionType, TransactionCategory, TransactionMethod, TransactionStatus } from "../../domain/entities/Transaction";
 
 @injectable()
 export class WithdrawalRepositoryImpl
@@ -117,5 +118,90 @@ export class WithdrawalRepositoryImpl
     });
 
     return statusCounts;
+  }
+
+  async processWithdrawal(params: {
+    withdrawalId: string;
+    status: string;
+    amount: number;
+    walletId: string;
+    rejectionReason?: string;
+    originalTransactionId?: string;
+  }): Promise<WithdrawalRequest> {
+    return prisma.$transaction(async (tx) => {
+      // 1. Update the withdrawal request status
+      const updatedWithdrawal = await tx.withdrawalRequest.update({
+        where: { id: params.withdrawalId },
+        data: {
+          status: params.status as any,
+          rejectionReason: params.rejectionReason,
+          processedAt: new Date(),
+        },
+      });
+
+      // 2. Handle balance updates based on target status
+      if (params.status === WithdrawalStatus.APPROVED || 
+          params.status === WithdrawalStatus.COMPLETED || 
+          params.status === WithdrawalStatus.PROCESSING) {
+        
+        // Withdrawal moving out of PENDING: Remove money from lockedAmount
+        await tx.wallet.updateMany({
+          where: { 
+            id: params.walletId, 
+            lockedAmount: { gte: params.amount } 
+          },
+          data: {
+            lockedAmount: { decrement: params.amount },
+          },
+        });
+
+        // Sync original transaction status to SUCCESS
+        if (params.originalTransactionId) {
+          await tx.transaction.update({
+            where: { id: params.originalTransactionId },
+            data: { status: TransactionStatus.SUCCESS }
+          });
+        }
+      } else if (params.status === WithdrawalStatus.REJECTED || params.status === WithdrawalStatus.FAILED) {
+        // Withdrawal rejected/failed: Return money from lockedAmount to balance
+        await tx.wallet.updateMany({
+          where: { 
+            id: params.walletId, 
+            lockedAmount: { gte: params.amount } 
+          },
+          data: {
+            balance: { increment: params.amount },
+            lockedAmount: { decrement: params.amount },
+          },
+        });
+
+        // Sync original transaction status to FAILED since withdrawal didn't proceed
+        if (params.originalTransactionId) {
+          await tx.transaction.update({
+            where: { id: params.originalTransactionId },
+            data: { status: TransactionStatus.FAILED }
+          });
+        }
+
+        // 3. Create a refund transaction
+        await tx.transaction.create({
+          data: {
+            walletId: params.walletId,
+            type: TransactionType.CREDITED,
+            category: TransactionCategory.REFUND,
+            amount: params.amount,
+            method: TransactionMethod.ART_COIN,
+            status: TransactionStatus.SUCCESS,
+            description: `Withdrawal ${params.status.toLowerCase()}: ${params.rejectionReason || "Technical failure"}`,
+            meta: {
+              withdrawalId: params.withdrawalId,
+              originalTransactionId: params.originalTransactionId
+            }
+          },
+        });
+      }
+
+      return updatedWithdrawal as unknown as WithdrawalRequest;
+    });
   }
 }

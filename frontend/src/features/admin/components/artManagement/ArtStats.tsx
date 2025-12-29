@@ -5,13 +5,13 @@ import StatsCard from "../common/StatsCard";
 interface ArtStatsProps {
   stats: {
     total: number;
-    active: number;
-    archived: number;
-    deleted: number;
+    free: number;
+    premium: number;
+    aiGenerated: number;
   };
 }
 
-const ArtStats: React.FC<ArtStatsProps> = ({ stats }) => {
+const ArtStats: React.FC<ArtStatsProps> = ({ stats = { total: 0, free: 0, premium: 0, aiGenerated: 0 } }) => {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <StatsCard
@@ -22,25 +22,25 @@ const ArtStats: React.FC<ArtStatsProps> = ({ stats }) => {
         iconBgColor="bg-blue-500/10"
       />
       <StatsCard
-        title="Active"
-        value={stats.active}
+        title="Free"
+        value={stats.free}
         icon={CheckCircle}
         iconColor="text-green-500"
         iconBgColor="bg-green-500/10"
       />
       <StatsCard
-        title="Archived"
-        value={stats.archived}
+        title="Premium"
+        value={stats.premium}
         icon={Archive}
         iconColor="text-yellow-500"
         iconBgColor="bg-yellow-500/10"
       />
       <StatsCard
-        title="Deleted"
-        value={stats.deleted}
+        title="AI Generated"
+        value={stats.aiGenerated}
         icon={Trash2}
-        iconColor="text-red-500"
-        iconBgColor="bg-red-500/10"
+        iconColor="text-purple-500"
+        iconBgColor="bg-purple-500/10"
       />
     </div>
   );

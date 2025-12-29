@@ -55,6 +55,9 @@ enum TransactionCategory {
   COMMISSION   // Platform earnings
   REFUND       // Money returned
   GIFT         // Gift from another user
+  AUCTION_FEE  // Platform fee from Auctions
+  SALE_FEE     // Platform fee from Direct Sales
+  COMMISSION_FEE // Platform fee from Commission Artworks
   OTHER        // Miscellaneous
 }
 

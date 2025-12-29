@@ -155,7 +155,6 @@ const WithdrawalManagement: React.FC = () => {
       title="Withdrawal Management"
       description="Manage and process withdrawal requests"
     >
-      <div className="relative">
         {/* Stats Cards */}
         <WithdrawalStatsCards totalCount={totalCount} statusCounts={statusCounts} />
 
@@ -276,7 +275,6 @@ const WithdrawalManagement: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      </div>
     </AdminPageLayout>
   );
 };

@@ -5,10 +5,12 @@ import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 import { IGetFavoritedUsersUseCase } from "../../interface/usecase/favorite/IGetFavoritedUsersUseCase";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
   constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IFavoriteRepository)
     private readonly _favoriteRepository: IFavoriteRepository
   ) {}
@@ -30,7 +32,7 @@ export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
     );
     const userIds = favorites.map((fav) => fav.userId);
 
-    const users = await UserService.getUsersByIds(userIds, currentUserId);
+    const users = await this._userService.getUsersByIds(userIds, currentUserId);
 
     const result = favorites.map((fav) => {
       const user = users.find((u) => u.id === fav.userId);

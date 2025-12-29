@@ -13,7 +13,9 @@ import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFun
 import { SettleAuctionDTO } from "../../application/interface/dto/wallet/SettleAuctionDTO";
 import { ISettleAuctionUseCase } from "../../application/interface/usecase/wallet/ISettleAuctionUseCase";
 import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
-import { IGiftArtCoinsUseCase } from "../../application/interface/usecases/wallet/IGiftArtCoinsUseCase";
+import { IGiftArtCoinsUseCase } from "../../application/interface/usecase/wallet/IGiftArtCoinsUseCase";
+import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase";
+import { ProcessSplitPurchaseDTO } from "../../application/interface/dto/transaction/ProcessSplitPurchaseDTO";
 
 @injectable()
 export class WalletController implements IWalletController {
@@ -29,7 +31,9 @@ export class WalletController implements IWalletController {
     @inject(TYPES.IGetWalletChartDataUseCase)
     private readonly _getWalletChartDataUseCase: IGetWalletChartDataUseCase,
     @inject(TYPES.IGiftArtCoinsUseCase)
-    private readonly _giftArtCoinsUseCase: IGiftArtCoinsUseCase
+    private readonly _giftArtCoinsUseCase: IGiftArtCoinsUseCase,
+    @inject(TYPES.IProcessSplitPurchaseUseCase)
+    private readonly _processSplitPurchaseUseCase: IProcessSplitPurchaseUseCase
   ) {}
 
   // ... (existing methods)
@@ -268,6 +272,55 @@ export class WalletController implements IWalletController {
        next(error);
     }
   };
+
+  //# ================================================================================================================
+    //# PROCESS SPLIT PURCHASE
+    //# ================================================================================================================
+    //# POST /api/v1/wallet/transaction/split-purchase
+    //# Request body: { buyerId, sellerId, adminId, totalAmount, commissionAmount, artId }
+    //# This controller handles art purchase transactions with commission split
+    //# ================================================================================================================
+    processSplitPurchase = async (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ): Promise<Response | void> => {
+      try {
+        const { buyerId, sellerId, adminId, totalAmount, commissionAmount, artId } = req.body;
+  
+        logger.info(
+          `[WalletController] Processing split purchase for art: ${artId} | buyer: ${buyerId} | seller: ${sellerId}`
+        );
+        
+        const dto: ProcessSplitPurchaseDTO = {
+          buyerId, 
+          sellerId, 
+          totalAmount, 
+          commissionAmount, 
+          artId
+        };
+  
+        const success = await this._processSplitPurchaseUseCase.execute(dto);
+  
+        if (success) {
+          logger.info(
+            `[WalletController] Split purchase processed successfully for art: ${artId}`
+          );
+          return res
+            .status(HttpStatus.OK)
+            .json({ message: "Purchase successful" });
+        } else {
+          return res
+            .status(HttpStatus.BAD_REQUEST)
+            .json({ message: "Purchase failed" });
+        }
+      } catch (error) {
+        logger.error(
+          `[WalletController] Error processing split purchase: ${error}`
+        );
+        next(error);
+      }
+    };
 
   //# ================================================================================================================
   //# GIFT ART COINS

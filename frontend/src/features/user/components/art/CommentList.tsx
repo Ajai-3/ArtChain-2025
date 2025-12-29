@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { formatTimeAgo } from "../../../../libs/formatTimeAgo";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
-import { useEditCommentMutation, useDeleteCommentMutation } from "../../../../api/user/art/mutations";
+import { useEditCommentMutation } from "../../hooks/art/useEditCommentMutation";
+import { useDeleteCommentMutation } from "../../hooks/art/useDeleteCommentMutation";
 import ConfirmModal from "../../../../components/modals/ConfirmModal";
 
 interface Props {

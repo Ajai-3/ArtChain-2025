@@ -1,16 +1,19 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
-import { IAdminWalletRepository } from '../../../domain/repository/IAdminWalletRepository';
-import { IGetAllWalletsUseCase } from '../../interface/usecases/admin/IGetAllWalletsUseCase';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { IGetAllWalletsUseCase } from '../../interface/usecase/admin/IGetAllWalletsUseCase';
 import { UserServiceClient } from '../../../infrastructure/clients/UserServiceClient';
+import { ElasticsearchClient } from '../../../infrastructure/clients/ElasticsearchClient';
 
 @injectable()
 export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
   constructor(
-    @inject(TYPES.IAdminWalletRepository)
-    private readonly _adminWalletRepository: IAdminWalletRepository,
+    @inject(TYPES.IWalletRepository)
+    private readonly _walletRepository: IWalletRepository,
     @inject(TYPES.UserServiceClient)
-    private readonly _userServiceClient: UserServiceClient
+    private readonly _userServiceClient: UserServiceClient,
+    @inject(TYPES.ElasticsearchClient)
+    private readonly _elasticsearchClient: ElasticsearchClient
   ) {}
 
   async execute(
@@ -21,33 +24,68 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
       minBalance?: number;
       maxBalance?: number;
     },
+    query?: string,
     token?: string
   ): Promise<{
     data: any[];
     meta: { total: number; page: number; limit: number };
+    stats?: {
+        totalWallets: number;
+        activeWallets: number;
+        suspendedWallets: number;
+        lockedWallets: number;
+    };
   }> {
-    // Get wallets from repository
-    const result = await this._adminWalletRepository.findAllWallets(
-      page,
-      limit,
-      filters
-    );
+    let result;
+    if (query && query.trim() !== '') {
+       const userIds = await this._elasticsearchClient.searchUsers(query);
+       
+       if (userIds.length === 0) {
+           // Fetch global stats even when no search results
+           const statsResult = await this._walletRepository.findAllWallets(1, 0, filters);
+           
+           return {
+               data: [],
+               meta: { total: 0, page, limit },
+               stats: statsResult.stats ? {
+                   totalWallets: statsResult.stats.total,
+                   activeWallets: statsResult.stats.active,
+                   suspendedWallets: statsResult.stats.suspended,
+                   lockedWallets: statsResult.stats.locked
+               } : {
+                   totalWallets: 0,
+                   activeWallets: 0,
+                   suspendedWallets: 0,
+                   lockedWallets: 0
+               }
+           };
+       }
 
-    // Extract user IDs
+       result = await this._walletRepository.findWalletsByUserIds(
+         userIds,
+         page,
+         limit,
+         filters
+       );
+    } else {
+       result = await this._walletRepository.findAllWallets(
+         page,
+         limit,
+         filters
+       );
+    }
+
     const userIds = result.data.map(wallet => wallet.userId);
-
-    // Fetch user profiles
     const users = await this._userServiceClient.getUsersByIds(userIds, token);
-
-    // Create a map for quick lookup
     const userMap = new Map(users.map(user => [user.id, user]));
 
-    // Enrich wallet data with user profiles
     const enrichedData = result.data.map(wallet => {
       const user = userMap.get(wallet.userId);
+      let walletUser = user;
+
       return {
         ...wallet,
-        user: user || {
+        user: walletUser || {
           id: wallet.userId,
           name: 'Unknown User',
           username: 'unknown',
@@ -57,9 +95,17 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
       };
     });
 
+    const stats = result.stats ? {
+        totalWallets: result.stats.total,
+        activeWallets: result.stats.active,
+        suspendedWallets: result.stats.suspended,
+        lockedWallets: result.stats.locked
+    } : undefined;
+
     return {
       data: enrichedData,
       meta: result.meta,
+      stats: stats
     };
   }
 }

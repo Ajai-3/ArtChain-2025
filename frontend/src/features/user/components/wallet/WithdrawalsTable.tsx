@@ -40,7 +40,7 @@ export default function WithdrawalsTable({ balance }: { balance: number }) {
   const [method, setMethod] = useState<string>("all");
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const { data, isLoading } = useGetWithdrawalRequests(page, 6, status, method);
+  const { data, isLoading } = useGetWithdrawalRequests(page, 5, status, method);
   const withdrawals = data?.requests || [];
   const totalPages = data?.totalPages || 1;
 
@@ -140,7 +140,7 @@ export default function WithdrawalsTable({ balance }: { balance: number }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
         <div className="flex gap-4">
             <Select

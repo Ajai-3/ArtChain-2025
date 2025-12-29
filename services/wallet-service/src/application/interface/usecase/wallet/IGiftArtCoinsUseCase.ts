@@ -1,3 +1,10 @@
 export interface IGiftArtCoinsUseCase {
-    execute(): Promise<void>;
+  execute(data: {
+    senderId: string;
+    receiverId: string;
+    amount: number;
+    message?: string;
+    senderName?: string;
+    senderImage?: string;
+  }): Promise<{ success: boolean; newBalance: number; lockedAmount: number; message: string }>;
 }

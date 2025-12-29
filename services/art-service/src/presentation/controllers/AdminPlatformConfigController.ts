@@ -4,7 +4,7 @@ import { IAdminPlatformConfigController } from "../interface/IAdminPlatformConfi
 import { IGetPlatformConfigUseCase } from "../../application/interface/usecase/admin/IGetPlatformConfigUseCase";
 import { IUpdatePlatformConfigUseCase } from "../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase";
 import { TYPES } from "../../infrastructure/Inversify/types";
-import { platformConfigSchema } from "../validator/admin/PlatformConfigSchema";
+import { platformConfigSchema } from "../validators/PlatformConfigSchema";
 import { UpdatePlatformConfigDTO } from "../../application/interface/dto/admin/UpdatePlatformConfigDTO";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { HttpStatus } from "art-chain-shared";

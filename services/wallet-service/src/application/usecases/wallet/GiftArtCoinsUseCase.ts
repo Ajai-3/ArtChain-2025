@@ -1,6 +1,6 @@
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/inversify/types";
-import { IGiftArtCoinsUseCase } from "../../interface/usecases/wallet/IGiftArtCoinsUseCase";
+import { IGiftArtCoinsUseCase } from "../../interface/usecase/wallet/IGiftArtCoinsUseCase";
 import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
 import { WalletProducer } from "../../../infrastructure/rabbitmq/producers/WalletProducer";
 import { BadRequestError, NotFoundError } from "art-chain-shared";

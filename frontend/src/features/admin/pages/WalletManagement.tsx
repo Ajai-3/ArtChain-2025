@@ -3,6 +3,7 @@ import AdminPageLayout from "../components/common/AdminPageLayout";
 import { useDebounce } from "../../../hooks/useDebounce";
 import WalletFilters from "../components/walletManagement/WalletFilters";
 import WalletTable from "../components/walletManagement/WalletTable";
+import WalletStats from "../components/walletManagement/WalletStats";
 import { useGetAllWallets } from "../hooks/walletManagement/useGetAllWallets";
 
 const WalletManagement: React.FC = () => {
@@ -14,7 +15,10 @@ const WalletManagement: React.FC = () => {
   const [minBalance, setMinBalance] = useState("");
   const [maxBalance, setMaxBalance] = useState("");
 
-  const limit = 10;
+  const debouncedMinBalance = useDebounce(minBalance, 500);
+  const debouncedMaxBalance = useDebounce(maxBalance, 500);
+
+  const limit = 4;
 
   const { data, isLoading } = useGetAllWallets({
     page,
@@ -22,8 +26,8 @@ const WalletManagement: React.FC = () => {
     search: debouncedSearch,
     filters: {
       status: statusFilter,
-      minBalance: minBalance ? parseFloat(minBalance) : undefined,
-      maxBalance: maxBalance ? parseFloat(maxBalance) : undefined,
+      minBalance: debouncedMinBalance ? parseFloat(debouncedMinBalance) : undefined,
+      maxBalance: debouncedMaxBalance ? parseFloat(debouncedMaxBalance) : undefined,
     },
   });
 
@@ -36,6 +40,8 @@ const WalletManagement: React.FC = () => {
       title="Wallet Management"
       description="Manage user wallets, view balances, and monitor transactions"
     >
+      {data?.stats && <WalletStats stats={data.stats} />}
+      
       <WalletFilters
         search={rawSearch}
         onSearchChange={(value) => {

@@ -50,4 +50,32 @@ async getByWalletId(
 }
 
 
+async getStats(startDate: Date, endDate: Date): Promise<any[]> {
+    const transactions = await this.model.findMany({
+      where: {
+        createdAt: { gte: startDate, lte: endDate },
+        status: TransactionStatus.SUCCESS
+      },
+      select: {
+        createdAt: true,
+        amount: true,
+        type: true,
+        status: true 
+      }
+    });
+
+    const dailyStats: Record<string, { date: string, earned: number, spent: number }> = {};
+
+    transactions.forEach(t => {
+       const date = t.createdAt.toISOString().split('T')[0];
+       if (!dailyStats[date]) dailyStats[date] = { date, earned: 0, spent: 0 };
+
+       const amt = Number(t.amount);
+       if (t.type === TransactionType.CREDITED) dailyStats[date].earned += amt;
+       else dailyStats[date].spent += amt; 
+    });
+
+    return Object.values(dailyStats)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+}
 }

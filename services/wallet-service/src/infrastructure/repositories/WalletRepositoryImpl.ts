@@ -1,8 +1,10 @@
 import { prisma } from "../db/prisma";
+import { logger } from "../../utils/logger";
 import { injectable } from "inversify";
+import { config } from "../config/env";
 import { Wallet } from "../../domain/entities/Wallet";
-import { TransactionCategory } from "../../domain/entities/Transaction";
 import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
+import { Transaction, TransactionCategory } from "../../domain/entities/Transaction";
 import { IWalletRepository } from "../../domain/repository/IWalletRepository.js";
 
 @injectable()
@@ -26,13 +28,11 @@ export class WalletRepositoryImpl
   ): Promise<boolean> {
     try {
       await prisma.$transaction(async (tx) => {
-        // 1. Fetch
         const sender = await tx.wallet.findUnique({ where: { userId: fromId } });
         
         if (!sender) throw new Error("Sender wallet not found");
         if (sender.balance < amount) throw new Error("Insufficient funds");
 
-        // 2. Update Sender
         const senderQuickStats = (sender.quickStats as any) || { earned: 0, spent: 0 };
         const senderTxSummary = (sender.transactionSummary as any) || { earned: 0, spent: 0, netGain: 0 };
         senderQuickStats.spent += amount;
@@ -48,7 +48,6 @@ export class WalletRepositoryImpl
             }
         });
 
-        // 3. Update Receiver
         const receiver = await tx.wallet.upsert({
             where: { userId: toId },
             create: { userId: toId, balance: amount },
@@ -69,13 +68,10 @@ export class WalletRepositoryImpl
             }
         });
 
-        // Resolve Category
         const resolvedCategory = Object.values(TransactionCategory).includes(category as any) 
             ? (category as TransactionCategory) 
             : TransactionCategory.OTHER;
 
-        // 4. Create Transactions
-        // Debit Sender
         await tx.transaction.create({
             data: {
                 walletId: sender.id,
@@ -90,7 +86,7 @@ export class WalletRepositoryImpl
             }
         });
 
-        // Credit Receiver
+        //
         await tx.transaction.create({
             data: {
                 walletId: receiver.id,
@@ -113,57 +109,76 @@ export class WalletRepositoryImpl
   }
 
   async getRevenueStats(adminId: string, startDate?: Date, endDate?: Date): Promise<any> {
-    const whereClause: any = {
+    const baseWhere: any = {
       wallet: { userId: adminId },
       type: "credited",
-      category: { in: [TransactionCategory.COMMISSION, TransactionCategory.OTHER] } 
+      category: { in: [
+        TransactionCategory.AUCTION_FEE,
+        TransactionCategory.SALE_FEE,
+        TransactionCategory.COMMISSION_FEE
+      ] } 
     };
 
-    if (startDate || endDate) {
-      whereClause.createdAt = {};
-      if (startDate) whereClause.createdAt.gte = startDate;
-      if (endDate) whereClause.createdAt.lte = endDate;
-    }
-
-    const transactions = await prisma.transaction.findMany({
-      where: whereClause,
+    const allTransactions = await prisma.transaction.findMany({
+      where: baseWhere,
       select: {
         amount: true,
         category: true,
-        description: true,
         createdAt: true
-      },
-      orderBy: { createdAt: 'asc' }
+      }
     });
 
-    let totalRevenue = 0;
-    const breakdown = {
-      auctions: 0,
-      artSales: 0,
-      aiGeneration: 0,
-      other: 0
+    let overallTotalRevenue = 0;
+    const overallBreakdown = {
+      auctions: { amount: 0, count: 0 },
+      artSales: { amount: 0, count: 0 },
+      commissions: { amount: 0, count: 0 }
     };
 
+    for (const tx of allTransactions) {
+      const amount = tx.amount;
+      overallTotalRevenue += amount;
+      if (tx.category === TransactionCategory.AUCTION_FEE) {
+        overallBreakdown.auctions.amount += amount;
+        overallBreakdown.auctions.count += 1;
+      } else if (tx.category === TransactionCategory.SALE_FEE) {
+        overallBreakdown.artSales.amount += amount;
+        overallBreakdown.artSales.count += 1;
+      } else if (tx.category === TransactionCategory.COMMISSION_FEE) {
+        overallBreakdown.commissions.amount += amount;
+        overallBreakdown.commissions.count += 1;
+      }
+    }
+
+    const trendTransactions = allTransactions.filter(tx => {
+      if (startDate && tx.createdAt < startDate) return false;
+      if (endDate && tx.createdAt > endDate) return false;
+      return true;
+    });
+
+    let trendTotalRevenue = 0;
+    const trendBreakdown = {
+      auctions: { amount: 0, count: 0 },
+      artSales: { amount: 0, count: 0 },
+      commissions: { amount: 0, count: 0 }
+    };
     const chartDataMap = new Map<string, number>();
 
-    for (const tx of transactions) {
+    for (const tx of trendTransactions) {
       const amount = tx.amount;
-      totalRevenue += amount;
+      trendTotalRevenue += amount;
 
-      if (tx.category === TransactionCategory.COMMISSION) {
-         if (tx.description && tx.description.toLowerCase().includes("auction")) {
-             breakdown.auctions += amount;
-         } else if (tx.description && (tx.description.toLowerCase().includes("sale") || tx.description.toLowerCase().includes("art"))) {
-             breakdown.artSales += amount;
-         } else {
-             breakdown.other += amount;
-         }
-      } else if (tx.category === TransactionCategory.OTHER && tx.description && tx.description.toLowerCase().includes("ai")) {
-          breakdown.aiGeneration += amount;
-      } else {
-          breakdown.other += amount;
+      if (tx.category === TransactionCategory.AUCTION_FEE) {
+        trendBreakdown.auctions.amount += amount;
+        trendBreakdown.auctions.count += 1;
+      } else if (tx.category === TransactionCategory.SALE_FEE) {
+        trendBreakdown.artSales.amount += amount;
+        trendBreakdown.artSales.count += 1;
+      } else if (tx.category === TransactionCategory.COMMISSION_FEE) {
+        trendBreakdown.commissions.amount += amount;
+        trendBreakdown.commissions.count += 1;
       }
-
+      
       const date = tx.createdAt.toISOString().split('T')[0];
       const current = chartDataMap.get(date) || 0;
       chartDataMap.set(date, current + amount);
@@ -174,8 +189,10 @@ export class WalletRepositoryImpl
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return {
-      totalRevenue,
-      breakdown,
+      totalRevenue: overallTotalRevenue, 
+      breakdown: overallBreakdown,       
+      trendRevenue: trendTotalRevenue,
+      trendBreakdown,
       chartData
     };
   }
@@ -251,7 +268,6 @@ export class WalletRepositoryImpl
       startDate = new Date();
       startDate.setMonth(now.getMonth() - 1);
     }
-    // If timeRange is "all" or undefined, startDate remains undefined (no filter)
 
     const whereClause: any = { walletId };
     if (startDate) {
@@ -277,13 +293,7 @@ export class WalletRepositoryImpl
   }
 
   async getDailyStats(walletId: string, startDate?: Date): Promise<any[]> {
-    // Efficient aggregation using Raw SQL for Postgres
-    // Groups by date and type to get daily sums
     const dateFilter = startDate ? `AND "createdAt" >= ${startDate.toISOString() ? `'${startDate.toISOString()}'` : 'NOW()'}` : '';
-    
-    // Note: Prisma QueryRaw requires careful table name usage. 
-    // Assuming table name is "Transaction" based on standard Prisma mapping.
-    // Using CAST("createdAt" as DATE) for grouping.
     
     return await prisma.$queryRawUnsafe(`
       SELECT 
@@ -355,7 +365,6 @@ export class WalletRepositoryImpl
       const sellerAmount = totalAmount - commissionAmount;
 
       await prisma.$transaction(async (tx) => {
-        // 1. Deduct from Winner (Locked)
         const winnerWallet = await tx.wallet.update({
           where: { userId: winnerId },
           data: { 
@@ -363,22 +372,18 @@ export class WalletRepositoryImpl
           }
         });
 
-        // 2. Credit Seller
         const sellerWallet = await tx.wallet.upsert({
             where: { userId: sellerId },
             create: { userId: sellerId, balance: sellerAmount },
             update: { balance: { increment: sellerAmount } }
         });
 
-        // 3. Credit Admin
         const adminWallet = await tx.wallet.upsert({
             where: { userId: adminId },
             create: { userId: adminId, balance: commissionAmount },
             update: { balance: { increment: commissionAmount } }
         });
 
-        // 4. Create Transactions
-        // Debit Winner
         await tx.transaction.create({
             data: {
                 walletId: winnerWallet.id,
@@ -393,7 +398,6 @@ export class WalletRepositoryImpl
             }
         });
 
-        // Credit Seller
         await tx.transaction.create({
              data: {
                 walletId: sellerWallet.id,
@@ -408,14 +412,13 @@ export class WalletRepositoryImpl
              }
         });
 
-        // Credit Admin
         if (commissionAmount > 0) {
             await tx.transaction.create({
                 data: {
                     walletId: adminWallet.id,
                     type: "credited",
                     amount: commissionAmount,
-                    category: "COMMISSION",
+                    category: "AUCTION_FEE",
                     method: "art_coin",
                     status: "success",
                     description: `Commission from auction ${auctionId}`,
@@ -444,33 +447,37 @@ export class WalletRepositoryImpl
       const sellerAmount = totalAmount - commissionAmount;
 
       await prisma.$transaction(async (tx) => {
-        // 1. Fetch Wallets
         const buyerWallet = await tx.wallet.findUnique({ where: { userId: buyerId } });
         const sellerWallet = await tx.wallet.findUnique({ where: { userId: sellerId } });
         
         if (!buyerWallet) throw new Error("Buyer wallet not found");
         if (!sellerWallet) throw new Error("Seller wallet not found");
+
+        const existingTx = await tx.transaction.findUnique({
+          where: { externalId: `${artId}-purchase` }
+        });
+
+        if (existingTx) {
+          logger.info(`Transaction ${artId}-purchase already exists, skipping wallet updates.`);
+          return;
+        }
         
         if (buyerWallet.balance < totalAmount) {
           throw new Error("Insufficient funds");
         }
 
-        // 2. Calculate Stats (Buyer)
         const buyerQuickStats = (buyerWallet.quickStats as any) || { earned: 0, spent: 0, avgTransaction: 0, roi: 0, grade: "B" };
         const buyerTxSummary = (buyerWallet.transactionSummary as any) || { earned: 0, spent: 0, netGain: 0 };
         buyerQuickStats.spent += totalAmount;
         buyerTxSummary.spent += totalAmount;
         buyerTxSummary.netGain -= totalAmount;
 
-        // 3. Calculate Stats (Seller)
         const sellerQuickStats = (sellerWallet.quickStats as any) || { earned: 0, spent: 0, avgTransaction: 0, roi: 0, grade: "B" };
         const sellerTxSummary = (sellerWallet.transactionSummary as any) || { earned: 0, spent: 0, netGain: 0 };
         sellerQuickStats.earned += sellerAmount;
         sellerTxSummary.earned += sellerAmount;
         sellerTxSummary.netGain += sellerAmount;
 
-        // 4. Update Wallets
-        // Debit Buyer
         await tx.wallet.update({
           where: { userId: buyerId },
           data: {
@@ -480,7 +487,6 @@ export class WalletRepositoryImpl
           },
         });
 
-        // Credit Seller
         await tx.wallet.update({
           where: { userId: sellerId },
           data: {
@@ -490,7 +496,6 @@ export class WalletRepositoryImpl
           },
         });
 
-        // Credit Admin
         let adminWalletId;
         if (commissionAmount > 0) {
             const updatedAdmin = await tx.wallet.upsert({
@@ -501,8 +506,6 @@ export class WalletRepositoryImpl
             adminWalletId = updatedAdmin.id;
         }
 
-        // 5. Create Transactions
-        // Debit Buyer
         await tx.transaction.create({
           data: {
             walletId: buyerWallet.id,
@@ -512,12 +515,11 @@ export class WalletRepositoryImpl
             method: "art_coin",
             status: "success",
             description: `Purchased art ${artId}`,
-            externalId: artId,
+            externalId: `${artId}-purchase`,
              meta: { sellerId, adminId, commissionAmount }
           },
         });
 
-        // Credit Seller
         await tx.transaction.create({
           data: {
             walletId: sellerWallet.id,
@@ -527,23 +529,22 @@ export class WalletRepositoryImpl
             method: "art_coin",
             status: "success",
             description: `Sold art ${artId}`,
-            externalId: artId,
+            externalId: `${artId}-sale`,
              meta: { buyerId }
           },
         });
 
-         // Credit Admin
         if (commissionAmount > 0 && adminWalletId) {
             await tx.transaction.create({
                 data: {
                     walletId: adminWalletId,
                     type: "credited",
                     amount: commissionAmount,
-                    category: "COMMISSION",
+                    category: "SALE_FEE",
                     method: "art_coin",
                     status: "success",
                     description: `Commission from art sale ${artId}`,
-                    externalId: artId,
+                    externalId: `${artId}-commission`,
                     meta: { buyerId, sellerId }
                 }
             });
@@ -555,6 +556,37 @@ export class WalletRepositoryImpl
       console.error("Process Split Purchase Error:", error);
       return false;
     }
+  }
+
+  async getAdminTransactions(
+    adminId: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any[]> {
+    const whereClause: any = {
+      wallet: { userId: adminId },
+      type: 'credited',
+      category: { in: [TransactionCategory.COMMISSION, TransactionCategory.OTHER, TransactionCategory.TOP_UP, TransactionCategory.AUCTION_FEE, TransactionCategory.SALE_FEE, TransactionCategory.COMMISSION_FEE] },
+    };
+
+    if (startDate || endDate) {
+      whereClause.createdAt = {};
+      if (startDate) whereClause.createdAt.gte = startDate;
+      if (endDate) whereClause.createdAt.lte = endDate;
+    }
+
+    const transactions = await prisma.transaction.findMany({
+      where: whereClause,
+      select: {
+        amount: true,
+        category: true,
+        description: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return transactions;
   }
 
   async getAdminCommissionTransactions(
@@ -588,4 +620,488 @@ export class WalletRepositoryImpl
     return transactions;
   }
 
+  async getAllRecentTransactions(limit: number): Promise<any[]> {
+    const txs = await prisma.transaction.findMany({
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        wallet: {
+            select: {
+                userId: true
+            }
+        }
+      }
+    });
+
+    return txs.map((tx: any) => ({
+      id: tx.id,
+      userId: tx.wallet?.userId,
+      date: tx.createdAt.toISOString(),
+      type: tx.type === "credited" ? "Earned" : "Spent",
+      amount: tx.amount,
+      category: tx.category,
+      status: tx.status,
+      method: tx.method,
+      description: tx.description
+    }));
+  }
+
+  async distributeCommissionFunds(params: {
+    userId: string;
+    artistId: string;
+    commissionId: string;
+    totalAmount: number;
+    artistAmount: number;
+    platformFee: number;
+  }): Promise<boolean> {
+    const { userId, artistId, commissionId, totalAmount, artistAmount, platformFee } = params;
+
+    try {
+      await prisma.$transaction(async (tx) => {
+        const userWallet = await tx.wallet.findUnique({ where: { userId } });
+        const artistWallet = await tx.wallet.findUnique({ where: { userId: artistId } });
+
+        if (!userWallet) throw new Error("User wallet not found");
+        if (!artistWallet) throw new Error("Artist wallet not found");
+        if (userWallet.lockedAmount < totalAmount) throw new Error("Insufficient locked funds");
+
+        // 1. Update User Wallet (Deduct from lockedAmount)
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            lockedAmount: { decrement: totalAmount },
+          },
+        });
+
+        // 2. Update Artist Wallet (Increment balance)
+        await tx.wallet.update({
+          where: { userId: artistId },
+          data: {
+            balance: { increment: artistAmount },
+            transactionSummary: {
+               upsert: {
+                  update: { earned: { increment: artistAmount }, netGain: { increment: artistAmount } },
+                  set: { earned: artistAmount, netGain: artistAmount, spent: 0 }
+               }
+            } as any 
+          },
+        });
+
+        // 3. Create Transactions
+        // Artist Credit
+        await tx.transaction.create({
+          data: {
+            walletId: artistWallet.id,
+            type: "credited",
+            category: TransactionCategory.COMMISSION,
+            amount: artistAmount,
+            method: "art_coin",
+            status: "success",
+            description: `Commission payment received for ${commissionId}`,
+            meta: { commissionId, type: "RELEASE" }
+          },
+        });
+
+        const adminId = config.platform_admin_id;
+        
+        const adminWallet = await tx.wallet.upsert({
+            where: { userId: adminId },
+            create: { userId: adminId, balance: platformFee },
+            update: { balance: { increment: platformFee } }
+        });
+
+        // Create Credit Transaction for Admin
+        await tx.transaction.create({
+            data: {
+              walletId: adminWallet.id,
+              type: "credited",
+              category: TransactionCategory.COMMISSION_FEE,
+              amount: platformFee,
+              method: "art_coin",
+              status: "success",
+              description: `Platform fee from commission ${commissionId}`,
+              externalId: commissionId,
+              meta: { buyerId: userId, artistId }
+            }
+        });
+
+        // Log the fee deduction in User's history as a part of the COMMISSION expense
+        await tx.transaction.create({
+            data: {
+              walletId: userWallet.id,
+              type: "debited",
+              category: TransactionCategory.COMMISSION,
+              amount: platformFee,
+              method: "art_coin",
+              status: "success",
+              description: `Service fee for commission ${commissionId}`,
+              meta: { commissionId, type: "FEE" }
+            },
+        });
+      });
+
+      return true;
+    } catch (error) {
+      console.error("DistributeCommissionFunds failed:", error);
+      return false;
+    }
+  }
+
+  async lockCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean> {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const wallet = await tx.wallet.findUnique({ where: { userId } });
+
+        if (!wallet) throw new Error("Wallet not found");
+        if (wallet.balance < amount) throw new Error("Insufficient funds");
+
+        // 1. Update wallet (Deduct balance, ADD to lockedAmount)
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            balance: { decrement: amount },
+            lockedAmount: { increment: amount },
+          },
+        });
+
+        // 2. Create transaction record for audit
+        await tx.transaction.create({
+          data: {
+            walletId: wallet.id,
+            type: "debited",
+            category: TransactionCategory.COMMISSION,
+            amount: amount,
+            method: "art_coin",
+            status: "success",
+            description: `Funds locked for commission agreement ${commissionId}`,
+            meta: { commissionId, type: "LOCK" }
+          },
+        });
+      });
+
+      return true;
+    } catch (error) {
+      console.error("LockCommissionFunds failed:", error);
+      return false;
+    }
+  }
+
+  async refundCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean> {
+    try {
+      await prisma.$transaction(async (tx) => {
+        const wallet = await tx.wallet.findUnique({ where: { userId } });
+
+        if (!wallet) throw new Error("Wallet not found");
+        if (wallet.lockedAmount < amount) throw new Error("Insufficient locked funds for refund");
+
+        // 1. Update wallet (Reduce lockedAmount, increase balance)
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            balance: { increment: amount },
+            lockedAmount: { decrement: amount },
+          },
+        });
+
+        // 2. Create transaction record for audit
+        await tx.transaction.create({
+          data: {
+            walletId: wallet.id,
+            type: "credited",
+            category: TransactionCategory.COMMISSION,
+            amount: amount,
+            method: "art_coin",
+            status: "success",
+            description: `Refund for commission dispute ${commissionId}`,
+            meta: { commissionId, type: "REFUND" }
+          },
+        });
+      });
+
+      return true;
+    } catch (error) {
+      console.error("RefundCommissionFunds failed:", error);
+      return false;
+    }
+  }
+
+  // ==================================================================================
+  // ADMIN WALLET MANAGEMENT METHODS (Merged from AdminWalletRepositoryImpl)
+  // ==================================================================================
+
+  async findAllWallets(
+    page: number,
+    limit: number,
+    filters?: import("../../domain/repository/IWalletRepository").WalletFilters
+  ): Promise<{ 
+    data: any[]; 
+    meta: { total: number; page: number; limit: number };
+    stats?: {
+      total: number;
+      active: number;
+      suspended: number;
+      locked: number;
+    }
+  }> {
+    const skip = (page - 1) * limit;
+
+    const baseWhere: any = {
+      userId: { not: config.platform_admin_id },
+    };
+
+    const where: any = { ...baseWhere };
+
+    if (filters?.status) {
+      where.status = filters.status;
+    }
+    if (filters?.minBalance !== undefined) {
+      where.balance = { ...where.balance, gte: filters.minBalance };
+    }
+    if (filters?.maxBalance !== undefined) {
+      where.balance = { ...where.balance, lte: filters.maxBalance };
+    }
+
+    const total = await prisma.wallet.count({ where });
+
+    const wallets = await prisma.wallet.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        transactions: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    // Calculate global stats (ignoring view filters but excluding admins)
+    const [active, suspended, locked, totalWallets] = await Promise.all([
+      prisma.wallet.count({ where: { ...baseWhere, status: 'active' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'suspended' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'locked' } }),
+      prisma.wallet.count({ where: baseWhere }),
+    ]);
+
+    const stats = {
+      total: totalWallets,
+      active,
+      suspended,
+      locked
+    };
+
+    const data = wallets.map(wallet => ({
+      id: wallet.id,
+      userId: wallet.userId,
+      balance: wallet.balance,
+      lockedAmount: wallet.lockedAmount,
+      status: wallet.status,
+      createdAt: wallet.createdAt,
+      updatedAt: wallet.updatedAt,
+      lastTransaction: wallet.transactions[0] || null,
+    }));
+
+    return {
+      data,
+      stats,
+      meta: { total, page, limit },
+    };
+  }
+
+  async findWalletsByUserIds(
+    userIds: string[],
+    page: number,
+    limit: number,
+    filters?: import("../../domain/repository/IWalletRepository").WalletFilters
+  ): Promise<{ 
+    data: any[]; 
+    meta: { total: number; page: number; limit: number };
+    stats?: {
+      total: number;
+      active: number;
+      suspended: number;
+      locked: number;
+    }
+  }> {
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      userId: { in: userIds },
+    };
+    if (filters?.status) {
+      where.status = filters.status;
+    }
+    if (filters?.minBalance !== undefined) {
+      where.balance = { ...where.balance, gte: filters.minBalance };
+    }
+    if (filters?.maxBalance !== undefined) {
+      where.balance = { ...where.balance, lte: filters.maxBalance };
+    }
+
+    // Get total count
+    const total = await prisma.wallet.count({ where });
+
+    // Get wallets with last transaction
+    const wallets = await prisma.wallet.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        transactions: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    // Calculate global stats (ignoring view filters but excluding admin)
+    const baseWhere: any = {
+      userId: { not: config.platform_admin_id },
+    };
+
+    const [active, suspended, locked, totalWallets] = await Promise.all([
+      prisma.wallet.count({ where: { ...baseWhere, status: 'active' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'suspended' } }),
+      prisma.wallet.count({ where: { ...baseWhere, status: 'locked' } }),
+      prisma.wallet.count({ where: baseWhere }),
+    ]);
+
+    const stats = {
+      total: totalWallets,
+      active,
+      suspended,
+      locked
+    };
+
+    // Format data
+    const data = wallets.map(wallet => ({
+      id: wallet.id,
+      userId: wallet.userId,
+      balance: wallet.balance,
+      lockedAmount: wallet.lockedAmount,
+      status: wallet.status,
+      createdAt: wallet.createdAt,
+      updatedAt: wallet.updatedAt,
+      lastTransaction: wallet.transactions[0] || null,
+    }));
+
+    return {
+      data,
+      stats,
+      meta: { total, page, limit },
+    };
+  }
+
+  async findWalletByUserId(userId: string): Promise<any | null> {
+    const wallet = await prisma.wallet.findUnique({
+      where: { userId },
+      include: {
+        transactions: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+    });
+
+    if (!wallet) return null;
+
+    return {
+      id: wallet.id,
+      userId: wallet.userId,
+      balance: wallet.balance,
+      lockedAmount: wallet.lockedAmount,
+      status: wallet.status,
+      createdAt: wallet.createdAt,
+      updatedAt: wallet.updatedAt,
+      lastTransaction: wallet.transactions[0] || null,
+    };
+  }
+
+  async updateWalletStatus(
+    walletId: string,
+    status: 'active' | 'locked' | 'suspended'
+  ): Promise<Wallet> {
+    const updated = await prisma.wallet.update({
+      where: { id: walletId },
+      data: { status, updatedAt: new Date() },
+    });
+
+    return new Wallet(
+      updated.id,
+      updated.userId,
+      updated.balance,
+      updated.lockedAmount,
+      updated.status as 'active' | 'locked' | 'suspended',
+      updated.createdAt,
+      updated.updatedAt
+    );
+  }
+
+  async getTransactionsByWalletId(
+    walletId: string,
+    page: number,
+    limit: number,
+    filters?: import("../../domain/repository/IWalletRepository").TransactionFilters
+  ): Promise<{ data: Transaction[]; meta: { total: number; page: number; limit: number } }> {
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = { walletId };
+    if (filters?.type) {
+      where.type = filters.type;
+    }
+    if (filters?.category) {
+      where.category = filters.category;
+    }
+    if (filters?.status) {
+      where.status = filters.status;
+    }
+    if (filters?.startDate || filters?.endDate) {
+      where.createdAt = {};
+      if (filters.startDate) {
+        where.createdAt.gte = filters.startDate;
+      }
+      if (filters.endDate) {
+        where.createdAt.lte = filters.endDate;
+      }
+    }
+
+    // Get total count
+    const total = await prisma.transaction.count({ where });
+
+    // Get transactions
+    const transactions = await prisma.transaction.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+
+    // Map to Transaction entities
+    const data = transactions.map(
+      tx =>
+        new Transaction(
+          tx.id,
+          tx.walletId,
+          tx.type as 'credited' | 'debited',
+          tx.category as any,
+          tx.amount,
+          tx.method as 'stripe' | 'razorpay',
+          tx.status as 'pending' | 'success' | 'failed',
+          tx.externalId,
+          tx.description,
+          tx.meta as any,
+          tx.createdAt,
+          tx.updatedAt
+        )
+    );
+
+    return {
+      data,
+      meta: { total, page, limit },
+    };
+  }
 }

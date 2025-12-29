@@ -56,6 +56,7 @@ export const ROUTES = {
     ARTIST_REQUEST_REJECT: '/artist-request/:id/reject',
     REPORTS: '/reports',
     REVENUE_STATS: '/revenue-stats',
+    DASHBOARD_STATS: '/dashboard-stats',
   },
 
   // External service routes

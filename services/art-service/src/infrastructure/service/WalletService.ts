@@ -5,20 +5,24 @@ import { IWalletService } from "../../domain/interfaces/IWalletService";
 
 @injectable()
 export class WalletService implements IWalletService {
-  async processPurchase(
+  async processSplitPurchase(
     buyerId: string,
     sellerId: string,
-    amount: number,
+    totalAmount: number,
+    commissionAmount: number,
     artId: string
   ): Promise<boolean> {
     try {
-      const response = await axios.post(
-        `${config.api_gateway_url}/api/v1/wallet/transaction/purchase`,
-        { buyerId, sellerId, amount, artId }
-      );
+      const response = await axios.post(`${config.api_gateway_url}/api/v1/wallet/transaction/split-purchase`, {
+        buyerId,
+        sellerId,
+        totalAmount,
+        commissionAmount,
+        artId
+      });
       return response.status === 200 || response.status === 201;
     } catch (error) {
-      console.error("Error processing purchase:", error);
+      console.error("Process Split Purchase Error:", error);
       return false;
     }
   }
@@ -52,7 +56,6 @@ export class WalletService implements IWalletService {
   async settleAuction(
     winnerId: string,
     sellerId: string,
-    adminId: string,
     totalAmount: number,
     commissionAmount: number,
     auctionId: string
@@ -60,7 +63,7 @@ export class WalletService implements IWalletService {
     try {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/wallet/transaction/split-purchase`,
-        { buyerId: winnerId, sellerId, adminId, totalAmount, commissionAmount, artId: auctionId }
+        { buyerId: winnerId, sellerId, totalAmount, commissionAmount, artId: auctionId }
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {

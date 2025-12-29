@@ -1,13 +1,13 @@
 import { injectable, inject } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAdminArtRepository } from "../../../domain/repositories/IAdminArtRepository";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
 import { IUpdateArtStatusUseCase } from "../../interface/usecase/admin/IUpdateArtStatusUseCase";
 import { UpdateArtStatusDTO } from "../../interface/dto/admin/UpdateArtStatusDTO";
 
 @injectable()
 export class UpdateArtStatusUseCase implements IUpdateArtStatusUseCase {
   constructor(
-    @inject(TYPES.IAdminArtRepository) private _repository: IAdminArtRepository
+    @inject(TYPES.IArtPostRepository) private _repository: IArtPostRepository
   ) {}
 
   async execute(dto: UpdateArtStatusDTO) {

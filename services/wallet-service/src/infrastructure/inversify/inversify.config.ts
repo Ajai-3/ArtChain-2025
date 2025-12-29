@@ -13,19 +13,17 @@ import { ITransactionRepository } from "../../domain/repository/ITransactionRepo
 
 // Use Cases
 import { IGetWalletUseCase } from "../../application/interface/usecase/wallet/IGetWalletUseCase";
-import { IGetStripeSessionUseCase } from "../../application/interface/usecase/IGetStripeSessionUseCase";
-import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/IHandleStripeWebhookUseCase";
+import { IGetStripeSessionUseCase } from "../../application/interface/usecase/stripe/IGetStripeSessionUseCase";
+import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/stripe/IHandleStripeWebhookUseCase";
 import { IGetTransactionsUseCase } from "../../application/interface/usecase/transaction/IGetTransactionsUseCase";
-import { IProcessPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessPurchaseUseCase";
-import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/ICreateStripeCheckoutSessionUseCase";
+import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase";
 
 import { GetWalletUseCase } from "../../application/usecases/wallet/GetWalletUseCase";
 import { GetStripeSessionUseCase } from "../../application/usecases/GetStripeSessionUseCase";
 import { HandleStripeWebhookUseCase } from "../../application/usecases/HandleStripeWebhookUseCase";
 import { GetTransactionsUseCase } from "../../application/usecases/transaction/GetTransactionsUseCase";
-import { ProcessPurchaseUseCase } from "../../application/usecases/transaction/ProcessPurchaseUseCase";
 import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase";
-import { ProcessSplitPurchaseUseCase } from "../../application/usecases/transaction/ProcessSplitPurchaseUseCase";
+import { ProcessSplitPurchaseUseCase } from "../../application/usecases/wallet/ProcessSplitPurchaseUseCase";
 import { IProcessPaymentUseCase } from "../../application/interface/usecase/transaction/IProcessPaymentUseCase";
 import { ProcessPaymentUseCase } from "../../application/usecases/transaction/ProcessPaymentUseCase";
 import { CreateStripeCheckoutSessionUseCase } from "../../application/usecases/CreateStripeCheckoutSessionUseCase";
@@ -87,9 +85,6 @@ container
   .bind<IGetTransactionsUseCase>(TYPES.IGetTransactionsUseCase)
   .to(GetTransactionsUseCase);
 container
-  .bind<IProcessPurchaseUseCase>(TYPES.IProcessPurchaseUseCase)
-  .to(ProcessPurchaseUseCase);
-container
   .bind<IProcessSplitPurchaseUseCase>(TYPES.IProcessSplitPurchaseUseCase)
   .to(ProcessSplitPurchaseUseCase);
 container
@@ -117,7 +112,7 @@ container
   .bind<IRefundCommissionFundsUseCase>(TYPES.IRefundCommissionFundsUseCase)
   .to(RefundCommissionFundsUseCase);
 
-import { IGiftArtCoinsUseCase } from "../../application/interface/usecases/wallet/IGiftArtCoinsUseCase";
+import { IGiftArtCoinsUseCase } from "../../application/interface/usecase/wallet/IGiftArtCoinsUseCase";
 import { GiftArtCoinsUseCase } from "../../application/usecases/wallet/GiftArtCoinsUseCase";
 container
   .bind<IGiftArtCoinsUseCase>(TYPES.IGiftArtCoinsUseCase)
@@ -130,9 +125,9 @@ container
   .to(GetWalletChartDataUseCase);
 
 // Withdrawal Use Cases
-import { ICreateWithdrawalRequestUseCase } from "../../application/interface/usecases/withdrawal/ICreateWithdrawalRequestUseCase";
+import { ICreateWithdrawalRequestUseCase } from "../../application/interface/usecase/withdrawal/ICreateWithdrawalRequestUseCase";
 import { CreateWithdrawalRequestUseCase } from "../../application/usecases/withdrawal/CreateWithdrawalRequestUseCase";
-import { IGetWithdrawalRequestsUseCase } from "../../application/interface/usecases/withdrawal/IGetWithdrawalRequestsUseCase";
+import { IGetWithdrawalRequestsUseCase } from "../../application/interface/usecase/withdrawal/IGetWithdrawalRequestsUseCase";
 import { GetWithdrawalRequestsUseCase } from "../../application/usecases/withdrawal/GetWithdrawalRequestsUseCase";
 container
   .bind<ICreateWithdrawalRequestUseCase>(TYPES.ICreateWithdrawalRequestUseCase)
@@ -168,9 +163,9 @@ container
   .to(WithdrawalController);
 
 // Admin Withdrawal Use Cases
-import { IGetAllWithdrawalRequestsUseCase } from "../../application/interface/usecases/withdrawal/IGetAllWithdrawalRequestsUseCase";
+import { IGetAllWithdrawalRequestsUseCase } from "../../application/interface/usecase/withdrawal/IGetAllWithdrawalRequestsUseCase";
 import { GetAllWithdrawalRequestsUseCase } from "../../application/usecases/withdrawal/GetAllWithdrawalRequestsUseCase";
-import { IUpdateWithdrawalStatusUseCase } from "../../application/interface/usecases/withdrawal/IUpdateWithdrawalStatusUseCase";
+import { IUpdateWithdrawalStatusUseCase } from "../../application/interface/usecase/withdrawal/IUpdateWithdrawalStatusUseCase";
 import { UpdateWithdrawalStatusUseCase } from "../../application/usecases/withdrawal/UpdateWithdrawalStatusUseCase";
 container
   .bind<IGetAllWithdrawalRequestsUseCase>(TYPES.IGetAllWithdrawalRequestsUseCase)
@@ -188,26 +183,23 @@ container
 
 
 // Admin Wallet Management
-import { IAdminWalletRepository } from "../../domain/repository/IAdminWalletRepository";
-import { AdminWalletRepositoryImpl } from "../repositories/AdminWalletRepositoryImpl";
 import { ElasticsearchClient } from "../clients/ElasticsearchClient";
 import { UserServiceClient } from "../clients/UserServiceClient";
-import { IGetAllWalletsUseCase } from "../../application/interface/usecases/admin/IGetAllWalletsUseCase";
+import { IGetAllWalletsUseCase } from "../../application/interface/usecase/admin/IGetAllWalletsUseCase";
 import { GetAllWalletsUseCase } from "../../application/usecases/admin/GetAllWalletsUseCase";
-import { ISearchWalletsUseCase } from "../../application/interface/usecases/admin/ISearchWalletsUseCase";
-import { SearchWalletsUseCase } from "../../application/usecases/admin/SearchWalletsUseCase";
-import { IUpdateWalletStatusUseCase } from "../../application/interface/usecases/admin/IUpdateWalletStatusUseCase";
+
+import { IUpdateWalletStatusUseCase } from "../../application/interface/usecase/admin/IUpdateWalletStatusUseCase";
 import { UpdateWalletStatusUseCase } from "../../application/usecases/admin/UpdateWalletStatusUseCase";
-import { IGetUserTransactionsUseCase } from "../../application/interface/usecases/admin/IGetUserTransactionsUseCase";
+import { IGetUserTransactionsUseCase } from "../../application/interface/usecase/admin/IGetUserTransactionsUseCase";
 import { GetUserTransactionsUseCase } from "../../application/usecases/admin/GetUserTransactionsUseCase";
+import { IGetAdminTransactionsUseCase } from "../../application/interface/usecase/admin/IGetAdminTransactionsUseCase";
+import { GetAdminTransactionsUseCase } from "../../application/usecases/admin/GetAdminTransactionsUseCase";
+import { IGetAllRecentTransactionsUseCase } from "../../application/interface/usecase/admin/IGetAllRecentTransactionsUseCase";
+import { GetAllRecentTransactionsUseCase } from "../../application/usecases/admin/GetAllRecentTransactionsUseCase";
 import { IAdminWalletController } from "../../presentation/interface/IAdminWalletController";
 import { AdminWalletController } from "../../presentation/controllers/AdminWalletController";
 
-// Admin Repositories & Clients
-container
-  .bind<IAdminWalletRepository>(TYPES.IAdminWalletRepository)
-  .to(AdminWalletRepositoryImpl)
-  .inSingletonScope();
+// Admin Clients (no admin repository needed - using consolidated IWalletRepository)
 container
   .bind<ElasticsearchClient>(TYPES.ElasticsearchClient)
   .to(ElasticsearchClient)
@@ -221,19 +213,33 @@ container
 container
   .bind<IGetAllWalletsUseCase>(TYPES.IGetAllWalletsUseCase)
   .to(GetAllWalletsUseCase);
-container
-  .bind<ISearchWalletsUseCase>(TYPES.ISearchWalletsUseCase)
-  .to(SearchWalletsUseCase);
+
 container
   .bind<IUpdateWalletStatusUseCase>(TYPES.IUpdateWalletStatusUseCase)
   .to(UpdateWalletStatusUseCase);
 container
   .bind<IGetUserTransactionsUseCase>(TYPES.IGetUserTransactionsUseCase)
   .to(GetUserTransactionsUseCase);
+container
+  .bind<IGetAllRecentTransactionsUseCase>(TYPES.IGetAllRecentTransactionsUseCase)
+  .to(GetAllRecentTransactionsUseCase);
+
+import { IGetTransactionStatsUseCase } from "../../application/interface/usecase/admin/IGetTransactionStatsUseCase";
+import { GetTransactionStatsUseCase } from "../../application/usecases/admin/GetTransactionStatsUseCase";
+container
+  .bind<IGetTransactionStatsUseCase>(TYPES.IGetTransactionStatsUseCase)
+  .to(GetTransactionStatsUseCase);
+
+container
+  .bind<IGetAdminTransactionsUseCase>(TYPES.IGetAdminTransactionsUseCase)
+  .to(GetAdminTransactionsUseCase);
 
 // Admin Controller
 container
   .bind<IAdminWalletController>(TYPES.IAdminWalletController)
   .to(AdminWalletController);
+
+
+
 
 export { container };

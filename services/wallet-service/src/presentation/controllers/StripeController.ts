@@ -3,9 +3,9 @@ import { inject, injectable } from "inversify";
 import { Request, Response, NextFunction } from "express";
 import { TYPES } from "../../infrastructure/inversify/types";
 import { IStripeController } from "../interface/IStripeController";
-import { IGetStripeSessionUseCase } from "../../application/interface/usecase/IGetStripeSessionUseCase";
-import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/IHandleStripeWebhookUseCase";
-import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/ICreateStripeCheckoutSessionUseCase";
+import { IGetStripeSessionUseCase } from "../../application/interface/usecase/stripe/IGetStripeSessionUseCase";
+import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/stripe/IHandleStripeWebhookUseCase";
+import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase";
 
 @injectable()
 export class StripeController implements IStripeController {

@@ -12,10 +12,7 @@ const CommissionRequestsPage: React.FC = () => {
             description="Manage commission requests, track progress, and resolve disputes"
         >
             <CommissionRequestStats />
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                 <h3 className="text-lg font-semibold text-zinc-100">All Commissions</h3>
                  <CommissionFilters statusFilter={statusFilter} onStatusChange={setStatusFilter} />
-            </div>
             
             <CommissionTable statusFilter={statusFilter} />
         </AdminPageLayout>

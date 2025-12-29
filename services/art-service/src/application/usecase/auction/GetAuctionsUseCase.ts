@@ -7,10 +7,12 @@ import { IBidRepository } from "../../../domain/repositories/IBidRepository";
 import { IS3Service } from "../../../domain/interfaces/IS3Service";
 import { AuctionMapper } from "../../mapper/AuctionMapper";
 import { GetAuctionsDTO } from "../../interface/dto/auction/GetAuctionsDTO";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetAuctionsUseCase implements IGetAuctionsUseCase {
   constructor(
+    @inject(TYPES.IUserService) private _userService: IUserService,
     @inject(TYPES.IAuctionRepository) private _repository: IAuctionRepository,
     @inject(TYPES.IBidRepository) private _bidRepository: IBidRepository,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service
@@ -63,7 +65,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
       })
     );
 
-    const users = await UserService.getUsersByIds([...allUserIds]);
+    const users = await this._userService.getUsersByIds([...allUserIds]);
     console.log(users)
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 

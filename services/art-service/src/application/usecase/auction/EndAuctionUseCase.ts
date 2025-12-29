@@ -45,8 +45,9 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         const commissionAmount = totalAmount * commissionRate;
         
         // 4. Settle Funds
-        // Admin ID needs to be provided. Defaulting to a placeholder if config misses it.
-        const adminId = (config as any).admin_id || "admin"; 
+        // 4. Settle Funds
+        // Use Platform Admin ID from config
+        const adminId = config.platform_admin_id; 
 
         // We use hostId as sellerId
         const settlementSuccess = await this._walletService.settleAuction(

@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../infrastructure/inversify/types";
 import { StripeSessionDTO } from "../interface/dto/StripeSessionDTO";
-import { IGetStripeSessionUseCase } from "../interface/usecase/IGetStripeSessionUseCase";
+import { IGetStripeSessionUseCase } from "../interface/usecase/stripe/IGetStripeSessionUseCase";
 
 @injectable()
 export class GetStripeSessionUseCase implements IGetStripeSessionUseCase {

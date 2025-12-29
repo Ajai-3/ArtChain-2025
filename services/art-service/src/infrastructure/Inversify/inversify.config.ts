@@ -16,7 +16,7 @@ import { AIProviderService } from "../service/AIProviderService";
 import { IWalletService } from "../../domain/interfaces/IWalletService";
 import { WalletService } from "../service/WalletService";
 import { IUserService } from "../../application/interface/service/IUserService";
-import { UserServiceImpl } from "../service/UserServiceImpl";
+import { UserService } from "../service/UserService";
 
 import { GetCommissionStatsUseCase } from "../../application/usecase/commission/GetCommissionStatsUseCase";
 
@@ -158,12 +158,19 @@ import { ICommentController } from "../../presentation/interface/ICommentControl
 import { IFavoriteController } from "../../presentation/interface/IFavoriteController";
 import { ICategoryController } from "../../presentation/interface/ICategoryController";
 
-import { IAdminArtRepository } from "../../domain/repositories/IAdminArtRepository";
-import { AdminArtRepositoryImpl } from "../repositories/AdminArtRepositoryImpl";
+// Admin Art Use Cases (using consolidated IArtPostRepository)
 import { IGetAllArtsUseCase } from "../../application/interface/usecase/admin/IGetAllArtsUseCase";
 import { GetAllArtsUseCase } from "../../application/usecase/admin/GetAllArtsUseCase";
 import { IGetArtStatsUseCase } from "../../application/interface/usecase/admin/IGetArtStatsUseCase";
 import { GetArtStatsUseCase } from "../../application/usecase/admin/GetArtStatsUseCase";
+import { IGetTopArtsUseCase } from "../../application/interface/usecase/admin/IGetTopArtsUseCase";
+import { GetTopArtsUseCase } from "../../application/usecase/admin/GetTopArtsUseCase";
+import { IGetCategoryStatsUseCase } from "../../application/interface/usecase/admin/IGetCategoryStatsUseCase";
+import { GetCategoryStatsUseCase } from "../../application/usecase/admin/GetCategoryStatsUseCase";
+import { IGetRecentAuctionsUseCase } from "../../application/interface/usecase/admin/IGetRecentAuctionsUseCase";
+import { GetRecentAuctionsUseCase } from "../../application/usecase/admin/GetRecentAuctionsUseCase";
+import { IGetRecentCommissionsUseCase } from "../../application/interface/usecase/admin/IGetRecentCommissionsUseCase";
+import { GetRecentCommissionsUseCase } from "../../application/usecase/admin/GetRecentCommissionsUseCase";
 import { IUpdateArtStatusUseCase } from "../../application/interface/usecase/admin/IUpdateArtStatusUseCase";
 import { UpdateArtStatusUseCase } from "../../application/usecase/admin/UpdateArtStatusUseCase";
 import { IAdminArtController } from "../../presentation/interface/IAdminArtController";
@@ -218,7 +225,7 @@ container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAna
 container.bind<IDeleteAIGenerationUseCase>(TYPES.IDeleteAIGenerationUseCase).to(DeleteAIGenerationUseCase);
 container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
 container.bind<IWalletService>(TYPES.IWalletService).to(WalletService);
-container.bind<IUserService>(TYPES.IUserService).to(UserServiceImpl);
+container.bind<IUserService>(TYPES.IUserService).to(UserService);
 
 // AI Controllers
 container.bind<IAIController>(TYPES.IAIController).to(AIController);
@@ -328,10 +335,15 @@ container
 container
 container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryController);
 
-// Admin Art
-container.bind<IAdminArtRepository>(TYPES.IAdminArtRepository).to(AdminArtRepositoryImpl);
+
+// Admin Art (using consolidated IArtPostRepository)
 container.bind<IGetAllArtsUseCase>(TYPES.IGetAllArtsUseCase).to(GetAllArtsUseCase);
 container.bind<IGetArtStatsUseCase>(TYPES.IGetArtStatsUseCase).to(GetArtStatsUseCase);
+
+container.bind<IGetTopArtsUseCase>(TYPES.IGetTopArtsUseCase).to(GetTopArtsUseCase);
+container.bind<IGetCategoryStatsUseCase>(TYPES.IGetCategoryStatsUseCase).to(GetCategoryStatsUseCase);
+container.bind<IGetRecentAuctionsUseCase>(TYPES.IGetRecentAuctionsUseCase).to(GetRecentAuctionsUseCase);
+container.bind<IGetRecentCommissionsUseCase>(TYPES.IGetRecentCommissionsUseCase).to(GetRecentCommissionsUseCase);
 container.bind<IUpdateArtStatusUseCase>(TYPES.IUpdateArtStatusUseCase).to(UpdateArtStatusUseCase);
 container.bind<IAdminArtController>(TYPES.IAdminArtController).to(AdminArtController);
 
@@ -391,6 +403,12 @@ import { AuctionEndedConsumer } from "../messaging/consumers/AuctionEndedConsume
 container.bind<RabbitMQService>(TYPES.RabbitMQService).to(RabbitMQService).inSingletonScope();
 container.bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase).to(EndAuctionUseCase);
 container.bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer).to(AuctionEndedConsumer).inSingletonScope();
-container.bind<GetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
+import { IGetCommissionStatsUseCase } from "../../application/interface/usecase/commission/IGetCommissionStatsUseCase";
+
+container.bind<IGetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
+
+// Elasticsearch Client
+import { ElasticSearchClient } from "../clients/ElasticSearchClient";
+container.bind<ElasticSearchClient>(TYPES.IElasticSearchClient).to(ElasticSearchClient);
 
 export { container };

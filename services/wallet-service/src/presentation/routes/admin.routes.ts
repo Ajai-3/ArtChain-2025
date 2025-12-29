@@ -14,7 +14,7 @@ const adminWalletController = container.get<IAdminWalletController>(
 router.get(ROUTES.ADMIN.WALLETS, adminWalletController.getAllWallets);
 
 // Search wallets
-router.get(ROUTES.ADMIN.SEARCH_WALLETS, adminWalletController.searchWallets);
+
 
 // Update wallet status
 router.patch(ROUTES.ADMIN.UPDATE_STATUS, adminWalletController.updateWalletStatus);
@@ -24,6 +24,15 @@ router.get(ROUTES.ADMIN.GET_USER_TRANSACTIONS, adminWalletController.getUserTran
 
 // Get revenue stats
 router.get(ROUTES.ADMIN.REVENUE_STATS, adminWalletController.getRevenueStats);
+
+// Get recent transactions (all users)
+router.get(ROUTES.ADMIN.RECENT_TRANSACTIONS, adminWalletController.getAllRecentTransactions);
+
+// Get transaction stats
+router.get(ROUTES.ADMIN.TRANSACTION_STATS, adminWalletController.getTransactionStats);
+
+// Get admin transactions (all commissions)
+router.get(ROUTES.ADMIN.ADMIN_TRANSACTIONS, adminWalletController.getAdminTransactions);
 
 // Admin Withdrawal Management
 import { IAdminWithdrawalController } from "../interface/IAdminWithdrawalController";

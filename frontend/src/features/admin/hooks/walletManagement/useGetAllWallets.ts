@@ -27,20 +27,15 @@ export const useGetAllWallets = ({
         ...filters,
       };
 
-      // If search is present, use the search endpoint
-      const endpoint = search
-        ? `/api/v1/wallet/admin/wallets/search`
-        : `/api/v1/wallet/admin/wallets`;
-
       if (search) {
         params.query = search;
       }
 
-      // Filter out "all" values
       if (params.status === "all") delete params.status;
 
-      const res = await apiClient.get(endpoint, { params });
+      const res = await apiClient.get(`/api/v1/wallet/admin/wallets`, { params });
       return res.data;
     },
+    placeholderData: (previousData) => previousData, 
   });
 };

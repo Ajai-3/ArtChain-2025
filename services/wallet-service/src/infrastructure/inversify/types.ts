@@ -14,7 +14,7 @@ export const TYPES = {
   ICreateStripeCheckoutSessionUseCase: Symbol.for(
     "ICreateStripeCheckoutSessionUseCase"
   ),
-  IProcessPurchaseUseCase: Symbol.for("IProcessPurchaseUseCase"),
+
   IProcessSplitPurchaseUseCase: Symbol.for("IProcessSplitPurchaseUseCase"),
   IProcessPaymentUseCase: Symbol.for("IProcessPaymentUseCase"),
   ILockFundsUseCase: Symbol.for("ILockFundsUseCase"),
@@ -39,12 +39,14 @@ export const TYPES = {
   IWithdrawalController: Symbol.for("IWithdrawalController"),
   IAdminWithdrawalController: Symbol.for("IAdminWithdrawalController"),
 
-  // Admin Wallet
-  IAdminWalletRepository: Symbol.for("IAdminWalletRepository"),
+  // Admin Wallet (using consolidated IWalletRepository)
   ElasticsearchClient: Symbol.for("ElasticsearchClient"),
   UserServiceClient: Symbol.for("UserServiceClient"),
   IGetAllWalletsUseCase: Symbol.for("IGetAllWalletsUseCase"),
   ISearchWalletsUseCase: Symbol.for("ISearchWalletsUseCase"),
   IUpdateWalletStatusUseCase: Symbol.for("IUpdateWalletStatusUseCase"),
   IGetUserTransactionsUseCase: Symbol.for("IGetUserTransactionsUseCase"),
+  IGetAllRecentTransactionsUseCase: Symbol.for("IGetAllRecentTransactionsUseCase"),
+  IGetTransactionStatsUseCase: Symbol.for("IGetTransactionStatsUseCase"),
+  IGetAdminTransactionsUseCase: Symbol.for("IGetAdminTransactionsUseCase"),
 };

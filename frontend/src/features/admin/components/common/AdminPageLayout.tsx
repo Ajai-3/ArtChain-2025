@@ -13,7 +13,7 @@ const AdminPageLayout: React.FC<AdminPageLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="container mx-auto p-2 sm:p-4">
+    <div className="w-full space-y-2">
       <AdminPageHeader title={title} description={description} />
       {children}
     </div>

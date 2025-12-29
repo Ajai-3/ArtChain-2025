@@ -26,6 +26,7 @@ export const ROUTES = {
     BASE: "/api/v1/art",
     BY_NAME: "/api/v1/art/by-name/:artname",
     BY_USER: "/api/v1/art/user/:userId",
+    BUY: "/api/v1/art/buy/:id",
     COMMENT: "/api/v1/art/comment",
     COMMENTS: "/api/v1/art/comments",
     COMMENTS_BY_ID: "/api/v1/art/comments/:id",

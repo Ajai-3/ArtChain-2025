@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { format, parseISO } from "date-fns";
-import { useUnifiedSearch } from "../../../../api/user/search/queries";
+import { useUnifiedSearch } from "../../hooks/search/useUnifiedSearch";
 
 interface UnifiedSearchResultsProps {
   query: string;

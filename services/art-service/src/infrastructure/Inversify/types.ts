@@ -95,10 +95,13 @@ export const TYPES = {
   IAdminPlatformConfigController: Symbol.for("IAdminPlatformConfigController"),
   IBidController: Symbol.for("IBidController"),
 
-  // Admin Art
-  IAdminArtRepository: Symbol.for("IAdminArtRepository"),
+  // Admin Art (using consolidated IArtPostRepository)
   IGetAllArtsUseCase: Symbol.for("IGetAllArtsUseCase"),
   IGetArtStatsUseCase: Symbol.for("IGetArtStatsUseCase"),
+  IGetTopArtsUseCase: Symbol.for("IGetTopArtsUseCase"),
+  IGetCategoryStatsUseCase: Symbol.for("IGetCategoryStatsUseCase"),
+  IGetRecentAuctionsUseCase: Symbol.for("IGetRecentAuctionsUseCase"),
+  IGetRecentCommissionsUseCase: Symbol.for("IGetRecentCommissionsUseCase"),
   IUpdateArtStatusUseCase: Symbol.for("IUpdateArtStatusUseCase"),
   IAdminArtController: Symbol.for("IAdminArtController"),
   UserServiceClient: Symbol.for("UserServiceClient"),
@@ -112,8 +115,11 @@ export const TYPES = {
   IGetPlatformConfigUseCase: Symbol.for("IGetPlatformConfigUseCase"),
   IUpdatePlatformConfigUseCase: Symbol.for("IUpdatePlatformConfigUseCase"),
 
+
   RabbitMQService: Symbol.for("RabbitMQService"),
   IEndAuctionUseCase: Symbol.for("IEndAuctionUseCase"),
+  ElasticsearchClient: Symbol.for("ElasticsearchClient"),
+  IElasticSearchClient: Symbol.for("IElasticSearchClient"),
   AuctionEndedConsumer: Symbol.for("AuctionEndedConsumer"),
   ICommissionController: Symbol.for("ICommissionController"),
 };

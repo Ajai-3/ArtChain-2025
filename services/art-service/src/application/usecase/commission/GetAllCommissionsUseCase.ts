@@ -2,11 +2,12 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
 import { CommissionMapper } from "../../mapper/CommissionMapper";
-import { UserService } from "../../../infrastructure/service/UserService";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetAllCommissionsUseCase {
   constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.ICommissionRepository)
     private readonly _commissionRepository: ICommissionRepository
   ) {}
@@ -25,7 +26,7 @@ export class GetAllCommissionsUseCase {
     });
 
     // Fetch user details
-    const users = await UserService.getUsersByIds(Array.from(userIds));
+    const users = await this._userService.getUsersByIds(Array.from(userIds));
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
     // Enrich DTOs

@@ -5,7 +5,7 @@ export class ElasticsearchClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = config.api_gateway_url;
+    this.baseUrl = config.api_gateway_URL;
   }
 
   async searchUsers(query: string): Promise<string[]> {
@@ -14,7 +14,6 @@ export class ElasticsearchClient {
         params: { q: query },
       });
       
-      // Assuming the response contains an array of user IDs
       return response.data.userIds || [];
     } catch (error) {
       console.error('Error searching users in Elasticsearch:', error);

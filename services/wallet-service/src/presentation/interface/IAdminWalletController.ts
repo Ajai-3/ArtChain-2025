@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 
 export interface IAdminWalletController {
-  getAllWallets: (req: Request, res: Response, next: NextFunction) =>  Promise<void>;
-  searchWallets: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  updateWalletStatus: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  getUserTransactions: (req: Request, res: Response, next: NextFunction) => Promise<void>;
-  getRevenueStats: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+  getAllWallets: (req: Request, res: Response, next: NextFunction) =>  Promise<Response | void>;
+
+  updateWalletStatus: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  getUserTransactions: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  getRevenueStats: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  getTransactionStats: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  getAllRecentTransactions: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  getAdminTransactions: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 }

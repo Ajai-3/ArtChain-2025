@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../infrastructure/inversify/types";
 import { IAdminWithdrawalController } from "../interface/IAdminWithdrawalController";
-import { IGetAllWithdrawalRequestsUseCase } from "../../application/interface/usecases/withdrawal/IGetAllWithdrawalRequestsUseCase";
-import { IUpdateWithdrawalStatusUseCase } from "../../application/interface/usecases/withdrawal/IUpdateWithdrawalStatusUseCase";
+import { IGetAllWithdrawalRequestsUseCase } from "../../application/interface/usecase/withdrawal/IGetAllWithdrawalRequestsUseCase";
+import { IUpdateWithdrawalStatusUseCase } from "../../application/interface/usecase/withdrawal/IUpdateWithdrawalStatusUseCase";
 import { WALLET_MESSAGES } from "../../constants/WalletMessages";
 import { HttpStatus } from "art-chain-shared";
 

@@ -10,6 +10,8 @@ import { HttpStatus } from "art-chain-shared";
 import { updateArtStatusSchema } from "../validators/updateArtStatus.schema";
 import { validateWithZod } from "../../utils/validateWithZod";
 import { UpdateArtStatusDTO } from "../../application/interface/dto/admin/UpdateArtStatusDTO";
+import { IGetTopArtsUseCase } from "../../application/interface/usecase/admin/IGetTopArtsUseCase";
+import { IGetCategoryStatsUseCase } from "../../application/interface/usecase/admin/IGetCategoryStatsUseCase";
 import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
 
 @injectable()
@@ -17,10 +19,12 @@ export class AdminArtController implements IAdminArtController {
   constructor(
     @inject(TYPES.IGetAllArtsUseCase) private _getAllArtsUseCase: IGetAllArtsUseCase,
     @inject(TYPES.IGetArtStatsUseCase) private _getArtStatsUseCase: IGetArtStatsUseCase,
-    @inject(TYPES.IUpdateArtStatusUseCase) private _updateArtStatusUseCase: IUpdateArtStatusUseCase
+    @inject(TYPES.IUpdateArtStatusUseCase) private _updateArtStatusUseCase: IUpdateArtStatusUseCase,
+    @inject(TYPES.IGetTopArtsUseCase) private _getTopArtsUseCase: IGetTopArtsUseCase,
+    @inject(TYPES.IGetCategoryStatsUseCase) private _getCategoryStatsUseCase: IGetCategoryStatsUseCase
   ) {}
 
-  getAllArts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getAllArts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -32,36 +36,65 @@ export class AdminArtController implements IAdminArtController {
 
       const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
 
-      const result = await this._getAllArtsUseCase.execute(
-        page,
-        limit,
-        { status, postType, priceType, search, userId },
-        token
-      );
+      const [result, stats] = await Promise.all([
+        this._getAllArtsUseCase.execute(
+          page,
+          limit,
+          { status, postType, priceType, search, userId },
+          token
+        ),
+        this._getArtStatsUseCase.execute()
+      ]);
 
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         success: true,
         data: result.data,
         meta: result.meta,
+        stats
       });
     } catch (error) {
       next(error);
     }
   };
 
-  getArtStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getArtStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const stats = await this._getArtStatsUseCase.execute();
-      res.status(HttpStatus.OK).json({
-        success: true,
-        data: stats,
-      });
+      return res.status(HttpStatus.OK).json({ success: true, data: stats });
     } catch (error) {
       next(error);
     }
   };
 
-  updateArtStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getTopArts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const limit = Number(req.query.limit) || 5;
+      const type = (req.query.type as 'likes' | 'price') || 'likes';
+      const arts = await this._getTopArtsUseCase.execute(limit, type);
+      return res.status(HttpStatus.OK).json({ data: arts });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getCategoryStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const stats = await this._getCategoryStatsUseCase.execute();
+      return res.status(HttpStatus.OK).json({ data: stats });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  updateArtStatus = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const validatedData = validateWithZod(updateArtStatusSchema, req.body);
@@ -77,7 +110,7 @@ export class AdminArtController implements IAdminArtController {
         return;
       }
 
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         success: true,
         data: updated,
         message: `Art status updated to ${validatedData.status}`,

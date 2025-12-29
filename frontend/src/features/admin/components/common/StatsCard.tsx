@@ -31,7 +31,7 @@ const StatsCard: React.FC<StatsCardProps> = ({
   const borderColor = colorMap[iconBgColor] || 'border-border/50';
   
   return (
-    <div className={`relative border-2 ${borderColor} rounded-2xl p-5 sm:mb-3 shadow-md overflow-hidden`}>
+    <div className={`relative border-2 ${borderColor} rounded-2xl p-5 shadow-md overflow-hidden`}>
       {/* Light colored background */}
       <div className={`absolute inset-0 ${iconBgColor} opacity-30`} />
       

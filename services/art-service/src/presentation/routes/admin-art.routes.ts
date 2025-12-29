@@ -10,6 +10,8 @@ const adminArtController = container.get<IAdminArtController>(TYPES.IAdminArtCon
 
 adminArtRouter.get(ROUTES.ADMIN_ART.BASE, adminArtController.getAllArts);
 adminArtRouter.get(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATS, adminArtController.getArtStats);
+adminArtRouter.get(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATS_TOP, adminArtController.getTopArts);
+adminArtRouter.get(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATS_CATEGORIES, adminArtController.getCategoryStats);
 adminArtRouter.patch(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATUS, adminArtController.updateArtStatus);
 
 export default adminArtRouter;
