@@ -4,6 +4,7 @@ export class Notification {
     public senderId: string,
     public type: string,
     public read = false,
+    public metadata: any = {},
     public createdAt = new Date(),
     public id?: string
   ) {}
@@ -15,6 +16,7 @@ export class Notification {
       type: this.type,
       senderId: this.senderId,
       read: this.read,
+      metadata: this.metadata,
       createdAt: this.createdAt,
     };
   }
