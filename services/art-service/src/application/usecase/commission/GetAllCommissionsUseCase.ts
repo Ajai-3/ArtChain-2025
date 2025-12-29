@@ -2,11 +2,12 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
 import { CommissionMapper } from "../../mapper/CommissionMapper";
-import { UserService } from "../../../infrastructure/service/UserService";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetAllCommissionsUseCase {
   constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.ICommissionRepository)
     private readonly _commissionRepository: ICommissionRepository
   ) {}

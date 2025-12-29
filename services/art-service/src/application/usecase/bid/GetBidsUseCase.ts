@@ -5,11 +5,13 @@ import { IBidRepository } from "../../../domain/repositories/IBidRepository";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { BidMapper } from "../../mapper/BidMapper";
 import { BidResponseDTO } from "../../interface/dto/bid/BidResponseDTO";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetBidsUseCase implements IGetBidsUseCase {
   constructor(
-    @inject(TYPES.IBidRepository) private bidRepository: IBidRepository
+      @inject(TYPES.IUserService) private readonly _userService: IUserService,
+    @inject(TYPES.IBidRepository) private readonly bidRepository: IBidRepository
   ) {}
 
   async execute(

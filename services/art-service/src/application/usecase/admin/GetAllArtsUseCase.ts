@@ -7,10 +7,12 @@ import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 import { IElasticSearchClient } from "../../../application/interface/clients/IElasticSearchClient";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetAllArtsUseCase implements IGetAllArtsUseCase {
   constructor(
+    @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IArtPostRepository) private readonly _repository: IArtPostRepository,
     @inject(TYPES.ILikeRepository) private readonly _likeRepository: ILikeRepository,
     @inject(TYPES.ICommentRepository) private readonly _commentRepository: ICommentRepository,

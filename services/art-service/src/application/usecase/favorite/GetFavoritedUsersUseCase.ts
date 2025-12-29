@@ -5,10 +5,12 @@ import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
 import { UserService } from "../../../infrastructure/service/UserService";
 import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
 import { IGetFavoritedUsersUseCase } from "../../interface/usecase/favorite/IGetFavoritedUsersUseCase";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {
   constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IFavoriteRepository)
     private readonly _favoriteRepository: IFavoriteRepository
   ) {}

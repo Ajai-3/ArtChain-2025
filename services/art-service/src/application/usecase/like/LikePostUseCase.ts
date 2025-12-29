@@ -13,10 +13,12 @@ import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
 import { ILikePostUseCase } from "../../interface/usecase/like/ILikePostUseCase";
 import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { IUserService } from "../../interface/service/IUserService";
 
 @injectable()
 export class LikePostUseCase implements ILikePostUseCase {
   constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
     @inject(TYPES.ILikeRepository)

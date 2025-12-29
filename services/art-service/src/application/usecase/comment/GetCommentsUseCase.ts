@@ -6,10 +6,9 @@ import { ICommentRepository } from "../../../domain/repositories/ICommentReposit
 @injectable()
 export class GetCommentsUseCase {
   constructor(
+      @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.ICommentRepository)
     private readonly _commentRepo: ICommentRepository,
-    @inject(TYPES.IUserService)
-    private readonly _userService: IUserService
   ) {}
 
   async execute(postId: string, page: number, limit: number) {

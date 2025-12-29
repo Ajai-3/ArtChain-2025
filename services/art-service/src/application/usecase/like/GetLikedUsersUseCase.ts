@@ -2,13 +2,14 @@ import { inject, injectable } from "inversify";
 import { BadRequestError } from "art-chain-shared";
 import { TYPES } from "../../../infrastructure/Inversify/types";
 import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
-import { UserService } from "../../../infrastructure/service/UserService";
+import { IUserService } from "../../interface/service/IUserService";
 import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
 import { IGetLikedUsersUseCase } from "../../interface/usecase/like/IGetLikedUsersUseCase";
 
 @injectable()
 export class GetLikedUsersUseCase implements IGetLikedUsersUseCase {
   constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.ILikeRepository) private readonly _likeRepo: ILikeRepository
   ) {}
 
