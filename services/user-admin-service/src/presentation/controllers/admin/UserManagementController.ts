@@ -55,7 +55,7 @@ export class UserManageMentController implements IUserManageMentController {
         plan,
       });
 
-      res.status(HttpStatus.OK).json({
+      return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.GET_ALL_USERS_SUCCESS,
         meta: result.meta,
         data: result.data,

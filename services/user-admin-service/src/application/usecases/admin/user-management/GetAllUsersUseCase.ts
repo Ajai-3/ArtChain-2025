@@ -22,40 +22,34 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
       userIds = await this._elasticSearchService.searchUserIds(search);
     }
 
-    if (userIds && userIds.length > 0) {
-      const users = await this._userRepo.findManyByIds(userIds, page, limit, {
+    let result;
+    if (userIds !== undefined) {
+      result = await this._userRepo.findManyByIds(userIds, page, limit, {
         role,
         status,
         plan,
       });
-
-      return {
-        ...users,
-        data: users.data.map((user: any) => ({
-          ...user,
-          profileImage: mapCdnUrl(user.profileImage) ?? null,
-          bannerImage: mapCdnUrl(user.bannerImage) ?? null,
-          backgroundImage: mapCdnUrl(user.backgroundImage) ?? null,
-        })),
-      };
+    } else {
+      result = await this._userRepo.findAllUsers({
+        page,
+        limit,
+        role,
+        status,
+        plan,
+      });
     }
 
-    const users = await this._userRepo.findAllUsers({
-      page,
-      limit,
-      role,
-      status,
-      plan,
-    });
+    const mappedData = result.data.map((user: any) => ({
+      ...user,
+      profileImage: mapCdnUrl(user.profileImage) ?? null,
+      bannerImage: mapCdnUrl(user.bannerImage) ?? null,
+      backgroundImage: mapCdnUrl(user.backgroundImage) ?? null,
+    }));
 
     return {
-      ...users,
-      data: users.data.map((user: any) => ({
-        ...user,
-        profileImage: mapCdnUrl(user.profileImage) ?? null,
-        bannerImage: mapCdnUrl(user.bannerImage) ?? null,
-        backgroundImage: mapCdnUrl(user.backgroundImage) ?? null,
-      })),
+      meta: result.meta,
+      data: mappedData,
+      stats: result.stats,
     };
   }
 }
