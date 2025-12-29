@@ -4,6 +4,7 @@ import { UserPreview } from "../../../../types/UserPreview";
 import { TYPES } from "../../../../infrastructure/inversify/types";
 import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
 import { IGetUserSupportingUseCase } from "../../../interface/usecases/user/user-intraction/IGetUserSupportingUseCase";
+import { GetSupportingRequestDto } from "../../../interface/dtos/user/user-intraction/GetSupportingRequestDto";
 import { logger } from "../../../../utils/logger";
 import { ILogoutUserUseCase } from "../../../interface/usecases/user/auth/ILogoutUserUseCase";
 import { ILogger } from "../../../interface/ILogger";
@@ -16,12 +17,8 @@ export class GetUserSupportingUseCase implements IGetUserSupportingUseCase {
     private readonly _supporterRepo: ISupporterRepository
   ) {}
 
-  async execute(
-    currentUserId: string,
-    userId: string,
-    page = 1,
-    limit = 10
-  ): Promise<UserPreview[]> {
+  async execute(dto: GetSupportingRequestDto): Promise<UserPreview[]> {
+    const { currentUserId, userId, page, limit } = dto;
     const supportings = await this._supporterRepo.getSupporting(
       userId,
       page,
@@ -34,12 +31,16 @@ export class GetUserSupportingUseCase implements IGetUserSupportingUseCase {
 
     const currentUserSupportSet = new Set(currentUserSupportIds);
 
-    this._logger.info("sdfsdf")
-
-    return supportings.map((user) => ({
+    const result = supportings.map((user) => ({
       ...user,
       profileImage: mapCdnUrl(user.profileImage) ?? null,
       isSupporting: currentUserSupportSet.has(user.id),
     }));
+
+     if (userId === currentUserId) {
+        return result.filter(s => s.id !== currentUserId);
+    }
+
+    return result;
   }
 }

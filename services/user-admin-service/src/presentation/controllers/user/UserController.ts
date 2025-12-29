@@ -18,6 +18,8 @@ import { IGetUserSupportersUseCase } from '../../../application/interface/usecas
 import { IGetUsersByIdsUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
 import { IGetUserSupportingUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
 import { getUsersBatchSchema } from '../../../application/validations/user/getUsersBatchSchema';
+import { GetSupportersRequestDto } from '../../../application/interface/dtos/user/user-intraction/GetSupportersRequestDto';
+import { GetSupportingRequestDto } from '../../../application/interface/dtos/user/user-intraction/GetSupportingRequestDto';
 
 @injectable()
 export class UserController implements IUserController {
@@ -57,6 +59,7 @@ export class UserController implements IUserController {
       const { username } = req.params;
       const currentUserId = req.headers['x-user-id'] as string;
 
+      // be - add zod validation here
       const dto: GetUserProfileRequestDto = { username, currentUserId };
       const result = await this._getUserProfileUseCase.execute(dto);
 
@@ -88,7 +91,8 @@ export class UserController implements IUserController {
     try {
       const userId = req.params.userId;
       const currentUserId = req.headers['x-user-id'] as string;
-
+ 
+      // be - add zod validation here
       const dto: GetUserProfileRequestDto = { userId, currentUserId };
       const user = await this._getUserWithIdUseCase.execute(dto);
 
@@ -154,6 +158,7 @@ export class UserController implements IUserController {
       const userId = req.params.userId;
       const currentUserId = req.headers['x-user-id'] as string;
 
+      // be - add zod validation here
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
       await this._supportUserUseCase.execute(dto);
 
@@ -213,9 +218,8 @@ export class UserController implements IUserController {
       const userId = req.headers['x-user-id'] as string;
       const currentUserId = req.params.supporterId;
 
-      console.log(userId, currentUserId);
+      // be - add zod validation here
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
-
       await this._unSupportUserUseCase.execute(dto);
 
       return res.status(HttpStatus.OK).json({
@@ -244,20 +248,16 @@ export class UserController implements IUserController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
+      // be - add zod validation here
       logger.debug(`Get supporing user userId: ${userId}`);
 
-      // be - data passing to the usecase must be in dto
-      let supporters = await this._getSupportersUseCase.execute(
+      // be - user propper dto to pass the values
+      const supporters = await this._getSupportersUseCase.execute({
         currentUserId,
         userId,
         page,
         limit
-      );
-
-      // be - filter must be inside the usecase
-      if (userId === currentUserId) {
-        supporters = supporters.filter((s) => s.id !== currentUserId);
-      }
+      });
 
       logger.info(`Suppoters fetched ${JSON.stringify(supporters)}`);
       return res.status(HttpStatus.OK).json({
@@ -287,18 +287,16 @@ export class UserController implements IUserController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
+      // be - add zod validation here
       logger.debug(`Get supporing user userId: ${userId}`);
 
-      let supporters = await this._getSupportingUseCase.execute(
+      // be - make it to propper dto to pass values
+      const supporters = await this._getSupportingUseCase.execute({
         currentUserId,
         userId,
         page,
         limit
-      );
-
-      if (userId === currentUserId) {
-        supporters = supporters.filter((s) => s.id !== currentUserId);
-      }
+      });
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORTING_FETCH_SUCCESS,
@@ -327,7 +325,7 @@ export class UserController implements IUserController {
       const users = await this._getUsersByIdsUserUseCase.execute(ids, currentUserId);
 
       logger.info('user with id fetched correctly');
-      console.log(users, "responce")
+
       return res
         .status(HttpStatus.OK)
         .json({ message: 'User fetch correcly', data: users });
