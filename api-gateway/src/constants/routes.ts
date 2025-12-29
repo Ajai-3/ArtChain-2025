@@ -60,6 +60,7 @@ export const ROUTES = {
     GET_TRANSACTIONS: "/api/v1/wallet/get-transactions",
     CREATE_TRANSACTIONS: "/api/v1/wallet/create-transactions",
     STATS_CHART: "/api/v1/wallet/stats/chart",
+    GIFT: "/api/v1/wallet/gift",
     
     // Withdrawal routes
     WITHDRAWAL_CREATE: "/api/v1/wallet/withdrawal/create",
