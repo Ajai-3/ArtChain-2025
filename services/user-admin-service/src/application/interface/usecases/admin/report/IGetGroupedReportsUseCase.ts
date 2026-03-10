@@ -1,4 +1,4 @@
-import type { Report, ReportReason } from "../../../../../domain/entities/Report";
+import type { Report, ReportReason } from '../../../../../domain/entities/Report';
 
 export interface IGetGroupedReportsUseCase {
   execute(

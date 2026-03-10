@@ -1,10 +1,10 @@
-  import { inject, injectable } from "inversify";
-  import { ArtUser } from "../../../../types/ArtUser";
-  import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
-  import { TYPES } from "../../../../infrastructure/inversify/types";
-  import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-  import { IGetUsersByIdsUserUseCase } from "../../../interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase";
-  import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
+  import { inject, injectable } from 'inversify';
+  import { ArtUser } from '../../../../types/ArtUser';
+  import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
+  import { TYPES } from '../../../../infrastructure/inversify/types';
+  import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+  import { IGetUsersByIdsUserUseCase } from '../../../interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
+  import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
 
   @injectable()
   export class GetUsersByIdsUserUseCase implements IGetUsersByIdsUserUseCase {
@@ -36,7 +36,7 @@
         role: user.role,
         status: user.status,
         isVerified: user.isVerified,
-        profileImage: mapCdnUrl(user.profileImage) ?? "",
+        profileImage: mapCdnUrl(user.profileImage) ?? '',
         ...(currentUserId && { isSupporting: supportingMap[user.id] ?? false }),
       }));
     }

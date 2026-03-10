@@ -1,18 +1,18 @@
-import bcrypt from "bcrypt";
-import { inject, injectable } from "inversify";
-import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { ITokenGenerator } from "../../../../application/interface/auth/ITokenGenerator";
-import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
-import { LoginRequestDto } from "../../../interface/dtos/user/auth/LoginRequestDto";
+import bcrypt from 'bcrypt';
+import { inject, injectable } from 'inversify';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { ITokenGenerator } from '../../../../application/interface/auth/ITokenGenerator';
+import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
+import { LoginRequestDto } from '../../../interface/dtos/user/auth/LoginRequestDto';
 import {
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
-} from "art-chain-shared";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { ILoginUserUseCase } from "../../../interface/usecases/user/auth/ILoginUserUseCase";
+} from 'art-chain-shared';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ILoginUserUseCase } from '../../../interface/usecases/user/auth/ILoginUserUseCase';
 
 @injectable()
 export class LoginUserUseCase implements ILoginUserUseCase {
@@ -32,11 +32,11 @@ export class LoginUserUseCase implements ILoginUserUseCase {
       throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
     }
 
-    if (rawUser.role !== "user" && rawUser.role !== "artist") {
+    if (rawUser.role !== 'user' && rawUser.role !== 'artist') {
       throw new ForbiddenError(AUTH_MESSAGES.INVALID_USER_ROLE);
     }
 
-    if (rawUser.status !== "active" && rawUser.status !== "suspended") {
+    if (rawUser.status !== 'active' && rawUser.status !== 'suspended') {
       throw new ForbiddenError(AUTH_MESSAGES.YOUR_ACCOUNT_BANNED);
     }
 
@@ -61,9 +61,9 @@ export class LoginUserUseCase implements ILoginUserUseCase {
 
     const formattedUser = {
       ...user,
-      profileImage: mapCdnUrl(user.profileImage) || "",
-      bannerImage: mapCdnUrl(user.bannerImage) || "",
-      backgroundImage: mapCdnUrl(user.backgroundImage) || "",
+      profileImage: mapCdnUrl(user.profileImage) || '',
+      bannerImage: mapCdnUrl(user.bannerImage) || '',
+      backgroundImage: mapCdnUrl(user.backgroundImage) || '',
     };
     const accessToken = this._tokenGenerator.generateAccess(payload);
     const refreshToken = this._tokenGenerator.generateRefresh(payload);

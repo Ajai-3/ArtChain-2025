@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { EventType } from "../../../domain/events/EventType";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { UserUpdatedEvent } from "../../../domain/events/UserUpdatedEvent";
-import { IMessagePublisher } from "../../interface/messaging/IMessagePublisher";
+import { inject, injectable } from 'inversify';
+import { EventType } from '../../../domain/events/EventType';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { UserUpdatedEvent } from '../../../domain/events/UserUpdatedEvent';
+import { IMessagePublisher } from '../../interface/messaging/IMessagePublisher';
 
-import { IEventHandler } from "../../interface/events/handlers/IEventHandler";
+import { IEventHandler } from '../../interface/events/handlers/IEventHandler';
 
 @injectable()
 export class UserUpdatedElasticHandler implements IEventHandler<UserUpdatedEvent> {

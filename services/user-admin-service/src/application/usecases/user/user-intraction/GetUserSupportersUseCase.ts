@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
-import { UserPreview } from "../../../../types/UserPreview";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { ISupporterRepository } from "../../../../domain/repositories/user/ISupporterRepository";
-import { IGetUserSupportersUseCase } from "../../../interface/usecases/user/user-intraction/IGetUserSupportersUseCase";
-import { GetSupportersRequestDto } from "../../../interface/dtos/user/user-intraction/GetSupportersRequestDto";
+import { inject, injectable } from 'inversify';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
+import { UserPreview } from '../../../../types/UserPreview';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { ISupporterRepository } from '../../../../domain/repositories/user/ISupporterRepository';
+import { IGetUserSupportersUseCase } from '../../../interface/usecases/user/user-intraction/IGetUserSupportersUseCase';
+import { GetSupportersRequestDto } from '../../../interface/dtos/user/user-intraction/GetSupportersRequestDto';
 
 @injectable()
 export class GetUserSupportersUseCase implements IGetUserSupportersUseCase {

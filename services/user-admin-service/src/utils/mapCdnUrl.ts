@@ -1,4 +1,4 @@
-import { config } from "../infrastructure/config/env";
+import { config } from '../infrastructure/config/env';
 
 export const mapCdnUrl = (path?: string | null): string | undefined => {
   const cdn = config.aws_cdn_domain;

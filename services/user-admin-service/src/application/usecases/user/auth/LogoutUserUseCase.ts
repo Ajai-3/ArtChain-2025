@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { ILogger } from "../../../interface/ILogger";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { ILogoutUserUseCase } from "../../../interface/usecases/user/auth/ILogoutUserUseCase";
-import { IRefreshTokenVerifier } from "../../../interface/auth/IRefreshTokenVerifier";
-import { BadRequestError } from "art-chain-shared";
+import { inject, injectable } from 'inversify';
+import { ILogger } from '../../../interface/ILogger';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { ILogoutUserUseCase } from '../../../interface/usecases/user/auth/ILogoutUserUseCase';
+import { IRefreshTokenVerifier } from '../../../interface/auth/IRefreshTokenVerifier';
+import { BadRequestError } from 'art-chain-shared';
 
 @injectable()
 export class LogoutUserUseCase implements ILogoutUserUseCase {
@@ -12,12 +12,12 @@ export class LogoutUserUseCase implements ILogoutUserUseCase {
 
   async execute(refreshToken: string): Promise<void> {
     if (!refreshToken) {
-      throw new BadRequestError("Refresh token is required");
+      throw new BadRequestError('Refresh token is required');
     }
     const payload = this._refreshTokenVerifier.verify(refreshToken);
 
-    if (typeof payload !== "object" || payload === null) {
-      throw new BadRequestError("Invalid refresh token");
+    if (typeof payload !== 'object' || payload === null) {
+      throw new BadRequestError('Invalid refresh token');
     }
 
     this._logger.info(

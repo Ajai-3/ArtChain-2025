@@ -1,16 +1,16 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { USER_MESSAGES } from "../../../../constants/userMessages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
 import {
   BadRequestError,
   ERROR_MESSAGES,
   NotFoundError,
-} from "art-chain-shared";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { UpdateUserProfileDto } from "../../../interface/dtos/user/profile/UpdateUserProfileDto";
-import { IUpdateProfileUserUseCase } from "../../../interface/usecases/user/profile/IUpdateProfileUserUseCase";
-import { IEventBus } from "../../../interface/events/IEventBus";
-import { UserUpdatedEvent } from "../../../../domain/events/UserUpdatedEvent";
+} from 'art-chain-shared';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { UpdateUserProfileDto } from '../../../interface/dtos/user/profile/UpdateUserProfileDto';
+import { IUpdateProfileUserUseCase } from '../../../interface/usecases/user/profile/IUpdateProfileUserUseCase';
+import { IEventBus } from '../../../interface/events/IEventBus';
+import { UserUpdatedEvent } from '../../../../domain/events/UserUpdatedEvent';
 
 @injectable()
 export class UpdateProfileUserUseCase implements IUpdateProfileUserUseCase {

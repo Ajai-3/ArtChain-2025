@@ -1,16 +1,16 @@
-import bcrypt from "bcrypt";
-import { inject, injectable } from "inversify";
-import { ConflictError } from "art-chain-shared";
-import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { AUTH_MESSAGES } from "../../../../constants/authMessages";
-import { AuthResultDto } from "../../../interface/dtos/user/auth/AuthResultDto";
-import { ITokenGenerator } from "../../../../application/interface/auth/ITokenGenerator";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { RegisterRequestDto } from "../../../interface/dtos/user/auth/RegisterRequestDto";
-import { IRegisterUserUseCase } from "../../../interface/usecases/user/auth/IRegisterUserUseCase";
-import { IEventBus } from "../../../interface/events/IEventBus";
-import { UserCreatedEvent } from "../../../../domain/events/UserCreatedEvent";
+import bcrypt from 'bcrypt';
+import { inject, injectable } from 'inversify';
+import { ConflictError } from 'art-chain-shared';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
+import { ITokenGenerator } from '../../../../application/interface/auth/ITokenGenerator';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { RegisterRequestDto } from '../../../interface/dtos/user/auth/RegisterRequestDto';
+import { IRegisterUserUseCase } from '../../../interface/usecases/user/auth/IRegisterUserUseCase';
+import { IEventBus } from '../../../interface/events/IEventBus';
+import { UserCreatedEvent } from '../../../../domain/events/UserCreatedEvent';
 
 @injectable()
 export class RegisterUserUseCase implements IRegisterUserUseCase {
@@ -41,26 +41,26 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
       name,
       email,
       username,
-      phone: "",
+      phone: '',
       password: hashedPassword,
       isVerified: false,
-      profileImage: "",
-      bannerImage: "",
-      backgroundImage: "",
-      bio: "",
-      country: "",
-      role: "user",
-      plan: "free",
-      status: "active",
+      profileImage: '',
+      bannerImage: '',
+      backgroundImage: '',
+      bio: '',
+      country: '',
+      role: 'user',
+      plan: 'free',
+      status: 'active',
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
     const formattedUser = {
       ...user,
-      profileImage: mapCdnUrl(user.profileImage) || "",
-      bannerImage: mapCdnUrl(user.bannerImage) || "",
-      backgroundImage: mapCdnUrl(user.backgroundImage) || "",
+      profileImage: mapCdnUrl(user.profileImage) || '',
+      bannerImage: mapCdnUrl(user.bannerImage) || '',
+      backgroundImage: mapCdnUrl(user.backgroundImage) || '',
     };
 
     const payload = {

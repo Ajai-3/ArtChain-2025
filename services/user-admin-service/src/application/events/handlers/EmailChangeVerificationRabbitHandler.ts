@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { EventType } from "../../../domain/events/EventType";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IMessagePublisher } from "../../interface/messaging/IMessagePublisher";
-import { EmailChangeVerificationEvent } from "../../../domain/events/EmailChangeVerificationEvent";
-import { IEventHandler } from "../../interface/events/handlers/IEventHandler";
+import { inject, injectable } from 'inversify';
+import { EventType } from '../../../domain/events/EventType';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IMessagePublisher } from '../../interface/messaging/IMessagePublisher';
+import { EmailChangeVerificationEvent } from '../../../domain/events/EmailChangeVerificationEvent';
+import { IEventHandler } from '../../interface/events/handlers/IEventHandler';
 
 @injectable()
 export class EmailChangeVerificationRabbitHandler implements IEventHandler<EmailChangeVerificationEvent> {
