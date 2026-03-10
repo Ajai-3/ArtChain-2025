@@ -1,4 +1,4 @@
-import { config } from "../constants/env";
+import { config } from "./env";
 import mongoose from "mongoose";
 import { logger } from "../infrastructure/utils/logger";
 
