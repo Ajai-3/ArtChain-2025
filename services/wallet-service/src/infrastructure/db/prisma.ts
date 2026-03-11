@@ -10,7 +10,7 @@ const connectionString = process.env.DATABASE_URL;
 const url = new URL(connectionString!);
 const sslMode = url.searchParams.get('sslmode');
 
-console.log(sslMode, url)
+console.log(sslMode, url);
 
 const pool = new Pool({
   connectionString,
