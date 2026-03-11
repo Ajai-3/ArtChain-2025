@@ -1,9 +1,9 @@
-import express from "express";
-import notificationRoutes from "./presentation/routes/notification.routes"
-import { logger } from "./infrastructure/utils/logger";
-import { ROUTES } from "./config/routes";
+import express from 'express';
+import notificationRoutes from './presentation/routes/notification.routes';
+import { logger } from './infrastructure/utils/logger';
+import { ROUTES } from './config/routes';
 
-const app = express()
+const app = express();
 
 app.use((req, res, next) => {
   const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
@@ -12,6 +12,6 @@ app.use((req, res, next) => {
 });
 
 
-app.use(ROUTES.BASE, notificationRoutes)
+app.use(ROUTES.BASE, notificationRoutes);
 
 export default app;

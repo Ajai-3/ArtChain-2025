@@ -1,12 +1,12 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { Notification } from "../../domain/entities/Notification";
-import { GetUserNotificationsDTO } from "../interfaces/dto/GetUserNotificationsDTO";
-import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
-import { IGetUserNotificationsUseCase } from "../../domain/usecases/IGetUserNotificationsUseCase";
-import { IUserServiceClient } from "../interfaces/clients/IUserServiceClient";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { Notification } from '../../domain/entities/Notification';
+import { GetUserNotificationsDTO } from '../interfaces/dto/GetUserNotificationsDTO';
+import { INotificationRepository } from '../../domain/repositories/INotificationRepository';
+import { IGetUserNotificationsUseCase } from '../../domain/usecases/IGetUserNotificationsUseCase';
+import { IUserServiceClient } from '../interfaces/clients/IUserServiceClient';
 
-import { NotificationResponse } from "../interfaces/dto/NotificationResponse";
+import { NotificationResponse } from '../interfaces/dto/NotificationResponse';
 
 @injectable()
 export class GetUserNotificationsUseCase

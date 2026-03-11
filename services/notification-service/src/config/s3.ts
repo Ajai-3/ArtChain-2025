@@ -1,8 +1,8 @@
-import AWS from "aws-sdk";
-import { config } from "./env";
-import { logger } from "../infrastructure/utils/logger";
+import AWS from 'aws-sdk';
+import { config } from './env';
+import { logger } from '../infrastructure/utils/logger';
 
-const s3 = new AWS.S3({ region: "ap-south-1" });
+const s3 = new AWS.S3({ region: 'ap-south-1' });
 
 export async function getTemplateFromS3(templateName: string): Promise<string> {
   const bucket = config.aws.email_template_bucket!;
@@ -10,7 +10,7 @@ export async function getTemplateFromS3(templateName: string): Promise<string> {
 
   try {
     const data = await s3.getObject({ Bucket: bucket, Key: key }).promise();
-    return data.Body?.toString("utf-8") ?? "";
+    return data.Body?.toString('utf-8') ?? '';
   } catch (err) {
     logger.error(`❌ Error fetching template ${templateName} from S3:`, err);
     throw err;

@@ -1,12 +1,12 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
-import { IUserServiceClient } from "../../application/interfaces/clients/IUserServiceClient";
-import { emitToUser } from "../../infrastructure/sockets/socketHandler";
-import { logger } from "../../infrastructure/utils/logger";
-import { Notification } from "../../domain/entities/Notification";
-import { NotificationType } from "../../domain/enums/NotificationType";
-import { IGiftEventHandler } from "../interfaces/handlers/IGiftEventHandler";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { INotificationRepository } from '../../domain/repositories/INotificationRepository';
+import { IUserServiceClient } from '../../application/interfaces/clients/IUserServiceClient';
+import { emitToUser } from '../../infrastructure/sockets/socketHandler';
+import { logger } from '../../infrastructure/utils/logger';
+import { Notification } from '../../domain/entities/Notification';
+import { NotificationType } from '../../domain/enums/NotificationType';
+import { IGiftEventHandler } from '../interfaces/handlers/IGiftEventHandler';
 
 @injectable()
 export class GiftEventHandler implements IGiftEventHandler {
@@ -46,9 +46,9 @@ export class GiftEventHandler implements IGiftEventHandler {
         senderImage: event.senderImage
       };
 
-      await emitToUser(event.receiverId, "notification", realTimeData);
+      await emitToUser(event.receiverId, 'notification', realTimeData);
     } catch (error) {
-      logger.error("Error handling gift event", error);
+      logger.error('Error handling gift event', error);
       throw error;
     }
   }

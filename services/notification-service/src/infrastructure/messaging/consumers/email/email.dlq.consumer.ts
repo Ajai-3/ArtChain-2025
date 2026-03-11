@@ -1,8 +1,8 @@
-import { getRabbitChannel } from "../../rabbitmq";
+import { getRabbitChannel } from '../../rabbitmq';
 
 export async function startEmailDLQConsumer() {
   const ch = await getRabbitChannel();
-  const dlqName = "emails.dlq";
+  const dlqName = 'emails.dlq';
 
   await ch.assertQueue(dlqName, { durable: true });
 
@@ -10,14 +10,14 @@ export async function startEmailDLQConsumer() {
     if (!msg) return;
     try {
       const data = JSON.parse(msg.content.toString());
-      console.error("☠️ Dead Letter Message:", data);
+      console.error('☠️ Dead Letter Message:', data);
 
       ch.ack(msg);
     } catch (err) {
-      console.error("❌ Error reading DLQ message:", err);
+      console.error('❌ Error reading DLQ message:', err);
       ch.ack(msg);
     }
   });
 
-  console.log("☠️ Listening on DLQ: emails.dlq");
+  console.log('☠️ Listening on DLQ: emails.dlq');
 }

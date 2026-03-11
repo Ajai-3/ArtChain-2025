@@ -1,13 +1,13 @@
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { logger } from "../../infrastructure/utils/logger";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { IMarkAsReadUseCase } from "../../domain/usecases/IMarkAsReadUseCase";
-import { INotificationController } from "../interface/INotificationController";
-import { GetUserNotificationsDTO } from "../../application/interfaces/dto/GetUserNotificationsDTO";
-import { IMarkAsAllReadUseCase } from "./../../domain/usecases/IMarkAllAsReadUseCase";
-import { IGetUnreadCountUseCase } from "../../domain/usecases/IGetUnreadCountUseCase";
-import { IGetUserNotificationsUseCase } from "../../domain/usecases/IGetUserNotificationsUseCase";
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../../infrastructure/utils/logger';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { IMarkAsReadUseCase } from '../../domain/usecases/IMarkAsReadUseCase';
+import { INotificationController } from '../interface/INotificationController';
+import { GetUserNotificationsDTO } from '../../application/interfaces/dto/GetUserNotificationsDTO';
+import { IMarkAsAllReadUseCase } from './../../domain/usecases/IMarkAllAsReadUseCase';
+import { IGetUnreadCountUseCase } from '../../domain/usecases/IGetUnreadCountUseCase';
+import { IGetUserNotificationsUseCase } from '../../domain/usecases/IGetUserNotificationsUseCase';
 
 @injectable()
 export class NotificationController implements INotificationController {
@@ -19,7 +19,7 @@ export class NotificationController implements INotificationController {
     @inject(TYPES.IMarkAsReadUseCase)
     private readonly _markAsReadUseCase: IMarkAsReadUseCase,
     @inject(TYPES.IMarkAsAllReadUseCase)
-    private readonly _markAllAsReadUseCase: IMarkAsAllReadUseCase
+    private readonly _markAllAsReadUseCase: IMarkAsAllReadUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -32,19 +32,18 @@ export class NotificationController implements INotificationController {
   getUserNotifications = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | any> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
       const dto: GetUserNotificationsDTO = { userId, page, limit };
 
-      const notifications = await this._getUserNotificationsUseCase.execute(
-        dto
-      );
+      const notifications =
+        await this._getUserNotificationsUseCase.execute(dto);
 
       const unreadCount = await this._getUnreadCountUseCase.execute(userId);
       return res.json({ notifications, page, limit, unreadCount });
@@ -63,10 +62,10 @@ export class NotificationController implements INotificationController {
   getUnreadCount = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<Response| any> => {
+    next: NextFunction,
+  ): Promise<Response | any> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const count = await this._getUnreadCountUseCase.execute(userId);
       return res.json({ unreadCount: count });
     } catch (error) {
@@ -84,13 +83,13 @@ export class NotificationController implements INotificationController {
   markAsRead = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<Response| any> => {
+    next: NextFunction,
+  ): Promise<Response | any> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       await this._markAsReadUseCase.execute(userId);
 
-      return res.json({ message: "Notification marked as read" });
+      return res.json({ message: 'Notification marked as read' });
     } catch (error) {
       next(error);
     }
@@ -106,12 +105,12 @@ export class NotificationController implements INotificationController {
   markAllAsRead = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<Response| any> => {
+    next: NextFunction,
+  ): Promise<Response | any> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       await this._markAllAsReadUseCase.execute(userId);
-      return res.json({ message: "All notifications marked as read" });
+      return res.json({ message: 'All notifications marked as read' });
     } catch (error) {
       next(error);
     }

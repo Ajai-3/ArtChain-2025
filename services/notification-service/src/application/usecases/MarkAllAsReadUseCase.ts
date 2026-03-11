@@ -1,7 +1,7 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { IMarkAsAllReadUseCase } from "../../domain/usecases/IMarkAllAsReadUseCase";
-import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { IMarkAsAllReadUseCase } from '../../domain/usecases/IMarkAllAsReadUseCase';
+import { INotificationRepository } from '../../domain/repositories/INotificationRepository';
 
 @injectable()
 export class MarkAllAsReadUseCase implements IMarkAsAllReadUseCase {

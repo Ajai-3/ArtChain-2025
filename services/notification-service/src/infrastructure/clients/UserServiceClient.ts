@@ -1,14 +1,14 @@
-import axios from "axios";
-import { injectable } from "inversify";
-import { logger } from "../../infrastructure/utils/logger";
-import { IUserServiceClient, UserDetails } from "../../application/interfaces/clients/IUserServiceClient";
+import axios from 'axios';
+import { injectable } from 'inversify';
+import { logger } from '../../infrastructure/utils/logger';
+import { IUserServiceClient, UserDetails } from '../../application/interfaces/clients/IUserServiceClient';
 
 @injectable()
 export class UserServiceClient implements IUserServiceClient {
     private readonly _baseUrl: string;
 
     constructor() {
-        this._baseUrl = process.env.API_GATEWAY_URL || "http://localhost:4000/api/v1";
+        this._baseUrl = process.env.API_GATEWAY_URL || 'http://localhost:4000/api/v1';
     }
 
     async getUser(userId: string): Promise<UserDetails | null> {
@@ -29,7 +29,7 @@ export class UserServiceClient implements IUserServiceClient {
             });
             return response.data.data;
         } catch (error) {
-             logger.error("Failed to fetch users batch", error);
+             logger.error('Failed to fetch users batch', error);
              return [];
         }
     }

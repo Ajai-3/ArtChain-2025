@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { Notification } from "../../domain/entities/Notification";
-import { NotificationModel, NotificationDoc } from "../db/models/NotificationModel";
-import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
-import { BaseRepository } from "./BaseRepository";
+import { injectable } from 'inversify';
+import { Notification } from '../../domain/entities/Notification';
+import { NotificationModel, NotificationDoc } from '../db/models/NotificationModel';
+import { INotificationRepository } from '../../domain/repositories/INotificationRepository';
+import { BaseRepository } from './BaseRepository';
 
 @injectable()
 export class NotificationRepositoryImp extends BaseRepository<Notification, NotificationDoc> implements INotificationRepository {

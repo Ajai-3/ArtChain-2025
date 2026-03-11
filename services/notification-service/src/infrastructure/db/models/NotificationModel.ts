@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface NotificationDoc extends Document {
   _id: mongoose.Types.ObjectId;
@@ -20,7 +20,7 @@ const NotificationSchema: Schema = new Schema({
 });
 
 export const NotificationModel = mongoose.model<NotificationDoc>(
-  "Notification",
+  'Notification',
   NotificationSchema,
-  "notifications" 
+  'notifications' 
 );
