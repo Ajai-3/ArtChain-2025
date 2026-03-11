@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 export interface ICommissionController {
   requestCommission: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;

@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { ConflictError } from "art-chain-shared";
-import { Category } from "../../../domain/entities/Category";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
-import { EditCategoryDTO } from "../../interface/dto/category/EditCategoryDTO";
-import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { IEditCategoryUseCase } from "../../interface/usecase/category/IEditCategoryUseCase";
+import { inject, injectable } from 'inversify';
+import { ConflictError } from 'art-chain-shared';
+import { Category } from '../../../domain/entities/Category';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { CATEGORY_MESSAGES } from '../../../constants/categoryMessages';
+import { EditCategoryDTO } from '../../interface/dto/category/EditCategoryDTO';
+import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
+import { IEditCategoryUseCase } from '../../interface/usecase/category/IEditCategoryUseCase';
 
 @injectable()
 export class EditCategoryUseCase implements IEditCategoryUseCase {

@@ -1,10 +1,10 @@
-import { injectable, inject } from "inversify";
-import { IGetPlatformConfigUseCase } from "../../interface/usecase/admin/IGetPlatformConfigUseCase";
-import { IPlatformConfigRepository } from "../../../domain/repositories/IPlatformConfigRepository";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { PlatformConfig } from "../../../domain/entities/PlatformConfig";
+import { injectable, inject } from 'inversify';
+import { IGetPlatformConfigUseCase } from '../../interface/usecase/admin/IGetPlatformConfigUseCase';
+import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { PlatformConfig } from '../../../domain/entities/PlatformConfig';
 
-import { GetPlatformConfigDTO } from "../../interface/dto/admin/GetPlatformConfigDTO";
+import { GetPlatformConfigDTO } from '../../interface/dto/admin/GetPlatformConfigDTO';
 
 @injectable()
 export class GetPlatformConfigUseCase implements IGetPlatformConfigUseCase {

@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { Commission } from "../../domain/entities/Commission";
-import { CommissionModel } from "../models/CommissionModel";
-import { ICommissionRepository } from "../../domain/repositories/ICommissionRepository";
+import { injectable } from 'inversify';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { Commission } from '../../domain/entities/Commission';
+import { CommissionModel } from '../models/CommissionModel';
+import { ICommissionRepository } from '../../domain/repositories/ICommissionRepository';
 
 @injectable()
 export class CommissionRepositoryImpl
@@ -88,7 +88,7 @@ export class CommissionRepositoryImpl
       CommissionModel.countDocuments({ ...query, status: 'DISPUTE_RAISED' }),
       CommissionModel.aggregate([
         { $match: { ...query, status: 'COMPLETED' } },
-        { $group: { _id: null, total: { $sum: "$platformFee" } } }
+        { $group: { _id: null, total: { $sum: '$platformFee' } } }
       ])
     ]);
 

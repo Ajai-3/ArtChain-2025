@@ -1,7 +1,7 @@
-import { injectable, inject } from "inversify";
-import { IGetAuctionStatsUseCase } from "../../interface/usecase/auction/IGetAuctionStatsUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAuctionRepository } from "../../../domain/repositories/IAuctionRepository";
+import { injectable, inject } from 'inversify';
+import { IGetAuctionStatsUseCase } from '../../interface/usecase/auction/IGetAuctionStatsUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
 
 @injectable()
 export class GetAuctionStatsUseCase implements IGetAuctionStatsUseCase {

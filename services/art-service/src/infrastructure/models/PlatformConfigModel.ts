@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface PlatformConfigDocument extends Document {
   auctionCommissionPercentage: number;
@@ -23,6 +23,6 @@ const PlatformConfigSchema = new Schema<PlatformConfigDocument>(
 );
 
 export const PlatformConfigModel = mongoose.model<PlatformConfigDocument>(
-  "PlatformConfig",
+  'PlatformConfig',
   PlatformConfigSchema
 );

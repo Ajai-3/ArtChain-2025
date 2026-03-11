@@ -1,5 +1,5 @@
-import { Comment } from "../entities/Comment";
-import { IBaseRepository } from "./IBaseRepository";
+import { Comment } from '../entities/Comment';
+import { IBaseRepository } from './IBaseRepository';
 
 export interface ICommentRepository extends IBaseRepository<Comment> {
   countByPostId(postId: string): Promise<number>

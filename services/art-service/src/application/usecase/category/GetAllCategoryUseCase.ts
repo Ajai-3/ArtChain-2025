@@ -1,8 +1,8 @@
-import { inject, injectable } from "inversify";
-import { Category } from "../../../domain/entities/Category";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { IGetAllCategoryUseCase } from "../../interface/usecase/category/IGetAllCategoryUseCase";
+import { inject, injectable } from 'inversify';
+import { Category } from '../../../domain/entities/Category';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
+import { IGetAllCategoryUseCase } from '../../interface/usecase/category/IGetAllCategoryUseCase';
 
 @injectable()
 export class GetAllCategoryUseCase implements IGetAllCategoryUseCase {

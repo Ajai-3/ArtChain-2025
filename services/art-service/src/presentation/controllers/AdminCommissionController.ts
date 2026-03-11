@@ -1,11 +1,11 @@
-import { Request, Response, NextFunction } from "express";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { GetAllCommissionsUseCase } from "../../application/usecase/commission/GetAllCommissionsUseCase";
-import { ResolveCommissionDisputeUseCase } from "../../application/usecase/commission/ResolveCommissionDisputeUseCase";
-import { IGetCommissionStatsUseCase } from "../../application/interface/usecase/commission/IGetCommissionStatsUseCase";
-import { IGetRecentCommissionsUseCase } from "../../application/interface/usecase/admin/IGetRecentCommissionsUseCase";
-import { HttpStatus } from "art-chain-shared";
+import { Request, Response, NextFunction } from 'express';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { GetAllCommissionsUseCase } from '../../application/usecase/commission/GetAllCommissionsUseCase';
+import { ResolveCommissionDisputeUseCase } from '../../application/usecase/commission/ResolveCommissionDisputeUseCase';
+import { IGetCommissionStatsUseCase } from '../../application/interface/usecase/commission/IGetCommissionStatsUseCase';
+import { IGetRecentCommissionsUseCase } from '../../application/interface/usecase/admin/IGetRecentCommissionsUseCase';
+import { HttpStatus } from 'art-chain-shared';
 
 @injectable()
 export class AdminCommissionController {
@@ -28,7 +28,7 @@ export class AdminCommissionController {
 
       const result = await this._getAllCommissionsUseCase.execute(page, limit, status);
       return res.status(HttpStatus.OK).json({
-        message: "Commissions fetched successfully",
+        message: 'Commissions fetched successfully',
         data: result
       });
     } catch (error) {
@@ -43,7 +43,7 @@ export class AdminCommissionController {
       
       const result = await this._resolveDisputeUseCase.execute(id, resolution);
       return res.status(HttpStatus.OK).json({
-        message: "Dispute resolved successfully",
+        message: 'Dispute resolved successfully',
         data: result
       });
     } catch (error) {
@@ -56,7 +56,7 @@ export class AdminCommissionController {
       const timeRange = (req.query.timeRange as string) || '7d';
       const result = await this._getCommissionStatsUseCase.execute(timeRange);
       return res.status(HttpStatus.OK).json({
-        message: "Commission stats fetched successfully",
+        message: 'Commission stats fetched successfully',
         data: result
       });
     } catch (error) {
@@ -69,7 +69,7 @@ export class AdminCommissionController {
       const limit = Number(req.query.limit) || 5;
       const result = await this._getRecentCommissionsUseCase.execute(limit);
       return res.status(HttpStatus.OK).json({
-        message: "Recent commissions fetched successfully",
+        message: 'Recent commissions fetched successfully',
         data: result
       });
     } catch (error) {

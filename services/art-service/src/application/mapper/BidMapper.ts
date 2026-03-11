@@ -1,6 +1,6 @@
-import { Bid } from "../../domain/entities/Bid";
-import { BidResponseDTO } from "../interface/dto/bid/BidResponseDTO";
-import { UserBidResponseDTO } from "../interface/dto/bid/UserBidResponseDTO";
+import { Bid } from '../../domain/entities/Bid';
+import { BidResponseDTO } from '../interface/dto/bid/BidResponseDTO';
+import { UserBidResponseDTO } from '../interface/dto/bid/UserBidResponseDTO';
 
 export class BidMapper {
   static toDTO(bid: Bid, bidder: any): BidResponseDTO {

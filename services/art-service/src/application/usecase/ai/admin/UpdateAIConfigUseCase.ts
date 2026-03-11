@@ -1,7 +1,7 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../../infrastructure/Inversify/types";
-import { IAIConfigRepository } from "../../../../domain/repositories/IAIConfigRepository";
-import { IUpdateAIConfigUseCase } from "../../../interface/usecase/ai/admin/IUpdateAIConfigUseCase";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../../infrastructure/Inversify/types';
+import { IAIConfigRepository } from '../../../../domain/repositories/IAIConfigRepository';
+import { IUpdateAIConfigUseCase } from '../../../interface/usecase/ai/admin/IUpdateAIConfigUseCase';
 
 @injectable()
 export class UpdateAIConfigUseCase implements IUpdateAIConfigUseCase {

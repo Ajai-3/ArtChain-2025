@@ -1,7 +1,7 @@
-import axios from "axios";
-import { config } from "../config/env";
-import { injectable } from "inversify";
-import { IUserService } from "../../application/interface/service/IUserService";
+import axios from 'axios';
+import { config } from '../config/env';
+import { injectable } from 'inversify';
+import { IUserService } from '../../application/interface/service/IUserService';
 
 @injectable()
 export class UserService implements IUserService {
@@ -12,7 +12,7 @@ export class UserService implements IUserService {
         `${config.api_gateway_url}/api/v1/user/profile-id/${userId}`,
         {
           headers: {
-            "x-user-id": currentUserId, 
+            'x-user-id': currentUserId, 
           },
         }
       );
@@ -34,7 +34,7 @@ export class UserService implements IUserService {
       );
       return response.data.data || [];
     } catch (error) {
-      console.error("Error fetching users in batch", error);
+      console.error('Error fetching users in batch', error);
       return [];
     }
   }
@@ -45,7 +45,7 @@ export class UserService implements IUserService {
         `${config.api_gateway_url}/api/v1/user/profile/${username}`);
       return response.data.data;
     } catch (error) {
-      console.error("Error fetching users in batch", error);
+      console.error('Error fetching users in batch', error);
       return [];
     }
   }

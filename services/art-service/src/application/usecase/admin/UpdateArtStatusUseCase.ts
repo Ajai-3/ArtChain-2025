@@ -1,8 +1,8 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IUpdateArtStatusUseCase } from "../../interface/usecase/admin/IUpdateArtStatusUseCase";
-import { UpdateArtStatusDTO } from "../../interface/dto/admin/UpdateArtStatusDTO";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IUpdateArtStatusUseCase } from '../../interface/usecase/admin/IUpdateArtStatusUseCase';
+import { UpdateArtStatusDTO } from '../../interface/dto/admin/UpdateArtStatusDTO';
 
 @injectable()
 export class UpdateArtStatusUseCase implements IUpdateArtStatusUseCase {

@@ -1,13 +1,13 @@
-import { injectable, inject } from "inversify";
-import { IGetAllArtsUseCase } from "../../interface/usecase/admin/IGetAllArtsUseCase";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IElasticSearchClient } from "../../../application/interface/clients/IElasticSearchClient";
-import { IUserService } from "../../interface/service/IUserService";
+import { injectable, inject } from 'inversify';
+import { IGetAllArtsUseCase } from '../../interface/usecase/admin/IGetAllArtsUseCase';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IElasticSearchClient } from '../../../application/interface/clients/IElasticSearchClient';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetAllArtsUseCase implements IGetAllArtsUseCase {
@@ -64,7 +64,7 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
         const users = await this._userService.getUsersByIds(userIds, token);
         userMap = new Map(users.map((u) => [u.id, u]));
       } catch (error) {
-        console.error("Failed to fetch users", error);
+        console.error('Failed to fetch users', error);
       }
     }
 
@@ -79,9 +79,9 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
         return {
           ...art,
           user: userMap.get(art.userId) || {
-            username: "Unknown",
-            email: "N/A",
-            profileImage: "",
+            username: 'Unknown',
+            email: 'N/A',
+            profileImage: '',
           },
           counts: {
             likes: likeCount,

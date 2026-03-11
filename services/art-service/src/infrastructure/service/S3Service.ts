@@ -1,7 +1,7 @@
-import { injectable } from "inversify";
-import { IS3Service } from "../../domain/interfaces/IS3Service";
-import { config } from "../config/env";
-import { createSignedUrl } from "../../utils/createSignedUrl";
+import { injectable } from 'inversify';
+import { IS3Service } from '../../domain/interfaces/IS3Service';
+import { config } from '../config/env';
+import { createSignedUrl } from '../../utils/createSignedUrl';
 
 @injectable()
 export class S3Service implements IS3Service {

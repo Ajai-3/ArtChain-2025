@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { IDeleteCommentUseCase } from "../../interface/usecase/comment/IDeleteCommentUseCase";
-import { BadRequestError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IDeleteCommentUseCase } from '../../interface/usecase/comment/IDeleteCommentUseCase';
+import { BadRequestError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../../constants/ErrorMessages';
 
 @injectable()
 export class DeleteCommentUseCase implements IDeleteCommentUseCase {

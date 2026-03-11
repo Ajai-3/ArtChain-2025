@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import { injectable } from "inversify";
-import { IBaseRepository } from "../../domain/repositories/IBaseRepository";
+import mongoose from 'mongoose';
+import { injectable } from 'inversify';
+import { IBaseRepository } from '../../domain/repositories/IBaseRepository';
 
 @injectable()
 export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
@@ -38,7 +38,7 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
     const updated = await this.model
       .findOneAndUpdate({ _id: id }, entity, { new: true })
       .lean();
-    if (!updated) throw new Error("Document not found");
+    if (!updated) throw new Error('Document not found');
     return updated as T;
   }
 

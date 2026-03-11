@@ -1,4 +1,4 @@
-import { Schema, Document, model } from "mongoose";
+import { Schema, Document, model } from 'mongoose';
 
 export interface LikeDocument extends Document {
   postId: string; 
@@ -15,4 +15,4 @@ const LikeSchema = new Schema<LikeDocument>(
 
 LikeSchema.index({ userId: 1, postId: 1 }, { unique: true });
 
-export const LikeModel = model<LikeDocument>("Like", LikeSchema);
+export const LikeModel = model<LikeDocument>('Like', LikeSchema);

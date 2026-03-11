@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const platformConfigSchema = z.object({
   auctionCommissionPercentage: z.number().min(0).max(50).optional(),

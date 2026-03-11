@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface AIConfigDocument extends Document {
   provider: string;
@@ -45,6 +45,6 @@ const AIConfigSchema = new Schema<AIConfigDocument>(
 );
 
 export const AIConfigModel = mongoose.model<AIConfigDocument>(
-  "AIConfig",
+  'AIConfig',
   AIConfigSchema
 );

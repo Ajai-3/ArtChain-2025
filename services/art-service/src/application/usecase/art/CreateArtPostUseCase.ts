@@ -1,13 +1,13 @@
-import { inject, injectable } from "inversify";
-import { ArtPost } from "../../../domain/entities/ArtPost";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
-import { CATEGORY_MESSAGES } from "../../../constants/categoryMessages";
-import { CreateArtPostDTO } from "../../interface/dto/art/CreateArtPostDTO";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { ICreateArtPostUseCase } from "../../interface/usecase/art/ICreateArtPostUseCase";
+import { inject, injectable } from 'inversify';
+import { ArtPost } from '../../../domain/entities/ArtPost';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../../constants/ErrorMessages';
+import { CATEGORY_MESSAGES } from '../../../constants/categoryMessages';
+import { CreateArtPostDTO } from '../../interface/dto/art/CreateArtPostDTO';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
+import { ICreateArtPostUseCase } from '../../interface/usecase/art/ICreateArtPostUseCase';
 
 @injectable()
 export class CreateArtPostUseCase implements ICreateArtPostUseCase {
@@ -27,19 +27,19 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
     if (!category) {
       throw new NotFoundError(CATEGORY_MESSAGES.NOT_FOUND);
     }
-    if (category.status !== "active") {
+    if (category.status !== 'active') {
       throw new BadRequestError(CATEGORY_MESSAGES.INVALID_CATEGORY);
     }
 
-    const baseName = dto.title.replace(/\s+/g, "-");
+    const baseName = dto.title.replace(/\s+/g, '-');
 
     const count = (await this._artRepo.count()) + 1;
 
-    const countStr = count.toString().padStart(4, "0");
+    const countStr = count.toString().padStart(4, '0');
 
     const letters = Array.from({ length: 4 }, () =>
       String.fromCharCode(65 + Math.floor(Math.random() * 26))
-    ).join("");
+    ).join('');
 
     const artName = `${baseName}-${countStr}${letters}`;
 

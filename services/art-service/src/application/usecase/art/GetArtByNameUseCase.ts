@@ -1,16 +1,16 @@
-import { IArtPostRepository } from "./../../../domain/repositories/IArtPostRepository";
-import { inject, injectable } from "inversify";
-import { ART_MESSAGES } from "../../../constants/ArtMessages";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
+import { IArtPostRepository } from './../../../domain/repositories/IArtPostRepository';
+import { inject, injectable } from 'inversify';
+import { ART_MESSAGES } from '../../../constants/ArtMessages';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ERROR_MESSAGES, NotFoundError } from 'art-chain-shared';
+import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepository';
 
-import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IGetArtByNameUseCase } from "../../interface/usecase/art/IGetArtByNameUseCase";
-import { IUserService } from "../../interface/service/IUserService";
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { toArtWithUserResponse } from '../../mapper/artWithUserMapper';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IGetArtByNameUseCase } from '../../interface/usecase/art/IGetArtByNameUseCase';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetArtByNameUseCase implements IGetArtByNameUseCase {

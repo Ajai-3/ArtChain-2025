@@ -1,5 +1,5 @@
-import { ArtPost, PostStatus, PostType, PriceType } from "../../domain/entities/ArtPost";
-import { IBaseRepository } from "./IBaseRepository";
+import { ArtPost, PostStatus, PostType, PriceType } from '../../domain/entities/ArtPost';
+import { IBaseRepository } from './IBaseRepository';
 
 export interface AdminArtFilters {
   status?: PostStatus;

@@ -1,37 +1,37 @@
-import { connectDB } from "../infrastructure/config/db";
-import { ArtPostModel } from "../infrastructure/models/ArtPostModel";
-import { PurchaseModel } from "../infrastructure/models/PurchaseModel";
-import mongoose from "mongoose";
+import { connectDB } from '../infrastructure/config/db';
+import { ArtPostModel } from '../infrastructure/models/ArtPostModel';
+import { PurchaseModel } from '../infrastructure/models/PurchaseModel';
+import mongoose from 'mongoose';
 
-const CREATOR_ID = "cmexta8ae0000bs8ktuvvq5qd";
-const PURCHASER_ID = "cmf6luw8t0000bsz8s7fhj3hh";
+const CREATOR_ID = 'cmexta8ae0000bs8ktuvvq5qd';
+const PURCHASER_ID = 'cmf6luw8t0000bsz8s7fhj3hh';
 
 const generateSoldArt = (index: number) => ({
   userId: CREATOR_ID,
   title: `Sold Art ${index + 1}`,
   artName: `sold-art-${Date.now()}-${index + 1}`,
   description: `This is a sold artwork number ${index + 1}`,
-  artType: "Digital",
-  hashtags: ["sold", "art", "exclusive"],
+  artType: 'Digital',
+  hashtags: ['sold', 'art', 'exclusive'],
   previewUrl: `https://picsum.photos/seed/${Date.now() + index}/400/600`,
   watermarkedUrl: `https://picsum.photos/seed/${Date.now() + index}/400/600?blur=2`,
-  aspectRatio: "2:3",
+  aspectRatio: '2:3',
   commentingDisabled: false,
   downloadingDisabled: false,
   isPrivate: false,
   isSensitive: false,
   isForSale: true,
   isSold: true, 
-  priceType: "artcoin",
+  priceType: 'artcoin',
   artcoins: Math.floor(Math.random() * 100) + 10,
   fiatPrice: null,
-  postType: "original",
-  status: "active"
+  postType: 'original',
+  status: 'active'
 });
 
 async function seedSoldArtworks() {
   try {
-    console.log("Connecting to database...");
+    console.log('Connecting to database...');
     await connectDB();
     
     console.log(`Seeding 3 SOLD artworks for creator ${CREATOR_ID} and purchaser ${PURCHASER_ID}...`);
@@ -58,9 +58,9 @@ async function seedSoldArtworks() {
     await ArtPostModel.insertMany(artworks);
     await PurchaseModel.insertMany(purchases);
     
-    console.log("✅ Successfully seeded 3 SOLD artworks and Purchase records directly to DB.");
+    console.log('✅ Successfully seeded 3 SOLD artworks and Purchase records directly to DB.');
   } catch (error) {
-    console.error("❌ Seeding failed:", error);
+    console.error('❌ Seeding failed:', error);
   } finally {
     await mongoose.connection.close();
     process.exit(0);

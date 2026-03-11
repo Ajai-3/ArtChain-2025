@@ -1,4 +1,4 @@
-export type AuctionStatus = "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED" | "UNSOLD";
+export type AuctionStatus = 'SCHEDULED' | 'ACTIVE' | 'ENDED' | 'CANCELLED' | 'UNSOLD';
 
 export class Auction {
   constructor(
@@ -10,7 +10,7 @@ export class Auction {
     public readonly startTime: Date,
     public readonly endTime: Date,
     public readonly currentBid: number = 0,
-    public readonly status: AuctionStatus = "SCHEDULED",
+    public readonly status: AuctionStatus = 'SCHEDULED',
     public readonly winnerId: string | null = null,
     public readonly bids: string[] = [],
     public readonly createdAt?: Date,

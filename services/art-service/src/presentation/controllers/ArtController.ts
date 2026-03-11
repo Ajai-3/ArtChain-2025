@@ -1,25 +1,25 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { ART_MESSAGES } from "../../constants/ArtMessages";
-import { IArtController } from "../interface/IArtController";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { validateWithZod } from "../../utils/validateWithZod";
-import { createArtPostSchema } from "../validators/artPost.schema";
-import { UserService } from "../../infrastructure/service/UserService";
-import { publishNotification } from "../../infrastructure/messaging/rabbitmq";
-import { CreateArtPostDTO } from "../../application/interface/dto/art/CreateArtPostDTO";
-import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
-import { IGetArtByIdUseCase } from "../../application/interface/usecase/art/IGetArtByIdUseCase";
-import { IGetArtByNameUseCase } from "../../application/interface/usecase/art/IGetArtByNameUseCase";
-import { ICountArtWorkUseCase } from "../../application/interface/usecase/art/ICountArtWorkUseCase";
-import { ICreateArtPostUseCase } from "../../application/interface/usecase/art/ICreateArtPostUseCase";
-import { IArtToElasticSearchUseCase } from "../../application/interface/usecase/art/IArtToElasticSearchUseCase";
-import { IGetAllArtWithUserIdUseCase } from "../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase";
-import { IBuyArtUseCase } from "../../application/interface/usecase/art/IBuyArtUseCase";
-import { IDownloadArtUseCase } from "../../application/interface/usecase/art/IDownloadArtUseCase";
-import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { ART_MESSAGES } from '../../constants/ArtMessages';
+import { IArtController } from '../interface/IArtController';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { createArtPostSchema } from '../validators/artPost.schema';
+import { UserService } from '../../infrastructure/service/UserService';
+import { publishNotification } from '../../infrastructure/messaging/rabbitmq';
+import { CreateArtPostDTO } from '../../application/interface/dto/art/CreateArtPostDTO';
+import { IGetAllArtUseCase } from '../../application/interface/usecase/art/IGetAllArtUseCase';
+import { IGetArtByIdUseCase } from '../../application/interface/usecase/art/IGetArtByIdUseCase';
+import { IGetArtByNameUseCase } from '../../application/interface/usecase/art/IGetArtByNameUseCase';
+import { ICountArtWorkUseCase } from '../../application/interface/usecase/art/ICountArtWorkUseCase';
+import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/ICreateArtPostUseCase';
+import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
+import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
+import { IBuyArtUseCase } from '../../application/interface/usecase/art/IBuyArtUseCase';
+import { IDownloadArtUseCase } from '../../application/interface/usecase/art/IDownloadArtUseCase';
+import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 
 @injectable()
 export class ArtController implements IArtController {
@@ -58,7 +58,7 @@ export class ArtController implements IArtController {
   ): Promise<Response | void> => {
     try {
       const { artname } = req.params;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       const data = await this._getArtByNameUseCase.execute(
         artname,
@@ -67,7 +67,7 @@ export class ArtController implements IArtController {
 
       logger.info(`${data.art.artName} fetched succefully.`);
 
-      console.log("Art fetched successfully.", data);
+      console.log('Art fetched successfully.', data);
       return res
         .status(HttpStatus.OK)
         .json({ message: ART_MESSAGES.ART_FETCH_WITH_ART_NAME_SUCESS, data });
@@ -85,7 +85,7 @@ export class ArtController implements IArtController {
   //# ================================================================================================================
   getAllArt = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const categoryId = req.query.categoryId as string | undefined;
@@ -117,7 +117,7 @@ export class ArtController implements IArtController {
   //# ================================================================================================================
   getRecommendedArt = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const categoryId = req.query.categoryId as string | undefined;
@@ -156,7 +156,7 @@ export class ArtController implements IArtController {
       const userId = req.params.userId as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 15;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       logger.info(
         `Fetching art for user ID: ${userId}, page=${page}, limit=${limit}`
@@ -176,7 +176,7 @@ export class ArtController implements IArtController {
         data: arts,
       });
     } catch (error) {
-      logger.error("Error in getArtWithUser", error);
+      logger.error('Error in getArtWithUser', error);
       next(error);
     }
   };
@@ -223,7 +223,7 @@ export class ArtController implements IArtController {
         art,
       });
     } catch (error) {
-      logger.error("Error in getArtById", error);
+      logger.error('Error in getArtById', error);
       next(error);
     }
   };
@@ -241,7 +241,7 @@ export class ArtController implements IArtController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       const validatedData = validateWithZod(createArtPostSchema, req.body);
 
@@ -250,7 +250,7 @@ export class ArtController implements IArtController {
 
       const art = await this._artToElasticSearchUseCase.execute(createdArt);
 
-      await publishNotification("art.created", art);
+      await publishNotification('art.created', art);
 
       logger.info(
         `Art created successfully by userId=${userId}, title=${JSON.stringify(
@@ -262,7 +262,7 @@ export class ArtController implements IArtController {
         .status(HttpStatus.CREATED)
         .json({ message: ART_MESSAGES.CREATE_SUCCESS, data: createdArt });
     } catch (error) {
-      logger.error("Error in createArt", error);
+      logger.error('Error in createArt', error);
       next(error);
     }
   };
@@ -294,7 +294,7 @@ export class ArtController implements IArtController {
         data: updateData,
       });
     } catch (error) {
-      logger.error("Error in updateArt", error);
+      logger.error('Error in updateArt', error);
       next(error);
     }
   };
@@ -324,7 +324,7 @@ export class ArtController implements IArtController {
         artworksCount,
       });
     } catch (error) {
-      logger.error("Error in countArtwork", error);
+      logger.error('Error in countArtwork', error);
       next(error);
     }
   };
@@ -351,7 +351,7 @@ export class ArtController implements IArtController {
         .status(HttpStatus.OK)
         .json({ message: ART_MESSAGES.DELETE_SUCCESS });
     } catch (error) {
-      logger.error("Error in deleteArt", error);
+      logger.error('Error in deleteArt', error);
       next(error);
     }
   };
@@ -370,17 +370,17 @@ export class ArtController implements IArtController {
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       logger.info(`User ${currentUserId} buying art ${id}`);
 
       await this._buyArtUseCase.execute(id, currentUserId);
 
       return res.status(HttpStatus.OK).json({
-        message: "Art purchased successfully",
+        message: 'Art purchased successfully',
       });
     } catch (error) {
-      logger.error("Error in buyArt", error);
+      logger.error('Error in buyArt', error);
       next(error);
     }
   };
@@ -399,18 +399,18 @@ export class ArtController implements IArtController {
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       logger.info(`User ${currentUserId} downloading art ${id}`);
 
       const signedUrl = await this._downloadArtUseCase.execute(id, currentUserId);
 
       return res.status(HttpStatus.OK).json({
-        message: "Download link generated successfully",
+        message: 'Download link generated successfully',
         downloadUrl: signedUrl,
       });
     } catch (error) {
-      logger.error("Error in downloadArt", error);
+      logger.error('Error in downloadArt', error);
       next(error);
     }
   };

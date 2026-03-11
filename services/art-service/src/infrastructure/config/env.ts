@@ -6,8 +6,8 @@ import 'dotenv-flow/config';
 
 // Using hardcoded values from .env file instead
 const secrets = {
-    aws_cdn_domain: process.env.AWS_CDN_DOMAIN || "your-cdn-domain-here.cloudfront.net",
-    jwtAccessSecret: process.env.JWT_ACCESS_SECRET || "your-access-secret-key-here",
+    aws_cdn_domain: process.env.AWS_CDN_DOMAIN || 'your-cdn-domain-here.cloudfront.net',
+    jwtAccessSecret: process.env.JWT_ACCESS_SECRET || 'your-access-secret-key-here',
 };
 
 export const config = {
@@ -22,5 +22,5 @@ export const config = {
         cloudfront_private_key: process.env.CLOUDFRONT_PRIVATE_KEY!,
     },
     jwt_secret: secrets.jwtAccessSecret!,
-    platform_admin_id: process.env.PLATFORM_ADMIN_ID || "admin-platform-wallet-id"
-}
+    platform_admin_id: process.env.PLATFORM_ADMIN_ID || 'admin-platform-wallet-id'
+};

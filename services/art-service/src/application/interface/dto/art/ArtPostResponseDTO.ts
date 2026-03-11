@@ -10,10 +10,10 @@ export interface ArtPostResponseDTO {
   watermarkedUrl: string;
   aspectRatio: string;
   isForSale: boolean;
-  priceType?: "artcoin" | "fiat";
+  priceType?: 'artcoin' | 'fiat';
   artcoins?: number;
   fiatPrice?: number;
-  postType: "original" | "repost" | "purchased";
+  postType: 'original' | 'repost' | 'purchased';
   createdAt: Date;
   updatedAt: Date;
 }

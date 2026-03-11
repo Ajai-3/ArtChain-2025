@@ -1,14 +1,14 @@
-import { inject, injectable } from "inversify";
-import { IBuyArtUseCase } from "../../interface/usecase/art/IBuyArtUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IWalletService } from "../../../domain/interfaces/IWalletService";
-import { Purchase } from "../../../domain/entities/Purchase";
-import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
+import { inject, injectable } from 'inversify';
+import { IBuyArtUseCase } from '../../interface/usecase/art/IBuyArtUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IWalletService } from '../../../domain/interfaces/IWalletService';
+import { Purchase } from '../../../domain/entities/Purchase';
+import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepository';
 
-import { IPlatformConfigRepository } from "../../../domain/repositories/IPlatformConfigRepository";
-import { config } from "../../../infrastructure/config/env";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
+import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
+import { config } from '../../../infrastructure/config/env';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
 
 @injectable()
 export class BuyArtUseCase implements IBuyArtUseCase {
@@ -27,20 +27,20 @@ export class BuyArtUseCase implements IBuyArtUseCase {
     const art = await this._artRepository.findById(artId);
 
     if (!art) {
-      throw new NotFoundError("Art not found");
+      throw new NotFoundError('Art not found');
     }
 
     if (!art.isForSale) {
-      throw new BadRequestError("Art is not for sale");
+      throw new BadRequestError('Art is not for sale');
     }
 
     if (art.userId === buyerId) {
-      throw new BadRequestError("You already own this art");
+      throw new BadRequestError('You already own this art');
     }
 
     const price = art.artcoins || 0; // Assuming artcoins is the price
     if (price <= 0) {
-        throw new BadRequestError("Invalid price");
+        throw new BadRequestError('Invalid price');
     }
 
     // Calculate Platform Fee
@@ -58,7 +58,7 @@ export class BuyArtUseCase implements IBuyArtUseCase {
     );
 
     if (!transactionSuccess) {
-      throw new Error("Transaction failed");
+      throw new Error('Transaction failed');
     }
 
     // Create Purchase Record
@@ -76,7 +76,7 @@ export class BuyArtUseCase implements IBuyArtUseCase {
     await this._artRepository.update(artId, {
       isForSale: false,
       isSold: true,
-      status: "active",
+      status: 'active',
       updatedAt: new Date(),
     });
 

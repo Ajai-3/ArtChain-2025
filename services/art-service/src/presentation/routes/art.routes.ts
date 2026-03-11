@@ -1,15 +1,15 @@
-import express from "express";
+import express from 'express';
 
-import { IArtController } from "../interface/IArtController";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { ILikeController } from "../interface/ILikeController";
-import { IShopController } from "../interface/IShopController";
-import { ICommentController } from "../interface/ICommentController";
-import { IFavoriteController } from "../interface/IFavoriteController";
-import { ICategoryController } from "../interface/ICategoryController";
-import { IAdminPlatformConfigController } from "../interface/IAdminPlatformConfigController";
-import { container } from "../../infrastructure/Inversify/inversify.config";
-import { ROUTES } from "../../constants/routes";
+import { IArtController } from '../interface/IArtController';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { ILikeController } from '../interface/ILikeController';
+import { IShopController } from '../interface/IShopController';
+import { ICommentController } from '../interface/ICommentController';
+import { IFavoriteController } from '../interface/IFavoriteController';
+import { ICategoryController } from '../interface/ICategoryController';
+import { IAdminPlatformConfigController } from '../interface/IAdminPlatformConfigController';
+import { container } from '../../infrastructure/Inversify/inversify.config';
+import { ROUTES } from '../../constants/routes';
 
 const router = express.Router();
 

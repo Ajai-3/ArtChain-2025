@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 export interface IAIController {
   generateImage: (req: Request, res: Response, next: NextFunction) => Promise<void>;

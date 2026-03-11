@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { CategoryModel } from "../models/CategoryModel";
-import { Category } from "../../domain/entities/Category";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
+import { injectable } from 'inversify';
+import { CategoryModel } from '../models/CategoryModel';
+import { Category } from '../../domain/entities/Category';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { ICategoryRepository } from '../../domain/repositories/ICategoryRepository';
 
 @injectable()
 export class CategoryRepositoryImpl
@@ -44,7 +44,7 @@ export class CategoryRepositoryImpl
     const query: any = {};
 
     if (search) {
-      query.name = { $regex: search, $options: "i" };
+      query.name = { $regex: search, $options: 'i' };
     }
 
     if (countFilter !== undefined) {

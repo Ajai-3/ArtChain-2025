@@ -1,18 +1,18 @@
-import { Request, Response, NextFunction } from "express";
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IAdminArtController } from "../interface/IAdminArtController";
-import { IGetAllArtsUseCase } from "../../application/interface/usecase/admin/IGetAllArtsUseCase";
-import { IGetArtStatsUseCase } from "../../application/interface/usecase/admin/IGetArtStatsUseCase";
-import { IUpdateArtStatusUseCase } from "../../application/interface/usecase/admin/IUpdateArtStatusUseCase";
-import { PostStatus, PostType, PriceType } from "../../domain/entities/ArtPost";
-import { HttpStatus } from "art-chain-shared";
-import { updateArtStatusSchema } from "../validators/updateArtStatus.schema";
-import { validateWithZod } from "../../utils/validateWithZod";
-import { UpdateArtStatusDTO } from "../../application/interface/dto/admin/UpdateArtStatusDTO";
-import { IGetTopArtsUseCase } from "../../application/interface/usecase/admin/IGetTopArtsUseCase";
-import { IGetCategoryStatsUseCase } from "../../application/interface/usecase/admin/IGetCategoryStatsUseCase";
-import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
+import { Request, Response, NextFunction } from 'express';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IAdminArtController } from '../interface/IAdminArtController';
+import { IGetAllArtsUseCase } from '../../application/interface/usecase/admin/IGetAllArtsUseCase';
+import { IGetArtStatsUseCase } from '../../application/interface/usecase/admin/IGetArtStatsUseCase';
+import { IUpdateArtStatusUseCase } from '../../application/interface/usecase/admin/IUpdateArtStatusUseCase';
+import { PostStatus, PostType, PriceType } from '../../domain/entities/ArtPost';
+import { HttpStatus } from 'art-chain-shared';
+import { updateArtStatusSchema } from '../validators/updateArtStatus.schema';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { UpdateArtStatusDTO } from '../../application/interface/dto/admin/UpdateArtStatusDTO';
+import { IGetTopArtsUseCase } from '../../application/interface/usecase/admin/IGetTopArtsUseCase';
+import { IGetCategoryStatsUseCase } from '../../application/interface/usecase/admin/IGetCategoryStatsUseCase';
+import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 
 @injectable()
 export class AdminArtController implements IAdminArtController {

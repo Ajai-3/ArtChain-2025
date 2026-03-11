@@ -1,18 +1,18 @@
-import { injectable, inject } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IAIController } from "../interface/IAIController";
-import { IGenerateAIImageUseCase } from "../../application/interface/usecase/ai/IGenerateAIImageUseCase";
-import { IGetMyAIGenerationsUseCase } from "../../application/interface/usecase/ai/IGetMyAIGenerationsUseCase";
-import { ICheckAIQuotaUseCase } from "../../application/interface/usecase/ai/ICheckAIQuotaUseCase";
-import { IGetEnabledAIConfigsUseCase } from "../../application/interface/usecase/ai/IGetEnabledAIConfigsUseCase";
-import { IDeleteAIGenerationUseCase } from "../../application/interface/usecase/ai/IDeleteAIGenerationUseCase";
-import { HttpStatus } from "art-chain-shared";
-import { validateWithZod } from "../../utils/validateWithZod";
-import { generateAIImageSchema } from "../validators/ai.schema";
-import { GenerateAIImageDTO } from "../../application/interface/dto/ai/GenerateAIImageDTO";
-import { AI_MESSAGES } from "../../constants/AIMessages";
-import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IAIController } from '../interface/IAIController';
+import { IGenerateAIImageUseCase } from '../../application/interface/usecase/ai/IGenerateAIImageUseCase';
+import { IGetMyAIGenerationsUseCase } from '../../application/interface/usecase/ai/IGetMyAIGenerationsUseCase';
+import { ICheckAIQuotaUseCase } from '../../application/interface/usecase/ai/ICheckAIQuotaUseCase';
+import { IGetEnabledAIConfigsUseCase } from '../../application/interface/usecase/ai/IGetEnabledAIConfigsUseCase';
+import { IDeleteAIGenerationUseCase } from '../../application/interface/usecase/ai/IDeleteAIGenerationUseCase';
+import { HttpStatus } from 'art-chain-shared';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { generateAIImageSchema } from '../validators/ai.schema';
+import { GenerateAIImageDTO } from '../../application/interface/dto/ai/GenerateAIImageDTO';
+import { AI_MESSAGES } from '../../constants/AIMessages';
+import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 
 @injectable()
 export class AIController implements IAIController {
@@ -26,7 +26,7 @@ export class AIController implements IAIController {
 
   generateImage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       if (!userId) {
         res.status(HttpStatus.UNAUTHORIZED).json({
@@ -55,7 +55,7 @@ export class AIController implements IAIController {
 
   getMyGenerations = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       if (!userId) {
         res.status(HttpStatus.UNAUTHORIZED).json({
@@ -80,7 +80,7 @@ export class AIController implements IAIController {
 
   checkQuota = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       if (!userId) {
         res.status(HttpStatus.UNAUTHORIZED).json({
@@ -115,7 +115,7 @@ export class AIController implements IAIController {
 
   deleteGeneration = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       if (!userId) {
         res.status(HttpStatus.UNAUTHORIZED).json({
@@ -127,7 +127,7 @@ export class AIController implements IAIController {
       const { id } = req.params;
       if (!id) {
         res.status(HttpStatus.BAD_REQUEST).json({
-          message: "Generation ID is required"
+          message: 'Generation ID is required'
         });
         return;
       }

@@ -4,8 +4,8 @@ export interface IGetAllShopArtsUseCase {
     limit?: number,
     filters?: {
       category?: string[];
-      priceOrder?: "asc" | "desc";
-      titleOrder?: "asc" | "desc";
+      priceOrder?: 'asc' | 'desc';
+      titleOrder?: 'asc' | 'desc';
       minPrice?: number;
       maxPrice?: number;
     }

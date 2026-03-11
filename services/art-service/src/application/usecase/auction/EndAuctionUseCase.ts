@@ -1,13 +1,13 @@
-import { injectable, inject } from "inversify";
-import { IEndAuctionUseCase } from "../../interface/usecase/auction/IEndAuctionUseCase";
-import { IAuctionRepository } from "../../../domain/repositories/IAuctionRepository";
-import { IBidRepository } from "../../../domain/repositories/IBidRepository";
-import { IWalletService } from "../../../domain/interfaces/IWalletService";
-import { ISocketService } from "../../../domain/interfaces/ISocketService";
-import { IPlatformConfigRepository } from "../../../domain/repositories/IPlatformConfigRepository";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { logger } from "../../../utils/logger";
-import { config } from "../../../infrastructure/config/env";
+import { injectable, inject } from 'inversify';
+import { IEndAuctionUseCase } from '../../interface/usecase/auction/IEndAuctionUseCase';
+import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
+import { IBidRepository } from '../../../domain/repositories/IBidRepository';
+import { IWalletService } from '../../../domain/interfaces/IWalletService';
+import { ISocketService } from '../../../domain/interfaces/ISocketService';
+import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { logger } from '../../../utils/logger';
+import { config } from '../../../infrastructure/config/env';
 
 @injectable()
 export class EndAuctionUseCase implements IEndAuctionUseCase {
@@ -29,7 +29,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         return false;
     }
 
-    if (auction.status !== "ACTIVE") {
+    if (auction.status !== 'ACTIVE') {
         logger.warn(`Auction ${auctionId} is not active (Status: ${auction.status}). Skipping.`);
         return false; 
     }
@@ -62,7 +62,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         if (settlementSuccess) {
             // 5. Update Auction Status
             await this._auctionRepository.update(auctionId, {
-                status: "ENDED",
+                status: 'ENDED',
                 winnerId: winningBid.bidderId
             });
             
@@ -71,7 +71,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
                 auctionId,
                 winnerId: winningBid.bidderId,
                 winningBidAmount: winningBid.amount,
-                status: "ENDED"
+                status: 'ENDED'
             });
             logger.info(`Auction ${auctionId} settled successfully. Winner: ${winningBid.bidderId}`);
         } else {
@@ -81,10 +81,10 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
 
     } else {
         // No Bids
-        await this._auctionRepository.update(auctionId, { status: "UNSOLD" }); // Use correct status enum if existing
+        await this._auctionRepository.update(auctionId, { status: 'UNSOLD' }); // Use correct status enum if existing
          this._socketService.publishAuctionEnded({
                 auctionId,
-                status: "UNSOLD"
+                status: 'UNSOLD'
             });
         logger.info(`Auction ${auctionId} ended without bids.`);
     }

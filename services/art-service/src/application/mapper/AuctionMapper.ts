@@ -1,5 +1,5 @@
-import { Auction } from "../../domain/entities/Auction";
-import { Bid } from "../../domain/entities/Bid";
+import { Auction } from '../../domain/entities/Auction';
+import { Bid } from '../../domain/entities/Bid';
 
 export class AuctionMapper {
   static toDTO(

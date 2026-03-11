@@ -1,19 +1,19 @@
-import { inject, injectable } from "inversify";
-import { Like } from "../../../domain/entities/Like";
+import { inject, injectable } from 'inversify';
+import { Like } from '../../../domain/entities/Like';
 import {
   ConflictError,
   BadRequestError,
   NotFoundError,
-} from "art-chain-shared";
-import { ART_MESSAGES } from "../../../constants/ArtMessages";
-import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { publishNotification } from "../../../infrastructure/messaging/rabbitmq";
-import { ILikePostUseCase } from "../../interface/usecase/like/ILikePostUseCase";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IUserService } from "../../interface/service/IUserService";
+} from 'art-chain-shared';
+import { ART_MESSAGES } from '../../../constants/ArtMessages';
+import { LIKE_MESSAGES } from '../../../constants/LikeMessages';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
+import { ILikePostUseCase } from '../../interface/usecase/like/ILikePostUseCase';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class LikePostUseCase implements ILikePostUseCase {
@@ -55,7 +55,7 @@ export class LikePostUseCase implements ILikePostUseCase {
       const likerUser = userMap.get(userId);
 
       if (likedUser && likerUser) {
-        await publishNotification("like", {
+        await publishNotification('like', {
           likedUserId: likedUser.id,
           likerId: likerUser.id,
           likerName: likerUser.username,

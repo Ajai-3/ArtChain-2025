@@ -1,11 +1,11 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAIGenerationRepository } from "../../../domain/repositories/IAIGenerationRepository";
-import { IAIConfigRepository } from "../../../domain/repositories/IAIConfigRepository";
-import { AIProviderService } from "../../../infrastructure/service/AIProviderService";
-import { IWalletService } from "../../../domain/interfaces/IWalletService";
-import { IGenerateAIImageUseCase } from "../../interface/usecase/ai/IGenerateAIImageUseCase";
-import { GenerateAIImageDTO } from "../../interface/dto/ai/GenerateAIImageDTO";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IAIGenerationRepository } from '../../../domain/repositories/IAIGenerationRepository';
+import { IAIConfigRepository } from '../../../domain/repositories/IAIConfigRepository';
+import { AIProviderService } from '../../../infrastructure/service/AIProviderService';
+import { IWalletService } from '../../../domain/interfaces/IWalletService';
+import { IGenerateAIImageUseCase } from '../../interface/usecase/ai/IGenerateAIImageUseCase';
+import { GenerateAIImageDTO } from '../../interface/dto/ai/GenerateAIImageDTO';
 
 @injectable()
 export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
@@ -22,7 +22,7 @@ export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
     // Get enabled AI configs
     const configs = await this._aiConfigRepo.findAllEnabled();
     if (!configs || configs.length === 0) {
-      throw new Error("No AI providers are currently enabled");
+      throw new Error('No AI providers are currently enabled');
     }
 
     let selectedConfig;
@@ -56,7 +56,7 @@ export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
         // For now, let's use a placeholder system ID or pass empty if allowed.
         // Actually, let's use the first available admin or a system constant. 
         // Better: Pass a recognized system constant if possible. If not, maybe the wallet service handles it.
-        const payeeId = "SYSTEM_TREASURY"; // Placeholder 
+        const payeeId = 'SYSTEM_TREASURY'; // Placeholder 
 
         const paymentSuccess = await this._walletService.processPayment(
            userId,
@@ -64,11 +64,11 @@ export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
            cost,
            description,
            referenceId,
-           "AI_GENERATION"
+           'AI_GENERATION'
         );
 
         if (!paymentSuccess) {
-           throw new Error("Insufficient ArtCoins or payment failed.");
+           throw new Error('Insufficient ArtCoins or payment failed.');
         }
       }
     } else {
@@ -95,7 +95,7 @@ export class GenerateAIImageUseCase implements IGenerateAIImageUseCase {
       }
     );
 
-    console.log(`[GenerateAIImage] Image generated successfully. Saving record...`);
+    console.log('[GenerateAIImage] Image generated successfully. Saving record...');
 
     // Save generation record AFTER successful generation
     const generation = await this._aiGenerationRepo.create({

@@ -1,9 +1,9 @@
 
-import { inject, injectable } from "inversify";
-import { ICancelAuctionUseCase } from "../../interface/usecase/auction/ICancelAuctionUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAuctionRepository } from "../../../domain/repositories/IAuctionRepository";
-import { NotFoundError, ValidationError } from "art-chain-shared";
+import { inject, injectable } from 'inversify';
+import { ICancelAuctionUseCase } from '../../interface/usecase/auction/ICancelAuctionUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
+import { NotFoundError, ValidationError } from 'art-chain-shared';
 
 @injectable()
 export class CancelAuctionUseCase implements ICancelAuctionUseCase {
@@ -16,13 +16,13 @@ export class CancelAuctionUseCase implements ICancelAuctionUseCase {
     const auction = await this._auctionRepository.getById(id);
 
     if (!auction) {
-      throw new NotFoundError("Auction not found");
+      throw new NotFoundError('Auction not found');
     }
 
-    if (auction.status === "ENDED" || auction.status === "CANCELLED") {
-      throw new ValidationError("Cannot cancel an auction that is already ended or cancelled");
+    if (auction.status === 'ENDED' || auction.status === 'CANCELLED') {
+      throw new ValidationError('Cannot cancel an auction that is already ended or cancelled');
     }
 
-    await this._auctionRepository.updateStatus(id, "CANCELLED");
+    await this._auctionRepository.updateStatus(id, 'CANCELLED');
   }
 }

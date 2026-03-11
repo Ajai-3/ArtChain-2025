@@ -1,6 +1,6 @@
-import { injectable } from "inversify";
-import { logger } from "../../../utils/logger";
-import { IArtToElasticSearchUseCase } from "../../interface/usecase/art/IArtToElasticSearchUseCase";
+import { injectable } from 'inversify';
+import { logger } from '../../../utils/logger';
+import { IArtToElasticSearchUseCase } from '../../interface/usecase/art/IArtToElasticSearchUseCase';
 
 @injectable()
 export class ArtToElasticSearchUseCase implements IArtToElasticSearchUseCase {

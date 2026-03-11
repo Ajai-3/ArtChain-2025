@@ -1,8 +1,8 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAIGenerationRepository } from "../../../domain/repositories/IAIGenerationRepository";
-import { IAIConfigRepository } from "../../../domain/repositories/IAIConfigRepository";
-import { ICheckAIQuotaUseCase } from "../../interface/usecase/ai/ICheckAIQuotaUseCase";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IAIGenerationRepository } from '../../../domain/repositories/IAIGenerationRepository';
+import { IAIConfigRepository } from '../../../domain/repositories/IAIConfigRepository';
+import { ICheckAIQuotaUseCase } from '../../interface/usecase/ai/ICheckAIQuotaUseCase';
 
 @injectable()
 export class CheckAIQuotaUseCase implements ICheckAIQuotaUseCase {
@@ -15,7 +15,7 @@ export class CheckAIQuotaUseCase implements ICheckAIQuotaUseCase {
     // Get enabled AI configs to determine daily limit
     const configs = await this._aiConfigRepo.findAllEnabled();
     if (!configs || configs.length === 0) {
-      throw new Error("No AI providers are currently enabled");
+      throw new Error('No AI providers are currently enabled');
     }
 
     const sortedConfigs = configs.sort((a: any, b: any) => (a.priority || 0) - (b.priority || 0));

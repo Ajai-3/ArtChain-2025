@@ -1,7 +1,7 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IGetCategoryStatsUseCase } from "../../interface/usecase/admin/IGetCategoryStatsUseCase";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IGetCategoryStatsUseCase } from '../../interface/usecase/admin/IGetCategoryStatsUseCase';
 
 @injectable()
 export class GetCategoryStatsUseCase implements IGetCategoryStatsUseCase {

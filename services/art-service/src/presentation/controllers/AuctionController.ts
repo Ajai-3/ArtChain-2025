@@ -1,22 +1,22 @@
-import { Request, Response, NextFunction } from "express";
-import { injectable, inject } from "inversify";
-import { HttpStatus } from "art-chain-shared";
-import { logger } from "../../utils/logger";
-import { IAuctionController } from "../interface/IAuctionController";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { ICreateAuctionUseCase } from "../../application/interface/usecase/auction/ICreateAuctionUseCase";
-import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction/IGetAuctionsUseCase";
-import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
-import { IGetAuctionStatsUseCase } from "../../application/interface/usecase/auction/IGetAuctionStatsUseCase";
-import { ICancelAuctionUseCase } from "../../application/interface/usecase/auction/ICancelAuctionUseCase";
-import { IGetRecentAuctionsUseCase } from "../../application/interface/usecase/admin/IGetRecentAuctionsUseCase";
-import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
+import { Request, Response, NextFunction } from 'express';
+import { injectable, inject } from 'inversify';
+import { HttpStatus } from 'art-chain-shared';
+import { logger } from '../../utils/logger';
+import { IAuctionController } from '../interface/IAuctionController';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
+import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction/IGetAuctionsUseCase';
+import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
+import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
+import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
+import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
+import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
 
-import { createAuctionSchema } from "../validators/auction.schema";
-import { CreateAuctionDTO } from "../../application/interface/dto/auction/CreateAuctionDTO";
-import { GetAuctionsDTO } from "../../application/interface/dto/auction/GetAuctionsDTO";
-import { GetAuctionByIdDTO } from "../../application/interface/dto/auction/GetAuctionByIdDTO";
-import { validateWithZod } from "../../utils/validateWithZod";
+import { createAuctionSchema } from '../validators/auction.schema';
+import { CreateAuctionDTO } from '../../application/interface/dto/auction/CreateAuctionDTO';
+import { GetAuctionsDTO } from '../../application/interface/dto/auction/GetAuctionsDTO';
+import { GetAuctionByIdDTO } from '../../application/interface/dto/auction/GetAuctionByIdDTO';
+import { validateWithZod } from '../../utils/validateWithZod';
 
 @injectable()
 export class AuctionController implements IAuctionController {
@@ -49,7 +49,7 @@ export class AuctionController implements IAuctionController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const hostId = req.headers["x-user-id"] as string;
+      const hostId = req.headers['x-user-id'] as string;
       logger.info(`Creating auction for host: ${hostId}`);
 
       const validatedBody = validateWithZod(createAuctionSchema, req.body);
@@ -71,7 +71,7 @@ export class AuctionController implements IAuctionController {
         data: auction,
       });
     } catch (error) {
-      logger.error("Error in createAuction", error);
+      logger.error('Error in createAuction', error);
       next(error);
     }
   };
@@ -123,7 +123,7 @@ export class AuctionController implements IAuctionController {
         data: result,
       });
     } catch (error) {
-      logger.error("Error in getAuctions", error);
+      logger.error('Error in getAuctions', error);
       next(error);
     }
   };
@@ -181,7 +181,7 @@ export class AuctionController implements IAuctionController {
         },
       });
     } catch (error) {
-      logger.error("Error in getAuctionsWithStats", error);
+      logger.error('Error in getAuctionsWithStats', error);
       next(error);
     }
   };
@@ -210,7 +210,7 @@ export class AuctionController implements IAuctionController {
         data: auction,
       });
     } catch (error) {
-      logger.error("Error in getAuction", error);
+      logger.error('Error in getAuction', error);
       next(error);
     }
   };
@@ -235,7 +235,7 @@ export class AuctionController implements IAuctionController {
         data: stats,
       });
     } catch (error) {
-      logger.error("Error in getAuctionStats", error);
+      logger.error('Error in getAuctionStats', error);
       next(error);
     }
   };
@@ -259,10 +259,10 @@ export class AuctionController implements IAuctionController {
       await this._cancelAuctionUseCase.execute(id);
 
       return res.status(HttpStatus.OK).json({
-        message: "Auction cancelled successfully",
+        message: 'Auction cancelled successfully',
       });
     } catch (error) {
-      logger.error("Error in cancelAuction", error);
+      logger.error('Error in cancelAuction', error);
       next(error);
     }
   };
@@ -276,11 +276,11 @@ export class AuctionController implements IAuctionController {
       const limit = parseInt(req.query.limit as string) || 5;
       const auctions = await this._getRecentAuctionsUseCase.execute(limit);
       return res.status(HttpStatus.OK).json({
-        message: "Recent auctions fetched successfully",
+        message: 'Recent auctions fetched successfully',
         data: auctions,
       });
     } catch (error) {
-      logger.error("Error in getRecentAuctions", error);
+      logger.error('Error in getRecentAuctions', error);
       next(error);
     }
   };

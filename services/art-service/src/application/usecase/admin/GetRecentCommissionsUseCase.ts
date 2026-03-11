@@ -1,8 +1,8 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
-import { IGetRecentCommissionsUseCase } from "../../interface/usecase/admin/IGetRecentCommissionsUseCase";
-import { Commission } from "../../../domain/entities/Commission";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
+import { IGetRecentCommissionsUseCase } from '../../interface/usecase/admin/IGetRecentCommissionsUseCase';
+import { Commission } from '../../../domain/entities/Commission';
 
 @injectable()
 export class GetRecentCommissionsUseCase implements IGetRecentCommissionsUseCase {

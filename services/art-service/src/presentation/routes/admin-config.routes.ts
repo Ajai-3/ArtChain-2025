@@ -1,9 +1,9 @@
-import express from "express";
-import { container } from "../../infrastructure/Inversify/inversify.config";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IAdminPlatformConfigController } from "../interface/IAdminPlatformConfigController";
+import express from 'express';
+import { container } from '../../infrastructure/Inversify/inversify.config';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IAdminPlatformConfigController } from '../interface/IAdminPlatformConfigController';
 
-import { ROUTES } from "../../constants/routes";
+import { ROUTES } from '../../constants/routes';
 
 const router = express.Router();
 

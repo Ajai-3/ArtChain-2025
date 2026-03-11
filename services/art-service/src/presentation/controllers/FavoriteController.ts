@@ -1,15 +1,15 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { FAVORITE_MESSAGES } from "../../constants/FavoriteMessages";
-import { IFavoriteController } from "../interface/IFavoriteController";
-import { IAddFavoriteUseCase } from "../../application/interface/usecase/favorite/IAddFavoriteUseCase";
-import { IRemoveFavoriteUseCase } from "../../application/interface/usecase/favorite/IRemoveFavoriteUseCase";
-import { IGetFavoriteCountUseCase } from "../../application/interface/usecase/favorite/IGetFavoriteCountUseCase";
-import { IGetFavoritedUsersUseCase } from "../../application/interface/usecase/favorite/IGetFavoritedUsersUseCase";
-import { IGetUserFavoritedArtsUseCase } from "../../application/interface/usecase/favorite/IGetUserFavoritedArtsUseCase";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { FAVORITE_MESSAGES } from '../../constants/FavoriteMessages';
+import { IFavoriteController } from '../interface/IFavoriteController';
+import { IAddFavoriteUseCase } from '../../application/interface/usecase/favorite/IAddFavoriteUseCase';
+import { IRemoveFavoriteUseCase } from '../../application/interface/usecase/favorite/IRemoveFavoriteUseCase';
+import { IGetFavoriteCountUseCase } from '../../application/interface/usecase/favorite/IGetFavoriteCountUseCase';
+import { IGetFavoritedUsersUseCase } from '../../application/interface/usecase/favorite/IGetFavoritedUsersUseCase';
+import { IGetUserFavoritedArtsUseCase } from '../../application/interface/usecase/favorite/IGetUserFavoritedArtsUseCase';
 
 @injectable()
 export class FavoriteController implements IFavoriteController {
@@ -39,7 +39,7 @@ export class FavoriteController implements IFavoriteController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { postId } = req.body;
 
       await this._addFavoriteUseCase.execute(postId, userId);
@@ -68,7 +68,7 @@ export class FavoriteController implements IFavoriteController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { postId } = req.body;
 
       await this._removeFavoriteUseCase.execute(postId, userId);
@@ -125,7 +125,7 @@ export class FavoriteController implements IFavoriteController {
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
@@ -170,7 +170,7 @@ export class FavoriteController implements IFavoriteController {
       const userId = req.params.userId;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 15;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       const arts = await this._getUserFavoritedArtsUseCase.execute(
         userId,

@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { Bid } from "../../domain/entities/Bid";
-import { BidModel } from "../models/BidModel";
-import { IBidRepository } from "../../domain/repositories/IBidRepository";
+import { injectable } from 'inversify';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { Bid } from '../../domain/entities/Bid';
+import { BidModel } from '../models/BidModel';
+import { IBidRepository } from '../../domain/repositories/IBidRepository';
 
 @injectable()
 export class BidRepositoryImpl extends BaseRepositoryImpl<Bid> implements IBidRepository {

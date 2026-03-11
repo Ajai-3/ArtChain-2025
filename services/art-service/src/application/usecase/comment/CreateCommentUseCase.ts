@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { BadRequestError } from "art-chain-shared";
-import { Comment } from "../../../domain/entities/Comment";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
-import { CreateCommentDTO } from "../../interface/dto/comment/CreateCommentDTO";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { ICreateCommentUseCase } from "../../interface/usecase/comment/ICreateCommentUseCase";
+import { inject, injectable } from 'inversify';
+import { BadRequestError } from 'art-chain-shared';
+import { Comment } from '../../../domain/entities/Comment';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ERROR_MESSAGES } from '../../../constants/ErrorMessages';
+import { CreateCommentDTO } from '../../interface/dto/comment/CreateCommentDTO';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { ICreateCommentUseCase } from '../../interface/usecase/comment/ICreateCommentUseCase';
 
 @injectable()
 export class CreateCommentUseCase implements ICreateCommentUseCase {
@@ -23,7 +23,7 @@ export class CreateCommentUseCase implements ICreateCommentUseCase {
       dto.postId,
       dto.userId,
       dto.content,
-      "original"
+      'original'
     );
 
     const created = await this._commentRepo.create(comment);

@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { LIKE_MESSAGES } from "../../../constants/LikeMessages";
-import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { IGetLikeCountUseCase } from "../../interface/usecase/like/IGetLikeCountUseCase";
+import { inject, injectable } from 'inversify';
+import { BadRequestError } from 'art-chain-shared';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { LIKE_MESSAGES } from '../../../constants/LikeMessages';
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { IGetLikeCountUseCase } from '../../interface/usecase/like/IGetLikeCountUseCase';
 
 @injectable()
 export class GetLikeCountUseCase implements IGetLikeCountUseCase {

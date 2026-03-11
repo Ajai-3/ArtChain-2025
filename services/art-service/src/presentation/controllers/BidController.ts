@@ -1,17 +1,17 @@
-import { Request, Response, NextFunction } from "express";
-import { injectable, inject } from "inversify";
-import { HttpStatus } from "art-chain-shared";
-import { logger } from "../../utils/logger";
-import { IBidController } from "../interface/IBidController";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IPlaceBidUseCase } from "../../application/interface/usecase/bid/IPlaceBidUseCase";
-import { IGetBidsUseCase } from "../../application/interface/usecase/bid/IGetBidsUseCase";
-import { IGetUserBidsUseCase } from "../../application/interface/usecase/bid/IGetUserBidsUseCase";
-import { AUCTION_MESSAGES } from "../../constants/AuctionMessages";
+import { Request, Response, NextFunction } from 'express';
+import { injectable, inject } from 'inversify';
+import { HttpStatus } from 'art-chain-shared';
+import { logger } from '../../utils/logger';
+import { IBidController } from '../interface/IBidController';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IPlaceBidUseCase } from '../../application/interface/usecase/bid/IPlaceBidUseCase';
+import { IGetBidsUseCase } from '../../application/interface/usecase/bid/IGetBidsUseCase';
+import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGetUserBidsUseCase';
+import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
 
-import { placeBidSchema } from "../validators/bid.schema";
-import { PlaceBidDTO } from "../../application/interface/dto/bid/PlaceBidDTO";
-import { validateWithZod } from "../../utils/validateWithZod";
+import { placeBidSchema } from '../validators/bid.schema';
+import { PlaceBidDTO } from '../../application/interface/dto/bid/PlaceBidDTO';
+import { validateWithZod } from '../../utils/validateWithZod';
 
 @injectable()
 export class BidController implements IBidController {
@@ -38,7 +38,7 @@ export class BidController implements IBidController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const bidderId = req.headers["x-user-id"] as string;
+      const bidderId = req.headers['x-user-id'] as string;
       
       const validatedBody = validateWithZod(placeBidSchema, req.body);
 
@@ -65,7 +65,7 @@ export class BidController implements IBidController {
         data: bid,
       });
     } catch (error) {
-      logger.error("Error in placeBid", error);
+      logger.error('Error in placeBid', error);
       next(error);
     }
   };
@@ -95,7 +95,7 @@ export class BidController implements IBidController {
         data: result,
       });
     } catch (error) {
-      logger.error("Error in getBids", error);
+      logger.error('Error in getBids', error);
       next(error);
     }
   };
@@ -113,7 +113,7 @@ export class BidController implements IBidController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       logger.info(`Fetching bid history for userId=${userId}`);
 
       const bids = await this._getUserBidsUseCase.execute(userId);
@@ -123,7 +123,7 @@ export class BidController implements IBidController {
         data: bids,
       });
     } catch (error) {
-      logger.error("Error in getUserBids", error);
+      logger.error('Error in getUserBids', error);
       next(error);
     }
   };

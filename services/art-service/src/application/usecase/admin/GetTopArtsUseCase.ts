@@ -1,8 +1,8 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IGetTopArtsUseCase } from "../../interface/usecase/admin/IGetTopArtsUseCase";
-import { ArtPost } from "../../../domain/entities/ArtPost";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IGetTopArtsUseCase } from '../../interface/usecase/admin/IGetTopArtsUseCase';
+import { ArtPost } from '../../../domain/entities/ArtPost';
 
 @injectable()
 export class GetTopArtsUseCase implements IGetTopArtsUseCase {

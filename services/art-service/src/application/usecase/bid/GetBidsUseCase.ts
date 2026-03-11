@@ -1,11 +1,11 @@
-import { injectable, inject } from "inversify";
-import { IGetBidsUseCase } from "../../interface/usecase/bid/IGetBidsUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IBidRepository } from "../../../domain/repositories/IBidRepository";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { BidMapper } from "../../mapper/BidMapper";
-import { BidResponseDTO } from "../../interface/dto/bid/BidResponseDTO";
-import { IUserService } from "../../interface/service/IUserService";
+import { injectable, inject } from 'inversify';
+import { IGetBidsUseCase } from '../../interface/usecase/bid/IGetBidsUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IBidRepository } from '../../../domain/repositories/IBidRepository';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { BidMapper } from '../../mapper/BidMapper';
+import { BidResponseDTO } from '../../interface/dto/bid/BidResponseDTO';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetBidsUseCase implements IGetBidsUseCase {

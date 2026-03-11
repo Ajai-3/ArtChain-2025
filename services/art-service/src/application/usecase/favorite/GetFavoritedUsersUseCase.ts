@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IGetFavoritedUsersUseCase } from "../../interface/usecase/favorite/IGetFavoritedUsersUseCase";
-import { IUserService } from "../../interface/service/IUserService";
+import { inject, injectable } from 'inversify';
+import { BadRequestError } from 'art-chain-shared';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { FAVORITE_MESSAGES } from '../../../constants/FavoriteMessages';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IGetFavoritedUsersUseCase } from '../../interface/usecase/favorite/IGetFavoritedUsersUseCase';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetFavoritedUsersUseCase implements IGetFavoritedUsersUseCase {

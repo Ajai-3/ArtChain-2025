@@ -1,206 +1,206 @@
-import "reflect-metadata";
-import { TYPES } from "./types";
-import { Container } from "inversify";
+import 'reflect-metadata';
+import { TYPES } from './types';
+import { Container } from 'inversify';
 
 const container = new Container();
 
 // Repositories
-import { ILikeRepository } from "../../domain/repositories/ILikeRepository";
-import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
-import { ICommentRepository } from "../../domain/repositories/ICommentRepository";
-import { ICategoryRepository } from "../../domain/repositories/ICategoryRepository";
-import { IFavoriteRepository } from "../../domain/repositories/IFavoriteRepository";
-import { IAIGenerationRepository } from "../../domain/repositories/IAIGenerationRepository";
-import { IAIConfigRepository } from "../../domain/repositories/IAIConfigRepository";
-import { AIProviderService } from "../service/AIProviderService";
-import { IWalletService } from "../../domain/interfaces/IWalletService";
-import { WalletService } from "../service/WalletService";
-import { IUserService } from "../../application/interface/service/IUserService";
-import { UserService } from "../service/UserService";
+import { ILikeRepository } from '../../domain/repositories/ILikeRepository';
+import { IArtPostRepository } from '../../domain/repositories/IArtPostRepository';
+import { ICommentRepository } from '../../domain/repositories/ICommentRepository';
+import { ICategoryRepository } from '../../domain/repositories/ICategoryRepository';
+import { IFavoriteRepository } from '../../domain/repositories/IFavoriteRepository';
+import { IAIGenerationRepository } from '../../domain/repositories/IAIGenerationRepository';
+import { IAIConfigRepository } from '../../domain/repositories/IAIConfigRepository';
+import { AIProviderService } from '../service/AIProviderService';
+import { IWalletService } from '../../domain/interfaces/IWalletService';
+import { WalletService } from '../service/WalletService';
+import { IUserService } from '../../application/interface/service/IUserService';
+import { UserService } from '../service/UserService';
 
-import { GetCommissionStatsUseCase } from "../../application/usecase/commission/GetCommissionStatsUseCase";
+import { GetCommissionStatsUseCase } from '../../application/usecase/commission/GetCommissionStatsUseCase';
 
-import { LikeRepositoryImpl } from "../repositories/LikeRepositoryImpl";
-import { ArtPostRepositoryImpl } from "../repositories/ArtPostRepositoryImpl";
-import { CommentRepositoryImpl } from "../repositories/CommentRepositoryImpl";
-import { CategoryRepositoryImpl } from "../repositories/CategoryRepositoryImpl";
-import { FavoriteRepositoryImpl } from "../repositories/FavoriteRepositoryImpl";
-import { AIGenerationRepositoryImpl } from "../repositories/AIGenerationRepositoryImpl";
-import { AIConfigRepositoryImpl } from "../repositories/AIConfigRepositoryImpl";
-import { IPlatformConfigRepository } from "../../domain/repositories/IPlatformConfigRepository";
-import { PlatformConfigRepositoryImpl } from "../repositories/PlatformConfigRepositoryImpl";
-import { IGetPlatformConfigUseCase } from "../../application/interface/usecase/admin/IGetPlatformConfigUseCase";
-import { GetPlatformConfigUseCase } from "../../application/usecase/admin/GetPlatformConfigUseCase";
+import { LikeRepositoryImpl } from '../repositories/LikeRepositoryImpl';
+import { ArtPostRepositoryImpl } from '../repositories/ArtPostRepositoryImpl';
+import { CommentRepositoryImpl } from '../repositories/CommentRepositoryImpl';
+import { CategoryRepositoryImpl } from '../repositories/CategoryRepositoryImpl';
+import { FavoriteRepositoryImpl } from '../repositories/FavoriteRepositoryImpl';
+import { AIGenerationRepositoryImpl } from '../repositories/AIGenerationRepositoryImpl';
+import { AIConfigRepositoryImpl } from '../repositories/AIConfigRepositoryImpl';
+import { IPlatformConfigRepository } from '../../domain/repositories/IPlatformConfigRepository';
+import { PlatformConfigRepositoryImpl } from '../repositories/PlatformConfigRepositoryImpl';
+import { IGetPlatformConfigUseCase } from '../../application/interface/usecase/admin/IGetPlatformConfigUseCase';
+import { GetPlatformConfigUseCase } from '../../application/usecase/admin/GetPlatformConfigUseCase';
 
-import { IPurchaseRepository } from "../../domain/repositories/IPurchaseRepository";
-import { PurchaseRepositoryImpl } from "../repositories/PurchaseRepositoryImpl";
+import { IPurchaseRepository } from '../../domain/repositories/IPurchaseRepository';
+import { PurchaseRepositoryImpl } from '../repositories/PurchaseRepositoryImpl';
 
-import { IUpdatePlatformConfigUseCase } from "../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase";
-import { UpdatePlatformConfigUseCase } from "../../application/usecase/admin/UpdatePlatformConfigUseCase";
-import { IAdminPlatformConfigController } from "../../presentation/interface/IAdminPlatformConfigController";
-import { AdminPlatformConfigController } from "../../presentation/controllers/AdminPlatformConfigController";
+import { IUpdatePlatformConfigUseCase } from '../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase';
+import { UpdatePlatformConfigUseCase } from '../../application/usecase/admin/UpdatePlatformConfigUseCase';
+import { IAdminPlatformConfigController } from '../../presentation/interface/IAdminPlatformConfigController';
+import { AdminPlatformConfigController } from '../../presentation/controllers/AdminPlatformConfigController';
 
 // Services
-import { ChatService } from "../service/ChatService";
-import { SocketService } from "../service/SocketService";
-import { IChatService } from "../../domain/interfaces/IChatService";
-import { ISocketService } from "../../domain/interfaces/ISocketService";
+import { ChatService } from '../service/ChatService';
+import { SocketService } from '../service/SocketService';
+import { IChatService } from '../../domain/interfaces/IChatService';
+import { ISocketService } from '../../domain/interfaces/ISocketService';
 
 // Use Cases - Art
-import { IGetAllArtUseCase } from "../../application/interface/usecase/art/IGetAllArtUseCase";
-import { IGetArtByIdUseCase } from "../../application/interface/usecase/art/IGetArtByIdUseCase";
-import { ICountArtWorkUseCase } from "../../application/interface/usecase/art/ICountArtWorkUseCase";
-import { IGetArtByNameUseCase } from "../../application/interface/usecase/art/IGetArtByNameUseCase";
-import { ICreateArtPostUseCase } from "../../application/interface/usecase/art/ICreateArtPostUseCase";
-import { IGetAllShopArtsUseCase } from "../../application/interface/usecase/art/IGetShopArtsByUserUseCase";
-import { IGetShopArtsByUserUseCase } from "../../application/interface/usecase/art/IGetAllShopArtsUseCase";
-import { IArtToElasticSearchUseCase } from "../../application/interface/usecase/art/IArtToElasticSearchUseCase";
-import { IGetAllArtWithUserIdUseCase } from "../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase";
+import { IGetAllArtUseCase } from '../../application/interface/usecase/art/IGetAllArtUseCase';
+import { IGetArtByIdUseCase } from '../../application/interface/usecase/art/IGetArtByIdUseCase';
+import { ICountArtWorkUseCase } from '../../application/interface/usecase/art/ICountArtWorkUseCase';
+import { IGetArtByNameUseCase } from '../../application/interface/usecase/art/IGetArtByNameUseCase';
+import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/ICreateArtPostUseCase';
+import { IGetAllShopArtsUseCase } from '../../application/interface/usecase/art/IGetShopArtsByUserUseCase';
+import { IGetShopArtsByUserUseCase } from '../../application/interface/usecase/art/IGetAllShopArtsUseCase';
+import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
+import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
 
-import { GetAllArtUseCase } from "../../application/usecase/art/GetAllArtUseCase";
-import { GetArtByIdUseCase } from "../../application/usecase/art/GetArtByIdUseCase";
-import { CountArtWorkUseCase } from "../../application/usecase/art/CountArtWorkUseCase";
-import { GetArtByNameUseCase } from "../../application/usecase/art/GetArtByNameUseCase";
-import { CreateArtPostUseCase } from "../../application/usecase/art/CreateArtPostUseCase";
-import { GetAllShopArtsUseCase } from "../../application/usecase/shop/GetAllShopArtsUseCase";
-import { GetShopArtsByUserUseCase } from "../../application/usecase/shop/GetShopArtsByUserUseCase";
-import { ArtToElasticSearchUseCase } from "../../application/usecase/art/ArtToElasticSearchUseCase";
-import { GetAllArtWithUserIdUseCase } from "../../application/usecase/art/GetAllArtWithUserIdUseCase";
-import { IBuyArtUseCase } from "../../application/interface/usecase/art/IBuyArtUseCase";
-import { BuyArtUseCase } from "../../application/usecase/art/BuyArtUseCase";
-import { IDownloadArtUseCase } from "../../application/interface/usecase/art/IDownloadArtUseCase";
-import { DownloadArtUseCase } from "../../application/usecase/art/DownloadArtUseCase";
-import { IS3Service } from "../../domain/interfaces/IS3Service";
-import { S3Service } from "../../infrastructure/service/S3Service";
+import { GetAllArtUseCase } from '../../application/usecase/art/GetAllArtUseCase';
+import { GetArtByIdUseCase } from '../../application/usecase/art/GetArtByIdUseCase';
+import { CountArtWorkUseCase } from '../../application/usecase/art/CountArtWorkUseCase';
+import { GetArtByNameUseCase } from '../../application/usecase/art/GetArtByNameUseCase';
+import { CreateArtPostUseCase } from '../../application/usecase/art/CreateArtPostUseCase';
+import { GetAllShopArtsUseCase } from '../../application/usecase/shop/GetAllShopArtsUseCase';
+import { GetShopArtsByUserUseCase } from '../../application/usecase/shop/GetShopArtsByUserUseCase';
+import { ArtToElasticSearchUseCase } from '../../application/usecase/art/ArtToElasticSearchUseCase';
+import { GetAllArtWithUserIdUseCase } from '../../application/usecase/art/GetAllArtWithUserIdUseCase';
+import { IBuyArtUseCase } from '../../application/interface/usecase/art/IBuyArtUseCase';
+import { BuyArtUseCase } from '../../application/usecase/art/BuyArtUseCase';
+import { IDownloadArtUseCase } from '../../application/interface/usecase/art/IDownloadArtUseCase';
+import { DownloadArtUseCase } from '../../application/usecase/art/DownloadArtUseCase';
+import { IS3Service } from '../../domain/interfaces/IS3Service';
+import { S3Service } from '../../infrastructure/service/S3Service';
 
 // Use Cases - Category
-import { IEditCategoryUseCase } from "../../application/interface/usecase/category/IEditCategoryUseCase";
-import { ICreateCategoryUseCase } from "../../application/interface/usecase/category/ICreateCategoryUseCase";
-import { IGetAllCategoryUseCase } from "../../application/interface/usecase/category/IGetAllCategoryUseCase";
+import { IEditCategoryUseCase } from '../../application/interface/usecase/category/IEditCategoryUseCase';
+import { ICreateCategoryUseCase } from '../../application/interface/usecase/category/ICreateCategoryUseCase';
+import { IGetAllCategoryUseCase } from '../../application/interface/usecase/category/IGetAllCategoryUseCase';
 
-import { EditCategoryUseCase } from "../../application/usecase/category/EditCategoryUseCase";
-import { CreateCategoryUseCase } from "../../application/usecase/category/CreateCategoryUseCase";
-import { GetAllCategoryUseCase } from "../../application/usecase/category/GetAllCategoryUseCase";
+import { EditCategoryUseCase } from '../../application/usecase/category/EditCategoryUseCase';
+import { CreateCategoryUseCase } from '../../application/usecase/category/CreateCategoryUseCase';
+import { GetAllCategoryUseCase } from '../../application/usecase/category/GetAllCategoryUseCase';
 
 // Use Cases - Comment
-import { IGetCommentsUseCase } from "../../application/interface/usecase/comment/IGetCommentsUseCase";
-import { IGetCommentByIdUseCase } from "../../application/interface/usecase/comment/IGetCommentByIdUseCase";
-import { ICreateCommentUseCase } from "../../application/interface/usecase/comment/ICreateCommentUseCase";
+import { IGetCommentsUseCase } from '../../application/interface/usecase/comment/IGetCommentsUseCase';
+import { IGetCommentByIdUseCase } from '../../application/interface/usecase/comment/IGetCommentByIdUseCase';
+import { ICreateCommentUseCase } from '../../application/interface/usecase/comment/ICreateCommentUseCase';
 
-import { GetCommentsUseCase } from "../../application/usecase/comment/GetCommentsUseCase";
-import { GetCommentByIdUseCase } from "../../application/usecase/comment/GetCommentByIdUseCase";
-import { CreateCommentUseCase } from "../../application/usecase/comment/CreateCommentUseCase";
-import { IEditCommentUseCase } from "../../application/interface/usecase/comment/IEditCommentUseCase";
-import { EditCommentUseCase } from "../../application/usecase/comment/EditCommentUseCase";
-import { IDeleteCommentUseCase } from "../../application/interface/usecase/comment/IDeleteCommentUseCase";
-import { DeleteCommentUseCase } from "../../application/usecase/comment/DeleteCommentUseCase";
+import { GetCommentsUseCase } from '../../application/usecase/comment/GetCommentsUseCase';
+import { GetCommentByIdUseCase } from '../../application/usecase/comment/GetCommentByIdUseCase';
+import { CreateCommentUseCase } from '../../application/usecase/comment/CreateCommentUseCase';
+import { IEditCommentUseCase } from '../../application/interface/usecase/comment/IEditCommentUseCase';
+import { EditCommentUseCase } from '../../application/usecase/comment/EditCommentUseCase';
+import { IDeleteCommentUseCase } from '../../application/interface/usecase/comment/IDeleteCommentUseCase';
+import { DeleteCommentUseCase } from '../../application/usecase/comment/DeleteCommentUseCase';
 
 // Use Cases - Favorite
-import { IAddFavoriteUseCase } from "../../application/interface/usecase/favorite/IAddFavoriteUseCase";
-import { IRemoveFavoriteUseCase } from "../../application/interface/usecase/favorite/IRemoveFavoriteUseCase";
-import { IGetFavoriteCountUseCase } from "../../application/interface/usecase/favorite/IGetFavoriteCountUseCase";
-import { IGetFavoritedUsersUseCase } from "../../application/interface/usecase/favorite/IGetFavoritedUsersUseCase";
-import { IGetUserFavoritedArtsUseCase } from "../../application/interface/usecase/favorite/IGetUserFavoritedArtsUseCase";
+import { IAddFavoriteUseCase } from '../../application/interface/usecase/favorite/IAddFavoriteUseCase';
+import { IRemoveFavoriteUseCase } from '../../application/interface/usecase/favorite/IRemoveFavoriteUseCase';
+import { IGetFavoriteCountUseCase } from '../../application/interface/usecase/favorite/IGetFavoriteCountUseCase';
+import { IGetFavoritedUsersUseCase } from '../../application/interface/usecase/favorite/IGetFavoritedUsersUseCase';
+import { IGetUserFavoritedArtsUseCase } from '../../application/interface/usecase/favorite/IGetUserFavoritedArtsUseCase';
 
-import { AddFavoriteUseCase } from "../../application/usecase/favorite/AddFavoriteUseCase";
-import { RemoveFavoriteUseCase } from "../../application/usecase/favorite/RemoveFavoriteUseCase";
-import { GetFavoriteCountUseCase } from "../../application/usecase/favorite/GetFavoriteCountUseCase";
-import { GetFavoritedUsersUseCase } from "../../application/usecase/favorite/GetFavoritedUsersUseCase";
-import { GetUserFavoritedArtsUseCase } from "../../application/usecase/favorite/GetUserFavoritedArtsUseCase";
+import { AddFavoriteUseCase } from '../../application/usecase/favorite/AddFavoriteUseCase';
+import { RemoveFavoriteUseCase } from '../../application/usecase/favorite/RemoveFavoriteUseCase';
+import { GetFavoriteCountUseCase } from '../../application/usecase/favorite/GetFavoriteCountUseCase';
+import { GetFavoritedUsersUseCase } from '../../application/usecase/favorite/GetFavoritedUsersUseCase';
+import { GetUserFavoritedArtsUseCase } from '../../application/usecase/favorite/GetUserFavoritedArtsUseCase';
 
 // Use Cases - Like
-import { ILikePostUseCase } from "../../application/interface/usecase/like/ILikePostUseCase";
-import { IUnlikePostUseCase } from "../../application/interface/usecase/like/IUnlikePostUseCase";
-import { IGetLikeCountUseCase } from "../../application/interface/usecase/like/IGetLikeCountUseCase";
-import { IGetLikedUsersUseCase } from "../../application/interface/usecase/like/IGetLikedUsersUseCase";
+import { ILikePostUseCase } from '../../application/interface/usecase/like/ILikePostUseCase';
+import { IUnlikePostUseCase } from '../../application/interface/usecase/like/IUnlikePostUseCase';
+import { IGetLikeCountUseCase } from '../../application/interface/usecase/like/IGetLikeCountUseCase';
+import { IGetLikedUsersUseCase } from '../../application/interface/usecase/like/IGetLikedUsersUseCase';
 
-import { LikePostUseCase } from "../../application/usecase/like/LikePostUseCase";
-import { UnlikePostUseCase } from "../../application/usecase/like/UnlikePostUseCase";
-import { GetLikeCountUseCase } from "../../application/usecase/like/GetLikeCountUseCase";
-import { GetLikedUsersUseCase } from "../../application/usecase/like/GetLikedUsersUseCase";
+import { LikePostUseCase } from '../../application/usecase/like/LikePostUseCase';
+import { UnlikePostUseCase } from '../../application/usecase/like/UnlikePostUseCase';
+import { GetLikeCountUseCase } from '../../application/usecase/like/GetLikeCountUseCase';
+import { GetLikedUsersUseCase } from '../../application/usecase/like/GetLikedUsersUseCase';
 
 // Use Cases - AI
-import { IGenerateAIImageUseCase } from "../../application/interface/usecase/ai/IGenerateAIImageUseCase";
-import { IGetMyAIGenerationsUseCase } from "../../application/interface/usecase/ai/IGetMyAIGenerationsUseCase";
-import { ICheckAIQuotaUseCase } from "../../application/interface/usecase/ai/ICheckAIQuotaUseCase";
-import { IUpdateAIConfigUseCase } from "../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase";
-import { IGetAIConfigsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase";
-import { IGetAIAnalyticsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase";
-import { IDeleteAIGenerationUseCase } from "../../application/interface/usecase/ai/IDeleteAIGenerationUseCase"; // Added
+import { IGenerateAIImageUseCase } from '../../application/interface/usecase/ai/IGenerateAIImageUseCase';
+import { IGetMyAIGenerationsUseCase } from '../../application/interface/usecase/ai/IGetMyAIGenerationsUseCase';
+import { ICheckAIQuotaUseCase } from '../../application/interface/usecase/ai/ICheckAIQuotaUseCase';
+import { IUpdateAIConfigUseCase } from '../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase';
+import { IGetAIConfigsUseCase } from '../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase';
+import { IGetAIAnalyticsUseCase } from '../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase';
+import { IDeleteAIGenerationUseCase } from '../../application/interface/usecase/ai/IDeleteAIGenerationUseCase'; // Added
 
-import { GenerateAIImageUseCase } from "../../application/usecase/ai/GenerateAIImageUseCase";
-import { GetMyAIGenerationsUseCase } from "../../application/usecase/ai/GetMyAIGenerationsUseCase";
-import { CheckAIQuotaUseCase } from "../../application/usecase/ai/CheckAIQuotaUseCase";
-import { UpdateAIConfigUseCase } from "../../application/usecase/ai/admin/UpdateAIConfigUseCase";
-import { GetAIConfigsUseCase } from "../../application/usecase/ai/admin/GetAIConfigsUseCase";
-import { GetAIAnalyticsUseCase } from "../../application/usecase/ai/admin/GetAIAnalyticsUseCase";
-import { GetEnabledAIConfigsUseCase } from "../../application/usecase/ai/GetEnabledAIConfigsUseCase";
-import { IGetEnabledAIConfigsUseCase } from "../../application/interface/usecase/ai/IGetEnabledAIConfigsUseCase";
-import { DeleteAIGenerationUseCase } from "../../application/usecase/ai/DeleteAIGenerationUseCase"; // Added
+import { GenerateAIImageUseCase } from '../../application/usecase/ai/GenerateAIImageUseCase';
+import { GetMyAIGenerationsUseCase } from '../../application/usecase/ai/GetMyAIGenerationsUseCase';
+import { CheckAIQuotaUseCase } from '../../application/usecase/ai/CheckAIQuotaUseCase';
+import { UpdateAIConfigUseCase } from '../../application/usecase/ai/admin/UpdateAIConfigUseCase';
+import { GetAIConfigsUseCase } from '../../application/usecase/ai/admin/GetAIConfigsUseCase';
+import { GetAIAnalyticsUseCase } from '../../application/usecase/ai/admin/GetAIAnalyticsUseCase';
+import { GetEnabledAIConfigsUseCase } from '../../application/usecase/ai/GetEnabledAIConfigsUseCase';
+import { IGetEnabledAIConfigsUseCase } from '../../application/interface/usecase/ai/IGetEnabledAIConfigsUseCase';
+import { DeleteAIGenerationUseCase } from '../../application/usecase/ai/DeleteAIGenerationUseCase'; // Added
 
 // Controllers
-import { IAIController } from "../../presentation/interface/IAIController";
-import { IAdminAIController } from "../../presentation/interface/IAdminAIController";
-import { AIController } from "../../presentation/controllers/AIController";
-import { AdminAIController } from "../../presentation/controllers/AdminAIController";
+import { IAIController } from '../../presentation/interface/IAIController';
+import { IAdminAIController } from '../../presentation/interface/IAdminAIController';
+import { AIController } from '../../presentation/controllers/AIController';
+import { AdminAIController } from '../../presentation/controllers/AdminAIController';
 
-import { ArtController } from "../../presentation/controllers/ArtController";
-import { ShopController } from "../../presentation/controllers/ShopController";
-import { LikeController } from "../../presentation/controllers/LikeController";
-import { CommentController } from "../../presentation/controllers/CommentController";
-import { FavoriteController } from "../../presentation/controllers/FavoriteController";
-import { CategoryController } from "../../presentation/controllers/CategoryController";
+import { ArtController } from '../../presentation/controllers/ArtController';
+import { ShopController } from '../../presentation/controllers/ShopController';
+import { LikeController } from '../../presentation/controllers/LikeController';
+import { CommentController } from '../../presentation/controllers/CommentController';
+import { FavoriteController } from '../../presentation/controllers/FavoriteController';
+import { CategoryController } from '../../presentation/controllers/CategoryController';
 
-import { IArtController } from "../../presentation/interface/IArtController";
-import { IShopController } from "../../presentation/interface/IShopController";
-import { ILikeController } from "../../presentation/interface/ILikeController";
-import { ICommentController } from "../../presentation/interface/ICommentController";
-import { IFavoriteController } from "../../presentation/interface/IFavoriteController";
-import { ICategoryController } from "../../presentation/interface/ICategoryController";
+import { IArtController } from '../../presentation/interface/IArtController';
+import { IShopController } from '../../presentation/interface/IShopController';
+import { ILikeController } from '../../presentation/interface/ILikeController';
+import { ICommentController } from '../../presentation/interface/ICommentController';
+import { IFavoriteController } from '../../presentation/interface/IFavoriteController';
+import { ICategoryController } from '../../presentation/interface/ICategoryController';
 
 // Admin Art Use Cases (using consolidated IArtPostRepository)
-import { IGetAllArtsUseCase } from "../../application/interface/usecase/admin/IGetAllArtsUseCase";
-import { GetAllArtsUseCase } from "../../application/usecase/admin/GetAllArtsUseCase";
-import { IGetArtStatsUseCase } from "../../application/interface/usecase/admin/IGetArtStatsUseCase";
-import { GetArtStatsUseCase } from "../../application/usecase/admin/GetArtStatsUseCase";
-import { IGetTopArtsUseCase } from "../../application/interface/usecase/admin/IGetTopArtsUseCase";
-import { GetTopArtsUseCase } from "../../application/usecase/admin/GetTopArtsUseCase";
-import { IGetCategoryStatsUseCase } from "../../application/interface/usecase/admin/IGetCategoryStatsUseCase";
-import { GetCategoryStatsUseCase } from "../../application/usecase/admin/GetCategoryStatsUseCase";
-import { IGetRecentAuctionsUseCase } from "../../application/interface/usecase/admin/IGetRecentAuctionsUseCase";
-import { GetRecentAuctionsUseCase } from "../../application/usecase/admin/GetRecentAuctionsUseCase";
-import { IGetRecentCommissionsUseCase } from "../../application/interface/usecase/admin/IGetRecentCommissionsUseCase";
-import { GetRecentCommissionsUseCase } from "../../application/usecase/admin/GetRecentCommissionsUseCase";
-import { IUpdateArtStatusUseCase } from "../../application/interface/usecase/admin/IUpdateArtStatusUseCase";
-import { UpdateArtStatusUseCase } from "../../application/usecase/admin/UpdateArtStatusUseCase";
-import { IAdminArtController } from "../../presentation/interface/IAdminArtController";
-import { AdminArtController } from "../../presentation/controllers/AdminArtController";
+import { IGetAllArtsUseCase } from '../../application/interface/usecase/admin/IGetAllArtsUseCase';
+import { GetAllArtsUseCase } from '../../application/usecase/admin/GetAllArtsUseCase';
+import { IGetArtStatsUseCase } from '../../application/interface/usecase/admin/IGetArtStatsUseCase';
+import { GetArtStatsUseCase } from '../../application/usecase/admin/GetArtStatsUseCase';
+import { IGetTopArtsUseCase } from '../../application/interface/usecase/admin/IGetTopArtsUseCase';
+import { GetTopArtsUseCase } from '../../application/usecase/admin/GetTopArtsUseCase';
+import { IGetCategoryStatsUseCase } from '../../application/interface/usecase/admin/IGetCategoryStatsUseCase';
+import { GetCategoryStatsUseCase } from '../../application/usecase/admin/GetCategoryStatsUseCase';
+import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
+import { GetRecentAuctionsUseCase } from '../../application/usecase/admin/GetRecentAuctionsUseCase';
+import { IGetRecentCommissionsUseCase } from '../../application/interface/usecase/admin/IGetRecentCommissionsUseCase';
+import { GetRecentCommissionsUseCase } from '../../application/usecase/admin/GetRecentCommissionsUseCase';
+import { IUpdateArtStatusUseCase } from '../../application/interface/usecase/admin/IUpdateArtStatusUseCase';
+import { UpdateArtStatusUseCase } from '../../application/usecase/admin/UpdateArtStatusUseCase';
+import { IAdminArtController } from '../../presentation/interface/IAdminArtController';
+import { AdminArtController } from '../../presentation/controllers/AdminArtController';
 
 // Bidding Imports
-import { IAuctionRepository } from "../../domain/repositories/IAuctionRepository";
-import { IBidRepository } from "../../domain/repositories/IBidRepository";
-import { AuctionRepositoryImpl } from "../repositories/AuctionRepositoryImpl";
-import { BidRepositoryImpl } from "../repositories/BidRepositoryImpl";
-import { ICreateAuctionUseCase } from "../../application/interface/usecase/auction/ICreateAuctionUseCase";
-import { CreateAuctionUseCase } from "../../application/usecase/auction/CreateAuctionUseCase";
-import { IGetAuctionsUseCase } from "../../application/interface/usecase/auction/IGetAuctionsUseCase";
-import { GetAuctionsUseCase } from "../../application/usecase/auction/GetAuctionsUseCase";
-import { IGetAuctionStatsUseCase } from "../../application/interface/usecase/auction/IGetAuctionStatsUseCase";
-import { GetAuctionStatsUseCase } from "../../application/usecase/auction/GetAuctionStatsUseCase";
-import { IGetAuctionByIdUseCase } from "../../application/interface/usecase/auction/IGetAuctionByIdUseCase";
-import { GetAuctionByIdUseCase } from "../../application/usecase/auction/GetAuctionByIdUseCase";
-import { IPlaceBidUseCase } from "../../application/interface/usecase/bid/IPlaceBidUseCase";
-import { PlaceBidUseCase } from "../../application/usecase/bid/PlaceBidUseCase";
-import { IGetBidsUseCase } from "../../application/interface/usecase/bid/IGetBidsUseCase";
-import { GetBidsUseCase } from "../../application/usecase/bid/GetBidsUseCase";
-import { ICancelAuctionUseCase } from "../../application/interface/usecase/auction/ICancelAuctionUseCase";
-import { CancelAuctionUseCase } from "../../application/usecase/auction/CancelAuctionUseCase";
-import { IAuctionController } from "../../presentation/interface/IAuctionController";
-import { AuctionController } from "../../presentation/controllers/AuctionController";
-import { IBidController } from "../../presentation/interface/IBidController";
-import { BidController } from "../../presentation/controllers/BidController";
-import { IGetUserBidsUseCase } from "../../application/interface/usecase/bid/IGetUserBidsUseCase";
-import { GetUserBidsUseCase } from "../../application/usecase/bid/GetUserBidsUseCase";
+import { IAuctionRepository } from '../../domain/repositories/IAuctionRepository';
+import { IBidRepository } from '../../domain/repositories/IBidRepository';
+import { AuctionRepositoryImpl } from '../repositories/AuctionRepositoryImpl';
+import { BidRepositoryImpl } from '../repositories/BidRepositoryImpl';
+import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
+import { CreateAuctionUseCase } from '../../application/usecase/auction/CreateAuctionUseCase';
+import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction/IGetAuctionsUseCase';
+import { GetAuctionsUseCase } from '../../application/usecase/auction/GetAuctionsUseCase';
+import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
+import { GetAuctionStatsUseCase } from '../../application/usecase/auction/GetAuctionStatsUseCase';
+import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
+import { GetAuctionByIdUseCase } from '../../application/usecase/auction/GetAuctionByIdUseCase';
+import { IPlaceBidUseCase } from '../../application/interface/usecase/bid/IPlaceBidUseCase';
+import { PlaceBidUseCase } from '../../application/usecase/bid/PlaceBidUseCase';
+import { IGetBidsUseCase } from '../../application/interface/usecase/bid/IGetBidsUseCase';
+import { GetBidsUseCase } from '../../application/usecase/bid/GetBidsUseCase';
+import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
+import { CancelAuctionUseCase } from '../../application/usecase/auction/CancelAuctionUseCase';
+import { IAuctionController } from '../../presentation/interface/IAuctionController';
+import { AuctionController } from '../../presentation/controllers/AuctionController';
+import { IBidController } from '../../presentation/interface/IBidController';
+import { BidController } from '../../presentation/controllers/BidController';
+import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGetUserBidsUseCase';
+import { GetUserBidsUseCase } from '../../application/usecase/bid/GetUserBidsUseCase';
 
 
 // AI Repositories
@@ -332,7 +332,7 @@ container
 container
   .bind<IFavoriteController>(TYPES.IFavoriteController)
   .to(FavoriteController);
-container
+container;
 container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryController);
 
 
@@ -370,20 +370,20 @@ container.bind<IUpdatePlatformConfigUseCase>(TYPES.IUpdatePlatformConfigUseCase)
 container.bind<IAdminPlatformConfigController>(TYPES.IAdminPlatformConfigController).to(AdminPlatformConfigController);
 
 // Commission
-import { ICommissionRepository } from "../../domain/repositories/ICommissionRepository";
-import { CommissionRepositoryImpl } from "../repositories/CommissionRepositoryImpl";
-import { ICreateCommissionUseCase } from "../../application/interface/usecase/commission/ICreateCommissionUseCase";
-import { CreateCommissionUseCase } from "../../application/usecase/commission/CreateCommissionUseCase";
-import { IGetCommissionByConversationUseCase } from "../../application/interface/usecase/commission/IGetCommissionByConversationUseCase";
-import { GetCommissionByConversationUseCase } from "../../application/usecase/commission/GetCommissionByConversationUseCase";
-import { IUpdateCommissionUseCase } from "../../application/interface/usecase/commission/IUpdateCommissionUseCase";
-import { UpdateCommissionUseCase } from "../../application/usecase/commission/UpdateCommissionUseCase";
+import { ICommissionRepository } from '../../domain/repositories/ICommissionRepository';
+import { CommissionRepositoryImpl } from '../repositories/CommissionRepositoryImpl';
+import { ICreateCommissionUseCase } from '../../application/interface/usecase/commission/ICreateCommissionUseCase';
+import { CreateCommissionUseCase } from '../../application/usecase/commission/CreateCommissionUseCase';
+import { IGetCommissionByConversationUseCase } from '../../application/interface/usecase/commission/IGetCommissionByConversationUseCase';
+import { GetCommissionByConversationUseCase } from '../../application/usecase/commission/GetCommissionByConversationUseCase';
+import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
+import { UpdateCommissionUseCase } from '../../application/usecase/commission/UpdateCommissionUseCase';
 
-import { ICommissionController } from "../../presentation/interface/ICommissionController";
-import { CommissionController } from "../../presentation/controllers/CommissionController";
-import { GetAllCommissionsUseCase } from "../../application/usecase/commission/GetAllCommissionsUseCase";
-import { ResolveCommissionDisputeUseCase } from "../../application/usecase/commission/ResolveCommissionDisputeUseCase";
-import { AdminCommissionController } from "../../presentation/controllers/AdminCommissionController";
+import { ICommissionController } from '../../presentation/interface/ICommissionController';
+import { CommissionController } from '../../presentation/controllers/CommissionController';
+import { GetAllCommissionsUseCase } from '../../application/usecase/commission/GetAllCommissionsUseCase';
+import { ResolveCommissionDisputeUseCase } from '../../application/usecase/commission/ResolveCommissionDisputeUseCase';
+import { AdminCommissionController } from '../../presentation/controllers/AdminCommissionController';
 
 container.bind<ICommissionRepository>(TYPES.ICommissionRepository).to(CommissionRepositoryImpl);
 container.bind<ICreateCommissionUseCase>(TYPES.ICreateCommissionUseCase).to(CreateCommissionUseCase);
@@ -395,20 +395,20 @@ container.bind<ResolveCommissionDisputeUseCase>(ResolveCommissionDisputeUseCase)
 container.bind<AdminCommissionController>(AdminCommissionController).to(AdminCommissionController);
 
 // RabbitMQ & Auction Ending
-import { RabbitMQService } from "../messaging/RabbitMQService";
-import { IEndAuctionUseCase } from "../../application/interface/usecase/auction/IEndAuctionUseCase";
-import { EndAuctionUseCase } from "../../application/usecase/auction/EndAuctionUseCase";
-import { AuctionEndedConsumer } from "../messaging/consumers/AuctionEndedConsumer";
+import { RabbitMQService } from '../messaging/RabbitMQService';
+import { IEndAuctionUseCase } from '../../application/interface/usecase/auction/IEndAuctionUseCase';
+import { EndAuctionUseCase } from '../../application/usecase/auction/EndAuctionUseCase';
+import { AuctionEndedConsumer } from '../messaging/consumers/AuctionEndedConsumer';
 
 container.bind<RabbitMQService>(TYPES.RabbitMQService).to(RabbitMQService).inSingletonScope();
 container.bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase).to(EndAuctionUseCase);
 container.bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer).to(AuctionEndedConsumer).inSingletonScope();
-import { IGetCommissionStatsUseCase } from "../../application/interface/usecase/commission/IGetCommissionStatsUseCase";
+import { IGetCommissionStatsUseCase } from '../../application/interface/usecase/commission/IGetCommissionStatsUseCase';
 
 container.bind<IGetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
 
 // Elasticsearch Client
-import { ElasticSearchClient } from "../clients/ElasticSearchClient";
+import { ElasticSearchClient } from '../clients/ElasticSearchClient';
 container.bind<ElasticSearchClient>(TYPES.IElasticSearchClient).to(ElasticSearchClient);
 
 export { container };

@@ -1,14 +1,14 @@
-import { injectable, inject } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { IAdminPlatformConfigController } from "../interface/IAdminPlatformConfigController";
-import { IGetPlatformConfigUseCase } from "../../application/interface/usecase/admin/IGetPlatformConfigUseCase";
-import { IUpdatePlatformConfigUseCase } from "../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { platformConfigSchema } from "../validators/PlatformConfigSchema";
-import { UpdatePlatformConfigDTO } from "../../application/interface/dto/admin/UpdatePlatformConfigDTO";
-import { validateWithZod } from "../../utils/validateWithZod";
-import { HttpStatus } from "art-chain-shared";
-import { PLATFORM_CONFIG_MESSAGES } from "../../constants/PlatformConfigMessages";
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { IAdminPlatformConfigController } from '../interface/IAdminPlatformConfigController';
+import { IGetPlatformConfigUseCase } from '../../application/interface/usecase/admin/IGetPlatformConfigUseCase';
+import { IUpdatePlatformConfigUseCase } from '../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { platformConfigSchema } from '../validators/PlatformConfigSchema';
+import { UpdatePlatformConfigDTO } from '../../application/interface/dto/admin/UpdatePlatformConfigDTO';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { HttpStatus } from 'art-chain-shared';
+import { PLATFORM_CONFIG_MESSAGES } from '../../constants/PlatformConfigMessages';
 
 @injectable()
 export class AdminPlatformConfigController implements IAdminPlatformConfigController {
@@ -34,7 +34,7 @@ export class AdminPlatformConfigController implements IAdminPlatformConfigContro
     try {
       const config = await this._getPlatformConfigUseCase.execute();
 
-      console.log("haii")
+      console.log('haii');
       res.status(HttpStatus.OK).json({ 
           message: PLATFORM_CONFIG_MESSAGES.FETCH_SUCCESS, 
           data: config 

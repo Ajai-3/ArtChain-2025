@@ -1,4 +1,4 @@
-export type AIGenerationStatus = "pending" | "processing" | "completed" | "failed";
+export type AIGenerationStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export class AIGeneration {
   constructor(
