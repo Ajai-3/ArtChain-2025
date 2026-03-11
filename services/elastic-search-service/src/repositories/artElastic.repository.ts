@@ -1,9 +1,9 @@
-import { injectable } from "inversify";
-import { IndexedArt } from "../interface/indexArt";
-import { elasticClient } from "../config/elasticClient";
-import { IArtElasticRepository } from "../interface/IArtElasticRepository";
+import { injectable } from 'inversify';
+import { IndexedArt } from '../interface/indexArt';
+import { elasticClient } from '../config/elasticClient';
+import { IArtElasticRepository } from '../interface/IArtElasticRepository';
 
-const INDEX_NAME = "arts";
+const INDEX_NAME = 'arts';
 
 @injectable()
 export class ArtElasticRepository implements IArtElasticRepository {
@@ -29,16 +29,16 @@ export class ArtElasticRepository implements IArtElasticRepository {
     const result = await elasticClient.search({
       index: INDEX_NAME,
       size: 20,
-      sort: [{ createdAt: "desc" }],
+      sort: [{ createdAt: 'desc' }],
       query: {
         bool: {
           should: [
             { match_phrase_prefix: { title: query } },
             { match_phrase_prefix: { artName: query } },
             { match_phrase_prefix: { hashtags: query } },
-            { fuzzy: { title: { value: query, fuzziness: "AUTO" } } },
-            { fuzzy: { artName: { value: query, fuzziness: "AUTO" } } },
-            { fuzzy: { hashtags: { value: query, fuzziness: "AUTO" } } },
+            { fuzzy: { title: { value: query, fuzziness: 'AUTO' } } },
+            { fuzzy: { artName: { value: query, fuzziness: 'AUTO' } } },
+            { fuzzy: { hashtags: { value: query, fuzziness: 'AUTO' } } },
           ],
         },
       },

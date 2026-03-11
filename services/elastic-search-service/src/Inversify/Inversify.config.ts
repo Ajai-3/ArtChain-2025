@@ -1,28 +1,28 @@
-import { Container } from "inversify";
-import { TYPES } from "./types";
+import { Container } from 'inversify';
+import { TYPES } from './types';
 
 // Repositories
-import { IArtElasticRepository } from "../interface/IArtElasticRepository";
-import { IUserElasticRepository } from "../interface/IUserElasticRepository";
+import { IArtElasticRepository } from '../interface/IArtElasticRepository';
+import { IUserElasticRepository } from '../interface/IUserElasticRepository';
 
-import { ArtElasticRepository } from "../repositories/ArtElastic.repository";
-import { UserElasticRepository } from "../repositories/UserElastic.repository";
+import { ArtElasticRepository } from '../repositories/ArtElastic.repository';
+import { UserElasticRepository } from '../repositories/UserElastic.repository';
 
 // Services
-import { IArtElasticService } from "../interface/IArtElasticService";
+import { IArtElasticService } from '../interface/IArtElasticService';
 
-import { ArtElasticService } from "../services/ArtElastic.service";
+import { ArtElasticService } from '../services/ArtElastic.service';
 
 // Controllers
-import { IArtElasticController } from "../interface/IArtElasticController";
-import { IUserElasticController } from "../interface/IUserElasticController";
-import { IElasticSearchController } from "../interface/IElasticSearchController";
+import { IArtElasticController } from '../interface/IArtElasticController';
+import { IUserElasticController } from '../interface/IUserElasticController';
+import { IElasticSearchController } from '../interface/IElasticSearchController';
 
-import { ArtElasticController } from "../controller/ArtElastic.controller";
-import { UserElasticController } from "../controller/UserElastic.controller";
-import { ElasticSearchController } from "../controller/ElasticSearch.controller";
-import { IUserElasticService } from "../interface/IUserElasticService";
-import { UserElasticService } from "../services/UserElastic.service";
+import { ArtElasticController } from '../controller/ArtElastic.controller';
+import { UserElasticController } from '../controller/UserElastic.controller';
+import { ElasticSearchController } from '../controller/ElasticSearch.controller';
+import { IUserElasticService } from '../interface/IUserElasticService';
+import { UserElasticService } from '../services/UserElastic.service';
 
 const container = new Container();
 

@@ -1,4 +1,4 @@
-import { IndexedArt } from "../interface/indexArt";
+import { IndexedArt } from '../interface/indexArt';
 
 export interface IArtElasticService {
   addArt(art: IndexedArt): Promise<void>;

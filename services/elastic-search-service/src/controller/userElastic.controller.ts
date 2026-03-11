@@ -1,11 +1,11 @@
-import { logger } from "../utils/logger";
-import { TYPES } from "../Inversify/types";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { IUserElasticService } from "../interface/IUserElasticService";
-import { ELASTIC_MESSAGES } from "../constants/elasticMesages.constants";
-import { IUserElasticController } from "../interface/IUserElasticController";
+import { logger } from '../utils/logger';
+import { TYPES } from '../Inversify/types';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { IUserElasticService } from '../interface/IUserElasticService';
+import { ELASTIC_MESSAGES } from '../constants/elasticMesages.constants';
+import { IUserElasticController } from '../interface/IUserElasticController';
 
 @injectable()
 export class UserElasticController implements IUserElasticController {
@@ -28,7 +28,7 @@ export class UserElasticController implements IUserElasticController {
   ): Promise<void> => {
     try {
       await this._userService.addUser(req.body);
-      logger.info("Index created");
+      logger.info('Index created');
       res
         .status(HttpStatus.CREATED)
         .json({ message: ELASTIC_MESSAGES.INDEX_SUCCESS });
