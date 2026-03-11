@@ -5,24 +5,24 @@ import { TYPES } from './types';
 import { IArtElasticRepository } from '../interface/IArtElasticRepository';
 import { IUserElasticRepository } from '../interface/IUserElasticRepository';
 
-import { ArtElasticRepository } from '../repositories/ArtElastic.repository';
-import { UserElasticRepository } from '../repositories/UserElastic.repository';
+import { ArtElasticRepository } from '../repositories/artElastic.repository';
+import { UserElasticRepository } from '../repositories/userElastic.repository';
 
 // Services
 import { IArtElasticService } from '../interface/IArtElasticService';
 
-import { ArtElasticService } from '../services/ArtElastic.service';
+import { ArtElasticService } from '../services/artElastic.service';
 
 // Controllers
 import { IArtElasticController } from '../interface/IArtElasticController';
 import { IUserElasticController } from '../interface/IUserElasticController';
 import { IElasticSearchController } from '../interface/IElasticSearchController';
 
-import { ArtElasticController } from '../controller/ArtElastic.controller';
-import { UserElasticController } from '../controller/UserElastic.controller';
-import { ElasticSearchController } from '../controller/ElasticSearch.controller';
+import { ArtElasticController } from '../controller/artElastic.controller';
+import { UserElasticController } from '../controller/userElastic.controller';
+import { ElasticSearchController } from '../controller/elasticSearch.controller';
 import { IUserElasticService } from '../interface/IUserElasticService';
-import { UserElasticService } from '../services/UserElastic.service';
+import { UserElasticService } from '../services/userElastic.service';
 
 const container = new Container();
 
