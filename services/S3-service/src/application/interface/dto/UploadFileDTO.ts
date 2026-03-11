@@ -1,4 +1,4 @@
-import { FileCategory } from "../../../types/FileCategory";
+import { FileCategory } from '../../../types/FileCategory';
 
 export interface UploadFileDTO {
   fileBuffer: Buffer;

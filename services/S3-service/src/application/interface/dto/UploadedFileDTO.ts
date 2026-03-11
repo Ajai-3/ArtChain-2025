@@ -1,4 +1,4 @@
-import { FileCategory } from "../../../types/FileCategory";
+import { FileCategory } from '../../../types/FileCategory';
 
 export interface UploadedFileDTO {
   url?: string;

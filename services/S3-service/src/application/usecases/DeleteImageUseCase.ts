@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { IFileRepository } from "../../domain/repositories/IFileRepository";
-import { publishNotification } from "../../infrastructure/rabbitmq/rabbitmq";
-import { DeleteImageRequestDTO } from "../interface/dto/DeleteImageRequestDTO";
-import { IDeleteImageUseCase } from "../interface/usecases/IDeleteImageUseCase";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { IFileRepository } from '../../domain/repositories/IFileRepository';
+import { publishNotification } from '../../infrastructure/rabbitmq/rabbitmq';
+import { DeleteImageRequestDTO } from '../interface/dto/DeleteImageRequestDTO';
+import { IDeleteImageUseCase } from '../interface/usecases/IDeleteImageUseCase';
 
 @injectable()
 export class DeleteImageUseCase implements IDeleteImageUseCase {
@@ -13,13 +13,13 @@ export class DeleteImageUseCase implements IDeleteImageUseCase {
   async execute(request: DeleteImageRequestDTO): Promise<void> {
     const { fileUrl, userId, category } = request;
 
-    console.log(category)
+    console.log(category);
 
-    await publishNotification("user.profile_update", {
+    await publishNotification('user.profile_update', {
       payload: {
         userId: userId,
         category,
-        key: "",
+        key: '',
       },
     });
 

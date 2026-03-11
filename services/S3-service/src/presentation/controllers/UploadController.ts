@@ -1,18 +1,18 @@
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { logger } from "../../infrastructure/utils/logger";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { validateUpload } from "../validations/validateUpload";
-import { UPLOAD_MESSAGES } from "../../constants/uploadMessages";
-import { IUploadController } from "../interface/IUploadController";
-import { mapFrontendType } from "../../infrastructure/utils/mapFrontendType";
-import { UploadFileDTO } from "../../application/interface/dto/UploadFileDTO";
-import { IUploadArtImage } from "../../application/interface/usecases/IUploadArtImage";
-import { DeleteImageRequestDTO } from "../../application/interface/dto/DeleteImageRequestDTO";
-import { IDeleteImageUseCase } from "../../application/interface/usecases/IDeleteImageUseCase";
-import { IUploadImageUseCase } from "../../application/interface/usecases/IUploadImageUseCase";
-import { IGetSignedUrlUseCase } from "../../application/interface/usecases/IGetSignedUrlUseCase";
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../../infrastructure/utils/logger';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { validateUpload } from '../validations/validateUpload';
+import { UPLOAD_MESSAGES } from '../../constants/uploadMessages';
+import { IUploadController } from '../interface/IUploadController';
+import { mapFrontendType } from '../../infrastructure/utils/mapFrontendType';
+import { UploadFileDTO } from '../../application/interface/dto/UploadFileDTO';
+import { IUploadArtImage } from '../../application/interface/usecases/IUploadArtImage';
+import { DeleteImageRequestDTO } from '../../application/interface/dto/DeleteImageRequestDTO';
+import { IDeleteImageUseCase } from '../../application/interface/usecases/IDeleteImageUseCase';
+import { IUploadImageUseCase } from '../../application/interface/usecases/IUploadImageUseCase';
+import { IGetSignedUrlUseCase } from '../../application/interface/usecases/IGetSignedUrlUseCase';
 
 @injectable()
 export class UploadController implements IUploadController {
@@ -83,14 +83,14 @@ export class UploadController implements IUploadController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { userId, file } = validateUpload(req, "art");
+      const { userId, file } = validateUpload(req, 'art');
       logger.info(`Art upload request recived ${userId} ${file}`);
 
       const dto: UploadFileDTO = {
         fileBuffer: file.buffer,
         fileName: file.originalname,
         mimeType: file.mimetype,
-        category: "art",
+        category: 'art',
         userId,
       };
 
@@ -125,7 +125,7 @@ export class UploadController implements IUploadController {
     try {
       const { fileUrl } = req.body;
       const fileType = mapFrontendType(req.body.type);
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       const dto: DeleteImageRequestDTO = { fileUrl, userId, category: fileType };
       await this._deleteImageUseCase.execute(dto);
@@ -156,7 +156,7 @@ export class UploadController implements IUploadController {
       const fileType = mapFrontendType(type as string);
 
       if (!key) {
-        throw new Error("Key is required");
+        throw new Error('Key is required');
       }
 
       const signedUrl = await this._getSignedUrlUseCase.execute(key as string, fileType);

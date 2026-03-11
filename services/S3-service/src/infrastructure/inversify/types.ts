@@ -1,13 +1,13 @@
 export const TYPES = {
   // Repositories
-  IFileRepository: Symbol.for("IFileRepository"),
+  IFileRepository: Symbol.for('IFileRepository'),
 
   // Use Cases
-  IUploadArtImage: Symbol.for("IUploadArtImage"),
-  IUploadImageUseCase: Symbol.for("IUploadImageUseCase"),
-  IDeleteImageUseCase: Symbol.for("IDeleteImageUseCase"),
-  IGetSignedUrlUseCase: Symbol.for("IGetSignedUrlUseCase"),
+  IUploadArtImage: Symbol.for('IUploadArtImage'),
+  IUploadImageUseCase: Symbol.for('IUploadImageUseCase'),
+  IDeleteImageUseCase: Symbol.for('IDeleteImageUseCase'),
+  IGetSignedUrlUseCase: Symbol.for('IGetSignedUrlUseCase'),
 
   // Controllers
-  IUploadController: Symbol.for("IUploadController"),
+  IUploadController: Symbol.for('IUploadController'),
 };

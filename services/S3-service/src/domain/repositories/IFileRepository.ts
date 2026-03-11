@@ -1,5 +1,5 @@
-import { UploadResult } from "../../types/UploadResult";
-import { FileCategory } from "../../types/FileCategory";
+import { UploadResult } from '../../types/UploadResult';
+import { FileCategory } from '../../types/FileCategory';
 
 export interface IFileRepository {
   upload(

@@ -1,4 +1,4 @@
-import sharp from "sharp";
+import sharp from 'sharp';
 
 export interface WatermarkResult {
   previewBuffer: Buffer;
@@ -8,7 +8,7 @@ export interface WatermarkResult {
 export class WatermarkService {
   static async process(
     fileBuffer: Buffer,
-    watermarkText = "Artchain"
+    watermarkText = 'Artchain'
   ): Promise<WatermarkResult> {
     const image = sharp(fileBuffer);
     const metadata = await image.metadata();
