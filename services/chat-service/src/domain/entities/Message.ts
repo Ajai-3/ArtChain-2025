@@ -1,22 +1,22 @@
 export const MediaType = {
-  TEXT: "TEXT",
-  IMAGE: "IMAGE",
-  AUDIO: "AUDIO",
-  VIDEO: "VIDEO",
-  CALL_LOG: "CALL_LOG",
+  TEXT: 'TEXT',
+  IMAGE: 'IMAGE',
+  AUDIO: 'AUDIO',
+  VIDEO: 'VIDEO',
+  CALL_LOG: 'CALL_LOG',
 } as const;
 
 export const DeleteMode = {
-  NONE: "NONE",
-  ME: "ME",
-  ALL: "ALL",
+  NONE: 'NONE',
+  ME: 'ME',
+  ALL: 'ALL',
 } as const;
 
 export const CallStatus = {
-  MISSED: "MISSED",
-  ENDED: "ENDED",
-  STARTED: "STARTED",
-  DECLINED: "DECLINED",
+  MISSED: 'MISSED',
+  ENDED: 'ENDED',
+  STARTED: 'STARTED',
+  DECLINED: 'DECLINED',
 } as const;
 
 export type DeleteMode = (typeof DeleteMode)[keyof typeof DeleteMode];

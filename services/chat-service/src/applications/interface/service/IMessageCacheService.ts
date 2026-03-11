@@ -1,4 +1,4 @@
-import { Message } from "../../../domain/entities/Message";
+import { Message } from '../../../domain/entities/Message';
 
 export interface IMessageCacheService {
   cacheMessage(message: Message): Promise<void>;

@@ -1,4 +1,4 @@
-import { Socket } from "socket.io";
+import { Socket } from 'socket.io';
 
 export interface IClientEventHandler {
   typing(socket: Socket, data: { conversationId: string }): void;
@@ -14,7 +14,7 @@ export interface IClientEventHandler {
     payload: {
       conversationId: string;
       messageId: string;
-      mode: "ME" | "EVERYONE";
+      mode: 'ME' | 'EVERYONE';
     },
     callback?: (ack: boolean) => void
   ): Promise<void>;

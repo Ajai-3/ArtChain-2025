@@ -1,7 +1,7 @@
-import { TYPES } from "../Inversify/types";
-import { inject, injectable } from "inversify";
-import { ICacheService } from "../../domain/service/ICacheService";
-import { IConversationCacheService } from "../../applications/interface/service/IConversationCacheService";
+import { TYPES } from '../Inversify/types';
+import { inject, injectable } from 'inversify';
+import { ICacheService } from '../../domain/service/ICacheService';
+import { IConversationCacheService } from '../../applications/interface/service/IConversationCacheService';
 
 @injectable()
 export class ConversationCacheService implements IConversationCacheService {

@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IAddGroupAdminUseCase } from "../interface/usecase/IAddGroupAdminUseCase";
-import { AddGroupAdminDto } from "../interface/dto/AddGroupAdminDto";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
-import { BadRequestError, NotFoundError, ForbiddenError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IAddGroupAdminUseCase } from '../interface/usecase/IAddGroupAdminUseCase';
+import { AddGroupAdminDto } from '../interface/dto/AddGroupAdminDto';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
+import { BadRequestError, NotFoundError, ForbiddenError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 @injectable()
 export class AddGroupAdminUseCase implements IAddGroupAdminUseCase {
@@ -24,7 +24,7 @@ export class AddGroupAdminUseCase implements IAddGroupAdminUseCase {
       throw new NotFoundError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
     }
 
-    if (conversation.type !== "GROUP") {
+    if (conversation.type !== 'GROUP') {
       throw new BadRequestError(ERROR_MESSAGES.NOT_A_GROUP_CONVERSATION);
     }
 
@@ -46,7 +46,7 @@ export class AddGroupAdminUseCase implements IAddGroupAdminUseCase {
       adminIds: newAdminIds
     });
 
-    await this._broadcastService.publishGroupUpdate(conversationId, "ADMIN_ADDED", {
+    await this._broadcastService.publishGroupUpdate(conversationId, 'ADMIN_ADDED', {
       userId: targetUserId,
       addedBy: requesterId
     });

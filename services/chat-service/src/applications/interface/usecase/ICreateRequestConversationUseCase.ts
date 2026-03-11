@@ -1,5 +1,5 @@
-import { CreateRequestConversationDto } from "../dto/CreateRequestConversationDto";
-import { CreatePrivateConversationResponseDto } from "../dto/CreatePrivateConversationResponseDto";
+import { CreateRequestConversationDto } from '../dto/CreateRequestConversationDto';
+import { CreatePrivateConversationResponseDto } from '../dto/CreatePrivateConversationResponseDto';
 
 export interface ICreateRequestConversationUseCase {
   execute(

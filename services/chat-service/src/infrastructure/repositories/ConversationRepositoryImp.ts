@@ -1,14 +1,14 @@
-import { injectable } from "inversify";
-import { BaseRepositoryImp } from "./BaseRepositoryImp";
+import { injectable } from 'inversify';
+import { BaseRepositoryImp } from './BaseRepositoryImp';
 import {
   Conversation,
   ConversationType,
-} from "../../domain/entities/Conversation";
+} from '../../domain/entities/Conversation';
 import {
   ConversationModel,
   IConversationDocument,
-} from "./../models/ConversationModel";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
+} from './../models/ConversationModel';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
 
 @injectable()
 export class ConversationRepositoryImp

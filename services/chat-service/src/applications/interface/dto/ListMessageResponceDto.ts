@@ -1,4 +1,4 @@
-import { MessageResponseDto } from "./MessageResponseDto";
+import { MessageResponseDto } from './MessageResponseDto';
 
 export interface ListMessagesResponse {
   messages: MessageResponseDto[];

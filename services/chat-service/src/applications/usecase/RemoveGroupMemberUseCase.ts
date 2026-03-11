@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IRemoveGroupMemberUseCase } from "../interface/usecase/IRemoveGroupMemberUseCase";
-import { RemoveGroupMemberDto } from "../interface/dto/RemoveGroupMemberDto";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
-import { BadRequestError, NotFoundError, ForbiddenError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IRemoveGroupMemberUseCase } from '../interface/usecase/IRemoveGroupMemberUseCase';
+import { RemoveGroupMemberDto } from '../interface/dto/RemoveGroupMemberDto';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
+import { BadRequestError, NotFoundError, ForbiddenError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 @injectable()
 export class RemoveGroupMemberUseCase implements IRemoveGroupMemberUseCase {
@@ -24,7 +24,7 @@ export class RemoveGroupMemberUseCase implements IRemoveGroupMemberUseCase {
       throw new NotFoundError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
     }
 
-    if (conversation.type !== "GROUP") {
+    if (conversation.type !== 'GROUP') {
       throw new BadRequestError(ERROR_MESSAGES.NOT_A_GROUP_CONVERSATION);
     }
 
@@ -53,7 +53,7 @@ export class RemoveGroupMemberUseCase implements IRemoveGroupMemberUseCase {
       adminIds: newAdminIds
     });
 
-    await this._broadcastService.publishGroupUpdate(conversationId, "MEMBER_REMOVED", {
+    await this._broadcastService.publishGroupUpdate(conversationId, 'MEMBER_REMOVED', {
       userId: targetUserId,
       removedBy: requesterId
     });

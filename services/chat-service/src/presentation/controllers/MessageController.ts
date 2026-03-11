@@ -1,18 +1,18 @@
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IMessageController } from "../interface/IMessageController";
-import { SendMessageDto } from "../../applications/interface/dto/SendMessageDto";
-import { ListMessagesDto } from "../../applications/interface/dto/ListMessagesDto";
-import { DeleteMessageDto } from "../../applications/interface/dto/DeleteMessageDto";
-import { ISendMessageUseCase } from "../../applications/interface/usecase/ISendMessageUseCase";
-import { IListMessagesUseCase } from "../../applications/interface/usecase/IListMessagesUseCase";
-import { IDeleteMessageUseCase } from "../../applications/interface/usecase/IDeleteMessageUseCase";
-import { validateWithZod } from "../../infrastructure/utils/zodValidater";
-import { getMessagesSchema } from "../validators/getMessagesSchema";
-import { SUCCESS_MESSAGES } from "../../constants/messages";
-import { ROUTES } from "../../constants/routes";
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IMessageController } from '../interface/IMessageController';
+import { SendMessageDto } from '../../applications/interface/dto/SendMessageDto';
+import { ListMessagesDto } from '../../applications/interface/dto/ListMessagesDto';
+import { DeleteMessageDto } from '../../applications/interface/dto/DeleteMessageDto';
+import { ISendMessageUseCase } from '../../applications/interface/usecase/ISendMessageUseCase';
+import { IListMessagesUseCase } from '../../applications/interface/usecase/IListMessagesUseCase';
+import { IDeleteMessageUseCase } from '../../applications/interface/usecase/IDeleteMessageUseCase';
+import { validateWithZod } from '../../infrastructure/utils/zodValidater';
+import { getMessagesSchema } from '../validators/getMessagesSchema';
+import { SUCCESS_MESSAGES } from '../../constants/messages';
+import { ROUTES } from '../../constants/routes';
 
 @injectable()
 export class MessageController implements IMessageController {
@@ -73,7 +73,7 @@ export class MessageController implements IMessageController {
 
       const { limit, fromId } = parsed.query;
       const { conversationId } = parsed.params;
-      const requestUserId = parsed.headers["x-user-id"] as string;
+      const requestUserId = parsed.headers['x-user-id'] as string;
 
       const dto: ListMessagesDto = {
         conversationId,

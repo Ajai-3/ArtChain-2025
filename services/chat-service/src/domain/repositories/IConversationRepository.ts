@@ -1,5 +1,5 @@
-import { Conversation } from "../entities/Conversation";
-import { IBaseRepository } from "./IBaseRepositories";
+import { Conversation } from '../entities/Conversation';
+import { IBaseRepository } from './IBaseRepositories';
 
 export interface IConversationRepository extends IBaseRepository<Conversation> {
   findPrivateConversation(

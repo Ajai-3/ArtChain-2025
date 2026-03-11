@@ -1,14 +1,14 @@
-import { injectable } from "inversify";
-import { redisCache } from "../config/redis";
-import { ICacheService } from "../../domain/service/ICacheService";
+import { injectable } from 'inversify';
+import { redisCache } from '../config/redis';
+import { ICacheService } from '../../domain/service/ICacheService';
 
 @injectable()
 export class RedisCacheService implements ICacheService {
   async set(key: string, value: string, expiryInMS?: number): Promise<boolean> {
     if (expiryInMS) {
-      return (await redisCache.set(key, value, "PX", expiryInMS)) === "OK";
+      return (await redisCache.set(key, value, 'PX', expiryInMS)) === 'OK';
     }
-    return (await redisCache.set(key, value)) === "OK";
+    return (await redisCache.set(key, value)) === 'OK';
   }
 
   async get(key: string): Promise<string | null> {

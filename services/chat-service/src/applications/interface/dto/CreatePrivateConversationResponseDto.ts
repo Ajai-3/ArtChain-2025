@@ -1,4 +1,4 @@
-import { Conversation } from "../../../domain/entities/Conversation";
+import { Conversation } from '../../../domain/entities/Conversation';
 
 export interface CreatePrivateConversationResponseDto {
   isNewConvo: boolean;

@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
-import { Message, MediaType, DeleteMode, CallStatus } from "../../domain/entities/Message";
+import { Schema, model } from 'mongoose';
+import { Message, MediaType, DeleteMode, CallStatus } from '../../domain/entities/Message';
 
-export interface IMessageDocument extends Omit<Message, "id"> {}
+export interface IMessageDocument extends Omit<Message, 'id'> {}
 
 const MessageSchema = new Schema<IMessageDocument>(
   {
@@ -10,20 +10,20 @@ const MessageSchema = new Schema<IMessageDocument>(
     content: { type: String, required: true },
     mediaType: {
       type: String,
-      enum: ["TEXT", "IMAGE", "AUDIO", "VIDEO", "CALL_LOG"] as MediaType[],
+      enum: ['TEXT', 'IMAGE', 'AUDIO', 'VIDEO', 'CALL_LOG'] as MediaType[],
       required: true,
     },
     mediaUrl: { type: String },
     readBy: { type: [String], default: [] },
     deleteMode: {
       type: String,
-      enum: ["NONE", "ME", "ALL"] as DeleteMode[],
-      default: "NONE",
+      enum: ['NONE', 'ME', 'ALL'] as DeleteMode[],
+      default: 'NONE',
     },
     callId: { type: String },
     callStatus: {
       type: String,
-      enum: ["MISSED", "ENDED", "STARTED", "DECLINED"] as CallStatus[],
+      enum: ['MISSED', 'ENDED', 'STARTED', 'DECLINED'] as CallStatus[],
     },
     callDuration: { type: Number },
     deletedAt: { type: Date },
@@ -33,4 +33,4 @@ const MessageSchema = new Schema<IMessageDocument>(
   }
 );
 
-export const MessageModel = model<IMessageDocument>("Message", MessageSchema);
+export const MessageModel = model<IMessageDocument>('Message', MessageSchema);

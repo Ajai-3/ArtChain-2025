@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import { logger } from "../../infrastructure/utils/logger";
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../../infrastructure/utils/logger';
 
 export const requestLoggerMiddleware = (
   req: Request,
@@ -12,14 +12,14 @@ export const requestLoggerMiddleware = (
     method: req.method,
     url: req.originalUrl || req.url,
     // ip: req.ip || req.socket.remoteAddress,
-    userId: req.headers["x-user-id"],
+    userId: req.headers['x-user-id'],
     // userAgent: req.get("user-agent"),
   };
 
 
   logger.info(`Incoming HTTP request: ${JSON.stringify(basicInfo)}`);
 
-  res.on("finish", () => {
+  res.on('finish', () => {
     const duration = Date.now() - start;
     const logData = { ...basicInfo, duration, statusCode: res.statusCode };
 
@@ -32,7 +32,7 @@ export const requestLoggerMiddleware = (
     }
   });
 
-  res.on("close", () => {
+  res.on('close', () => {
     if (!res.writableEnded) {
       const duration = Date.now() - start;
       logger.warn(

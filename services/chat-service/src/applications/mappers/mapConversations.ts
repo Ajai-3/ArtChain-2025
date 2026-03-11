@@ -1,6 +1,6 @@
-import { ConversationType } from "../../domain/entities/Conversation";
-import { Message } from "../../domain/entities/Message";
-import { UserDto } from "../interface/dto/MessageResponseDto";
+import { ConversationType } from '../../domain/entities/Conversation';
+import { Message } from '../../domain/entities/Message';
+import { UserDto } from '../interface/dto/MessageResponseDto';
 
 export interface EnrichedGroup {
   name?: string;
@@ -21,7 +21,7 @@ export interface EnrichedConversation {
   lastMessage: Message | null;
   unreadCount: number;
 
-  partner: Omit<UserDto, "status"> | null;
+  partner: Omit<UserDto, 'status'> | null;
   group: EnrichedGroup | null;
 }
 
@@ -42,7 +42,7 @@ export function mapConversation({
 }: MapConversationParams): EnrichedConversation {
   const pid = c.memberIds.find((id: string) => id !== userId);
 
-  let partner: Omit<UserDto, "status"> | null = null;
+  let partner: Omit<UserDto, 'status'> | null = null;
   if (
     (c.type === ConversationType.PRIVATE ||
       c.type === ConversationType.REQUEST) &&
@@ -63,18 +63,18 @@ export function mapConversation({
   let lastMessage = lastMap.get(c.id) || null;
 
   if (lastMessage) {
-    if (lastMessage.deleteMode === "ALL") {
+    if (lastMessage.deleteMode === 'ALL') {
       lastMessage = {
         ...lastMessage,
-        content: "",
+        content: '',
       };
     } else if (
-      lastMessage.deleteMode === "ME" &&
+      lastMessage.deleteMode === 'ME' &&
       lastMessage.senderId === userId
     ) {
       lastMessage = {
         ...lastMessage,
-        content: "",
+        content: '',
       };
     }
   }

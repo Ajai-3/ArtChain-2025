@@ -1,6 +1,6 @@
-import Redis from "ioredis";
-import { env } from "../config/env";
-import { logger } from "../utils/logger";
+import Redis from 'ioredis';
+import { env } from '../config/env';
+import { logger } from '../utils/logger';
 
 export let redisPub: Redis;
 export let redisSub: Redis;
@@ -12,10 +12,10 @@ export const connectRedis = async () => {
   redisCache = new Redis(env.redis_url);
 
   await Promise.all([
-    new Promise<void>((resolve) => redisPub.once("ready", () => resolve())),
-    new Promise<void>((resolve) => redisSub.once("ready", () => resolve())),
-    new Promise<void>((resolve) => redisCache.once("ready", () => resolve())),
+    new Promise<void>((resolve) => redisPub.once('ready', () => resolve())),
+    new Promise<void>((resolve) => redisSub.once('ready', () => resolve())),
+    new Promise<void>((resolve) => redisCache.once('ready', () => resolve())),
   ]);
 
-  logger.info("🐛 Redis connected.");
+  logger.info('🐛 Redis connected.');
 };

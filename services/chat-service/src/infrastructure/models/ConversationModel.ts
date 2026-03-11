@@ -1,10 +1,10 @@
-import { Schema, model } from "mongoose";
-import { Conversation, ConversationType } from "../../domain/entities/Conversation";
+import { Schema, model } from 'mongoose';
+import { Conversation, ConversationType } from '../../domain/entities/Conversation';
 
-export interface IConversationDocument extends Omit<Conversation, "id"> {}
+export interface IConversationDocument extends Omit<Conversation, 'id'> {}
 
 const ConversationSchema = new Schema<IConversationDocument>({
-  type: { type: String, enum: ["PRIVATE", "REQUEST", "GROUP"] as ConversationType[], required: true },
+  type: { type: String, enum: ['PRIVATE', 'REQUEST', 'GROUP'] as ConversationType[], required: true },
   memberIds: { type: [String], required: true },
   ownerId: { type: String },
   adminIds: { type: [String], default: [] },
@@ -14,4 +14,4 @@ const ConversationSchema = new Schema<IConversationDocument>({
   timestamps: true,
 });
 
-export const ConversationModel = model<IConversationDocument>("Conversation", ConversationSchema);
+export const ConversationModel = model<IConversationDocument>('Conversation', ConversationSchema);

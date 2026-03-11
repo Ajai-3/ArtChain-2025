@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { IMarkMessagesReadUseCase } from "../interface/usecase/IMarkMessagesReadUseCase";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { IMessageCacheService } from "../interface/service/IMessageCacheService";
-import { BadRequestError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { inject, injectable } from 'inversify';
+import { IMarkMessagesReadUseCase } from '../interface/usecase/IMarkMessagesReadUseCase';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { IMessageCacheService } from '../interface/service/IMessageCacheService';
+import { BadRequestError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 @injectable()
 export class MarkMessagesReadUseCase implements IMarkMessagesReadUseCase {
@@ -25,7 +25,7 @@ export class MarkMessagesReadUseCase implements IMarkMessagesReadUseCase {
     }
 
     if (!conversation.memberIds.includes(userId)) {
-      throw new BadRequestError("You are not a member of this conversation");
+      throw new BadRequestError('You are not a member of this conversation');
     }
 
     if (!messageIds || messageIds.length === 0) {

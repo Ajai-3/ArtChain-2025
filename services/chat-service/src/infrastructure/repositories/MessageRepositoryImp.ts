@@ -1,9 +1,9 @@
-import { injectable } from "inversify";
-import { Types } from "mongoose";
-import { Message } from "../../domain/entities/Message";
-import { BaseRepositoryImp } from "./BaseRepositoryImp";
-import { IMessageDocument, MessageModel } from "../models/MessageModel";
-import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
+import { injectable } from 'inversify';
+import { Types } from 'mongoose';
+import { Message } from '../../domain/entities/Message';
+import { BaseRepositoryImp } from './BaseRepositoryImp';
+import { IMessageDocument, MessageModel } from '../models/MessageModel';
+import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
 
 @injectable()
 export class MessageRepositoryImp
@@ -35,7 +35,7 @@ export class MessageRepositoryImp
     try {
       const validIds = messageIds.filter(id => Types.ObjectId.isValid(id));
       if (validIds.length === 0) {
-        console.warn("No valid ObjectIds found in messageIds:", messageIds);
+        console.warn('No valid ObjectIds found in messageIds:', messageIds);
         return;
       }
 
@@ -47,7 +47,7 @@ export class MessageRepositoryImp
       );
       console.log(`Marked ${result.modifiedCount} messages as read for user ${userId}`);
     } catch (error) {
-      console.error("Error marking messages as read:", error);
+      console.error('Error marking messages as read:', error);
       throw error;
     }
   }
@@ -62,7 +62,7 @@ export class MessageRepositoryImp
     const rows = await this.model.aggregate([
       { $match: { conversationId: { $in: conversationIds } } },
       { $sort: { createdAt: -1 } },
-      { $group: { _id: "$conversationId", doc: { $first: "$$ROOT" } } },
+      { $group: { _id: '$conversationId', doc: { $first: '$$ROOT' } } },
     ]);
 
     return rows.map((r) => this.mapDbToDomain(r.doc));
@@ -77,7 +77,7 @@ export class MessageRepositoryImp
           readBy: { $ne: userId },
         },
       },
-      { $group: { _id: "$conversationId", count: { $sum: 1 } } },
+      { $group: { _id: '$conversationId', count: { $sum: 1 } } },
     ]);
 
     return rows.map((r) => ({
@@ -100,7 +100,7 @@ export class MessageRepositoryImp
       );
       console.log(`Marked ${result.modifiedCount} messages as read in conversation ${conversationId} for user ${userId}`);
     } catch (error) {
-       console.error("Error marking all messages as read:", error);
+       console.error('Error marking all messages as read:', error);
        throw error;
     }
   }
