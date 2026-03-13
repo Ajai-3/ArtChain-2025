@@ -1,8 +1,8 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IGetWalletChartDataUseCase, WalletChartData } from "../../interface/usecase/wallet/IGetWalletChartDataUseCase";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
-import { BadRequestError } from "art-chain-shared";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IGetWalletChartDataUseCase, WalletChartData } from '../../interface/usecase/wallet/IGetWalletChartDataUseCase';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { BadRequestError } from 'art-chain-shared';
 
 @injectable()
 export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
@@ -11,18 +11,18 @@ export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
     private readonly _walletRepo: IWalletRepository
   ) {}
 
-  async execute(userId: string, timeRange: "7d" | "1m" | "all"): Promise<WalletChartData> {
+  async execute(userId: string, timeRange: '7d' | '1m' | 'all'): Promise<WalletChartData> {
     const wallet = await this._walletRepo.getByUserId(userId);
-    if (!wallet) throw new BadRequestError("Wallet not found");
+    if (!wallet) throw new BadRequestError('Wallet not found');
 
     let startDate: Date | undefined;
     const now = new Date();
 
-    if (timeRange === "7d") {
+    if (timeRange === '7d') {
        startDate = new Date();
        startDate.setDate(now.getDate() - 7);
        startDate.setHours(0, 0, 0, 0);
-    } else if (timeRange === "1m") {
+    } else if (timeRange === '1m') {
        startDate = new Date();
        startDate.setMonth(now.getMonth() - 1);
        startDate.setHours(0, 0, 0, 0);
@@ -52,7 +52,7 @@ export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
             dateKey = String(stat.date).split('T')[0];
         }
         
-        const isCredit = stat.type === "credited" || stat.type === "Earned";
+        const isCredit = stat.type === 'credited' || stat.type === 'Earned';
 
         const current = dailyMap.get(dateKey) || { net: 0, income: 0, expense: 0 };
         
@@ -79,7 +79,7 @@ export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
     
     const trendData = sortedDates.map(dateStr => {
         const dateObj = new Date(dateStr);
-        const displayDate = dateObj.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+        const displayDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
         
         const dayStats = dailyMap.get(dateStr) || { net: 0, income: 0, expense: 0 };
         runningBalance += dayStats.net; 
@@ -94,22 +94,22 @@ export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
 
 
     const earnedBreakdown = categoryStats
-        .filter((s: any) => s.type === "credited" || s.type === "Earned")
-        .map((s: any) => ({ name: s.category || "Other", value: s._sum.amount || 0 }));
+        .filter((s: any) => s.type === 'credited' || s.type === 'Earned')
+        .map((s: any) => ({ name: s.category || 'Other', value: s._sum.amount || 0 }));
     
     const spentBreakdown = categoryStats
-        .filter((s: any) => s.type === "debited" || s.type === "Spent")
-        .map((s: any) => ({ name: s.category || "Other", value: s._sum.amount || 0 }));
+        .filter((s: any) => s.type === 'debited' || s.type === 'Spent')
+        .map((s: any) => ({ name: s.category || 'Other', value: s._sum.amount || 0 }));
 
     const avgTx = periodTxCount > 0 ? (periodEarned + periodSpent) / periodTxCount : 0;
     
     const roiVal = periodSpent > 0 ? ((periodEarned - periodSpent) / periodSpent) * 100 : 0;
 
-    let grade = "-";
+    let grade = '-';
     if (periodTxCount > 0) {
-      if (roiVal > 50) grade = "A";
-      else if (roiVal > 20) grade = "B";
-      else grade = "C";
+      if (roiVal > 50) grade = 'A';
+      else if (roiVal > 20) grade = 'B';
+      else grade = 'C';
     }
 
     const stats = [

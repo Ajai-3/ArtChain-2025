@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IGetAllWithdrawalRequestsUseCase } from "../../interface/usecase/withdrawal/IGetAllWithdrawalRequestsUseCase";
-import { IWithdrawalRepository } from "../../../domain/repository/IWithdrawalRepository";
-import { WithdrawalRequest } from "../../../domain/entities/WithdrawalRequest";
-import { UserServiceClient } from "../../../infrastructure/clients/UserServiceClient";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IGetAllWithdrawalRequestsUseCase } from '../../interface/usecase/withdrawal/IGetAllWithdrawalRequestsUseCase';
+import { IWithdrawalRepository } from '../../../domain/repository/IWithdrawalRepository';
+import { WithdrawalRequest } from '../../../domain/entities/WithdrawalRequest';
+import { UserServiceClient } from '../../../infrastructure/clients/UserServiceClient';
 
 @injectable()
 export class GetAllWithdrawalRequestsUseCase implements IGetAllWithdrawalRequestsUseCase {

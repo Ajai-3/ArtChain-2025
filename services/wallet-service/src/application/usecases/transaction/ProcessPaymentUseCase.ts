@@ -1,9 +1,9 @@
-import { injectable, inject } from "inversify";
-import { IProcessPaymentUseCase } from "../../interface/usecase/transaction/IProcessPaymentUseCase";
-import { ProcessPaymentDTO } from "../../interface/dto/transaction/ProcessPaymentDTO";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
-import { logger } from "../../../utils/logger";
+import { injectable, inject } from 'inversify';
+import { IProcessPaymentUseCase } from '../../interface/usecase/transaction/IProcessPaymentUseCase';
+import { ProcessPaymentDTO } from '../../interface/dto/transaction/ProcessPaymentDTO';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { logger } from '../../../utils/logger';
 
 @injectable()
 export class ProcessPaymentUseCase implements IProcessPaymentUseCase {
@@ -23,7 +23,7 @@ export class ProcessPaymentUseCase implements IProcessPaymentUseCase {
       dto.amount,
       dto.description,
       dto.referenceId,
-      dto.category || "PAYMENT"
+      dto.category || 'PAYMENT'
     );
   }
 }

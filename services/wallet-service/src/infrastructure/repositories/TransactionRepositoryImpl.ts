@@ -1,8 +1,8 @@
-import { prisma } from "../db/prisma";
-import { injectable } from "inversify";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { ITransactionRepository } from "../../domain/repository/ITransactionRepository";
-import { Transaction, TransactionCategory, TransactionMethod, TransactionStatus, TransactionType } from "../../domain/entities/Transaction";
+import { prisma } from '../db/prisma';
+import { injectable } from 'inversify';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { ITransactionRepository } from '../../domain/repository/ITransactionRepository';
+import { Transaction, TransactionCategory, TransactionMethod, TransactionStatus, TransactionType } from '../../domain/entities/Transaction';
 
 @injectable()
 export class TransactionRepositoryImpl
@@ -39,7 +39,7 @@ async getByWalletId(
   const [transactions, total] = await Promise.all([
     this.model.findMany({
       where: whereClause,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip,
       take: limit,
     }),

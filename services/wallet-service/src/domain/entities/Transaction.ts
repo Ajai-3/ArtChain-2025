@@ -1,35 +1,35 @@
 export const TransactionType = {
-  CREDITED: "credited",
-  DEBITED: "debited",
+  CREDITED: 'credited',
+  DEBITED: 'debited',
 } as const;
 export type TransactionType = typeof TransactionType[keyof typeof TransactionType];
 
 export const TransactionMethod = {
-  STRIPE: "stripe",
-  RAZORPAY: "razorpay",
-  ART_COIN: "art_coin",
+  STRIPE: 'stripe',
+  RAZORPAY: 'razorpay',
+  ART_COIN: 'art_coin',
 } as const;
 export type TransactionMethod = typeof TransactionMethod[keyof typeof TransactionMethod];
 
 export const TransactionStatus = {
-  PENDING: "pending",
-  SUCCESS: "success",
-  FAILED: "failed",
+  PENDING: 'pending',
+  SUCCESS: 'success',
+  FAILED: 'failed',
 } as const;
 export type TransactionStatus = typeof TransactionStatus[keyof typeof TransactionStatus];
 
 export const TransactionCategory = {
-  TOP_UP: "TOP_UP",
-  SALE: "SALE",
-  PURCHASE: "PURCHASE",
-  WITHDRAWAL: "WITHDRAWAL",
-  COMMISSION: "COMMISSION",
-  REFUND: "REFUND",
-  GIFT: "GIFT",
-  AUCTION_FEE: "AUCTION_FEE",      
-  SALE_FEE: "SALE_FEE",          
-  COMMISSION_FEE: "COMMISSION_FEE",
-  OTHER: "OTHER",
+  TOP_UP: 'TOP_UP',
+  SALE: 'SALE',
+  PURCHASE: 'PURCHASE',
+  WITHDRAWAL: 'WITHDRAWAL',
+  COMMISSION: 'COMMISSION',
+  REFUND: 'REFUND',
+  GIFT: 'GIFT',
+  AUCTION_FEE: 'AUCTION_FEE',      
+  SALE_FEE: 'SALE_FEE',          
+  COMMISSION_FEE: 'COMMISSION_FEE',
+  OTHER: 'OTHER',
 } as const;
 export type TransactionCategory = typeof TransactionCategory[keyof typeof TransactionCategory];
 

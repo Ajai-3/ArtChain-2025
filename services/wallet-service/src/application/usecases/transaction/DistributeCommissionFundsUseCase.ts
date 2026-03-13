@@ -1,7 +1,7 @@
-import { inject, injectable } from "inversify";
-import { IDistributeCommissionFundsUseCase } from "../../interface/usecase/transaction/IDistributeCommissionFundsUseCase";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
+import { inject, injectable } from 'inversify';
+import { IDistributeCommissionFundsUseCase } from '../../interface/usecase/transaction/IDistributeCommissionFundsUseCase';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
 
 @injectable()
 export class DistributeCommissionFundsUseCase implements IDistributeCommissionFundsUseCase {

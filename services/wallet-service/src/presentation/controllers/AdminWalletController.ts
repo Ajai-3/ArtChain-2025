@@ -6,8 +6,8 @@ import { IGetAllWalletsUseCase } from '../../application/interface/usecase/admin
 
 import { IUpdateWalletStatusUseCase } from '../../application/interface/usecase/admin/IUpdateWalletStatusUseCase';
 import { IGetUserTransactionsUseCase } from '../../application/interface/usecase/admin/IGetUserTransactionsUseCase';
-import { HttpStatus } from "art-chain-shared";
-import { GetRevenueStatsDTO } from "../../application/interface/dto/wallet/GetRevenueStatsDTO";
+import { HttpStatus } from 'art-chain-shared';
+import { GetRevenueStatsDTO } from '../../application/interface/dto/wallet/GetRevenueStatsDTO';
 import { IGetRevenueStatsUseCase } from '../../application/interface/usecase/wallet/IGetRevenueStatsUseCase';
 import { IGetAllRecentTransactionsUseCase } from '../../application/interface/usecase/admin/IGetAllRecentTransactionsUseCase';
 import { IGetTransactionStatsUseCase } from '../../application/interface/usecase/admin/IGetTransactionStatsUseCase';
@@ -117,7 +117,7 @@ export class AdminWalletController implements IAdminWalletController {
 
   getRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const adminId = (req.headers["x-admin-id"] as string) || config.platform_admin_id;
+      const adminId = (req.headers['x-admin-id'] as string) || config.platform_admin_id;
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 

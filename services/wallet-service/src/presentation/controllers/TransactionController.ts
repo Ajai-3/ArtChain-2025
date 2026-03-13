@@ -1,25 +1,25 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { TRANSACTION_MESSAGES } from "../../constants/TransactionMessages";
-import { ITransactionController } from "../interface/ITransactionController";
-import { GetTransactionsDto } from "../../application/interface/dto/transaction/GetTransactionsDto";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { TRANSACTION_MESSAGES } from '../../constants/TransactionMessages';
+import { ITransactionController } from '../interface/ITransactionController';
+import { GetTransactionsDto } from '../../application/interface/dto/transaction/GetTransactionsDto';
 import {
   TransactionMethod,
   TransactionCategory,
   TransactionType,
   TransactionStatus,
-} from "./../../domain/entities/Transaction";
-import { IGetTransactionsUseCase } from "../../application/interface/usecase/transaction/IGetTransactionsUseCase";
-import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase";
-import { ProcessSplitPurchaseDTO } from "../../application/interface/dto/transaction/ProcessSplitPurchaseDTO";
-import { IProcessPaymentUseCase } from "../../application/interface/usecase/transaction/IProcessPaymentUseCase";
-import { ProcessPaymentDTO } from "../../application/interface/dto/transaction/ProcessPaymentDTO";
-import { ILockCommissionFundsUseCase } from "../../application/interface/usecase/transaction/ILockCommissionFundsUseCase";
-import { IDistributeCommissionFundsUseCase } from "../../application/interface/usecase/transaction/IDistributeCommissionFundsUseCase";
-import { IRefundCommissionFundsUseCase } from "../../application/interface/usecase/transaction/IRefundCommissionFundsUseCase";
+} from './../../domain/entities/Transaction';
+import { IGetTransactionsUseCase } from '../../application/interface/usecase/transaction/IGetTransactionsUseCase';
+import { IProcessSplitPurchaseUseCase } from '../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase';
+import { ProcessSplitPurchaseDTO } from '../../application/interface/dto/transaction/ProcessSplitPurchaseDTO';
+import { IProcessPaymentUseCase } from '../../application/interface/usecase/transaction/IProcessPaymentUseCase';
+import { ProcessPaymentDTO } from '../../application/interface/dto/transaction/ProcessPaymentDTO';
+import { ILockCommissionFundsUseCase } from '../../application/interface/usecase/transaction/ILockCommissionFundsUseCase';
+import { IDistributeCommissionFundsUseCase } from '../../application/interface/usecase/transaction/IDistributeCommissionFundsUseCase';
+import { IRefundCommissionFundsUseCase } from '../../application/interface/usecase/transaction/IRefundCommissionFundsUseCase';
 
 @injectable()
 export class TransactionController implements ITransactionController {
@@ -54,7 +54,7 @@ export class TransactionController implements ITransactionController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
       const status = req.query.status as TransactionStatus;
@@ -107,7 +107,7 @@ export class TransactionController implements ITransactionController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { type, category, amount, description } = req.body;
 
       logger.info(
@@ -170,11 +170,11 @@ export class TransactionController implements ITransactionController {
         );
         return res
           .status(HttpStatus.OK)
-          .json({ message: "Payment successful" });
+          .json({ message: 'Payment successful' });
       } else {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: "Payment failed" });
+          .json({ message: 'Payment failed' });
       }
     } catch (error) {
       logger.error(
@@ -199,9 +199,9 @@ export class TransactionController implements ITransactionController {
       const { userId, commissionId, amount } = req.body;
       const success = await this._lockCommissionFundsUseCase.execute(userId, commissionId, amount);
       if (success) {
-        return res.status(HttpStatus.OK).json({ message: "Funds locked successfully" });
+        return res.status(HttpStatus.OK).json({ message: 'Funds locked successfully' });
       }
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to lock funds" });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to lock funds' });
     } catch (error) {
       next(error);
     }
@@ -221,9 +221,9 @@ export class TransactionController implements ITransactionController {
     try {
       const success = await this._distributeCommissionFundsUseCase.execute(req.body);
       if (success) {
-        return res.status(HttpStatus.OK).json({ message: "Funds distributed successfully" });
+        return res.status(HttpStatus.OK).json({ message: 'Funds distributed successfully' });
       }
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to distribute funds" });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to distribute funds' });
     } catch (error) {
       next(error);
     }
@@ -244,9 +244,9 @@ export class TransactionController implements ITransactionController {
       const { userId, commissionId, amount } = req.body;
       const success = await this._refundCommissionFundsUseCase.execute(userId, commissionId, amount);
       if (success) {
-        return res.status(HttpStatus.OK).json({ message: "Funds refunded successfully" });
+        return res.status(HttpStatus.OK).json({ message: 'Funds refunded successfully' });
       }
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: "Failed to refund funds" });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to refund funds' });
     } catch (error) {
       next(error);
     }

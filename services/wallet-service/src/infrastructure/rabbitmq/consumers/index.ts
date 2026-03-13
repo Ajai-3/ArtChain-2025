@@ -1,5 +1,5 @@
-import { Channel } from "amqplib";
-import { walletConsumer } from "./walletConsumer";
+import { Channel } from 'amqplib';
+import { walletConsumer } from './walletConsumer';
 
 
 const consumers = [walletConsumer];

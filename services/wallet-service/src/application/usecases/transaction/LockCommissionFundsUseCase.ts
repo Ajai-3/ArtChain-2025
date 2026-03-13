@@ -1,7 +1,7 @@
-import { inject, injectable } from "inversify";
-import { ILockCommissionFundsUseCase } from "../../interface/usecase/transaction/ILockCommissionFundsUseCase";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
+import { inject, injectable } from 'inversify';
+import { ILockCommissionFundsUseCase } from '../../interface/usecase/transaction/ILockCommissionFundsUseCase';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
 
 @injectable()
 export class LockCommissionFundsUseCase implements ILockCommissionFundsUseCase {

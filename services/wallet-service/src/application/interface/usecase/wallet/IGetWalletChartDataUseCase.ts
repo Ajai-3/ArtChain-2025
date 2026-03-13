@@ -8,5 +8,5 @@ export interface WalletChartData {
 }
 
 export interface IGetWalletChartDataUseCase {
-  execute(userId: string, timeRange: "7d" | "1m" | "all"): Promise<WalletChartData>;
+  execute(userId: string, timeRange: '7d' | '1m' | 'all'): Promise<WalletChartData>;
 }

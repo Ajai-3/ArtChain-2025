@@ -1,10 +1,10 @@
-import { injectable, inject } from "inversify";
-import { ISettleAuctionUseCase } from "../../interface/usecase/wallet/ISettleAuctionUseCase";
-import { SettleAuctionDTO } from "../../interface/dto/wallet/SettleAuctionDTO";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
-import { logger } from "../../../utils/logger";
-import { config } from "../../../infrastructure/config/env";
+import { injectable, inject } from 'inversify';
+import { ISettleAuctionUseCase } from '../../interface/usecase/wallet/ISettleAuctionUseCase';
+import { SettleAuctionDTO } from '../../interface/dto/wallet/SettleAuctionDTO';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { logger } from '../../../utils/logger';
+import { config } from '../../../infrastructure/config/env';
 
 @injectable()
 export class SettleAuctionUseCase implements ISettleAuctionUseCase {

@@ -1,10 +1,10 @@
-import { injectable } from "inversify";
-import { prisma } from "../db/prisma";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { IWithdrawalRepository } from "../../domain/repository/IWithdrawalRepository";
-import { WithdrawalRequest } from "../../domain/entities/WithdrawalRequest";
-import { WithdrawalStatus } from "../../domain/entities/WithdrawalRequest";
-import { TransactionType, TransactionCategory, TransactionMethod, TransactionStatus } from "../../domain/entities/Transaction";
+import { injectable } from 'inversify';
+import { prisma } from '../db/prisma';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { IWithdrawalRepository } from '../../domain/repository/IWithdrawalRepository';
+import { WithdrawalRequest } from '../../domain/entities/WithdrawalRequest';
+import { WithdrawalStatus } from '../../domain/entities/WithdrawalRequest';
+import { TransactionType, TransactionCategory, TransactionMethod, TransactionStatus } from '../../domain/entities/Transaction';
 
 @injectable()
 export class WithdrawalRepositoryImpl
@@ -24,18 +24,18 @@ export class WithdrawalRepositoryImpl
      const skip = (page - 1) * limit;
      const where: any = { userId };
      
-     if (status && status !== "all") {
+     if (status && status !== 'all') {
         where.status = status;
      }
 
-     if (method && method !== "all") {
+     if (method && method !== 'all') {
         where.method = method;
      }
 
      const [requests, total] = await Promise.all([
         this.model.findMany({
            where,
-           orderBy: { createdAt: "desc" },
+           orderBy: { createdAt: 'desc' },
            skip,
            take: limit
         }),
@@ -48,7 +48,7 @@ export class WithdrawalRepositoryImpl
   async getWithdrawalRequestsByWalletId(walletId: string): Promise<WithdrawalRequest[]> {
     return this.model.findMany({
       where: { walletId },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -73,7 +73,7 @@ export class WithdrawalRepositoryImpl
   async findAll(page: number, limit: number, status?: string, method?: string): Promise<{ requests: WithdrawalRequest[]; total: number }> {
     const skip = (page - 1) * limit;
     const where: any = {};
-    if (status && status !== "ALL") {
+    if (status && status !== 'ALL') {
         where.status = status;
     }
 
@@ -82,7 +82,7 @@ export class WithdrawalRepositoryImpl
         where,
         skip,
         take: limit,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
       }),
       this.model.count({ where }),
     ]);
@@ -192,7 +192,7 @@ export class WithdrawalRepositoryImpl
             amount: params.amount,
             method: TransactionMethod.ART_COIN,
             status: TransactionStatus.SUCCESS,
-            description: `Withdrawal ${params.status.toLowerCase()}: ${params.rejectionReason || "Technical failure"}`,
+            description: `Withdrawal ${params.status.toLowerCase()}: ${params.rejectionReason || 'Technical failure'}`,
             meta: {
               withdrawalId: params.withdrawalId,
               originalTransactionId: params.originalTransactionId

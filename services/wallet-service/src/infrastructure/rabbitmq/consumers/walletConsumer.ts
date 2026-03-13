@@ -1,14 +1,14 @@
-import { Channel } from "amqplib";
-import { logger } from "../../../utils/logger";
-import { WalletRepositoryImpl } from "../../repositories/WalletRepositoryImpl";
+import { Channel } from 'amqplib';
+import { logger } from '../../../utils/logger';
+import { WalletRepositoryImpl } from '../../repositories/WalletRepositoryImpl';
 
 const walletRepo = new WalletRepositoryImpl();
 
 export async function walletConsumer(ch: Channel) {
-  const queue = "wallet-service";
+  const queue = 'wallet-service';
 
   await ch.assertQueue(queue, { durable: true });
-  await ch.bindQueue(queue, "global_exchange", "user.created");
+  await ch.bindQueue(queue, 'global_exchange', 'user.created');
 
   logger.info(`✅ WalletConsumer listening on queue "${queue}" for event "user.created"`);
 

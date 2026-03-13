@@ -1,15 +1,15 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { ICreateWithdrawalRequestUseCase } from "../../interface/usecase/withdrawal/ICreateWithdrawalRequestUseCase";
-import { IWithdrawalRepository } from "../../../domain/repository/IWithdrawalRepository";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
-import { WithdrawalRequest, WithdrawalMethod, WithdrawalStatus } from "../../../domain/entities/WithdrawalRequest";
-import { TransactionType, TransactionCategory, TransactionMethod, TransactionStatus } from "../../../domain/entities/Transaction";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { prisma } from "../../../infrastructure/db/prisma";
-import { CreateWithdrawalRequestDTO } from "../../interface/dto/withdrawal/CreateWithdrawalRequestDTO";
-import { WALLET_MESSAGES } from "../../../constants/WalletMessages";
-import { Wallet, WalletStatus } from "../../../domain/entities/Wallet";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { ICreateWithdrawalRequestUseCase } from '../../interface/usecase/withdrawal/ICreateWithdrawalRequestUseCase';
+import { IWithdrawalRepository } from '../../../domain/repository/IWithdrawalRepository';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { WithdrawalRequest, WithdrawalMethod, WithdrawalStatus } from '../../../domain/entities/WithdrawalRequest';
+import { TransactionType, TransactionCategory, TransactionMethod, TransactionStatus } from '../../../domain/entities/Transaction';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { prisma } from '../../../infrastructure/db/prisma';
+import { CreateWithdrawalRequestDTO } from '../../interface/dto/withdrawal/CreateWithdrawalRequestDTO';
+import { WALLET_MESSAGES } from '../../../constants/WalletMessages';
+import { Wallet, WalletStatus } from '../../../domain/entities/Wallet';
 
 @injectable()
 export class CreateWithdrawalRequestUseCase implements ICreateWithdrawalRequestUseCase {
@@ -82,7 +82,7 @@ export class CreateWithdrawalRequestUseCase implements ICreateWithdrawalRequestU
           amount: dto.amount,
           method: TransactionMethod.ART_COIN,
           status: TransactionStatus.PENDING,
-          description: `Withdrawal request - ${dto.method === WithdrawalMethod.BANK_TRANSFER ? "Bank Transfer" : "UPI"}`,
+          description: `Withdrawal request - ${dto.method === WithdrawalMethod.BANK_TRANSFER ? 'Bank Transfer' : 'UPI'}`,
           meta: {
             withdrawalMethod: dto.method,
             ...(dto.method === WithdrawalMethod.BANK_TRANSFER

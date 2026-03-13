@@ -1,8 +1,8 @@
-import Stripe from "stripe";
-import { inject, injectable } from "inversify";
-import { config } from "../../infrastructure/config/env";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { ICreateStripeCheckoutSessionUseCase } from "../interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase";
+import Stripe from 'stripe';
+import { inject, injectable } from 'inversify';
+import { config } from '../../infrastructure/config/env';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { ICreateStripeCheckoutSessionUseCase } from '../interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase';
 
 @injectable()
 export class CreateStripeCheckoutSessionUseCase
@@ -14,17 +14,17 @@ export class CreateStripeCheckoutSessionUseCase
     userId: string,
     amount: number
   ): Promise<Stripe.Checkout.Session> {
-    if (!userId) throw new Error("Missing user ID");
-    if (!amount || amount <= 0) throw new Error("Invalid amount");
+    if (!userId) throw new Error('Missing user ID');
+    if (!amount || amount <= 0) throw new Error('Invalid amount');
 
     const session = await this._stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
+      payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
-            currency: "INR",
+            currency: 'INR',
             product_data: {
-              name: "ArtCoin Topup",
+              name: 'ArtCoin Topup',
               description: `${amount} INR → ${amount / 10} ArtCoins`,
               metadata: { userId },
             },
@@ -33,7 +33,7 @@ export class CreateStripeCheckoutSessionUseCase
           quantity: 1,
         },
       ],
-      mode: "payment",
+      mode: 'payment',
       client_reference_id: userId,
       success_url: `${config.client_url}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${config.client_url}/wallet`,
