@@ -31,6 +31,7 @@ export const s3Client = new AWS.S3({
   region: config.aws.region,
   accessKeyId: config.aws.accessKeyId,
   secretAccessKey: config.aws.secretAccessKey,
+  signatureVersion: 'v4',
 });
 
 export { getBucketConfig };

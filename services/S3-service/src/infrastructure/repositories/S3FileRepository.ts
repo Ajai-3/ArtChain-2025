@@ -97,9 +97,10 @@ export class S3FileRepository implements IFileRepository {
 
       let publicUrl = `${config.aws.cdn_domain}/${keyBase}`;
       
-      if (category === 'bidding') {
-         publicUrl = createSignedUrl(publicUrl);
-      }
+      // if (category === 'bidding') {
+      //   console.log(publicUrl)
+      //   //  publicUrl = createSignedUrl(publicUrl);
+      // }
 
       logger.info(
         `✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`
@@ -161,7 +162,7 @@ export class S3FileRepository implements IFileRepository {
       return s3Client.getSignedUrlPromise('getObject', {
         Bucket: bucketConfig.privateBucket,
         Key: `art/${key}`, // Assuming key passed is relative to art/
-        Expires: 3600, // 1 hour
+        Expires: 3600, // 1 hour expiration
       });
     }
 
