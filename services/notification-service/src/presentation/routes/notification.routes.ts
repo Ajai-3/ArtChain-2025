@@ -1,8 +1,8 @@
 import express from 'express';
+import { ROUTES } from '../../constants/routes';
 import { TYPES } from '../../infrastructure/inversify/types';
 import { container } from '../../infrastructure/inversify/inversify.config';
 import { INotificationController } from '../interface/INotificationController';
-import { ROUTES } from '../../config/routes';
 
 const router = express.Router();
 

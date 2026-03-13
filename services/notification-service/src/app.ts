@@ -1,7 +1,7 @@
 import express from 'express';
-import notificationRoutes from './presentation/routes/notification.routes';
+import { ROUTES } from './constants/routes';
 import { logger } from './infrastructure/utils/logger';
-import { ROUTES } from './config/routes';
+import notificationRoutes from './presentation/routes/notification.routes';
 
 const app = express();
 
