@@ -35,7 +35,7 @@
     "inversify": "^7.10.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.20.0",
-    "prisma": "^6.19.2",
+    "prisma": "^7.5.0",
     "reflect-metadata": "^0.2.2",
     "winston": "^3.17.0",
     "winston-elasticsearch": "^0.11.0",

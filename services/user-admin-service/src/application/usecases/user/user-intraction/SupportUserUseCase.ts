@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ILogger } from '../../../interface/ILogger';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
@@ -57,7 +58,7 @@ export class SupportUserUseCase implements ISupportUserUseCase {
       targetUser.id,
       supporter.id,
       supporter.username,
-      supporter.profileImage || ''
+      mapCdnUrl(supporter.profileImage) || ''
     ));
 
     this._logger.info(`User ${supporter.username} supported ${targetUser.username}`);
