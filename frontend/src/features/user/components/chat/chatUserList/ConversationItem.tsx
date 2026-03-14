@@ -27,7 +27,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
     ? (conversation.memberIds?.find((id) => id !== currentUserId) || conversation.partner?.id)
     : undefined;
 
-  const resolvedPartner = partnerId ? (userCache[partnerId] || conversation.partner) : conversation.partner;
+  // Use cached user if available, otherwise exactly what's on the conversation
+  const cachedPartner = partnerId ? userCache[partnerId] : undefined;
+  const resolvedPartner = cachedPartner || conversation.partner;
 
   const { isOnline } = usePresence(partnerId || conversation.partner?.id);
 

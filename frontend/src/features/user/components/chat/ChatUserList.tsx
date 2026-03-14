@@ -59,8 +59,10 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
     return sortedConversations.filter((c) => {
       const pId = c.memberIds?.find((id) => id !== currentUserId) || c.partner?.id || "";
       const partner = userCache[pId] || c.partner;
-      const query = searchQuery.toLowerCase();
+      const query = searchQuery.toLowerCase().trim();
+      
       const matchesSearch =
+        !query ||
         c.name?.toLowerCase().includes(query) ||
         partner?.name?.toLowerCase().includes(query) ||
         false;
@@ -72,7 +74,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
 
       return matchesSearch && matchesTab;
     });
-  }, [sortedConversations, searchQuery, activeTab]);
+  }, [sortedConversations, searchQuery, activeTab, userCache, currentUserId]);
 
   const tabs = [
     { id: "private" as TabType, label: "Private" },

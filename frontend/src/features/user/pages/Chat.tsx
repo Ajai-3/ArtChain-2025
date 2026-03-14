@@ -7,11 +7,11 @@ import { useRecentConversations } from "../hooks/chat/useRecentConversations";
 import {
   setConversations,
   addConversations,
+  cacheUsers,
 } from "../../../redux/slices/chatSlice";
 import {
   selectConversations,
   selectCurrentUserId,
-  selectMessagesByConversationId,
 } from "../../../redux/selectors/chatSelectors";
 import { useSendMessage } from "../hooks/chat/socket/useSendMessage";
 import { useConvoOpen } from "../hooks/chat/socket/useConvoOpen";
@@ -36,15 +36,22 @@ const Chat: React.FC = () => {
 
   const conversations = useSelector(selectConversations);
   
-  // Select messages for current conversation
-  const messages = useSelector((state: any) =>
-    selectMessagesByConversationId(state, conversationId || "")
-  );
-
   // Merge server conversations safely
   useEffect(() => {
     if (!data?.pages) return;
     const serverConversations = data.pages.flatMap((p) => p.conversations);
+
+    // Pre-cache any partner users we received from the initial fetch to prevent blank UI flashes
+    const usersToCache: any[] = [];
+    serverConversations.forEach((c) => {
+      if (c.partner && c.partner.id) {
+        usersToCache.push(c.partner);
+      }
+    });
+
+    if (usersToCache.length > 0) {
+      dispatch(cacheUsers(usersToCache));
+    }
 
     if (conversations.length === 0) {
       dispatch(setConversations(serverConversations));
