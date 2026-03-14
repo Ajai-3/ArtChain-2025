@@ -41,7 +41,7 @@ const SearchBar: React.FC = () => {
   }, []);
 
   return (
-    <div ref={wrapperRef} className="relative w-full sm:w-1/3">
+    <div ref={wrapperRef} className="relative w-full sm:w-3/4">
       {/* Search input */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-400 w-4 h-4" />
