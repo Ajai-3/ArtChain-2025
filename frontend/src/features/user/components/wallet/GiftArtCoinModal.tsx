@@ -78,7 +78,7 @@ export const GiftArtCoinModal: React.FC<GiftArtCoinModalProps> = ({
                 receiverId,
                 amount: numAmount,
                 message,
-                senderName: user?.name || user?.username || "Someone",
+                senderName: user?.username || "Someone",
                 senderImage: user?.profileImage || ""
             });
             onClose();
