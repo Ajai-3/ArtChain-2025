@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectUserCache, selectCurrentUserId } from "../../../../../../redux/selectors/chatSelectors";
 import { ConversationType } from "../../../../../../types/chat/chat";
 import type { Conversation } from "../../../../../../types/chat/chat";
 
@@ -10,17 +12,25 @@ interface ConversationProfileProps {
 
 const ConversationProfile: React.FC<ConversationProfileProps> = ({ conversation, onClose }) => {
   const navigate = useNavigate();
+  const currentUserId = useSelector(selectCurrentUserId);
+  const userCache = useSelector(selectUserCache);
+
+  const partnerId = conversation.type === "PRIVATE" || conversation.type === "REQUEST"
+    ? (conversation.memberIds?.find((id) => id !== currentUserId) || conversation.partner?.id)
+    : undefined;
+  
+  const resolvedPartner = partnerId ? (userCache[partnerId] || conversation.partner) : conversation.partner;
 
   const getConversationName = () => {
     if (conversation.type === "GROUP") {
       return conversation.name || conversation.group?.name || "Unnamed Group";
     }
-    return conversation.partner?.name || "Unknown User";
+    return resolvedPartner?.name || "Unknown User";
   };
 
   const getProfileImage = () => {
-    if ((conversation.type === "PRIVATE" || conversation.type === "REQUEST") && conversation.partner?.profileImage) {
-      return conversation.partner.profileImage;
+    if ((conversation.type === "PRIVATE" || conversation.type === "REQUEST") && resolvedPartner?.profileImage) {
+      return resolvedPartner.profileImage;
     }
     if (conversation.type === "GROUP" && conversation?.group?.profileImage) {
       return conversation?.group?.profileImage;
