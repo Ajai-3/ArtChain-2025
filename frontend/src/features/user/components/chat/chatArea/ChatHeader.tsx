@@ -78,11 +78,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     <div className="flex items-center justify-between py-2 px-4 border-b border-border bg-background/80 backdrop-blur-sm">
       {/* Left side - Back button and conversation info */}
       <div className="flex items-center space-x-3">
-        {/* Back button (mobile only) */}
+        {/* Back button */}
         {onBack && (
           <button
             onClick={onBack}
-            className="md:hidden p-2 hover:bg-muted rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
             <svg
               className="w-5 h-5"
