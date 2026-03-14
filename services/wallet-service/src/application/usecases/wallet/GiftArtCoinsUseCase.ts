@@ -10,6 +10,7 @@ import { TransactionCategory } from '@prisma/client';
 
 import { GiftArtCoinsDTO } from '../../interface/dto/wallet/GiftArtCoinsDTO';
 import { WalletStatus } from '../../../domain/entities/Wallet';
+import { mapCdnUrl } from '../../../utils/mapCdnUrl';
 
 @injectable()
 export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
@@ -71,7 +72,7 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
             message,
             timestamp: new Date(),
             senderName,
-            senderImage: senderImage || ''
+            senderImage: mapCdnUrl(senderImage) || ''
         });
 
         const updatedSenderWallet = await this._walletRepository.getByUserId(senderId);

@@ -290,6 +290,8 @@ export class WalletController implements IWalletController {
     try {
       const senderId = req.headers['x-user-id'] as string;
 
+      console.log(req.body, "req.body")
+
       const dto: GiftArtCoinsDTO = validateWithZod(giftArtCoinsSchema, { ...req.body, senderId });
 
 

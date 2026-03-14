@@ -8,6 +8,7 @@ export const config = {
   database_url: process.env.DATABASE_URL || '',
   rabbitmq_URL: process.env.RABBITMQ_URL || '',
   api_gateway_URL: process.env.API_GATEWAY_URL || '',
+  aws_cdn_domain: process.env.AWS_CDN_DOMAIN || "",
   platform_admin_id: process.env.PLATFORM_ADMIN_ID || '',
   isProduction: process.env.NODE_ENV === 'production',
   stripe_secret_key: process.env.STRIPE_SECRET_KEY || '',
