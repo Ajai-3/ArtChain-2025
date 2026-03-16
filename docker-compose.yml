@@ -59,6 +59,8 @@ services:
       - xpack.security.http.ssl.enabled=false
     ports:
       - '9200:9200'
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
     networks:
       - backend
     healthcheck:
@@ -163,11 +165,12 @@ services:
     build: ./services/notification-service
     env_file:
       - .env
-      - ./services/notification-service/.env
+      - ./services/notification-service/.env.docker
     ports:
       - '4005:4005'
     networks:
       - backend
+      
   s3-service:
     container_name: s3-service
     build: ./services/s3-service
