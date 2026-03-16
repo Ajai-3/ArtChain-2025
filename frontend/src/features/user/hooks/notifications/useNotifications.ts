@@ -13,6 +13,7 @@ export const useNotifications = () => {
       const res = await apiClient.get<NotificationResponse>('/api/v1/notifications', {
         params: { page: pageParam, limit: 10 },
       });
+
       return res.data.notifications;
     },
     getNextPageParam: (lastPage, allPages) => {

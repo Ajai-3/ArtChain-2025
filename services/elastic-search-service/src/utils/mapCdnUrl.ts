@@ -1,6 +1,12 @@
 import { config } from '../config/env';
 
 export const mapCdnUrl = (path?: string | null): string | undefined => {
+  if (!path) return undefined;
+
   const cdn = config.aws_cdn_domain;
-  return path ? `${cdn}/${path}` : undefined;
+  if (path.startsWith('http') || path.includes(cdn)) {
+    return path;
+  }
+
+  return `${cdn}/${path}`;
 };

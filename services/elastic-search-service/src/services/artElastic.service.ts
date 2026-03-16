@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { IndexedArt } from '../interface/indexArt';
 import { IArtElasticService } from '../interface/IArtElasticService';
 import { IArtElasticRepository } from '../interface/IArtElasticRepository';
+import { mapCdnUrl } from '../utils/mapCdnUrl';
 
 @injectable()
 export class ArtElasticService implements IArtElasticService {
@@ -20,7 +21,12 @@ export class ArtElasticService implements IArtElasticService {
   }
 
   async searchForArt(query: string): Promise<IndexedArt[]> {
-    return await this._repo.searchArt(query);
+    const results = await this._repo.searchArt(query);
+
+    return results.map((art) => ({
+      ...art,
+      imageUrl: mapCdnUrl(art.imageUrl) || '',
+    }));
   }
 
   async adminSearch(query: string): Promise<string[]> {

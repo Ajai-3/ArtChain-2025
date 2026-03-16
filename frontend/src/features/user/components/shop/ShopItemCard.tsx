@@ -24,7 +24,7 @@ const ShopItemCard: React.FC<ShopItemProps> = ({ item }) => {
 
   return (
     <div
-      className="group relative bg-zinc-700/20 dark:bg-zinc-900 backdrop-blur-sm border border-white/20 rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-300 cursor-pointer h-full flex flex-col"
+      className="group relative bg-zinc-700/20 dark:bg-zinc-900 backdrop-blur-sm border border-white/20 rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-300 cursor-pointer flex flex-col"
       onClick={() => navigate(`/${item.user?.username}/art/${item.artName}`)}
     >
       {/* Image Container */}
