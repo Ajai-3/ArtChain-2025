@@ -30,7 +30,7 @@ export class AdminDashboardController implements IAdminDashboardController {
         if (timeRange === 'today') startDate.setHours(0, 0, 0, 0);
         else if (timeRange === '7d') startDate.setDate(endDate.getDate() - 7);
         else if (timeRange === '30d') startDate.setDate(endDate.getDate() - 30);
-        else startDate.setDate(endDate.getDate() - 7); // Default
+        else startDate.setDate(endDate.getDate() - 7); 
       }
 
       const dto: GetPlatformRevenueStatsDTO = {

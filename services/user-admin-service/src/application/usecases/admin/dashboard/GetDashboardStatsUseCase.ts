@@ -4,6 +4,7 @@ import { IGetDashboardStatsUseCase } from '../../../interface/usecases/admin/IGe
 import { IArtService } from '../../../interface/http/IArtService';
 import { IWalletService } from '../../../interface/http/IWalletService';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 
 @injectable()
 export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
@@ -99,7 +100,7 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
             user: user ? {
                 username: user.username,
                 name: user.name,
-                profileImage: user.profileImage
+                profileImage: mapCdnUrl(user.profileImage)
             } : null
         };
     });

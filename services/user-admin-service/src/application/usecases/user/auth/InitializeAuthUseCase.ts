@@ -53,8 +53,10 @@ export class InitializeAuthUseCase implements IInitializeAuthUseCase {
     });
 
     const userWithCdn = { ...user };
-    if (userWithCdn.profileImage) {
+    if (userWithCdn.profileImage || userWithCdn.bannerImage || userWithCdn.backgroundImage) {
         userWithCdn.profileImage = mapCdnUrl(userWithCdn.profileImage) ?? null;
+        userWithCdn.bannerImage = mapCdnUrl(userWithCdn.bannerImage) ?? null;
+        userWithCdn.backgroundImage = mapCdnUrl(userWithCdn.backgroundImage) ?? null;
     }
 
     return { accessToken, user: userWithCdn };
