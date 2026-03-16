@@ -10,10 +10,14 @@ interface DetailBidFeedProps {
     isEnded: boolean;
     isScheduled: boolean;
     isUnsold: boolean;
+    initialBids?: any[]; 
 }
 
-export const DetailBidFeed = ({ auction, isLive, isEnded, isScheduled, isUnsold }: DetailBidFeedProps) => {
-    const { bids, activeUsers } = useBiddingSocket(auction.id);
+export const DetailBidFeed = ({ auction, isLive, isEnded, isScheduled, isUnsold, initialBids }: DetailBidFeedProps) => {
+    const { bids, activeUsers } = useBiddingSocket(auction.id, initialBids);
+
+
+     console.log('DetailBidFeed bids:', bids); 
 
     return (
         <div className={`flex-1 min-h-[400px] md:min-h-0 rounded-2xl overflow-hidden shadow-sm flex flex-col border-2 ${

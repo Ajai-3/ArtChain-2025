@@ -1,65 +1,80 @@
-import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { setActiveAuction, addBid } from "../../../../redux/slices/biddingSlice";
-import { getBiddingSocket } from "../../../../socket/socketManager";
+import { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  setActiveAuction,
+  addBid,
+  setBids,
+} from '../../../../redux/slices/biddingSlice';
+import { getBiddingSocket } from '../../../../socket/socketManager';
 
-export const useBiddingSocket = (auctionId: string | undefined) => {
+export const useBiddingSocket = (
+  auctionId: string | undefined,
+  initialBids: any[] = [],
+) => {
   const dispatch = useDispatch();
   const bids = useSelector((state: any) => state.bidding.bids);
   const [activeUsers, setActiveUsers] = useState<number>(0);
 
   useEffect(() => {
+    console.log('initialBids:', initialBids);
+    console.log('redux bids:', bids);
+    if (initialBids.length > 0) {
+      dispatch(setBids(initialBids));
+    }
+  }, [auctionId]);
+
+  useEffect(() => {
     if (!auctionId) return;
 
     dispatch(setActiveAuction(auctionId));
-    
+
     // Get the global socket instance
     const socket = getBiddingSocket();
-    
+
     if (socket && socket.connected) {
-        socket.emit("join_auction", auctionId);
+      socket.emit('join_auction', auctionId);
     } else {
-        // Retry logic or listener for connection could be added here if critical
-        // For now, assume provider initializes it eventually
-        const checkInterval = setInterval(() => {
-             const s = getBiddingSocket();
-             if (s && s.connected) {
-                 s.emit("join_auction", auctionId);
-                 clearInterval(checkInterval);
-             }
-        }, 1000); // Check every second
-        
-        // Clean up interval on unmount
-        return () => clearInterval(checkInterval);
+      // Retry logic or listener for connection could be added here if critical
+      // For now, assume provider initializes it eventually
+      const checkInterval = setInterval(() => {
+        const s = getBiddingSocket();
+        if (s && s.connected) {
+          s.emit('join_auction', auctionId);
+          clearInterval(checkInterval);
+        }
+      }, 1000); // Check every second
+
+      // Clean up interval on unmount
+      return () => clearInterval(checkInterval);
     }
 
     // Listeners
     const handleNewBid = (newBid: any) => {
-        console.log("⚡ [Frontend Hook] Received 'bid_placed' event:", newBid);
-        dispatch(addBid(newBid));
+      console.log("⚡ [Frontend Hook] Received 'bid_placed' event:", newBid);
+      dispatch(addBid(newBid));
     };
 
     const handleAuctionEnded = (_data: any) => {
-         // Could dispatch an action to update status
-         // For now, just invalidate queries to fetch final state
-         // But optimally: dispatch(updateAuctionStatus('ENDED'));
-    };
-    
-    const handleActiveUsers = (count: number) => {
-        setActiveUsers(count);
+      // Could dispatch an action to update status
+      // For now, just invalidate queries to fetch final state
+      // But optimally: dispatch(updateAuctionStatus('ENDED'));
     };
 
-    socket?.on("bid_placed", handleNewBid);
-    socket?.on("auction_ended", handleAuctionEnded);
-    socket?.on("active_users", handleActiveUsers);
+    const handleActiveUsers = (count: number) => {
+      setActiveUsers(count);
+    };
+
+    socket?.on('bid_placed', handleNewBid);
+    socket?.on('auction_ended', handleAuctionEnded);
+    socket?.on('active_users', handleActiveUsers);
 
     return () => {
       const s = getBiddingSocket();
       if (s) {
-        s.emit("leave_auction", auctionId);
-        s.off("bid_placed", handleNewBid);
-        s.off("auction_ended", handleAuctionEnded);
-        s.off("active_users", handleActiveUsers);
+        s.emit('leave_auction', auctionId);
+        s.off('bid_placed', handleNewBid);
+        s.off('auction_ended', handleAuctionEnded);
+        s.off('active_users', handleActiveUsers);
       }
     };
   }, [auctionId, dispatch]);

@@ -27,8 +27,6 @@ const biddingSlice = createSlice({
   reducers: {
     setActiveAuction: (state, action: PayloadAction<string>) => {
       state.activeAuctionId = action.payload;
-      state.bids = [];
-      state.currentHighestBid = 0;
     },
     setBids: (state, action: PayloadAction<Bid[]>) => {
       state.bids = action.payload;
