@@ -2,6 +2,7 @@ export const AUCTION_MESSAGES = {
   AUCTION_CREATED: 'Auction created successfully',
   AUCTIONS_FETCHED: 'Auctions fetched successfully',
   AUCTION_FETCHED: 'Auction fetched successfully',
+  HOST_CANNOT_BID: 'Host cannot place a bid on their own auction',
   AUCTION_NOT_FOUND: 'Auction not found',
   BID_PLACED: 'Bid placed successfully',
   BIDS_FETCHED: 'Bids fetched successfully',

@@ -14,14 +14,20 @@ const PORT = config.port;
 const server = http.createServer(app);
 
 connectDB().then(async () => {
-    await connectRedis();
-    const socketService = container.get<ISocketService>(TYPES.ISocketService);
-    socketService.initialize(server);
+  await connectRedis();
+  const socketService = container.get<ISocketService>(TYPES.ISocketService);
+  socketService.initialize(server);
 
-    const auctionEndedConsumer = container.get<any>(TYPES.AuctionEndedConsumer);
-    auctionEndedConsumer.start().catch((err: any) => logger.error('Failed to start AuctionEndedConsumer', err));
-    
-    server.listen(PORT, () => {
-        logger.info(`Art Service starts on port ${PORT}`);
-    });
+  const auctionEndedConsumer = container.get<any>(TYPES.AuctionEndedConsumer);
+  auctionEndedConsumer
+    .start()
+    .catch((err: any) =>
+      logger.error('Failed to start AuctionEndedConsumer', err),
+    );
+
+  console.log(config);
+
+  server.listen(PORT, () => {
+    logger.info(`Art Service starts on port ${PORT}`);
+  });
 });

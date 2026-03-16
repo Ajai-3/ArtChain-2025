@@ -21,9 +21,9 @@ export const createAuctionSchema = z
       })
       .min(0.1, 'Start price must be at least 0.1'),
 
-    startDate: z.string().nonempty('Start date is required'),
+    startDate: z.string().nonempty('Start date is required'), // ✅ added back
     startTime: z.string().nonempty('Start time is required'),
-    endDate: z.string().nonempty('End date is required'),
+    endDate: z.string().nonempty('End date is required'), // ✅ added back
     endTime: z.string().nonempty('End time is required'),
 
     imageKey: z.string().min(1, 'Image key is required'),
@@ -31,7 +31,6 @@ export const createAuctionSchema = z
   .superRefine((data, ctx) => {
     const { startTime, endTime } = data;
 
-    // ✅ now startTime and endTime are full ISO strings, just parse directly
     const start = new Date(startTime);
     const end = new Date(endTime);
     const now = new Date();
