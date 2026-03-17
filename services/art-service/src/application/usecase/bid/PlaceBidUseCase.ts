@@ -130,7 +130,6 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         return bidDTO;
 
     } catch (dbError) {
-        // Compensation: Unlock the funds we just locked if DB fails
         logger.error('DB Error during bid placement, rolling back funds lock', dbError);
         await this._walletService.unlockFunds(bidderId, amountToLock, auctionId);
         throw dbError;

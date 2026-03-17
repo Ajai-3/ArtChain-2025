@@ -42,18 +42,12 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         const platformConfig = await this._platformConfigRepository.getConfig();
         const commissionRate = platformConfig.auctionCommissionPercentage / 100;
         const totalAmount = winningBid.amount;
-        const commissionAmount = totalAmount * commissionRate;
-        
-        // 4. Settle Funds
-        // 4. Settle Funds
-        // Use Platform Admin ID from config
-        const adminId = config.platform_admin_id; 
+        const commissionAmount = totalAmount * commissionRate; 
 
         // We use hostId as sellerId
         const settlementSuccess = await this._walletService.settleAuction(
             winningBid.bidderId,
             auction.hostId,
-            adminId,
             totalAmount,
             commissionAmount,
             auctionId

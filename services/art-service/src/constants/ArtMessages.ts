@@ -8,4 +8,8 @@ export enum ART_MESSAGES {
   UPDATE_SUCCESS = 'Art item updated successfully',
   DELETE_SUCCESS = 'Art item deleted successfully',
   ART_FETCH_WITH_ART_NAME_SUCESS = 'Art fetched with artname sucessfully',
+  ART_NOT_FOR_SALE = 'Art is not for sale',
+  ART_ALREADY_OWNED = 'You already own this art',
+  INVALID_PRICE = 'Invalid price',
+  PURCHASE_FAILED = 'Purchase failed',
 }
