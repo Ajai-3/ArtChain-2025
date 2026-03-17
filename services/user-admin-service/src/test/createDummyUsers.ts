@@ -6,24 +6,22 @@ import { NAMES } from './dummyUserNames';
 const PASSWORD = '1q2w3e4r@A';
 
 function generateUsername(name: string) {
-  const parts = name.toLowerCase().split(' ');
-  const base = parts.join('_');
-  const randomNum = Math.floor(Math.random() * 1000); // ensure uniqueness
-  return `${base}_${randomNum}`;
+  return name.toLowerCase().split(' ').join('_');
 }
 
 function generateEmail(name: string) {
   const parts = name.toLowerCase().split(' ');
-  const first = parts[0];
-  const last = parts[parts.length - 1];
-  return `${first}${last}@gmail.com`;
+  return `${parts.join('')}@gmail.com`;
 }
 
 export async function createDummyUsers() {
   let createdCount = 0;
 
-  while (createdCount < 150) {
-    const name = NAMES[Math.floor(Math.random() * NAMES.length)];
+  console.log(
+    `🚀 Starting sequential creation of ${NAMES.length} unique users...`,
+  );
+
+  for (const name of NAMES) {
     const email = generateEmail(name);
     const username = generateUsername(name);
     const hashedPassword = await bcrypt.hash(PASSWORD, 10);
@@ -34,7 +32,7 @@ export async function createDummyUsers() {
       });
 
       if (existingUser) {
-
+        console.log(`⏩ Skipping: ${username} (Already exists)`);
         continue;
       }
 
@@ -48,11 +46,11 @@ export async function createDummyUsers() {
           role: 'user',
           plan: 'free',
           status: 'active',
-          isVerified: false,
+          isVerified: true,
           profileImage: '',
           bannerImage: '',
           backgroundImage: '',
-          bio: '',
+          bio: `Hi, I am ${name}. Welcome to my ArtChain profile!`,
           country: '',
         },
       });
@@ -71,18 +69,23 @@ export async function createDummyUsers() {
       };
 
       await publishNotification('user.created', elasticUser);
+
       createdCount++;
-      console.log(`Created user ${createdCount}: ${username}`);
+      console.log(`Created user ${createdCount}/${NAMES.length}: ${username}`);
     } catch (err) {
-      console.error('Error creating user:', err);
+      console.error(`❌ Error creating ${name}:`, err);
     }
   }
 
-  console.log('All 150 dummy users created successfully!');
+  console.log(
+    `✅ Finished! Created ${createdCount} clean, unique dummy users.`,
+  );
 }
 
 createDummyUsers()
-  .then(() => process.exit(0))
+  .then(() => {
+    setTimeout(() => process.exit(0), 2000);
+  })
   .catch((err) => {
     console.error(err);
     process.exit(1);

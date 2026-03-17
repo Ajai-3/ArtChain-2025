@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "cross-env NODE_ENV=docker tsx watch src/server.ts",
+    "seed:users": "cross-env NODE_ENV=docker tsx src/test/createDummyUsers.ts",
     "local": "cross-env NODE_ENV=local tsx watch src/server.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
