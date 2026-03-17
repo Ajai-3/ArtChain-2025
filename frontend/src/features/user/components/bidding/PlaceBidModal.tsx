@@ -55,7 +55,7 @@ export const PlaceBidModal = ({ isOpen, onClose, auction, onBidPlaced }: PlaceBi
   // Wallet Calculations
   const availableBalance = walletData?.balance || 0;
   const lockedBalance = walletData?.lockedAmount || 0; 
-  const freeBalance = availableBalance - lockedBalance;
+  const freeBalance = availableBalance;
 
   // Validation
   // If no bids yet, must be >= startPrice. If bids exist, must be > currentBid
@@ -77,7 +77,7 @@ export const PlaceBidModal = ({ isOpen, onClose, auction, onBidPlaced }: PlaceBi
       // toast is handled in usePlaceBid hook
       onBidPlaced(); // This should refetch wallet
       onClose();
-    } catch (error: any) {
+    } catch (error) {
       // Error handled by hook
     }
   };
