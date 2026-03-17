@@ -66,6 +66,8 @@ export const ROUTES = {
     WITHDRAWAL_CREATE: "/api/v1/wallet/withdrawal/create",
     WITHDRAWAL_REQUESTS: "/api/v1/wallet/withdrawal/requests",
     WITHDRAWAL_REQUEST_BY_ID: "/api/v1/wallet/withdrawal/requests/:id",
+    TRANSACTION_LOCK: "/api/v1/wallet/transaction/lock",
+    TRANSACTION_UNLOCK: "/api/v1/wallet/transaction/unlock",
     
     // Admin withdrawal routes
     ADMIN_WITHDRAWAL_REQUESTS: "/api/v1/wallet/admin/withdrawal/requests",
