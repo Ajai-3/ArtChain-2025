@@ -1,7 +1,7 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IUserService } from "../../interface/service/IUserService";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IUserService } from '../../interface/service/IUserService';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
 
 @injectable()
 export class GetCommentsUseCase {
@@ -28,8 +28,8 @@ export class GetCommentsUseCase {
 
       return {
         ...comment,
-        name: user?.name ?? "Unknown User",
-        userName: user?.username ?? "unknown",
+        name: user?.name ?? 'Unknown User',
+        userName: user?.username ?? 'unknown',
         profileImage: user?.profileImage ?? null,
       };
     });

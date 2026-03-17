@@ -1,4 +1,4 @@
-import { UserDto } from "../interface/dto/MessageResponseDto";
+import { UserDto } from '../interface/dto/MessageResponseDto';
 
 export function mapToUserDto(userData: any): UserDto {
   return {

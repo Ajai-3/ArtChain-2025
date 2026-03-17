@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { TYPES } from "../Inversify/types";
-import { container } from "../Inversify/Inversify.config";
-import { IUserElasticController } from "../interface/IUserElasticController";
-import { IElasticSearchController } from "../interface/IElasticSearchController";
-import { IArtElasticController } from "../interface/IArtElasticController";
+import { Router } from 'express';
+import { TYPES } from '../Inversify/types';
+import { container } from '../Inversify/Inversify.config';
+import { IUserElasticController } from '../interface/IUserElasticController';
+import { IElasticSearchController } from '../interface/IElasticSearchController';
+import { IArtElasticController } from '../interface/IArtElasticController';
 
 const router = Router();
 
@@ -18,8 +18,8 @@ const elasticSearchController = container.get<IElasticSearchController>(
 );
 
 // Unified search endpoint
-router.get("/search", elasticSearchController.search);
-router.get("/admin/search", userElasticController.adminSearchUsers);
-router.get("/admin/search/arts", artElasticController.adminSearchArts);
+router.get('/search', elasticSearchController.search);
+router.get('/admin/search', userElasticController.adminSearchUsers);
+router.get('/admin/search/arts', artElasticController.adminSearchArts);
 
 export default router;

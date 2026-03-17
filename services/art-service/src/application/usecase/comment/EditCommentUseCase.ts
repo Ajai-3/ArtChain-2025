@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { IEditCommentUseCase } from "../../interface/usecase/comment/IEditCommentUseCase";
-import { EditCommentDTO } from "../../interface/dto/comment/EditCommentDTO";
-import { Comment, CommentStatus } from "../../../domain/entities/Comment";
-import { BadRequestError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IEditCommentUseCase } from '../../interface/usecase/comment/IEditCommentUseCase';
+import { EditCommentDTO } from '../../interface/dto/comment/EditCommentDTO';
+import { Comment, CommentStatus } from '../../../domain/entities/Comment';
+import { BadRequestError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../../constants/ErrorMessages';
 
 @injectable()
 export class EditCommentUseCase implements IEditCommentUseCase {
@@ -29,7 +29,7 @@ export class EditCommentUseCase implements IEditCommentUseCase {
 
     const updatedComment = await this._commentRepository.update(id, {
       content,
-      status: "edited" as CommentStatus,
+      status: 'edited' as CommentStatus,
       updatedAt: new Date(),
     });
 

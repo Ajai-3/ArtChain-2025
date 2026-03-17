@@ -1,15 +1,15 @@
-import { injectable, inject } from "inversify";
-import { IGetAuctionByIdUseCase } from "../../interface/usecase/auction/IGetAuctionByIdUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAuctionRepository } from "../../../domain/repositories/IAuctionRepository";
-import { IBidRepository } from "../../../domain/repositories/IBidRepository";
-import { IS3Service } from "../../../domain/interfaces/IS3Service";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { AuctionMapper } from "../../mapper/AuctionMapper";
-import { NotFoundError } from "art-chain-shared";
-import { AUCTION_MESSAGES } from "../../../constants/AuctionMessages";
-import { GetAuctionByIdDTO } from "../../interface/dto/auction/GetAuctionByIdDTO";
-import { IUserService } from "../../interface/service/IUserService";
+import { injectable, inject } from 'inversify';
+import { IGetAuctionByIdUseCase } from '../../interface/usecase/auction/IGetAuctionByIdUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
+import { IBidRepository } from '../../../domain/repositories/IBidRepository';
+import { IS3Service } from '../../../domain/interfaces/IS3Service';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { AuctionMapper } from '../../mapper/AuctionMapper';
+import { NotFoundError } from 'art-chain-shared';
+import { AUCTION_MESSAGES } from '../../../constants/AuctionMessages';
+import { GetAuctionByIdDTO } from '../../interface/dto/auction/GetAuctionByIdDTO';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {

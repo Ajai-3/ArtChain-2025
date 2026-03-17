@@ -1,10 +1,10 @@
-import axios from "axios";
-import { env } from "../config/env"
-import { injectable } from "inversify";
-import { UserDto } from "../../applications/interface/dto/MessageResponseDto";
-import { IUserService } from "../../applications/interface/http/IUserService";
-import { mapToUserDto } from "../../applications/mappers/mapUser";
-import { ROUTES, buildUserServiceRoute } from "../../constants/routes";
+import axios from 'axios';
+import { env } from '../config/env';
+import { injectable } from 'inversify';
+import { UserDto } from '../../applications/interface/dto/MessageResponseDto';
+import { IUserService } from '../../applications/interface/http/IUserService';
+import { mapToUserDto } from '../../applications/mappers/mapUser';
+import { ROUTES, buildUserServiceRoute } from '../../constants/routes';
 
 @injectable()
 export class UserService implements IUserService {
@@ -31,7 +31,7 @@ export class UserService implements IUserService {
           ids: userIds,
         }
       );
-      console.log(res.data, "getUsersByIds");
+      console.log(res.data, 'getUsersByIds');
       return res.data.data;
     } catch (err) {
       return [];

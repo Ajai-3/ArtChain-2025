@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useGetAllShopItems } from "../hooks/shop/useGetAllShopItems";
 import { useGetCategories } from "../hooks/art/useGetCategories";
-import { Filter } from "lucide-react";
+import { Filter, Search } from "lucide-react";
 import ShopItemCard from "../components/shop/ShopItemCard";
 import ShopFilters from "../components/shop/ShopFilters";
 
@@ -121,7 +121,7 @@ const Shop: React.FC = () => {
         {!isLoading && allArts.length === 0 && (
           <div className="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
             <div className="w-20 h-20 bg-zinc-800/50 rounded-full flex items-center justify-center mb-6">
-              <span className="text-4xl">🔍</span>
+              <Search size={32} className="text-zinc-600" />
             </div>
             <h3 className="text-xl font-medium text-white mb-2">
               No items found

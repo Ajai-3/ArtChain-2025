@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
-import { IGetCommissionByConversationUseCase } from "../../interface/usecase/commission/IGetCommissionByConversationUseCase";
-import { CommissionMapper } from "../../mapper/CommissionMapper";
-import { NotFoundError } from "art-chain-shared";
-import { UserService } from "../../../infrastructure/service/UserService";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
+import { IGetCommissionByConversationUseCase } from '../../interface/usecase/commission/IGetCommissionByConversationUseCase';
+import { CommissionMapper } from '../../mapper/CommissionMapper';
+import { NotFoundError } from 'art-chain-shared';
+import { UserService } from '../../../infrastructure/service/UserService';
 
 @injectable()
 export class GetCommissionByConversationUseCase implements IGetCommissionByConversationUseCase {
@@ -17,7 +17,7 @@ export class GetCommissionByConversationUseCase implements IGetCommissionByConve
     const commissions = await this._commissionRepository.findAllByConversationId(conversationId);
     
     if (!commissions || commissions.length === 0) {
-      throw new NotFoundError("No commissions found for this conversation");
+      throw new NotFoundError('No commissions found for this conversation');
     }
 
     // Latest is at index 0 because of repository sort
@@ -34,7 +34,7 @@ export class GetCommissionByConversationUseCase implements IGetCommissionByConve
             UserService.getUserById(latestCommission.artistId)
         ]);
     } catch (error) {
-        console.warn("Failed to fetch user details for commission:", error);
+        console.warn('Failed to fetch user details for commission:', error);
     }
 
     return {

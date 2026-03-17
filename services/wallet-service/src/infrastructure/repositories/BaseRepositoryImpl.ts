@@ -1,5 +1,5 @@
-import { injectable } from "inversify";
-import { IBaseRepository } from "../../domain/repository/IBaseRepository";
+import { injectable } from 'inversify';
+import { IBaseRepository } from '../../domain/repository/IBaseRepository';
 
 @injectable()
 export abstract class BaseRepositoryImpl<T> implements IBaseRepository<T> {

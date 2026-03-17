@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../../infrastructure/inversify/types";
-import { IUserRepository } from "../../../../domain/repositories/user/IUserRepository";
-import { GetAllUsersQueryDto } from "../../../interface/dtos/admin/GetAllUsersQueryDto";
-import { IElasticSearchService } from "../../../interface/http/IElasticSearchService";
-import { IGetAllUsersUseCase } from "../../../interface/usecases/admin/user-management/IGetAllUsersUseCase";
-import { mapCdnUrl } from "../../../../utils/mapCdnUrl";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQueryDto';
+import { IElasticSearchService } from '../../../interface/http/IElasticSearchService';
+import { IGetAllUsersUseCase } from '../../../interface/usecases/admin/user-management/IGetAllUsersUseCase';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 
 @injectable()
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {

@@ -1,3 +1,4 @@
+// This schema is used for validating the auction creation form on the frontend.
 import { z } from "zod";
 
 export const createAuctionSchema = z.object({
@@ -26,17 +27,16 @@ export const createAuctionSchema = z.object({
 
   const start = new Date(startDate);
   const [startHours, startMinutes] = startTime.split(":").map(Number);
-  start.setHours(startHours, startMinutes);
+  start.setHours(startHours, startMinutes, 0, 0);
 
   const end = new Date(endDate);
   const [endHours, endMinutes] = endTime.split(":").map(Number);
-  end.setHours(endHours, endMinutes);
+  end.setHours(endHours, endMinutes, 0, 0);
 
   const now = new Date();
   // const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60 * 1000);
 
   const thirtyMinutesFromNow = new Date(now.getTime() + 60000);
-
 
   // 1. Start time must be at least 30 minutes in the future
   if (start < thirtyMinutesFromNow) {
@@ -47,9 +47,19 @@ export const createAuctionSchema = z.object({
      });
   }
 
-  // 2. End time must be at least 30 minutes after start time
+  // 2. ✅ FIX: End must be after start (catches end date 16 < start date 19)
+  if (end <= start) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "End date & time must be after start date & time",
+      path: ["endTime"],
+    });
+    return; // no point checking the 30min gap if end is already before start
+  }
+
+  // 3. End time must be at least 30 minutes after start time
   // const thirtyMinutesAfterStart = new Date(start.getTime() + 30 * 60 * 1000);
-    const thirtyMinutesAfterStart = new Date(now.getTime() + 60000);
+  const thirtyMinutesAfterStart = new Date(start.getTime() + 60000);
 
   if (end < thirtyMinutesAfterStart) {
     ctx.addIssue({

@@ -1,6 +1,6 @@
-export type PriceType = "artcoin" | "fiat";
-export type PostType = "original" | "repost" | "purchased";
-export type PostStatus = "active" | "archived" | "deleted";
+export type PriceType = 'artcoin' | 'fiat';
+export type PostType = 'original' | 'repost' | 'purchased';
+export type PostStatus = 'active' | 'archived' | 'deleted';
 export class ArtPost {
   constructor(
     public readonly userId: string,
@@ -20,8 +20,8 @@ export class ArtPost {
     public readonly priceType?: PriceType,
     public readonly artcoins?: number,
     public readonly fiatPrice?: number | null,
-    public readonly postType: PostType = "original",
-    public readonly status: PostStatus = "active",
+    public readonly postType: PostType = 'original',
+    public readonly status: PostStatus = 'active',
     public readonly isSold: boolean = false,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date

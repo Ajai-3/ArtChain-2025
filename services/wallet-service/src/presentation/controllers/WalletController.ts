@@ -1,27 +1,27 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { WALLET_MESSAGES } from "../../constants/WalletMessages";
-import { IWalletController } from "../interface/IWalletController";
-import { IGetWalletUseCase } from "../../application/interface/usecase/wallet/IGetWalletUseCase";
-import { ILockFundsUseCase } from "../../application/interface/usecase/wallet/ILockFundsUseCase";
-import { IUnlockFundsUseCase } from "../../application/interface/usecase/wallet/IUnlockFundsUseCase";
-import { LockFundsDTO } from "../../application/interface/dto/wallet/LockFundsDTO";
-import { UnlockFundsDTO } from "../../application/interface/dto/wallet/UnlockFundsDTO";
-import { SettleAuctionDTO } from "../../application/interface/dto/wallet/SettleAuctionDTO";
-import { ISettleAuctionUseCase } from "../../application/interface/usecase/wallet/ISettleAuctionUseCase";
-import { IGetWalletChartDataUseCase } from "../../application/interface/usecase/wallet/IGetWalletChartDataUseCase";
-import { IGiftArtCoinsUseCase } from "../../application/interface/usecase/wallet/IGiftArtCoinsUseCase";
-import { IProcessSplitPurchaseUseCase } from "../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase";
-import { ProcessSplitPurchaseDTO } from "../../application/interface/dto/transaction/ProcessSplitPurchaseDTO";
-import { validateWithZod } from "../../utils/zodValidator";
-import { giftArtCoinsSchema } from "../../application/validation/giftArtCoinsSchema";
-import { lockUnlockFundsSchema } from "../../application/validation/lockUnlockFundsSchema";
-import { settleAuctionSchema } from "../../application/validation/settleAuctionSchema";
-import { processSplitPurchaseSchema } from "../../application/validation/processSplitPurchaseSchema";
-import { GiftArtCoinsDTO } from "../../application/interface/dto/wallet/GiftArtCoinsDTO";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { WALLET_MESSAGES } from '../../constants/WalletMessages';
+import { IWalletController } from '../interface/IWalletController';
+import { IGetWalletUseCase } from '../../application/interface/usecase/wallet/IGetWalletUseCase';
+import { ILockFundsUseCase } from '../../application/interface/usecase/wallet/ILockFundsUseCase';
+import { IUnlockFundsUseCase } from '../../application/interface/usecase/wallet/IUnlockFundsUseCase';
+import { LockFundsDTO } from '../../application/interface/dto/wallet/LockFundsDTO';
+import { UnlockFundsDTO } from '../../application/interface/dto/wallet/UnlockFundsDTO';
+import { SettleAuctionDTO } from '../../application/interface/dto/wallet/SettleAuctionDTO';
+import { ISettleAuctionUseCase } from '../../application/interface/usecase/wallet/ISettleAuctionUseCase';
+import { IGetWalletChartDataUseCase } from '../../application/interface/usecase/wallet/IGetWalletChartDataUseCase';
+import { IGiftArtCoinsUseCase } from '../../application/interface/usecase/wallet/IGiftArtCoinsUseCase';
+import { IProcessSplitPurchaseUseCase } from '../../application/interface/usecase/transaction/IProcessSplitPurchaseUseCase';
+import { ProcessSplitPurchaseDTO } from '../../application/interface/dto/transaction/ProcessSplitPurchaseDTO';
+import { validateWithZod } from '../../utils/zodValidator';
+import { giftArtCoinsSchema } from '../../application/validation/giftArtCoinsSchema';
+import { lockUnlockFundsSchema } from '../../application/validation/lockUnlockFundsSchema';
+import { settleAuctionSchema } from '../../application/validation/settleAuctionSchema';
+import { processSplitPurchaseSchema } from '../../application/validation/processSplitPurchaseSchema';
+import { GiftArtCoinsDTO } from '../../application/interface/dto/wallet/GiftArtCoinsDTO';
 
 @injectable()
 export class WalletController implements IWalletController {
@@ -57,8 +57,8 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
-      const timeRange = (req.query.timeRange as "7d" | "1m" | "all") || "7d";
+      const userId = req.headers['x-user-id'] as string;
+      const timeRange = (req.query.timeRange as '7d' | '1m' | 'all') || '7d';
       
       logger.info(`[WalletController] Fetching chart data for userId: ${userId}, range: ${timeRange}`);
 
@@ -88,7 +88,7 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       logger.info(`[WalletController] Fetching wallet for userId: ${userId}`);
 
       const walletData = await this._getWalletUseCase.execute(userId);
@@ -118,7 +118,7 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       logger.info(`[WalletController] Creating wallet for userId: ${userId}`);
 
       logger.info(
@@ -146,7 +146,7 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const updateData = req.body;
       logger.info(
         `[WalletController] Updating wallet for userId: ${userId} with data: ${JSON.stringify(
@@ -288,7 +288,9 @@ export class WalletController implements IWalletController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const senderId = req.headers["x-user-id"] as string;
+      const senderId = req.headers['x-user-id'] as string;
+
+      console.log(req.body, "req.body")
 
       const dto: GiftArtCoinsDTO = validateWithZod(giftArtCoinsSchema, { ...req.body, senderId });
 

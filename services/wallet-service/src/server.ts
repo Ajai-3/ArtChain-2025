@@ -1,15 +1,15 @@
-import http from "http";
-import app from "./app";
-import { logger } from "./utils/logger";
-import { config } from "./infrastructure/config/env";
-import { startConsumers } from "./infrastructure/rabbitmq/consumer";
+import http from 'http';
+import app from './app';
+import { logger } from './utils/logger';
+import { config } from './infrastructure/config/env';
+import { startConsumers } from './infrastructure/rabbitmq/consumer';
 
 const PORT = config.port;
 
-const server = http.createServer(app)
+const server = http.createServer(app);
 
-await startConsumers()
+await startConsumers();
 
 server.listen(PORT, () => {
-    logger.info(`Wallet Service starts on port ${PORT}`)
-})
+    logger.info(`Wallet Service starts on port ${PORT}`);
+});

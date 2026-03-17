@@ -1,5 +1,5 @@
-import { IBaseRepository } from "./IBaseRepository";
-import { Transaction } from "../entities/Transaction";
+import { IBaseRepository } from './IBaseRepository';
+import { Transaction } from '../entities/Transaction';
 
 export interface ITransactionRepository extends IBaseRepository<Transaction> {
   findByExternalId(externalId: string): Promise<Transaction | null>

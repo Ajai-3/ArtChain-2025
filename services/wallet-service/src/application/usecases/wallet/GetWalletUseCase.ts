@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { WALLET_MESSAGES } from "../../../constants/WalletMessages";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
-import { IGetWalletUseCase } from "../../interface/usecase/wallet/IGetWalletUseCase";
+import { inject, injectable } from 'inversify';
+import { BadRequestError } from 'art-chain-shared';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { WALLET_MESSAGES } from '../../../constants/WalletMessages';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { IGetWalletUseCase } from '../../interface/usecase/wallet/IGetWalletUseCase';
 
 @injectable()
 export class GetWalletUseCase implements IGetWalletUseCase {
@@ -20,7 +20,7 @@ export class GetWalletUseCase implements IGetWalletUseCase {
       wallet = await this._walletRepo.create({
         userId,
         balance: 0,
-        status: "active",
+        status: 'active',
       });
     }
 

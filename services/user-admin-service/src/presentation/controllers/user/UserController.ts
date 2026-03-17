@@ -6,32 +6,34 @@ import { validateWithZod } from '../../../utils/zodValidator';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../constants/userMessages';
 import { IUserController } from '../../interfaces/user/IUserController';
+import { getSupportSchema } from '../../../application/validations/user/GetSupportSchema';
 import { updateProfileSchema } from '../../../application/validations/user/updateProfileSchema';
+import { getUsersBatchSchema } from '../../../application/validations/user/getUsersBatchSchema';
 import { UpdateUserProfileDto } from '../../../application/interface/dtos/user/profile/UpdateUserProfileDto';
 import { IGetUserProfileUseCase } from '../../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
 import { GetUserProfileRequestDto } from '../../../application/interface/dtos/user/profile/GetUserProfileRequestDto';
 import { IUnSupportUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IUnSupportUserUseCase';
 import { IUpdateProfileUserUseCase } from '../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase';
+import { GetSupportersRequestDto } from '../../../application/interface/dtos/user/user-intraction/GetSupportersRequestDto';
+import { GetSupportingRequestDto } from '../../../application/interface/dtos/user/user-intraction/GetSupportingRequestDto';
 import { IGetUserWithIdUserUseCase } from '../../../application/interface/usecases/user/profile/IGetUserWithIdUserUseCase';
 import { SupportUnSupportRequestDto } from '../../../application/interface/dtos/user/user-intraction/SupportUnSupportRequestDto';
 import { IGetUserSupportersUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportersUseCase';
 import { IGetUsersByIdsUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUsersByIdsUserUseCase';
 import { IGetUserSupportingUseCase } from '../../../application/interface/usecases/user/user-intraction/IGetUserSupportingUseCase';
-import { getUsersBatchSchema } from '../../../application/validations/user/getUsersBatchSchema';
-import { GetSupportersRequestDto } from '../../../application/interface/dtos/user/user-intraction/GetSupportersRequestDto';
-import { GetSupportingRequestDto } from '../../../application/interface/dtos/user/user-intraction/GetSupportingRequestDto';
 
 @injectable()
 export class UserController implements IUserController {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: typeof logger,
+    @inject(TYPES.IUnSupportUserUseCase)
+    private readonly _supportUserUseCase: IUnSupportUserUseCase,
+    @inject(TYPES.IUnSupportUserUseCase)
+    private readonly _unSupportUserUseCase: IUnSupportUserUseCase,
     @inject(TYPES.IGetUserProfileUseCase)
     private readonly _getUserProfileUseCase: IGetUserProfileUseCase,
     @inject(TYPES.IGetUserWithIdUseCase)
     private readonly _getUserWithIdUseCase: IGetUserWithIdUserUseCase,
-    @inject(TYPES.ISupportUserUseCase)
-    private readonly _supportUserUseCase: IUnSupportUserUseCase,
-    @inject(TYPES.IUnSupportUserUseCase)
-    private readonly _unSupportUserUseCase: IUnSupportUserUseCase,
     @inject(TYPES.IGetUserSupportersUseCase)
     private readonly _getSupportersUseCase: IGetUserSupportersUseCase,
     @inject(TYPES.IGetUserSupportingUseCase)
@@ -53,24 +55,24 @@ export class UserController implements IUserController {
   getProfile = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const { username } = req.params;
+      const { username } = req.params as { username: string };
       const currentUserId = req.headers['x-user-id'] as string;
 
       // be - add zod validation here
       const dto: GetUserProfileRequestDto = { username, currentUserId };
       const result = await this._getUserProfileUseCase.execute(dto);
 
-      logger.info(`User profle fetched ${JSON.stringify(result)}`);
+      this._logger.info(`User profle fetched ${JSON.stringify(result)}`);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
         data: result,
       });
     } catch (error) {
-      logger.error('Error in fetching user profile');
+      this._logger.error('Error in fetching user profile');
       next(error);
     }
   };
@@ -86,24 +88,26 @@ export class UserController implements IUserController {
   getUserProfileWithId = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userId as string;
       const currentUserId = req.headers['x-user-id'] as string;
- 
+
       // be - add zod validation here
       const dto: GetUserProfileRequestDto = { userId, currentUserId };
       const user = await this._getUserWithIdUseCase.execute(dto);
 
-      logger.info(`User ${user.username} Profile fetched with id ${user.id}.`);
+      this._logger.info(
+        `User ${user.username} Profile fetched with id ${user.id}.`,
+      );
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_FETCH_SUCCESS,
         data: user,
       });
     } catch (error) {
-      logger.error('Error infetching user with id');
+      this._logger.error('Error in fetching user with id');
       next(error);
     }
   };
@@ -119,7 +123,7 @@ export class UserController implements IUserController {
   updateProfile = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
@@ -129,14 +133,14 @@ export class UserController implements IUserController {
       const dto: UpdateUserProfileDto = { ...validatedData, userId };
       const user = await this._updateProfileUserUseCase.execute(dto);
 
-      logger.info(`User profile updated ${JSON.stringify(user)}`);
+      this._logger.info(`User profile updated ${JSON.stringify(user)}`);
 
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.PROFILE_UPDATE_SUCCESS,
         user,
       });
     } catch (error) {
-      logger.error('Error in fetching user with id');
+      this._logger.error('Error in fetching user with id');
       next(error);
     }
   };
@@ -152,10 +156,10 @@ export class UserController implements IUserController {
   supportUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userId as string;
       const currentUserId = req.headers['x-user-id'] as string;
 
       // be - add zod validation here
@@ -181,17 +185,17 @@ export class UserController implements IUserController {
   unSupportUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const userId = req.params.userId;
+      const userId = req.params.userId as string;
       const currentUserId = req.headers['x-user-id'] as string;
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
 
       await this._unSupportUserUseCase.execute(dto);
 
-      logger.info(
-        `${currentUserId} un-supported ${userId} at ${new Date().toLocaleString()}`
+      this._logger.info(
+        `${currentUserId} un-supported ${userId} at ${new Date().toLocaleString()}`,
       );
 
       return res.status(HttpStatus.OK).json({
@@ -212,11 +216,11 @@ export class UserController implements IUserController {
   removeSupporter = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | any> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-      const currentUserId = req.params.supporterId;
+      const currentUserId = req.params.supporterId as string;
 
       // be - add zod validation here
       const dto: SupportUnSupportRequestDto = { userId, currentUserId };
@@ -240,26 +244,25 @@ export class UserController implements IUserController {
   getSupporters = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const userId = req.params.id;
+      const userId = req.params.id as string;
       const currentUserId = req.headers['x-user-id'] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      // be - add zod validation here
       logger.debug(`Get supporing user userId: ${userId}`);
 
-      // be - user propper dto to pass the values
-      const supporters = await this._getSupportersUseCase.execute({
+      const dto: GetSupportersRequestDto = validateWithZod(getSupportSchema, {
         currentUserId,
         userId,
         page,
-        limit
+        limit,
       });
+      const supporters = await this._getSupportersUseCase.execute(dto);
 
-      logger.info(`Suppoters fetched ${JSON.stringify(supporters)}`);
+      this._logger.info(`Suppoters fetched ${JSON.stringify(supporters)}`);
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORTERS_FETCH_SUCCESS,
         data: supporters,
@@ -279,25 +282,27 @@ export class UserController implements IUserController {
   getSupporing = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const userId = req.params.id;
+      const userId = req.params.id as string;
       const currentUserId = req.headers['x-user-id'] as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      // be - add zod validation here
       logger.debug(`Get supporing user userId: ${userId}`);
 
-      // be - make it to propper dto to pass values
-      const supporters = await this._getSupportingUseCase.execute({
+      const dto: GetSupportingRequestDto = validateWithZod(getSupportSchema, {
         currentUserId,
         userId,
         page,
-        limit
+        limit,
       });
+      const supporters = await this._getSupportingUseCase.execute(dto);
 
+      this._logger.info(
+        `Supporting users fetched ${JSON.stringify(supporters)}`,
+      );
       return res.status(HttpStatus.OK).json({
         message: USER_MESSAGES.SUPPORTING_FETCH_SUCCESS,
         data: supporters,
@@ -317,12 +322,18 @@ export class UserController implements IUserController {
   getAllUserWithIds = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | any> => {
     try {
-      const { ids, currentUserId } = validateWithZod(getUsersBatchSchema, req.body);
+      const { ids, currentUserId } = validateWithZod(
+        getUsersBatchSchema,
+        req.body,
+      );
 
-      const users = await this._getUsersByIdsUserUseCase.execute(ids, currentUserId);
+      const users = await this._getUsersByIdsUserUseCase.execute(
+        ids,
+        currentUserId,
+      );
 
       logger.info('user with id fetched correctly');
 

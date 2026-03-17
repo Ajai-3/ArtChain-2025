@@ -1,7 +1,7 @@
-import { Channel } from "amqplib";
-import { logger } from "../../utils/logger";
-import { startAllConsumers } from "./consumers/index";
-import { getRabbitChannel } from "./rabbitmq";
+import { Channel } from 'amqplib';
+import { logger } from '../../utils/logger';
+import { startAllConsumers } from './consumers/index';
+import { getRabbitChannel } from './rabbitmq';
 
 export async function startConsumers() {
   try {
@@ -9,9 +9,9 @@ export async function startConsumers() {
     
     await startAllConsumers(ch);
 
-    logger.info("🚀 All consumers started successfully");
+    logger.info('🚀 All consumers started successfully');
   } catch (error) {
-    logger.error("❌ Failed to start RabbitMQ consumers:", error);
+    logger.error('❌ Failed to start RabbitMQ consumers:', error);
     process.exit(1);
   }
 }

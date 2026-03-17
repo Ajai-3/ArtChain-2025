@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IGetGroupMembersUseCase } from "../interface/usecase/IGetGroupMembersUseCase";
-import { GetGroupMembersDto } from "../interface/dto/GetGroupMembersDto";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { IUserService } from "../interface/http/IUserService";
-import { NotFoundError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IGetGroupMembersUseCase } from '../interface/usecase/IGetGroupMembersUseCase';
+import { GetGroupMembersDto } from '../interface/dto/GetGroupMembersDto';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { IUserService } from '../interface/http/IUserService';
+import { NotFoundError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 @injectable()
 export class GetGroupMembersUseCase implements IGetGroupMembersUseCase {
@@ -46,10 +46,10 @@ export class GetGroupMembersUseCase implements IGetGroupMembersUseCase {
       ...user,
       role:
         user.id === conversation.ownerId
-          ? "OWNER"
+          ? 'OWNER'
           : conversation.adminIds.includes(user.id)
-          ? "ADMIN"
-          : "MEMBER",
+          ? 'ADMIN'
+          : 'MEMBER',
     }));
 
     return {

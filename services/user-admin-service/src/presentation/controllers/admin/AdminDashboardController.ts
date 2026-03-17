@@ -23,14 +23,14 @@ export class AdminDashboardController implements IAdminDashboardController {
       const timeRange = (req.query.timeRange as string) || '7d';
       let startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : new Date();
-      const token = req.headers.authorization?.split(' ')[1] || "";
+      const token = req.headers.authorization?.split(' ')[1] || '';
 
       if (!startDate && timeRange !== 'all') {
         startDate = new Date();
         if (timeRange === 'today') startDate.setHours(0, 0, 0, 0);
         else if (timeRange === '7d') startDate.setDate(endDate.getDate() - 7);
         else if (timeRange === '30d') startDate.setDate(endDate.getDate() - 30);
-        else startDate.setDate(endDate.getDate() - 7); // Default
+        else startDate.setDate(endDate.getDate() - 7); 
       }
 
       const dto: GetPlatformRevenueStatsDTO = {
@@ -47,13 +47,13 @@ export class AdminDashboardController implements IAdminDashboardController {
       });
     } catch (error) {
       logger.error('Error in getPlatformRevenueStats:', error);
-      next(error)
+      next(error);
     }
   };
 
   getDashboardStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-      const token = req.headers.authorization?.split(' ')[1] || "";
+      const token = req.headers.authorization?.split(' ')[1] || '';
 
       const stats = await this._getDashboardStatsUseCase.execute(token);
 
@@ -62,7 +62,7 @@ export class AdminDashboardController implements IAdminDashboardController {
       });
     } catch (error) {
       logger.error('Error in getDashboardStats:', error);
-      next(error)
+      next(error);
     }
   };
 }

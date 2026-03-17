@@ -1,19 +1,19 @@
-import Stripe from "stripe";
-import { logger } from "../../utils/logger";
-import { inject, injectable } from "inversify";
-import { config } from "../../infrastructure/config/env";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { WALLET_MESSAGES } from "../../constants/WalletMessages";
-import { BadRequestError, ConflictError } from "art-chain-shared";
-import { IWalletRepository } from "../../domain/repository/IWalletRepository";
-import { ITransactionRepository } from "../../domain/repository/ITransactionRepository";
+import Stripe from 'stripe';
+import { logger } from '../../utils/logger';
+import { inject, injectable } from 'inversify';
+import { config } from '../../infrastructure/config/env';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { WALLET_MESSAGES } from '../../constants/WalletMessages';
+import { BadRequestError, ConflictError } from 'art-chain-shared';
+import { IWalletRepository } from '../../domain/repository/IWalletRepository';
+import { ITransactionRepository } from '../../domain/repository/ITransactionRepository';
 import {
   TransactionMethod,
   TransactionCategory,
   TransactionStatus,
   TransactionType,
-} from "../../domain/entities/Transaction";
-import { IHandleStripeWebhookUseCase } from "../interface/usecase/stripe/IHandleStripeWebhookUseCase";
+} from '../../domain/entities/Transaction';
+import { IHandleStripeWebhookUseCase } from '../interface/usecase/stripe/IHandleStripeWebhookUseCase';
 
 @injectable()
 export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
@@ -39,11 +39,11 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
         config.stripe_webhook_secret
       );
     } catch (err: any) {
-      logger.error("Invalid webhook signature:", err.message);
+      logger.error('Invalid webhook signature:', err.message);
       throw new BadRequestError(WALLET_MESSAGES.INVALID_WEBHOOK_SIGNATURE);
     }
 
-    if (event.type === "checkout.session.completed") {
+    if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       await this.handleCheckoutSessionCompleted(session);
     } else {
@@ -77,19 +77,19 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
       wallet = await this._walletRepo.create({
         userId,
         balance: 0,
-        status: "active",
+        status: 'active',
       });
     }
 
     await this._transactionRepo.create({
       walletId: wallet.id,
-      type: "credited" as TransactionType,
-      category: "TOP_UP" as TransactionCategory,
+      type: 'credited' as TransactionType,
+      category: 'TOP_UP' as TransactionCategory,
       amount: amountInArtCoins,
-      method: "stripe" as TransactionMethod,
-      status: "success" as TransactionStatus,
+      method: 'stripe' as TransactionMethod,
+      status: 'success' as TransactionStatus,
       externalId,
-      description: "Wallet top-up via Stripe (Art Coins)",
+      description: 'Wallet top-up via Stripe (Art Coins)',
     });
 
     await this._walletRepo.update(

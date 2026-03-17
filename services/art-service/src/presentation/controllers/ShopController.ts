@@ -1,11 +1,11 @@
-import { logger } from "../../utils/logger";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IShopController } from "../interface/IShopController";
-import { IGetAllShopArtsUseCase } from "../../application/interface/usecase/art/IGetShopArtsByUserUseCase";
-import { IGetShopArtsByUserUseCase } from "../../application/interface/usecase/art/IGetAllShopArtsUseCase";
-import { HttpStatus } from "art-chain-shared";
+import { logger } from '../../utils/logger';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IShopController } from '../interface/IShopController';
+import { IGetAllShopArtsUseCase } from '../../application/interface/usecase/art/IGetShopArtsByUserUseCase';
+import { IGetShopArtsByUserUseCase } from '../../application/interface/usecase/art/IGetAllShopArtsUseCase';
+import { HttpStatus } from 'art-chain-shared';
 
 @injectable()
 export class ShopController implements IShopController {
@@ -40,10 +40,10 @@ export class ShopController implements IShopController {
 
       let category: string[] | undefined;
 
-      if (req.query["category[]"]) {
-        category = Array.isArray(req.query["category[]"])
-          ? (req.query["category[]"] as string[])
-          : [req.query["category[]"] as string];
+      if (req.query['category[]']) {
+        category = Array.isArray(req.query['category[]'])
+          ? (req.query['category[]'] as string[])
+          : [req.query['category[]'] as string];
       } else if (req.query.category) {
         category = Array.isArray(req.query.category)
           ? (req.query.category as string[])
@@ -52,13 +52,13 @@ export class ShopController implements IShopController {
 
       const filters = {
         category,
-        priceOrder: priceOrder as "asc" | "desc" | undefined,
-        titleOrder: titleOrder as "asc" | "desc" | undefined,
+        priceOrder: priceOrder as 'asc' | 'desc' | undefined,
+        titleOrder: titleOrder as 'asc' | 'desc' | undefined,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
       };
 
-      logger.info("🐛 Fetching all shop items", { page, limit, filters });
+      logger.info('🐛 Fetching all shop items', { page, limit, filters });
 
       const arts = await this._getAllShopArtsUseCase.execute(
         Number(page),
@@ -72,7 +72,7 @@ export class ShopController implements IShopController {
         limit: Number(limit),
       });
     } catch (error) {
-      logger.error("Error in getAllShopItems", { error });
+      logger.error('Error in getAllShopItems', { error });
       next(error);
     }
   };
@@ -93,7 +93,7 @@ export class ShopController implements IShopController {
       const { userId } = req.params;
       const { page = 1, limit = 10 } = req.query;
 
-      logger.info("🛍️ Fetching shop items by user", { userId, page, limit });
+      logger.info('🛍️ Fetching shop items by user', { userId, page, limit });
 
       const arts = await this._getShopArtsByUserUseCase.execute(
         userId,

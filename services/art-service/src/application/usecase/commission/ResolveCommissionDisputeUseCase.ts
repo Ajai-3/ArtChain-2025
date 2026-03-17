@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { CommissionStatus } from "../../../domain/entities/Commission";
-import { IWalletService } from "../../../domain/interfaces/IWalletService";
-import { CommissionMapper } from "../../mapper/CommissionMapper";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { CommissionStatus } from '../../../domain/entities/Commission';
+import { IWalletService } from '../../../domain/interfaces/IWalletService';
+import { CommissionMapper } from '../../mapper/CommissionMapper';
 
 @injectable()
 export class ResolveCommissionDisputeUseCase {
@@ -15,16 +15,16 @@ export class ResolveCommissionDisputeUseCase {
     private readonly _walletService: IWalletService
   ) {}
 
-  async execute(id: string, resolution: "REFUND" | "RELEASE"): Promise<any> {
+  async execute(id: string, resolution: 'REFUND' | 'RELEASE'): Promise<any> {
     const commission = await this._commissionRepository.getById(id);
-    if (!commission) throw new NotFoundError("Commission not found");
+    if (!commission) throw new NotFoundError('Commission not found');
 
     if (commission.status !== CommissionStatus.DISPUTE_RAISED) {
-      throw new BadRequestError("Commission is not in dispute");
+      throw new BadRequestError('Commission is not in dispute');
     }
 
     let success = false;
-    if (resolution === "REFUND") {
+    if (resolution === 'REFUND') {
       // Return funds to requester
       success = await this._walletService.refundCommissionFunds({
         userId: commission.requesterId,
@@ -35,10 +35,10 @@ export class ResolveCommissionDisputeUseCase {
         await this._commissionRepository.update(id, {
           status: CommissionStatus.CANCELLED,
           history: [...(commission.history || []), {
-            action: "DISPUTE_RESOLVED_REFUND",
-            userId: "SYSTEM_ADMIN",
+            action: 'DISPUTE_RESOLVED_REFUND',
+            userId: 'SYSTEM_ADMIN',
             timestamp: new Date(),
-            details: "Admin resolved dispute by refunding the requester."
+            details: 'Admin resolved dispute by refunding the requester.'
           }]
         });
       }
@@ -63,16 +63,16 @@ export class ResolveCommissionDisputeUseCase {
           amount: commission.budget,
           platformFee: platformFee,
           history: [...(commission.history || []), {
-            action: "DISPUTE_RESOLVED_RELEASE",
-            userId: "SYSTEM_ADMIN",
+            action: 'DISPUTE_RESOLVED_RELEASE',
+            userId: 'SYSTEM_ADMIN',
             timestamp: new Date(),
-            details: "Admin resolved dispute by releasing funds to the artist."
+            details: 'Admin resolved dispute by releasing funds to the artist.'
           }]
         });
       }
     }
 
-    if (!success) throw new BadRequestError("Failed to process dispute resolution in wallet service");
+    if (!success) throw new BadRequestError('Failed to process dispute resolution in wallet service');
 
     const updated = await this._commissionRepository.getById(id);
     return CommissionMapper.toDTO(updated!);

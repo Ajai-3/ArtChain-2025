@@ -1,12 +1,12 @@
-import { Socket } from "socket.io";
-import { TYPES } from "../../Inversify/types";
-import { inject, injectable, unmanaged } from "inversify";
-import { IClientEventHandler } from "../interface/IClientEventHandler";
-import { SendMessageDto } from "../../../applications/interface/dto/SendMessageDto";
-import { DeleteMessageDto } from "../../../applications/interface/dto/DeleteMessageDto";
-import { ISendMessageUseCase } from "../../../applications/interface/usecase/ISendMessageUseCase";
-import { IDeleteMessageUseCase } from "../../../applications/interface/usecase/IDeleteMessageUseCase";
-import { IMarkMessagesReadUseCase } from "../../../applications/interface/usecase/IMarkMessagesReadUseCase";
+import { Socket } from 'socket.io';
+import { TYPES } from '../../Inversify/types';
+import { inject, injectable, unmanaged } from 'inversify';
+import { IClientEventHandler } from '../interface/IClientEventHandler';
+import { SendMessageDto } from '../../../applications/interface/dto/SendMessageDto';
+import { DeleteMessageDto } from '../../../applications/interface/dto/DeleteMessageDto';
+import { ISendMessageUseCase } from '../../../applications/interface/usecase/ISendMessageUseCase';
+import { IDeleteMessageUseCase } from '../../../applications/interface/usecase/IDeleteMessageUseCase';
+import { IMarkMessagesReadUseCase } from '../../../applications/interface/usecase/IMarkMessagesReadUseCase';
 
 @injectable()
 export class ClientEventHandler implements IClientEventHandler {
@@ -23,7 +23,7 @@ export class ClientEventHandler implements IClientEventHandler {
   typing = (socket: Socket, data: { conversationId: string }) => {
     const userId = socket.data.userId;
     console.log(`⌨️ User ${userId} typing in conversation ${data.conversationId}`);
-    socket.to(data.conversationId).emit("userTyping", { 
+    socket.to(data.conversationId).emit('userTyping', { 
       userId, 
       conversationId: data.conversationId 
     });
@@ -45,12 +45,12 @@ export class ClientEventHandler implements IClientEventHandler {
         content: payload.content,
       };
 
-      console.log(dto)
+      console.log(dto);
 
       await this._sendMessageUseCase.execute(dto);
       if (callback) callback(true);
     } catch (err) {
-      console.error("Send message error:", err);
+      console.error('Send message error:', err);
       if (callback) callback(false);
     }
   };
@@ -60,7 +60,7 @@ export class ClientEventHandler implements IClientEventHandler {
     payload: {
       conversationId: string;
       messageId: string;
-      mode: "ME" | "EVERYONE";
+      mode: 'ME' | 'EVERYONE';
     },
     callback?: (ack: boolean) => void
   ) => {
@@ -76,7 +76,7 @@ export class ClientEventHandler implements IClientEventHandler {
       await this._deleteMessageUseCase.execute(dto);
       if (callback) callback(true);
     } catch (err) {
-      console.error("Delete message error:", err);
+      console.error('Delete message error:', err);
       if (callback) callback(false);
     }
   };
@@ -100,10 +100,10 @@ export class ClientEventHandler implements IClientEventHandler {
         // But we don't know WHICH messages were read easily without returning them.
         // For now, just marking them read is the requirement.
     } catch (error) {
-        console.error("Error marking messages read on open:", error);
+        console.error('Error marking messages read on open:', error);
     }
 
-    socket.to(conversationId).emit("userJoined", { userId });
+    socket.to(conversationId).emit('userJoined', { userId });
   };
 
   markMessagesRead = async (
@@ -119,13 +119,13 @@ export class ClientEventHandler implements IClientEventHandler {
         payload.conversationId
       );
 
-      socket.to(payload.conversationId).emit("messagesRead", {
+      socket.to(payload.conversationId).emit('messagesRead', {
         conversationId: payload.conversationId,
         messageIds: payload.messageIds,
         readBy: userId,
       });
     } catch (err) {
-      console.error("Mark messages read error:", err);
+      console.error('Mark messages read error:', err);
     }
   };
 }

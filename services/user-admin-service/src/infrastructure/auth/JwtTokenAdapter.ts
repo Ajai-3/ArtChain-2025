@@ -1,11 +1,11 @@
-import { injectable } from "inversify";
-import { tokenService } from "../../presentation/service/token.service";
+import { injectable } from 'inversify';
+import { tokenService } from '../../presentation/service/token.service';
 import {
   IAccessTokenVerifier,
-} from "../../application/interface/auth/IAccessTokenVerifier";
-import { IRefreshTokenVerifier } from "../../application/interface/auth/IRefreshTokenVerifier";
-import { IEmailTokenVerifier } from "../../application/interface/auth/IEmailTokenVerifier";
-import { ITokenGenerator } from "../../application/interface/auth/ITokenGenerator";
+} from '../../application/interface/auth/IAccessTokenVerifier';
+import { IRefreshTokenVerifier } from '../../application/interface/auth/IRefreshTokenVerifier';
+import { IEmailTokenVerifier } from '../../application/interface/auth/IEmailTokenVerifier';
+import { ITokenGenerator } from '../../application/interface/auth/ITokenGenerator';
 
 @injectable()
 export class JwtTokenAdapter

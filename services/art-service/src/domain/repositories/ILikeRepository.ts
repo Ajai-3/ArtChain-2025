@@ -1,5 +1,5 @@
-import { Like } from "../entities/Like";
-import { IBaseRepository } from "./IBaseRepository";
+import { Like } from '../entities/Like';
+import { IBaseRepository } from './IBaseRepository';
 
 export interface ILikeRepository extends IBaseRepository<Like> {
     findLike(postId: string, userId: string): Promise<Like | null>

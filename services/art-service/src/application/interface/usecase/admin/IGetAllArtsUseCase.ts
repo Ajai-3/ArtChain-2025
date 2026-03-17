@@ -1,4 +1,4 @@
-import { PostStatus, PostType, PriceType } from "../../../../domain/entities/ArtPost";
+import { PostStatus, PostType, PriceType } from '../../../../domain/entities/ArtPost';
 
 export interface IGetAllArtsUseCase {
   execute(

@@ -19,7 +19,7 @@ export class GetAdminTransactionsUseCase implements IGetAdminTransactionsUseCase
   ): Promise<any[]> {
     const targetAdminId = adminId || config.platform_admin_id;
     if (!targetAdminId) {
-      throw new BadRequestError("Admin ID not provided and PLATFORM_ADMIN_ID not configured");
+      throw new BadRequestError('Admin ID not provided and PLATFORM_ADMIN_ID not configured');
     }
     return await this._walletRepository.getAdminTransactions(
       targetAdminId,

@@ -1,4 +1,4 @@
-import { Schema, Document, model } from "mongoose";
+import { Schema, Document, model } from 'mongoose';
 
 export interface FavoriteDocument extends Document {
   postId: string; 
@@ -15,4 +15,4 @@ const FavoriteSchema = new Schema<FavoriteDocument>(
 
 FavoriteSchema.index({ userId: 1, postId: 1 }, { unique: true });
 
-export const FavoriteModel = model<FavoriteDocument>("Favorite", FavoriteSchema);
+export const FavoriteModel = model<FavoriteDocument>('Favorite', FavoriteSchema);

@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, model } from "mongoose";
-import { Purchase } from "../../domain/entities/Purchase";
+import mongoose, { Schema, Document, model } from 'mongoose';
+import { Purchase } from '../../domain/entities/Purchase';
 
 export interface PurchaseDocument extends Purchase, Document {}
 
@@ -18,4 +18,4 @@ const PurchaseSchema = new Schema<PurchaseDocument>(
 // Compound index for unique purchase per user per art (optional but good for data integrity)
 PurchaseSchema.index({ userId: 1, artId: 1 }, { unique: true });
 
-export const PurchaseModel = model<PurchaseDocument>("Purchase", PurchaseSchema);
+export const PurchaseModel = model<PurchaseDocument>('Purchase', PurchaseSchema);

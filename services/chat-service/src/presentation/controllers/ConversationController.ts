@@ -1,24 +1,24 @@
-import { inject, injectable } from "inversify";
-import { HttpStatus } from "art-chain-shared";
-import { Request, Response, NextFunction } from "express";
-import { logger } from "../../infrastructure/utils/logger";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { validateWithZod } from "../../infrastructure/utils/zodValidater";
-import { createPrivateConversationSchema } from "../validators/createPrivateConversationSchema";
-import { CreatePrivateConversationDto } from "../../applications/interface/dto/CreatePrivateConversationDto";
-import { IGetAllResendConversationUseCase } from "../../applications/interface/usecase/IGetAllResendConversationUseCase";
-import { ICreatePrivateConversationUseCase } from "../../applications/interface/usecase/ICreatePrivateConversationUseCase";
-import { ICreateRequestConversationUseCase } from "../../applications/interface/usecase/ICreateRequestConversationUseCase";
-import { ICreateGroupConversationUseCase } from "../../applications/interface/usecase/ICreateGroupConversationUseCase";
-import { createGroupConversationSchema } from "../validators/createGroupConversationSchema";
-import { CreateGroupConversationDto } from "../../applications/interface/dto/CreateGroupConversationDto";
-import { IGetGroupMembersUseCase } from "../../applications/interface/usecase/IGetGroupMembersUseCase";
-import { IRemoveGroupMemberUseCase } from "../../applications/interface/usecase/IRemoveGroupMemberUseCase";
-import { IAddGroupAdminUseCase } from "../../applications/interface/usecase/IAddGroupAdminUseCase";
-import { IRemoveGroupAdminUseCase } from "../../applications/interface/usecase/IRemoveGroupAdminUseCase";
-import { IAddGroupMemberUseCase } from "../../applications/interface/usecase/IAddGroupMemberUseCase";
-import { SUCCESS_MESSAGES } from "../../constants/messages";
-import { ROUTES } from "../../constants/routes";
+import { inject, injectable } from 'inversify';
+import { HttpStatus } from 'art-chain-shared';
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../../infrastructure/utils/logger';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { validateWithZod } from '../../infrastructure/utils/zodValidater';
+import { createPrivateConversationSchema } from '../validators/createPrivateConversationSchema';
+import { CreatePrivateConversationDto } from '../../applications/interface/dto/CreatePrivateConversationDto';
+import { IGetAllResendConversationUseCase } from '../../applications/interface/usecase/IGetAllResendConversationUseCase';
+import { ICreatePrivateConversationUseCase } from '../../applications/interface/usecase/ICreatePrivateConversationUseCase';
+import { ICreateRequestConversationUseCase } from '../../applications/interface/usecase/ICreateRequestConversationUseCase';
+import { ICreateGroupConversationUseCase } from '../../applications/interface/usecase/ICreateGroupConversationUseCase';
+import { createGroupConversationSchema } from '../validators/createGroupConversationSchema';
+import { CreateGroupConversationDto } from '../../applications/interface/dto/CreateGroupConversationDto';
+import { IGetGroupMembersUseCase } from '../../applications/interface/usecase/IGetGroupMembersUseCase';
+import { IRemoveGroupMemberUseCase } from '../../applications/interface/usecase/IRemoveGroupMemberUseCase';
+import { IAddGroupAdminUseCase } from '../../applications/interface/usecase/IAddGroupAdminUseCase';
+import { IRemoveGroupAdminUseCase } from '../../applications/interface/usecase/IRemoveGroupAdminUseCase';
+import { IAddGroupMemberUseCase } from '../../applications/interface/usecase/IAddGroupMemberUseCase';
+import { SUCCESS_MESSAGES } from '../../constants/messages';
+import { ROUTES } from '../../constants/routes';
 
 @injectable()
 export class ConversationController {
@@ -58,7 +58,7 @@ export class ConversationController {
   ): Promise<Response | void> => {
     try {
       const { otherUserId } = req.body;
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       const validatedData = validateWithZod(createPrivateConversationSchema, {
         userId,
@@ -95,11 +95,11 @@ export class ConversationController {
   ): Promise<Response | void> => {
     try {
       const { artistId } = req.body; // Expecting artistId for request
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       // Reuse private schema if it's just userId + otherId, or strict separate schema?
       // Using private schema for MVP as 'otherUserId' map to 'artistId' or just manual check
-      if (!artistId) throw new Error("Artist ID is required");
+      if (!artistId) throw new Error('Artist ID is required');
 
       const dto = {
         userId,
@@ -110,7 +110,7 @@ export class ConversationController {
         await this._createRequestConversationUseCase.execute(dto);
 
       return res.status(HttpStatus.CREATED).json({
-        message: "Request conversation created",
+        message: 'Request conversation created',
         data: { conversation, isNewConvo },
       });
     } catch (error) {
@@ -133,7 +133,7 @@ export class ConversationController {
   ): Promise<Response | void> => {
     try {
       const { name, memberIds } = req.body;
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       const validatedData = validateWithZod(createGroupConversationSchema, {
         userId,
@@ -178,7 +178,7 @@ export class ConversationController {
       const limit = Number(req.query.limit) || 10;
       const page = Number(req.query.page) || 1;
 
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       console.log(userId);
 
@@ -219,7 +219,7 @@ export class ConversationController {
       });
 
       return res.status(HttpStatus.OK).json({
-        message: "Members fetched successfully",
+        message: 'Members fetched successfully',
         data: result,
       });
     } catch (error) {
@@ -234,7 +234,7 @@ export class ConversationController {
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
-      const requesterId = req.headers["x-user-id"] as string;
+      const requesterId = req.headers['x-user-id'] as string;
 
       await this._removeGroupMemberUseCase.execute({
         conversationId,
@@ -243,7 +243,7 @@ export class ConversationController {
       });
 
       return res.status(HttpStatus.OK).json({
-        message: "Member removed successfully",
+        message: 'Member removed successfully',
       });
     } catch (error) {
       next(error);
@@ -257,7 +257,7 @@ export class ConversationController {
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
-      const requesterId = req.headers["x-user-id"] as string;
+      const requesterId = req.headers['x-user-id'] as string;
 
       await this._addGroupAdminUseCase.execute({
         conversationId,
@@ -266,7 +266,7 @@ export class ConversationController {
       });
 
       return res.status(HttpStatus.OK).json({
-        message: "Admin added successfully",
+        message: 'Admin added successfully',
       });
     } catch (error) {
       next(error);
@@ -280,7 +280,7 @@ export class ConversationController {
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
-      const requesterId = req.headers["x-user-id"] as string;
+      const requesterId = req.headers['x-user-id'] as string;
 
       await this._removeGroupAdminUseCase.execute({
         conversationId,
@@ -289,7 +289,7 @@ export class ConversationController {
       });
 
       return res.status(HttpStatus.OK).json({
-        message: "Admin removed successfully",
+        message: 'Admin removed successfully',
       });
     } catch (error) {
       next(error);
@@ -303,7 +303,7 @@ export class ConversationController {
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
-      const requesterId = req.headers["x-user-id"] as string;
+      const requesterId = req.headers['x-user-id'] as string;
 
       await this._addGroupMemberUseCase.execute({
         conversationId,
@@ -312,7 +312,7 @@ export class ConversationController {
       });
 
       return res.status(HttpStatus.OK).json({
-        message: "Member added successfully",
+        message: 'Member added successfully',
       });
     } catch (error) {
       next(error);

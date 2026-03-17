@@ -11,6 +11,7 @@ import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 
 import { loadStripe } from "@stripe/stripe-js";
+import toast from "react-hot-toast";
 
 import { useCreateStripeSession } from "../../hooks/wallet/useCreateStripeSession";
 import { useCreateRazorpayOrder } from "../../hooks/wallet/useCreateRazorpayOrder";
@@ -19,9 +20,7 @@ interface TopUpModalProps {
   trigger: React.ReactNode;
 }
 
-const stripePromise = loadStripe(
-  "pk_test_51SA9ySIO0a4vdKba2B5FwDZ8CzklCTm2XDoQXa9WPzfjBilGeQblUbjUduMJSs4obDhuEUtDDhMM3EUAYret22kF00TVFIwzsh"
-);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
   const [amount, setAmount] = useState<number | "">("");
@@ -106,7 +105,7 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
       await stripe?.redirectToCheckout({ sessionId });
     } catch (err) {
       console.error(err);
-      alert("Stripe checkout failed. Try again.");
+      toast.error("Stripe checkout failed. Try again.");
     }
   };
 
@@ -128,7 +127,7 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
         order_id: orderId,
         handler: (response: any) => {
           console.log("Razorpay success:", response);
-          alert("✅ Razorpay Payment Successful!");
+          toast.success("Razorpay payment successful!");
           resetState();
         },
         prefill: {
@@ -144,7 +143,7 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
       razor.open();
     } catch (err) {
       console.error(err);
-      alert("Razorpay payment failed.");
+      toast.error("Razorpay checkout failed. Try again.");
     }
   };
 

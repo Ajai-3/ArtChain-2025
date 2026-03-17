@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
-import { ArrowDownRight, Ellipsis, View, Upload, Trash2 } from "lucide-react";
+import { ArrowDownRight, Ellipsis, Upload, Trash2, Eye } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
+import { Dialog, DialogContent } from "../../../../components/ui/dialog";
 import { SupportModal } from "./SupportModal";
 import CustomLoader from "../../../../components/CustomLoader";
 import type { ProfileTopBarProps } from "../../../../types/users/profile/ProfileTopBarProps";
@@ -137,15 +138,22 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
   return (
     <div className="relative">
       {/* Banner Section */}
-      <div className="py-10 sm:py-20 px-4 sm:px-6 relative overflow-hidden">
+      <div className="py-10 sm:py-20 px-4 sm:px-6 relative overflow-hidden group/banner">
         {user?.bannerImage ? (
           <>
             <img
               src={user.bannerImage}
               alt="Banner"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover/banner:scale-105"
             />
-            <div className="absolute inset-0 bg-black/10 dark:bg-black/10"></div>
+            {/* Desktop only: Eye icon button in top-right of banner to zoom */}
+            <button
+              className="hidden md:flex absolute top-4 left-4 z-40 p-2 bg-black/40 rounded-full cursor-pointer items-center justify-center opacity-0 group-hover/banner:opacity-100 transition-opacity duration-300"
+              onClick={() => handleViewImage(user.bannerImage!)}
+              title="View Banner"
+            >
+              <Eye className="w-6 h-6 text-white" />
+            </button>
           </>
         ) : (
           <div className="absolute inset-0 bg-zinc-950">
@@ -156,15 +164,6 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
 
         {/* Banner Actions */}
         <div className="absolute right-4 flex gap-3 z-20 top-2 sm:top-auto sm:bottom-4">
-          {user?.bannerImage && (
-            <div
-              title="View Banner"
-              className={iconButtonClasses}
-              onClick={() => handleViewImage(user.bannerImage!)}
-            >
-              <View className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-            </div>
-          )}
 
           {isOwnProfile && (
             <>
@@ -195,27 +194,29 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
         {/* Profile Image & Info */}
         <div className="relative z-10 flex items-center gap-6 sm:h-28">
           {/* Profile Image */}
-          <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden relative group/profile aspect-square">
+          <div
+            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden relative group/profile aspect-square cursor-pointer pointer-events-auto"
+            onClick={() => {
+              if (user?.profileImage) handleViewImage(user.profileImage);
+            }}
+          >
             {user?.profileImage ? (
               <>
                 <img
                   src={user.profileImage}
                   alt="Profile"
-                  className="w-full h-full object-cover rounded-full"
+                  className="w-full h-full object-cover rounded-full transition-transform duration-500 group-hover/profile:scale-110"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center gap-4 opacity-0 group-hover/profile:opacity-100 transition duration-300">
-                  <div
-                    title="View Profile Picture"
-                    className={iconButtonClasses}
-                    onClick={() => handleViewImage(user.profileImage!)}
-                  >
-                    <View className="w-5 h-5 text-white" />
-                  </div>
+                  <Eye className="w-8 h-8 text-white pointer-events-none" />
                   {isOwnProfile && (
                     <div
                       title="Delete Profile Picture"
-                      className={iconButtonClasses}
-                      onClick={handleDeleteProfileImage}
+                      className={`${iconButtonClasses} pointer-events-auto`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteProfileImage();
+                      }}
                     >
                       <Trash2 className="w-5 h-5 text-red-400" />
                     </div>
@@ -243,11 +244,21 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
           </div>
 
           {/* Profile Info */}
-          <div className="flex flex-col space-y-2 text-white">
-            <div className="flex flex-col">
+          <div className="flex flex-col space-y-2 text-white relative flex-1">
+            <div className="flex flex-col pr-12">
               <h1 className="text-2xl font-bold">{user?.name}</h1>
               <p className="text-gray-200">@{user?.username}</p>
             </div>
+
+            {/* Ellipsis Menu - Mobile Only */}
+            {!isOwnProfile && (
+              <div
+                className={`md:hidden ${iconButtonClasses} absolute top-0 right-0`}
+                onClick={() => setIsOptionsOpen(true)}
+              >
+                <Ellipsis />
+              </div>
+            )}
 
             <div className="flex gap-4 cursor-pointer">
               <p>{artWorkCount} Arts</p>
@@ -294,11 +305,12 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
                     )}
                   </span>
                 </Button>
-                
-                
 
-                <div 
-                  className={iconButtonClasses}
+
+
+                {/* Ellipsis Menu - Desktop Only */}
+                <div
+                  className={`hidden md:flex ${iconButtonClasses}`}
                   onClick={() => setIsOptionsOpen(true)}
                 >
                   <Ellipsis />
@@ -317,20 +329,19 @@ const ProfileTopBar: React.FC<ProfileTopBarProps> = ({
           onClose={() => setModalType(null)}
         />
       )}
-      
+
       {/* Zoomed Profile Image Modal */}
-      {zoomImage && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50 cursor-pointer  backdrop-blur-sm"
-          onClick={handleCloseZoom}
-        >
-          <img
-            src={zoomImage}
-            alt="Profile Zoom"
-            className="max-h-[90%] max-w-[90%] rounded-lg shadow-lg"
-          />
-        </div>
-      )}
+      <Dialog open={!!zoomImage} onOpenChange={(open) => !open && handleCloseZoom()}>
+        <DialogContent className="max-w-[95vw] lg:max-w-[90vw] xl:max-w-7xl bg-transparent border-none shadow-none flex items-center justify-center p-0 outline-none">
+          {zoomImage && (
+            <img
+              src={zoomImage}
+              alt="Zoomed"
+              className="w-full h-auto max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Hidden File Input */}
       <input

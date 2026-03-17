@@ -1,16 +1,16 @@
 export const WithdrawalMethod = {
-  BANK_TRANSFER: "BANK_TRANSFER",
-  UPI: "UPI",
+  BANK_TRANSFER: 'BANK_TRANSFER',
+  UPI: 'UPI',
 } as const;
 export type WithdrawalMethod = typeof WithdrawalMethod[keyof typeof WithdrawalMethod];
 
 export const WithdrawalStatus = {
-  PENDING: "PENDING",
-  APPROVED: "APPROVED",
-  PROCESSING: "PROCESSING",
-  COMPLETED: "COMPLETED",
-  REJECTED: "REJECTED",
-  FAILED: "FAILED",
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  REJECTED: 'REJECTED',
+  FAILED: 'FAILED',
 } as const;
 export type WithdrawalStatus = typeof WithdrawalStatus[keyof typeof WithdrawalStatus];
 

@@ -1,5 +1,5 @@
-import nodemailer from "nodemailer";
-import { config } from "../../../constants/env";
+import nodemailer from 'nodemailer';
+import { config } from '../../../infrastructure/config/env';
 
 const transporter = nodemailer.createTransport({
   host: config.email.host,
@@ -22,7 +22,7 @@ async function sendEmail(mailOptions: {
       ...mailOptions,
     });
   } catch (error) {
-    console.error("Email sending failed:", error);
+    console.error('Email sending failed:', error);
     throw error;
   }
 }

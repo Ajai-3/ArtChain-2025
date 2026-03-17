@@ -1,5 +1,5 @@
-import { Schema, Document, model } from "mongoose";
-import { Category, CategoryStatus } from "../../domain/entities/Category";
+import { Schema, Document, model } from 'mongoose';
+import { Category, CategoryStatus } from '../../domain/entities/Category';
 
 export interface CategoryDocument extends Category, Document {}
 
@@ -9,14 +9,14 @@ const CategorySchema = new Schema<CategoryDocument>(
     count: { type: Number, default: 0 },
     status: {
       type: String,
-      enum: ["active", "inactive"] as CategoryStatus[],
-      default: "active",
+      enum: ['active', 'inactive'] as CategoryStatus[],
+      default: 'active',
     },
   },
   { timestamps: true }
 );
 
 export const CategoryModel = model<CategoryDocument>(
-  "Category",
+  'Category',
   CategorySchema
 );

@@ -1,12 +1,12 @@
-import { logger } from "../utils/logger";
-import { TYPES } from "../Inversify/types";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { IArtElasticService } from "../interface/IArtElasticService";
-import { IUserElasticService } from "../interface/IUserElasticService";
-import { ELASTIC_MESSAGES } from "../constants/elasticMesages.constants";
-import { IElasticSearchController } from "../interface/IElasticSearchController";
+import { logger } from '../utils/logger';
+import { TYPES } from '../Inversify/types';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { IArtElasticService } from '../interface/IArtElasticService';
+import { IUserElasticService } from '../interface/IUserElasticService';
+import { ELASTIC_MESSAGES } from '../constants/elasticMesages.constants';
+import { IElasticSearchController } from '../interface/IElasticSearchController';
 
 @injectable()
 export class ElasticSearchController implements IElasticSearchController {
@@ -30,7 +30,7 @@ export class ElasticSearchController implements IElasticSearchController {
   ): Promise<Response | void> => {
     try {
       const q = (req.query.q as string)?.trim();
-      const type = (req.query.type as string)?.toLowerCase() || "all";
+      const type = (req.query.type as string)?.toLowerCase() || 'all';
 
       if (!q) {
         return res
@@ -39,9 +39,9 @@ export class ElasticSearchController implements IElasticSearchController {
       }
 
       let results;
-      if (type === "user") {
+      if (type === 'user') {
         results = await this._userService.searchForUser(q);
-      } else if (type === "art") {
+      } else if (type === 'art') {
         results = await this._artService.searchForArt(q);
       } else {
         const [users, arts] = await Promise.all([
@@ -54,7 +54,7 @@ export class ElasticSearchController implements IElasticSearchController {
       logger.info(`Unified Search [type=${type}]: ${JSON.stringify(results)}`);
       res.json(results);
     } catch (err: any) {
-      logger.error("Unified search failed", err);
+      logger.error('Unified search failed', err);
       next(err);
     }
   };

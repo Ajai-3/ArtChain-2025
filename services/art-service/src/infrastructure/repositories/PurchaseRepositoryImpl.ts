@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { Purchase } from "../../domain/entities/Purchase";
-import { IPurchaseRepository } from "../../domain/repositories/IPurchaseRepository";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { PurchaseModel } from "../models/PurchaseModel";
+import { injectable } from 'inversify';
+import { Purchase } from '../../domain/entities/Purchase';
+import { IPurchaseRepository } from '../../domain/repositories/IPurchaseRepository';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { PurchaseModel } from '../models/PurchaseModel';
 
 @injectable()
 export class PurchaseRepositoryImpl

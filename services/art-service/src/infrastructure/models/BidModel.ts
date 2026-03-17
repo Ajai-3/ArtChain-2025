@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, model } from "mongoose";
-import { Bid } from "../../domain/entities/Bid";
+import mongoose, { Schema, Document, model } from 'mongoose';
+import { Bid } from '../../domain/entities/Bid';
 
 export interface BidDocument extends Omit<Bid, '_id'>, Document {
   isWinner: boolean;
@@ -15,4 +15,4 @@ const BidSchema = new Schema<BidDocument>(
   { timestamps: true }
 );
 
-export const BidModel = model<BidDocument>("Bid", BidSchema);
+export const BidModel = model<BidDocument>('Bid', BidSchema);

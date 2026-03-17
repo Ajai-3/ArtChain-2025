@@ -1,4 +1,4 @@
-import { Wallet } from "../../../../domain/entities/Wallet";
+import { Wallet } from '../../../../domain/entities/Wallet';
 
 export interface IUpdateWalletStatusUseCase {
   execute(

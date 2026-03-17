@@ -1,7 +1,7 @@
-import { Message, MediaType } from "../../domain/entities/Message";
-import { DeleteMode } from "../../domain/entities/Message";
-import { MessageResponseDto } from "../interface/dto/MessageResponseDto";
-import { mapCdnUrl } from "../../utils/mapCdnUrl";
+import { Message, MediaType } from '../../domain/entities/Message';
+import { DeleteMode } from '../../domain/entities/Message';
+import { MessageResponseDto } from '../interface/dto/MessageResponseDto';
+import { mapCdnUrl } from '../../utils/mapCdnUrl';
 
 export class MessageMapper {
   static toResponse(

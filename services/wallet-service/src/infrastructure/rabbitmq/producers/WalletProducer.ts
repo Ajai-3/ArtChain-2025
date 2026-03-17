@@ -1,5 +1,5 @@
-import { getRabbitChannel } from "../rabbitmq";
-import { logger } from "../../../utils/logger";
+import { getRabbitChannel } from '../rabbitmq';
+import { logger } from '../../../utils/logger';
 
 export class WalletProducer {
   async publishGiftEvent(data: { 
@@ -13,13 +13,13 @@ export class WalletProducer {
   }) {
     try {
       const channel = await getRabbitChannel();
-      const exchange = "global_exchange";
-      const routingKey = "wallet.gift";
+      const exchange = 'global_exchange';
+      const routingKey = 'wallet.gift';
 
       channel.publish(exchange, routingKey, Buffer.from(JSON.stringify(data)));
       logger.info(`📤 Published gift event: ${routingKey}`);
     } catch (error) {
-      logger.error("Failed to publish gift event", error);
+      logger.error('Failed to publish gift event', error);
     }
   }
 }

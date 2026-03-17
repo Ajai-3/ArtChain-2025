@@ -1,4 +1,4 @@
-import { Purchase } from "../entities/Purchase";
+import { Purchase } from '../entities/Purchase';
 
 export interface IPurchaseRepository {
   create(purchase: Purchase): Promise<Purchase>;

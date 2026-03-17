@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { z } from 'zod';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 export const createPrivateConversationSchema = z
   .object({
@@ -8,7 +8,7 @@ export const createPrivateConversationSchema = z
   })
   .refine((data) => data.userId !== data.otherUserId, {
     message: ERROR_MESSAGES.USER_ID_OTHER_USER_ID_CANNOT_BE_SAME,
-    path: ["otherUserId"],
+    path: ['otherUserId'],
   });
 
 export type CreatePrivateConversationInput = z.infer<

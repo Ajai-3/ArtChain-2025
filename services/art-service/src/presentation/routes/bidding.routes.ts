@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { container } from "../../infrastructure/Inversify/inversify.config";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IAuctionController } from "../interface/IAuctionController";
-import { IBidController } from "../interface/IBidController";
-import { ROUTES } from "../../constants/routes";
+import { Router } from 'express';
+import { container } from '../../infrastructure/Inversify/inversify.config';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IAuctionController } from '../interface/IAuctionController';
+import { IBidController } from '../interface/IBidController';
+import { ROUTES } from '../../constants/routes';
 
 const router = Router();
 

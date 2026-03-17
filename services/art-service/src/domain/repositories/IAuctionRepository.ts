@@ -1,5 +1,5 @@
-import { IBaseRepository } from "./IBaseRepository";
-import { Auction } from "../entities/Auction";
+import { IBaseRepository } from './IBaseRepository';
+import { Auction } from '../entities/Auction';
 
 export interface IAuctionRepository extends IBaseRepository<Auction> {
   findByStatus(status: string): Promise<Auction[]>;

@@ -1,11 +1,11 @@
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { IStripeController } from "../interface/IStripeController";
-import { IGetStripeSessionUseCase } from "../../application/interface/usecase/stripe/IGetStripeSessionUseCase";
-import { IHandleStripeWebhookUseCase } from "../../application/interface/usecase/stripe/IHandleStripeWebhookUseCase";
-import { ICreateStripeCheckoutSessionUseCase } from "../../application/interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase";
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { IStripeController } from '../interface/IStripeController';
+import { IGetStripeSessionUseCase } from '../../application/interface/usecase/stripe/IGetStripeSessionUseCase';
+import { IHandleStripeWebhookUseCase } from '../../application/interface/usecase/stripe/IHandleStripeWebhookUseCase';
+import { ICreateStripeCheckoutSessionUseCase } from '../../application/interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase';
 
 @injectable()
 export class StripeController implements IStripeController {
@@ -31,13 +31,13 @@ export class StripeController implements IStripeController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       const { amount } = req.body;
       const session = await this._createCheckoutUseCase.execute(userId, amount);
 
       return res.status(HttpStatus.CREATED).json({
-        message: "Checkout session created",
+        message: 'Checkout session created',
         sessionId: session.id,
       });
     } catch (error) {
@@ -51,22 +51,19 @@ export class StripeController implements IStripeController {
   //# POST /api/v1/wallet/stripe/webhook
   //# This controller handles Stripe webhook events such as checkout.session.completed.
   //# ================================================================================================================
-  handleWebhook = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<Response | void> => {
-    try {
-      const payload = req.body as Buffer;
-      const signature = req.headers["stripe-signature"] as string;
+  handleWebhook = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // Access the rawBody attached by the express.json verify function
+    const payload = (req as any).rawBody; 
+    const signature = req.headers['stripe-signature'] as string;
 
-      await this._handleWebhookUseCase.execute(payload, signature);
+    await this._handleWebhookUseCase.execute(payload, signature);
 
-      res.sendStatus(HttpStatus.OK);
-    } catch (error) {
-      next(error);
-    }
-  };
+    res.sendStatus(HttpStatus.OK);
+  } catch (error) {
+    next(error);
+  }
+};
 
   //# ================================================================================================================
   //# GET PAYMENT SESSION

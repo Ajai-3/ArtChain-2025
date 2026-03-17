@@ -1,5 +1,5 @@
-import { Notification } from "../entities/Notification";
-import { IBaseRepository } from "./IBaseRepository";
+import { Notification } from '../entities/Notification';
+import { IBaseRepository } from './IBaseRepository';
 
 export interface INotificationRepository extends IBaseRepository<Notification> {
   getUserNotifications(userId: string, page: number, limit: number): Promise<Notification[]>;

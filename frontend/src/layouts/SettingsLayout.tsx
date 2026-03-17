@@ -13,7 +13,7 @@ const SettingsLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex w-full h-[calc(100vh-62px)] overflow-hidden">
+    <div className="flex w-full h-full overflow-hidden">
       <UserSettingsSideBar onLogoutClick={() => setShowLogoutModal(true)} />
 
       <div className="flex-1 overflow-y-auto scrollbar p-4 md:p-6">

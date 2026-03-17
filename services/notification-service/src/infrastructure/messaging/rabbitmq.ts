@@ -1,5 +1,5 @@
-import amqp, { Connection, Channel } from "amqplib";
-import { config } from "../../constants/env";
+import amqp, { Connection, Channel } from 'amqplib';
+import { config } from '../config/env';
 
 let connection: Connection;
 let channel: Channel;
@@ -14,7 +14,7 @@ export async function getRabbitChannel(): Promise<Channel> {
       try {
         connection = await amqp.connect(config.rabbitmq_url) as any;
         channel = await connection.createChannel();
-        console.log("✅ Connected to RabbitMQ");
+        console.log('✅ Connected to RabbitMQ');
         break;
       } catch (err) {
         retries++;
@@ -26,7 +26,7 @@ export async function getRabbitChannel(): Promise<Channel> {
     }
 
     if (!connection || !channel) {
-      throw new Error("Unable to connect to RabbitMQ after multiple retries.");
+      throw new Error('Unable to connect to RabbitMQ after multiple retries.');
     }
   }
 

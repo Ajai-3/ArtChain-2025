@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { Auction } from "../../domain/entities/Auction";
-import { AuctionModel } from "../models/AuctionModel";
-import { IAuctionRepository } from "../../domain/repositories/IAuctionRepository";
+import { injectable } from 'inversify';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { Auction } from '../../domain/entities/Auction';
+import { AuctionModel } from '../models/AuctionModel';
+import { IAuctionRepository } from '../../domain/repositories/IAuctionRepository';
 
 @injectable()
 export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implements IAuctionRepository {

@@ -1,5 +1,5 @@
-import { Category } from "../entities/Category";
-import { IBaseRepository } from "./IBaseRepository";
+import { Category } from '../entities/Category';
+import { IBaseRepository } from './IBaseRepository';
 
 export interface ICategoryRepository extends IBaseRepository<Category> {
     findById(id: string): Promise<Category | null> 

@@ -1,6 +1,6 @@
-import { Model } from "mongoose";
-import { injectable } from "inversify";
-import { IBaseRepository } from "../../domain/repositories/IBaseRepositories";
+import { Model } from 'mongoose';
+import { injectable } from 'inversify';
+import { IBaseRepository } from '../../domain/repositories/IBaseRepositories';
 
 @injectable()
 export abstract class BaseRepositoryImp<T, D> implements IBaseRepository<T> {

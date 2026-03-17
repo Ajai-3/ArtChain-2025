@@ -1,11 +1,11 @@
-import { logger } from "../utils/logger";
-import { TYPES } from "../Inversify/types";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { IArtElasticService } from "../interface/IArtElasticService";
-import { ELASTIC_MESSAGES } from "../constants/elasticMesages.constants";
-import { IArtElasticController } from "../interface/IArtElasticController";
+import { logger } from '../utils/logger';
+import { TYPES } from '../Inversify/types';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { IArtElasticService } from '../interface/IArtElasticService';
+import { ELASTIC_MESSAGES } from '../constants/elasticMesages.constants';
+import { IArtElasticController } from '../interface/IArtElasticController';
 
 @injectable()
 export class ArtElasticController implements IArtElasticController {

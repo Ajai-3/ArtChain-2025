@@ -1,19 +1,19 @@
-import { inject, injectable } from "inversify";
-import { logger } from "../../infrastructure/utils/logger";
-import { DeleteMode, MediaType, Message } from "../../domain/entities/Message";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { mapConversation } from "../mappers/mapConversations";
-import { IUserService } from "../interface/http/IUserService";
-import { ConversationType } from "../../domain/entities/Conversation";
-import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { CreatePrivateConversationDto } from "../interface/dto/CreatePrivateConversationDto";
-import { ICreatePrivateConversationUseCase } from "../interface/usecase/ICreatePrivateConversationUseCase";
-import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePrivateConversationResponseDto";
-import { UserDto } from "../interface/dto/MessageResponseDto";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { ERROR_MESSAGES, DEFAULT_MESSAGES } from "../../constants/messages";
-import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
+import { inject, injectable } from 'inversify';
+import { logger } from '../../infrastructure/utils/logger';
+import { DeleteMode, MediaType, Message } from '../../domain/entities/Message';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { mapConversation } from '../mappers/mapConversations';
+import { IUserService } from '../interface/http/IUserService';
+import { ConversationType } from '../../domain/entities/Conversation';
+import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { CreatePrivateConversationDto } from '../interface/dto/CreatePrivateConversationDto';
+import { ICreatePrivateConversationUseCase } from '../interface/usecase/ICreatePrivateConversationUseCase';
+import { CreatePrivateConversationResponseDto } from '../interface/dto/CreatePrivateConversationResponseDto';
+import { UserDto } from '../interface/dto/MessageResponseDto';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { ERROR_MESSAGES, DEFAULT_MESSAGES } from '../../constants/messages';
+import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
 
 @injectable()
 export class CreatePrivateConversationUseCase
@@ -109,7 +109,7 @@ export class CreatePrivateConversationUseCase
     });
 
     logger.info(
-      `Private conversation ${isNewConvo ? "created" : "found"}: ${
+      `Private conversation ${isNewConvo ? 'created' : 'found'}: ${
         conversation.id
       }`
     );

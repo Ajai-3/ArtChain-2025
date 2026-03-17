@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IGetShopArtsByUserUseCase } from "../../interface/usecase/art/IGetAllShopArtsUseCase";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ERROR_MESSAGES, NotFoundError } from 'art-chain-shared';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IGetShopArtsByUserUseCase } from '../../interface/usecase/art/IGetAllShopArtsUseCase';
 
 @injectable()
 export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {

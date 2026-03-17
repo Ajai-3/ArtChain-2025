@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { BadRequestError } from "art-chain-shared";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IGetFavoriteCountUseCase } from "../../interface/usecase/favorite/IGetFavoriteCountUseCase";
+import { inject, injectable } from 'inversify';
+import { BadRequestError } from 'art-chain-shared';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { FAVORITE_MESSAGES } from '../../../constants/FavoriteMessages';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IGetFavoriteCountUseCase } from '../../interface/usecase/favorite/IGetFavoriteCountUseCase';
 
 @injectable()
 export class GetFavoriteCountUseCase implements IGetFavoriteCountUseCase {

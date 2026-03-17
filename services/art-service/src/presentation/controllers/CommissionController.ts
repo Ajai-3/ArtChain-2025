@@ -1,12 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { ICommissionController } from "../interface/ICommissionController";
-import { ICreateCommissionUseCase } from "../../application/interface/usecase/commission/ICreateCommissionUseCase";
-import { IGetCommissionByConversationUseCase } from "../../application/interface/usecase/commission/IGetCommissionByConversationUseCase";
-import { IUpdateCommissionUseCase } from "../../application/interface/usecase/commission/IUpdateCommissionUseCase";
-import { CreateCommissionDto } from "../../application/interface/dto/CreateCommissionDto";
-import { HttpStatus } from "art-chain-shared";
+import { Request, Response, NextFunction } from 'express';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { ICommissionController } from '../interface/ICommissionController';
+import { ICreateCommissionUseCase } from '../../application/interface/usecase/commission/ICreateCommissionUseCase';
+import { IGetCommissionByConversationUseCase } from '../../application/interface/usecase/commission/IGetCommissionByConversationUseCase';
+import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
+import { CreateCommissionDto } from '../../application/interface/dto/CreateCommissionDto';
+import { HttpStatus } from 'art-chain-shared';
 
 @injectable()
 export class CommissionController implements ICommissionController {
@@ -25,7 +25,7 @@ export class CommissionController implements ICommissionController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const requesterId = req.headers["x-user-id"] as string;
+      const requesterId = req.headers['x-user-id'] as string;
       const { artistId, title, description, referenceImages, budget, deadline } = req.body;
 
       const dto: CreateCommissionDto = {
@@ -41,7 +41,7 @@ export class CommissionController implements ICommissionController {
       const result = await this._createCommissionUseCase.execute(dto);
 
       return res.status(HttpStatus.CREATED).json({
-        message: "Commission requested successfully",
+        message: 'Commission requested successfully',
         data: result
       });
     } catch (error) {
@@ -59,7 +59,7 @@ export class CommissionController implements ICommissionController {
       const result = await this._getCommissionByConversationUseCase.execute(conversationId);
 
       return res.status(HttpStatus.OK).json({
-        message: "Commission details fetched successfully",
+        message: 'Commission details fetched successfully',
         data: result
       });
     } catch (error) {
@@ -74,11 +74,11 @@ export class CommissionController implements ICommissionController {
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const result = await this._updateCommissionUseCase.execute(id, userId, req.body);
 
       return res.status(HttpStatus.OK).json({
-        message: "Commission updated successfully",
+        message: 'Commission updated successfully',
         data: result
       });
     } catch (error) {

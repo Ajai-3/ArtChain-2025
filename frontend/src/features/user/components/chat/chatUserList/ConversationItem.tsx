@@ -1,5 +1,7 @@
 // components/chat/ConversationItem.tsx
 import React from "react";
+import { useSelector } from "react-redux";
+import { selectUserCache, selectCurrentUserId } from "../../../../../redux/selectors/chatSelectors";
 import {
   type Conversation,
   ConversationType,
@@ -18,7 +20,18 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   isSelected,
   onSelect,
 }) => {
-  const { isOnline } = usePresence(conversation.partner?.id);
+  const currentUserId = useSelector(selectCurrentUserId);
+  const userCache = useSelector(selectUserCache);
+
+  const partnerId = conversation.type === ConversationType.PRIVATE || conversation.type === ConversationType.REQUEST
+    ? (conversation.memberIds?.find((id) => id !== currentUserId) || conversation.partner?.id)
+    : undefined;
+
+  // Use cached user if available, otherwise exactly what's on the conversation
+  const cachedPartner = partnerId ? userCache[partnerId] : undefined;
+  const resolvedPartner = cachedPartner || conversation.partner;
+
+  const { isOnline } = usePresence(partnerId || conversation.partner?.id);
 
   const getInitials = (name: string) => {
     return name
@@ -45,9 +58,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   const getProfileImage = () => {
     if (
       (conversation.type === ConversationType.PRIVATE || conversation.type === ConversationType.REQUEST) &&
-      conversation.partner?.profileImage
+      resolvedPartner?.profileImage
     ) {
-      return conversation.partner.profileImage;
+      return resolvedPartner.profileImage;
     }
     if (
       conversation.type === ConversationType.GROUP &&
@@ -99,7 +112,7 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       return conversation.name || conversation.group?.name || "Unnamed Group";
     }
 
-    return conversation.partner?.name || "Unknown User";
+    return resolvedPartner?.name || "Unknown User";
   };
 
   return (

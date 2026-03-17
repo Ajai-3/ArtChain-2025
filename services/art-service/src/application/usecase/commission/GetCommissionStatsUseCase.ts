@@ -1,9 +1,9 @@
-import { injectable, inject } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
-import { IGetCommissionStatsUseCase } from "../../interface/usecase/commission/IGetCommissionStatsUseCase";
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
+import { IGetCommissionStatsUseCase } from '../../interface/usecase/commission/IGetCommissionStatsUseCase';
 
-import { IPlatformConfigRepository } from "../../../domain/repositories/IPlatformConfigRepository";
+import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
 
 @injectable()
 export class GetCommissionStatsUseCase implements IGetCommissionStatsUseCase {

@@ -1,18 +1,18 @@
-import { inject, injectable } from "inversify";
-import { logger } from "../../infrastructure/utils/logger";
-import { DeleteMode, MediaType, Message } from "../../domain/entities/Message";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { mapConversation } from "../mappers/mapConversations";
-import { IUserService } from "../interface/http/IUserService";
-import { ConversationType } from "../../domain/entities/Conversation";
-import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { CreateRequestConversationDto } from "../interface/dto/CreateRequestConversationDto";
-import { CreatePrivateConversationResponseDto } from "../interface/dto/CreatePrivateConversationResponseDto"; // Reusing response DTO
-import { UserDto } from "../interface/dto/MessageResponseDto";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { ERROR_MESSAGES, DEFAULT_MESSAGES } from "../../constants/messages";
-import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
+import { inject, injectable } from 'inversify';
+import { logger } from '../../infrastructure/utils/logger';
+import { DeleteMode, MediaType, Message } from '../../domain/entities/Message';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { mapConversation } from '../mappers/mapConversations';
+import { IUserService } from '../interface/http/IUserService';
+import { ConversationType } from '../../domain/entities/Conversation';
+import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { CreateRequestConversationDto } from '../interface/dto/CreateRequestConversationDto';
+import { CreatePrivateConversationResponseDto } from '../interface/dto/CreatePrivateConversationResponseDto'; // Reusing response DTO
+import { UserDto } from '../interface/dto/MessageResponseDto';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { ERROR_MESSAGES, DEFAULT_MESSAGES } from '../../constants/messages';
+import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
 
 
 @injectable()
@@ -33,14 +33,14 @@ export class CreateRequestConversationUseCase {
     const { userId, artistId } = dto;
 
     if (!userId || !artistId) {
-      throw new BadRequestError("User ID and Artist ID are required");
+      throw new BadRequestError('User ID and Artist ID are required');
     }
 
     if (userId === artistId) {
       throw new BadRequestError(ERROR_MESSAGES.CANNOT_CREATE_CONVERSATION_WITH_SELF);
     }
 
-    console.log(userId, artistId)
+    console.log(userId, artistId);
     
     const conversation = await this._conversationRepo.create({
       type: ConversationType.REQUEST,
@@ -49,7 +49,7 @@ export class CreateRequestConversationUseCase {
       adminIds: [],
     });
 
-    console.log(conversation)
+    console.log(conversation);
 
     const isNewConvo = true;
 
@@ -62,7 +62,7 @@ export class CreateRequestConversationUseCase {
     const lastMessage = await this._messageRepo.create({
       conversationId: conversation.id,
       senderId: userId,
-      content: "Hey, I want a commission art 🎨", 
+      content: 'Hey, I want a commission art 🎨', 
       readBy: [userId],
       mediaType: MediaType.TEXT,
       deleteMode: DeleteMode.NONE,

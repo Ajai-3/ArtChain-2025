@@ -1,16 +1,16 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { validateWithZod } from "../../utils/validateWithZod";
-import { CATEGORY_MESSAGES } from "../../constants/categoryMessages";
-import { editCategorySchema } from "../validators/editCategorySchema";
-import { ICategoryController } from "../interface/ICategoryController";
-import { EditCategoryDTO } from "../../application/interface/dto/category/EditCategoryDTO";
-import { IGetAllCategoryUseCase } from "../../application/interface/usecase/category/IGetAllCategoryUseCase";
-import { IEditCategoryUseCase } from "../../application/interface/usecase/category/IEditCategoryUseCase";
-import { ICreateCategoryUseCase } from "../../application/interface/usecase/category/ICreateCategoryUseCase";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { CATEGORY_MESSAGES } from '../../constants/categoryMessages';
+import { editCategorySchema } from '../validators/editCategorySchema';
+import { ICategoryController } from '../interface/ICategoryController';
+import { EditCategoryDTO } from '../../application/interface/dto/category/EditCategoryDTO';
+import { IGetAllCategoryUseCase } from '../../application/interface/usecase/category/IGetAllCategoryUseCase';
+import { IEditCategoryUseCase } from '../../application/interface/usecase/category/IEditCategoryUseCase';
+import { ICreateCategoryUseCase } from '../../application/interface/usecase/category/ICreateCategoryUseCase';
 
 @injectable()
 export class CategoryController implements ICategoryController {
@@ -56,7 +56,7 @@ export class CategoryController implements ICategoryController {
         .status(HttpStatus.OK)
         .json({ message: CATEGORY_MESSAGES.FETCH_SUCCESS, data, total, stats });
     } catch (error) {
-      logger.error("Error in getting categories", error);
+      logger.error('Error in getting categories', error);
       next(error);
     }
   };
@@ -82,7 +82,7 @@ export class CategoryController implements ICategoryController {
         .status(HttpStatus.CREATED)
         .json({ message: CATEGORY_MESSAGES.CREATE_SUCCESS, category });
     } catch (error) {
-      logger.error("Error in creating category", error);
+      logger.error('Error in creating category', error);
       next(error);
     }
   };
@@ -112,7 +112,7 @@ export class CategoryController implements ICategoryController {
         .status(HttpStatus.OK)
         .json({ message: CATEGORY_MESSAGES.UPDATE_SUCCESS, category });
     } catch (error) {
-      logger.error("Error in editing category", error);
+      logger.error('Error in editing category', error);
       next(error);
     }
   };

@@ -67,16 +67,21 @@ const ChatArea: React.FC<ChatAreaProps> = ({
   const { startCall } = useVideoCall();
 
   const handleVideoCall = useCallback(() => {
-    if (selectedConversation && selectedConversation.partner) {
-        startCall(
-          selectedConversation.id, 
-          selectedConversation.partner.id, 
-          false,
-          selectedConversation.partner.name,
-          selectedConversation.partner.profileImage || undefined
-        );
+    if (selectedConversation) {
+        const pId = selectedConversation.memberIds?.find((id) => id !== currentUserId) || selectedConversation.partner?.id || "";
+        const partner = userCache[pId] || selectedConversation.partner;
+
+        if (partner && partner.id) {
+          startCall(
+            selectedConversation.id, 
+            partner.id, 
+            false,
+            partner.name || "Unknown User",
+            partner.profileImage || undefined
+          );
+        }
     }
-  }, [selectedConversation, startCall]);
+  }, [selectedConversation, startCall, currentUserId, userCache]);
 
 
   const handleToggleDetails = useCallback(() => {

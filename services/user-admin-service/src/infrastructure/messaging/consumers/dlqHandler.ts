@@ -1,9 +1,9 @@
-import amqp from "amqplib";
-import { config } from "../../config/env";
-import type { Channel, Connection } from "amqplib";
+import amqp from 'amqplib';
+import { config } from '../../config/env';
+import type { Channel, Connection } from 'amqplib';
 
 const DLQ_MAPPING = {
-  "profile_update.dlq": "profile_update",
+  'profile_update.dlq': 'profile_update',
 };
 
 const MAX_RETRIES = 3;
@@ -20,9 +20,9 @@ export async function initDLQHandler(): Promise<void> {
       await processDLQ(ch, dlq, originalQueue);
     }
 
-    console.log("✅ DLQ Handler initialized");
+    console.log('✅ DLQ Handler initialized');
   } catch (error) {
-    console.error("❌ Failed to initialize DLQ handler:", error);
+    console.error('❌ Failed to initialize DLQ handler:', error);
     setTimeout(initDLQHandler, 5000);
   }
 }
@@ -48,12 +48,12 @@ async function processDLQ(
           ch.sendToQueue(originalQueue, Buffer.from(JSON.stringify(newMessage)));
           console.log(`🔄 Retrying message to ${originalQueue}: retry ${retryCount + 1}`);
         } else {
-          console.error("❌ Max retries reached, leaving message in DLQ:", messageContent);
+          console.error('❌ Max retries reached, leaving message in DLQ:', messageContent);
         }
 
         ch.ack(msg);
       } catch (error) {
-        console.error("❌ Error processing DLQ message:", error);
+        console.error('❌ Error processing DLQ message:', error);
         ch.ack(msg);
       }
     },

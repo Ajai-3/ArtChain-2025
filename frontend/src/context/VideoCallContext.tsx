@@ -204,6 +204,11 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const getMediaStream = async (audioDeviceId?: string) => {
     console.log("[VideoCallContext] Requesting media permissions...");
+    if (localStream) {
+       console.log("Using existing localStream.");
+       return localStream;
+    }
+    
     try {
       const constraints = {
           video: true,
@@ -211,10 +216,26 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       setLocalStream(stream);
+      setIsCameraOn(true);
       return stream;
-    } catch (err) {
+    } catch (err: any) {
       console.error("[VideoCallContext] Error accessing media devices:", err);
-      // Basic fallback
+      if (err.name === 'NotReadableError' || err.name === 'NotFoundError' || err.name === 'NotAllowedError') {
+         console.log("Video device in use or not found, falling back to audio only.");
+         try {
+            const fallbackConstraints = {
+               video: false,
+               audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true
+            };
+            const fallbackStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+            setLocalStream(fallbackStream);
+            setIsCameraOn(false);
+            return fallbackStream;
+         } catch (fallbackErr) {
+            console.error("Audio fallback also failed", fallbackErr);
+            return null;
+         }
+      }
       return null;
     }
   };

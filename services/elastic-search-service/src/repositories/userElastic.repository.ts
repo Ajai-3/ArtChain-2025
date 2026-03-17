@@ -1,9 +1,9 @@
-import { injectable } from "inversify";
-import { IndexedUser } from "../interface/indexUser";
-import { elasticClient } from "../config/elasticClient";
-import { IUserElasticRepository } from "../interface/IUserElasticRepository";
+import { injectable } from 'inversify';
+import { IndexedUser } from '../interface/indexUser';
+import { elasticClient } from '../config/elasticClient';
+import { IUserElasticRepository } from '../interface/IUserElasticRepository';
 
-const INDEX_NAME = "users";
+const INDEX_NAME = 'users';
 
 @injectable()
 export class UserElasticRepository implements IUserElasticRepository {
@@ -29,16 +29,16 @@ export class UserElasticRepository implements IUserElasticRepository {
     const result = await elasticClient.search({
       index: INDEX_NAME,
       size: 20,
-      sort: [{ createdAt: "desc" }],
+      sort: [{ createdAt: 'desc' }],
       query: {
         bool: {
           should: [
             { match_phrase_prefix: { username: query } },
             { match_phrase_prefix: { name: query } },
             { match_phrase_prefix: { email: query } },
-            { fuzzy: { username: { value: query, fuzziness: "AUTO" } } },
-            { fuzzy: { name: { value: query, fuzziness: "AUTO" } } },
-            { fuzzy: { email: { value: query, fuzziness: "AUTO" } } },
+            { fuzzy: { username: { value: query, fuzziness: 'AUTO' } } },
+            { fuzzy: { name: { value: query, fuzziness: 'AUTO' } } },
+            { fuzzy: { email: { value: query, fuzziness: 'AUTO' } } },
           ],
         },
       },

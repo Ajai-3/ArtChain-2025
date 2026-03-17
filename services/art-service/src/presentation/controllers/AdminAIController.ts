@@ -1,14 +1,14 @@
-import { injectable, inject } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IAdminAIController } from "../interface/IAdminAIController";
-import { IUpdateAIConfigUseCase } from "../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase";
-import { IGetAIConfigsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase";
-import { IGetAIAnalyticsUseCase } from "../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase";
-import { AIProviderService } from "../../infrastructure/service/AIProviderService";
-import { HttpStatus } from "art-chain-shared";
-import { AI_MESSAGES } from "../../constants/AIMessages";
-import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IAdminAIController } from '../interface/IAdminAIController';
+import { IUpdateAIConfigUseCase } from '../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase';
+import { IGetAIConfigsUseCase } from '../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase';
+import { IGetAIAnalyticsUseCase } from '../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase';
+import { AIProviderService } from '../../infrastructure/service/AIProviderService';
+import { HttpStatus } from 'art-chain-shared';
+import { AI_MESSAGES } from '../../constants/AIMessages';
+import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 
 @injectable()
 export class AdminAIController implements IAdminAIController {

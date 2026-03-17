@@ -1,5 +1,5 @@
 // import { getArtChainSecrets } from "art-chain-shared";
-import dontenv from "dotenv";
+import dontenv from 'dotenv';
 dontenv.config();
 
 // COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
@@ -7,12 +7,12 @@ dontenv.config();
 
 // Using hardcoded values from .env file instead
 const secrets = {
-  aws_cdn_domain: process.env.AWS_CDN_DOMAIN || "your-cdn-domain-here.cloudfront.net",
+  aws_cdn_domain: process.env.AWS_CDN_DOMAIN || 'your-cdn-domain-here.cloudfront.net',
 };
 
 export const config = {
   port: process.env.PORT,
-  rabbitmq_URL: process.env.RABBITMQ_URL || "",
+  rabbitmq_URL: process.env.RABBITMQ_URL || '',
   aws: {
     region: process.env.AWS_REGION!,
     accessKeyId: process.env.AWS_ACCESS_KEY_ID!,

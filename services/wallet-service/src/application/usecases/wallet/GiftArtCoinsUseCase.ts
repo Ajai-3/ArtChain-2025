@@ -1,15 +1,16 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IGiftArtCoinsUseCase } from "../../interface/usecase/wallet/IGiftArtCoinsUseCase";
-import { IWalletRepository } from "../../../domain/repository/IWalletRepository";
-import { WalletProducer } from "../../../infrastructure/rabbitmq/producers/WalletProducer";
-import { WALLET_MESSAGES } from "../../../constants/WalletMessages";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
 import { v4 as uuidv4 } from 'uuid';
-import { TransactionCategory } from "@prisma/client";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IGiftArtCoinsUseCase } from '../../interface/usecase/wallet/IGiftArtCoinsUseCase';
+import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { WalletProducer } from '../../../infrastructure/rabbitmq/producers/WalletProducer';
+import { WALLET_MESSAGES } from '../../../constants/WalletMessages';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { TransactionCategory } from '@prisma/client';
 
-import { GiftArtCoinsDTO } from "../../interface/dto/wallet/GiftArtCoinsDTO";
-import { WalletStatus } from "../../../domain/entities/Wallet";
+import { GiftArtCoinsDTO } from '../../interface/dto/wallet/GiftArtCoinsDTO';
+import { WalletStatus } from '../../../domain/entities/Wallet';
+import { mapCdnUrl } from '../../../utils/mapCdnUrl';
 
 @injectable()
 export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
@@ -48,7 +49,7 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
         }
 
         const referenceId = uuidv4();
-        const description = message ? `Gift: ${message}` : "Gifted Art Coins";
+        const description = message ? `Gift: ${message}` : 'Gifted Art Coins';
 
         const success = await this._walletRepository.transferFunds(
             senderId,
@@ -60,7 +61,7 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
         );
 
         if (!success) {
-            throw new Error("Failed to process gift transaction.");
+            throw new Error('Failed to process gift transaction.');
         }
 
         // Publish Event
@@ -71,7 +72,7 @@ export class GiftArtCoinsUseCase implements IGiftArtCoinsUseCase {
             message,
             timestamp: new Date(),
             senderName,
-            senderImage: senderImage || ""
+            senderImage: mapCdnUrl(senderImage) || ''
         });
 
         const updatedSenderWallet = await this._walletRepository.getByUserId(senderId);

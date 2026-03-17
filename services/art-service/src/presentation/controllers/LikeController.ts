@@ -1,14 +1,14 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { LIKE_MESSAGES } from "../../constants/LikeMessages";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { ILikeController } from "../interface/ILikeController";
-import { ILikePostUseCase } from "../../application/interface/usecase/like/ILikePostUseCase";
-import { IUnlikePostUseCase } from "../../application/interface/usecase/like/IUnlikePostUseCase";
-import { IGetLikeCountUseCase } from "../../application/interface/usecase/like/IGetLikeCountUseCase";
-import { IGetLikedUsersUseCase } from "../../application/interface/usecase/like/IGetLikedUsersUseCase";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { LIKE_MESSAGES } from '../../constants/LikeMessages';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { ILikeController } from '../interface/ILikeController';
+import { ILikePostUseCase } from '../../application/interface/usecase/like/ILikePostUseCase';
+import { IUnlikePostUseCase } from '../../application/interface/usecase/like/IUnlikePostUseCase';
+import { IGetLikeCountUseCase } from '../../application/interface/usecase/like/IGetLikeCountUseCase';
+import { IGetLikedUsersUseCase } from '../../application/interface/usecase/like/IGetLikedUsersUseCase';
 
 @injectable()
 export class LikeController implements ILikeController {
@@ -36,7 +36,7 @@ export class LikeController implements ILikeController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { postId } = req.body;
 
       const savedLike = await this._likePostUseCase.execute(postId, userId);
@@ -63,7 +63,7 @@ export class LikeController implements ILikeController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const { postId } = req.body;
 
       await this._unlikePostUseCase.execute(postId, userId);
@@ -115,7 +115,7 @@ export class LikeController implements ILikeController {
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
-      const currentUserId = req.headers["x-user-id"] as string;
+      const currentUserId = req.headers['x-user-id'] as string;
 
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;

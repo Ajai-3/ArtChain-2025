@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { ConflictError } from "art-chain-shared";
-import { Category } from "../../../domain/entities/Category";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { CATEGORY_MESSAGES } from "./../../../constants/categoryMessages";
-import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { ICreateCategoryUseCase } from "../../interface/usecase/category/ICreateCategoryUseCase";
+import { inject, injectable } from 'inversify';
+import { ConflictError } from 'art-chain-shared';
+import { Category } from '../../../domain/entities/Category';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { CATEGORY_MESSAGES } from './../../../constants/categoryMessages';
+import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
+import { ICreateCategoryUseCase } from '../../interface/usecase/category/ICreateCategoryUseCase';
 
 @injectable()
 export class CreateCategoryUseCase implements ICreateCategoryUseCase {

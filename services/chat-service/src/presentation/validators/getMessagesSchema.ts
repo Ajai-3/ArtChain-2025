@@ -1,12 +1,12 @@
-import { z } from "zod";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { z } from 'zod';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 export const getMessagesSchema = z.object({
   query: z.object({
     fromId: z.string().optional(),
     limit: z
       .string()
-      .default("10")
+      .default('10')
       .transform((v) => Number(v))
       .refine(
         (v) => Number.isInteger(v) && v > 0,
@@ -19,7 +19,7 @@ export const getMessagesSchema = z.object({
   }),
 
   headers: z.object({
-    "x-user-id": z.string().min(1, ERROR_MESSAGES.X_USER_ID_HEADER_REQUIRED),
+    'x-user-id': z.string().min(1, ERROR_MESSAGES.X_USER_ID_HEADER_REQUIRED),
   }),
 });
 

@@ -1,11 +1,11 @@
-import amqp from "amqplib";
-import { config } from "../../config/env";
-import { TYPES } from "../../inversify/types";
-import type { Channel, Connection } from "amqplib";
-import { container } from "../../inversify/inversify.config";
-import { IUpdateProfileUserUseCase } from "../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase";
+import amqp from 'amqplib';
+import { config } from '../../config/env';
+import { TYPES } from '../../inversify/types';
+import type { Channel, Connection } from 'amqplib';
+import { container } from '../../inversify/inversify.config';
+import { IUpdateProfileUserUseCase } from '../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase';
 
-const QUEUE = "profile_update";
+const QUEUE = 'profile_update';
 
 export async function initProfileUpdateConsumer() {
   const conn: Connection = await amqp.connect(config.rabbitmq_URL) as any;
@@ -31,26 +31,26 @@ export async function initProfileUpdateConsumer() {
         );
 
         switch (category) {
-          case "profile":
+          case 'profile':
             await updateProfileUseCase.execute({ userId, profileImage: key });
             break;
-          case "banner":
+          case 'banner':
             await updateProfileUseCase.execute({ userId, bannerImage: key });
             break;
-          case "background":
+          case 'background':
             await updateProfileUseCase.execute({
               userId,
               backgroundImage: key,
             });
             break;
           default:
-            console.warn("⚠️ Unknown category:", category);
+            console.warn('⚠️ Unknown category:', category);
         }
 
         ch.ack(msg);
-        console.log("✅ User profile updated successfully");
+        console.log('✅ User profile updated successfully');
       } catch (err) {
-        console.error("❌ Failed to process profile update:", err);
+        console.error('❌ Failed to process profile update:', err);
         ch.nack(msg, false, false); 
       }
     },

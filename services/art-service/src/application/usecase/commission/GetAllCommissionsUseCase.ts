@@ -1,8 +1,8 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ICommissionRepository } from "../../../domain/repositories/ICommissionRepository";
-import { CommissionMapper } from "../../mapper/CommissionMapper";
-import { IUserService } from "../../interface/service/IUserService";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
+import { CommissionMapper } from '../../mapper/CommissionMapper';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetAllCommissionsUseCase {

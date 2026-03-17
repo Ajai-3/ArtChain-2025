@@ -1,7 +1,7 @@
-import { injectable } from "inversify";
-import { AIConfigModel } from "../models/AIConfigModel";
-import { AIConfig } from "../../domain/entities/AIConfig";
-import { IAIConfigRepository } from "../../domain/repositories/IAIConfigRepository";
+import { injectable } from 'inversify';
+import { AIConfigModel } from '../models/AIConfigModel';
+import { AIConfig } from '../../domain/entities/AIConfig';
+import { IAIConfigRepository } from '../../domain/repositories/IAIConfigRepository';
 
 @injectable()
 export class AIConfigRepositoryImpl implements IAIConfigRepository {
@@ -31,8 +31,12 @@ export class AIConfigRepositoryImpl implements IAIConfigRepository {
   }
 
   async update(id: string, updates: Partial<AIConfig>): Promise<AIConfig> {
-    const updated = await AIConfigModel.findByIdAndUpdate(id, { $set: updates }, { new: true });
-    if (!updated) throw new Error("Config not found");
+    const updated = await AIConfigModel.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { new: true },
+    );
+    if (!updated) throw new Error('Config not found');
     return this.toEntity(updated);
   }
 
@@ -74,7 +78,7 @@ export class AIConfigRepositoryImpl implements IAIConfigRepository {
       doc.priority,
       doc.apiKey,
       doc.createdAt,
-      doc.updatedAt
+      doc.updatedAt,
     );
   }
 }

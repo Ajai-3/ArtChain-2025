@@ -1,13 +1,13 @@
-import { Channel, ConsumeMessage } from "amqplib";
-import { getRabbitChannel } from "../../rabbitmq";
-import { container } from "../../../inversify/inversify.config";
-import { TYPES } from "../../../inversify/types";
-import { IGiftEventHandler } from "../../../../application/interfaces/handlers/IGiftEventHandler";
-import { logger } from "../../../utils/logger";
+import { Channel, ConsumeMessage } from 'amqplib';
+import { getRabbitChannel } from '../../rabbitmq';
+import { container } from '../../../inversify/inversify.config';
+import { TYPES } from '../../../inversify/types';
+import { IGiftEventHandler } from '../../../../application/interfaces/handlers/IGiftEventHandler';
+import { logger } from '../../../utils/logger';
 
 export async function startWalletConsumer() {
   const ch: Channel = await getRabbitChannel();
-  const queue = "wallet_notifications";
+  const queue = 'wallet_notifications';
 
   logger.info(`✅ Wallet Consumer listening on ${queue}`);
 
@@ -19,7 +19,7 @@ export async function startWalletConsumer() {
       const event = JSON.parse(msg.content.toString());
       logger.info(`📥 Received Wallet Event [${routingKey}]: ${JSON.stringify(event)}`);
 
-      if (routingKey === "wallet.gift") {
+      if (routingKey === 'wallet.gift') {
         const handler = container.get<IGiftEventHandler>(TYPES.IGiftEventHandler);
         await handler.handle(event);
       }
@@ -27,7 +27,7 @@ export async function startWalletConsumer() {
       
       ch.ack(msg);
     } catch (err) {
-      logger.error("❌ Failed processing wallet event:", err);
+      logger.error('❌ Failed processing wallet event:', err);
       ch.nack(msg, false, false);
     }
   });

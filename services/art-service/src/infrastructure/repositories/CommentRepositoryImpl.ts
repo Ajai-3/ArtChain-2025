@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { CommentModel } from "../models/CommentModel";
-import { Comment } from "../../domain/entities/Comment";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { ICommentRepository } from "../../domain/repositories/ICommentRepository";
+import { injectable } from 'inversify';
+import { CommentModel } from '../models/CommentModel';
+import { Comment } from '../../domain/entities/Comment';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { ICommentRepository } from '../../domain/repositories/ICommentRepository';
 
 @injectable()
 export class CommentRepositoryImpl

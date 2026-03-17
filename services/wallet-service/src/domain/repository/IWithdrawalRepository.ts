@@ -1,6 +1,6 @@
-import { WithdrawalRequest } from "../entities/WithdrawalRequest";
-import { CreateWithdrawalRequestDTO } from "../../application/interface/dto/withdrawal/CreateWithdrawalRequestDTO";
-import { IBaseRepository } from "./IBaseRepository";
+import { WithdrawalRequest } from '../entities/WithdrawalRequest';
+import { CreateWithdrawalRequestDTO } from '../../application/interface/dto/withdrawal/CreateWithdrawalRequestDTO';
+import { IBaseRepository } from './IBaseRepository';
 
 export interface IWithdrawalRepository extends IBaseRepository<WithdrawalRequest> {
   getWithdrawalRequestById(id: string): Promise<WithdrawalRequest | null>;

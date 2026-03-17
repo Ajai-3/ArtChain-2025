@@ -1,7 +1,7 @@
-import { injectable } from "inversify";
-import { AIGenerationModel } from "../models/AIGenerationModel";
-import { AIGeneration } from "../../domain/entities/AIGeneration";
-import { IAIGenerationRepository } from "../../domain/repositories/IAIGenerationRepository";
+import { injectable } from 'inversify';
+import { AIGenerationModel } from '../models/AIGenerationModel';
+import { AIGeneration } from '../../domain/entities/AIGeneration';
+import { IAIGenerationRepository } from '../../domain/repositories/IAIGenerationRepository';
 
 @injectable()
 export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
@@ -18,7 +18,9 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
 
   async getAll(page: number = 1, limit: number = 20): Promise<AIGeneration[]> {
     const skip = (page - 1) * limit;
-    const generations = await AIGenerationModel.find({ isDeleted: { $ne: true } })
+    const generations = await AIGenerationModel.find({
+      isDeleted: { $ne: true },
+    })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -29,9 +31,16 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
     return await AIGenerationModel.countDocuments();
   }
 
-  async update(id: string, updates: Partial<AIGeneration>): Promise<AIGeneration> {
-    const updated = await AIGenerationModel.findByIdAndUpdate(id, { $set: updates }, { new: true });
-    if (!updated) throw new Error("Generation not found");
+  async update(
+    id: string,
+    updates: Partial<AIGeneration>,
+  ): Promise<AIGeneration> {
+    const updated = await AIGenerationModel.findByIdAndUpdate(
+      id,
+      { $set: updates },
+      { new: true },
+    );
+    if (!updated) throw new Error('Generation not found');
     return this.toEntity(updated);
   }
 
@@ -43,9 +52,16 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
     return this.getById(id);
   }
 
-  async findByUserId(userId: string, page: number = 1, limit: number = 20): Promise<AIGeneration[]> {
+  async findByUserId(
+    userId: string,
+    page: number = 1,
+    limit: number = 20,
+  ): Promise<AIGeneration[]> {
     const skip = (page - 1) * limit;
-    const generations = await AIGenerationModel.find({ userId, isDeleted: { $ne: true } })
+    const generations = await AIGenerationModel.find({
+      userId,
+      isDeleted: { $ne: true },
+    })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -59,7 +75,7 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
     return await AIGenerationModel.countDocuments({
       userId,
       isFree: true,
-      createdAt: { $gte: startOfDay }
+      createdAt: { $gte: startOfDay },
     });
   }
 
@@ -81,7 +97,7 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
       doc.generationTime,
       doc.createdAt,
       doc.updatedAt,
-      doc.isDeleted
+      doc.isDeleted,
     );
   }
 }

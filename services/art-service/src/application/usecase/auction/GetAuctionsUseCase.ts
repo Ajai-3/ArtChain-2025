@@ -1,13 +1,13 @@
-import { injectable, inject } from "inversify";
-import { IGetAuctionsUseCase } from "../../interface/usecase/auction/IGetAuctionsUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IAuctionRepository } from "../../../domain/repositories/IAuctionRepository";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { IBidRepository } from "../../../domain/repositories/IBidRepository";
-import { IS3Service } from "../../../domain/interfaces/IS3Service";
-import { AuctionMapper } from "../../mapper/AuctionMapper";
-import { GetAuctionsDTO } from "../../interface/dto/auction/GetAuctionsDTO";
-import { IUserService } from "../../interface/service/IUserService";
+import { injectable, inject } from 'inversify';
+import { IGetAuctionsUseCase } from '../../interface/usecase/auction/IGetAuctionsUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { IBidRepository } from '../../../domain/repositories/IBidRepository';
+import { IS3Service } from '../../../domain/interfaces/IS3Service';
+import { AuctionMapper } from '../../mapper/AuctionMapper';
+import { GetAuctionsDTO } from '../../interface/dto/auction/GetAuctionsDTO';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetAuctionsUseCase implements IGetAuctionsUseCase {
@@ -66,7 +66,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     );
 
     const users = await this._userService.getUsersByIds([...allUserIds]);
-    console.log(users)
+    console.log(users);
     const userMap = new Map(users.map((u: any) => [u.id, u]));
 
     const mappedAuctions = auctionsData.map(({ auction, bids, signedImageUrl }) => {

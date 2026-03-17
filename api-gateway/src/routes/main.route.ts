@@ -1,6 +1,6 @@
 import Router from "express";
 import { adminAuth } from "../middleware/adminAuth";
-import { s3Proxy } from "../proxy/s3.proxy";
+import { s3Proxy } from "../proxy/S3.proxy";
 import { artProxy } from "../proxy/art.proxy";
 import { authProxy } from "../proxy/auth.proxy";
 import { userProxy } from "../proxy/user.proxy";

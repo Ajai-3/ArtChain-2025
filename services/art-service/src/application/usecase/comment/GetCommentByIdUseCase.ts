@@ -1,8 +1,8 @@
-import { inject, injectable } from "inversify";
-import { Comment } from "../../../domain/entities/Comment";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IGetCommentByIdUseCase } from "../../interface/usecase/comment/IGetCommentByIdUseCase";
+import { inject, injectable } from 'inversify';
+import { Comment } from '../../../domain/entities/Comment';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IGetCommentByIdUseCase } from '../../interface/usecase/comment/IGetCommentByIdUseCase';
 
 @injectable()
 export class GetCommentByIdUseCase implements IGetCommentByIdUseCase {

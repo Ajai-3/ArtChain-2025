@@ -1,9 +1,9 @@
-import { TYPES } from "../Inversify/types";
-import { inject, injectable } from "inversify";
-import { mapCdnUrl } from "../utils/mapCdnUrl";
-import { IndexedUser } from "../interface/indexUser";
-import { IUserElasticService } from "../interface/IUserElasticService";
-import { IUserElasticRepository } from "../interface/IUserElasticRepository";
+import { TYPES } from '../Inversify/types';
+import { inject, injectable } from 'inversify';
+import { mapCdnUrl } from '../utils/mapCdnUrl';
+import { IndexedUser } from '../interface/indexUser';
+import { IUserElasticService } from '../interface/IUserElasticService';
+import { IUserElasticRepository } from '../interface/IUserElasticRepository';
 
 @injectable()
 export class UserElasticService implements IUserElasticService {

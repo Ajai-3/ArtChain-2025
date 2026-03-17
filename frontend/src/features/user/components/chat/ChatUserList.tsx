@@ -1,9 +1,9 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import ConversationItem from "./chatUserList/ConversationItem";
-import type { Conversation } from "../../../../types/chat/chat";
-import { selectConversations } from "../../../../redux/selectors/chatSelectors";
+import { selectConversations, selectCurrentUserId, selectUserCache } from "../../../../redux/selectors/chatSelectors";
 import CreateGroupModal from "./chatUserList/CreateGroupModal";
+import { useUserResolver } from "../../hooks/chat/useUserResolver";
 
 interface ChatUserListProps {
   selectedConversation: string | null;
@@ -25,6 +25,21 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
   const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
 
   const conversations = useSelector(selectConversations);
+  const currentUserId = useSelector(selectCurrentUserId);
+  const userCache = useSelector(selectUserCache);
+
+  const partnerIds = useMemo(() => {
+    const ids = new Set<string>();
+    conversations.forEach((c) => {
+      if (c.type === "PRIVATE" || c.type === "REQUEST") {
+        const pId = c.memberIds?.find((id) => id !== currentUserId) || c.partner?.id;
+        if (pId) ids.add(pId);
+      }
+    });
+    return Array.from(ids);
+  }, [conversations, currentUserId]);
+
+  useUserResolver(partnerIds);
 
   const sortedConversations = useMemo(() => {
     const clone = [...conversations];
@@ -42,10 +57,14 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
 
   const filtered = useMemo(() => {
     return sortedConversations.filter((c) => {
-      const query = searchQuery.toLowerCase();
+      const pId = c.memberIds?.find((id) => id !== currentUserId) || c.partner?.id || "";
+      const partner = userCache[pId] || c.partner;
+      const query = searchQuery.toLowerCase().trim();
+      
       const matchesSearch =
+        !query ||
         c.name?.toLowerCase().includes(query) ||
-        c.partner?.name?.toLowerCase().includes(query) ||
+        partner?.name?.toLowerCase().includes(query) ||
         false;
 
       const matchesTab =
@@ -55,7 +74,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
 
       return matchesSearch && matchesTab;
     });
-  }, [sortedConversations, searchQuery, activeTab]);
+  }, [sortedConversations, searchQuery, activeTab, userCache, currentUserId]);
 
   const tabs = [
     { id: "private" as TabType, label: "Private" },

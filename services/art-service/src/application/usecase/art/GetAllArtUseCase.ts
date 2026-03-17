@@ -1,13 +1,13 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ILikeRepository } from "../../../domain/repositories/ILikeRepository";
-import { toArtWithUserResponse } from "../../mapper/artWithUserMapper";
-import { IGetAllArtUseCase } from "../../interface/usecase/art/IGetAllArtUseCase";
-import { ICommentRepository } from "../../../domain/repositories/ICommentRepository";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { ICategoryRepository } from "../../../domain/repositories/ICategoryRepository";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IUserService } from "../../interface/service/IUserService";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { toArtWithUserResponse } from '../../mapper/artWithUserMapper';
+import { IGetAllArtUseCase } from '../../interface/usecase/art/IGetAllArtUseCase';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetAllArtUseCase implements IGetAllArtUseCase {

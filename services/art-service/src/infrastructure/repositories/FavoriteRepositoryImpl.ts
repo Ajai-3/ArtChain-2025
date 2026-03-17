@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { FavoriteModel } from "../models/FavoriteModel";
-import { BaseRepositoryImpl } from "./BaseRepositoryImpl";
-import { Favorite } from "../../domain/entities/Favorite";
-import { IFavoriteRepository } from "../../domain/repositories/IFavoriteRepository";
+import { injectable } from 'inversify';
+import { FavoriteModel } from '../models/FavoriteModel';
+import { BaseRepositoryImpl } from './BaseRepositoryImpl';
+import { Favorite } from '../../domain/entities/Favorite';
+import { IFavoriteRepository } from '../../domain/repositories/IFavoriteRepository';
 
 @injectable()
 export class FavoriteRepositoryImpl

@@ -13,6 +13,8 @@ import { useUpdateProfileMutation } from "../../../hooks/profile/useUpdateProfil
 const ProfileSettings: React.FC = () => {
   const userData = useSelector((state: RootState) => state.user.user);
 
+  console.log(userData);
+
   const [bannerImage, setBannerImage] = useState<string | null>(userData?.bannerImage || null);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(userData?.backgroundImage || null);
 

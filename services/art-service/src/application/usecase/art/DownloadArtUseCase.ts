@@ -1,9 +1,9 @@
-import { inject, injectable } from "inversify";
-import { IDownloadArtUseCase } from "../../interface/usecase/art/IDownloadArtUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IS3Service } from "../../../domain/interfaces/IS3Service";
-import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
+import { inject, injectable } from 'inversify';
+import { IDownloadArtUseCase } from '../../interface/usecase/art/IDownloadArtUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IS3Service } from '../../../domain/interfaces/IS3Service';
+import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepository';
 
 @injectable()
 export class DownloadArtUseCase implements IDownloadArtUseCase {
@@ -20,7 +20,7 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
     const art = await this._artRepository.findById(artId);
 
     if (!art) {
-      throw new Error("Art not found");
+      throw new Error('Art not found');
     }
 
     let allowed = false;
@@ -41,11 +41,11 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
     }
 
     if (!allowed) {
-      throw new Error("You are not authorized to download this art");
+      throw new Error('You are not authorized to download this art');
     }
 
     if (!art.previewUrl) {
-        throw new Error("Art image source not found");
+        throw new Error('Art image source not found');
     }
 
 
@@ -53,15 +53,15 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
     const artIndex = urlParts.indexOf('art');
     
     if (artIndex === -1 || artIndex + 2 >= urlParts.length) {
-        throw new Error("Invalid image URL format");
+        throw new Error('Invalid image URL format');
     }
     
     const storedUserId = urlParts[artIndex + 1];
     const storedFilename = urlParts[artIndex + 2];
     
-    const keyBase = storedFilename.replace("preview_", "");
+    const keyBase = storedFilename.replace('preview_', '');
     const originalKey = `${storedUserId}/original_${keyBase}`;
 
-    return this._s3Service.getSignedUrl(originalKey, "art" as any);
+    return this._s3Service.getSignedUrl(originalKey, 'art' as any);
   }
 }

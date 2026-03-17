@@ -30,12 +30,12 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
     const file = e.target.files[0];
     setSelectedFile(file);
 
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/webp"];
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/webp", "image/png"];
     const maxSizeMB = 20;
     const fileSizeMB = file.size / (1024 * 1024);
 
     if (!allowedTypes.includes(file.type)) {
-      setError("Only JPG, JPEG, and WEBP images are allowed!");
+      setError("Only JPG, JPEG, PNG, and WEBP images are allowed!");
       e.target.value = "";
       return;
     }
@@ -88,20 +88,21 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
           className="hover:text-main-color text-black dark:text-white"
           variant="transparant"
         >
-          <ArrowLeft /> Back
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
       </div>
 
       <h2 className="text-lg font-semibold mb-4 text-black dark:text-white">Upload Image</h2>
 
       {!imageSrc && !previewSrc && (
-        <label className="w-32 h-32 flex items-center justify-center border rounded cursor-pointer mx-auto">
+        <label className="w-32 h-32 flex items-center justify-center border rounded cursor-pointer mx-auto hover:border-main-color transition-colors">
           <Plus className="h-6 w-6 text-gray-400" />
           <input
             type="file"
             className="hidden"
             onChange={handleFileChange}
-            accept=".jpg,.jpeg,.webp"
+            /* FIXED: Added .png and image/png to the accept attribute */
+            accept=".jpg,.jpeg,.webp,.png,image/png,image/jpeg,image/webp"
           />
         </label>
       )}
@@ -166,7 +167,7 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
         </div>
       )}
 
-      {error && <p className="text-red-500 mt-2 text-center">{error}</p>}
+      {error && <p className="text-red-500 mt-2 text-center text-sm font-medium">{error}</p>}
     </div>
   );
 };

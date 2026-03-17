@@ -1,10 +1,10 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { ERROR_MESSAGES, NotFoundError } from "art-chain-shared";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IUserService } from "../../interface/service/IUserService";
-import { toShopArtListResponse } from "../../mapper/artWithUserMapper";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { ERROR_MESSAGES, NotFoundError } from 'art-chain-shared';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IUserService } from '../../interface/service/IUserService';
+import { toShopArtListResponse } from '../../mapper/artWithUserMapper';
 
 @injectable()
 export class GetAllShopArtsUseCase {
@@ -22,16 +22,16 @@ export class GetAllShopArtsUseCase {
     limit = 10,
     filters?: {
       category?: string[];
-      priceOrder?: "asc" | "desc";
-      titleOrder?: "asc" | "desc";
+      priceOrder?: 'asc' | 'desc';
+      titleOrder?: 'asc' | 'desc';
       minPrice?: number;
       maxPrice?: number;
     }
   ): Promise<any[]> {
-    const query: any = { isForSale: true, status: "active" };
+    const query: any = { isForSale: true, status: 'active' };
 
     if (filters) {
-      console.log("categories", filters.category);
+      console.log('categories', filters.category);
     }
 
     // Multi-category filter
@@ -51,8 +51,8 @@ export class GetAllShopArtsUseCase {
     // Sorting
     const sort: any = {};
     if (filters?.priceOrder)
-      sort.artcoins = filters.priceOrder === "asc" ? 1 : -1;
-    if (filters?.titleOrder) sort.title = filters.titleOrder === "asc" ? 1 : -1;
+      sort.artcoins = filters.priceOrder === 'asc' ? 1 : -1;
+    if (filters?.titleOrder) sort.title = filters.titleOrder === 'asc' ? 1 : -1;
     if (!filters?.priceOrder && !filters?.titleOrder) sort.createdAt = -1;
 
     const arts = await this._artRepo.findAllWithFilters(

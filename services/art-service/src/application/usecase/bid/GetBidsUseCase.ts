@@ -1,28 +1,29 @@
-import { injectable, inject } from "inversify";
-import { IGetBidsUseCase } from "../../interface/usecase/bid/IGetBidsUseCase";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IBidRepository } from "../../../domain/repositories/IBidRepository";
-import { UserService } from "../../../infrastructure/service/UserService";
-import { BidMapper } from "../../mapper/BidMapper";
-import { BidResponseDTO } from "../../interface/dto/bid/BidResponseDTO";
-import { IUserService } from "../../interface/service/IUserService";
+import { injectable, inject } from 'inversify';
+import { IGetBidsUseCase } from '../../interface/usecase/bid/IGetBidsUseCase';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IBidRepository } from '../../../domain/repositories/IBidRepository';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { BidMapper } from '../../mapper/BidMapper';
+import { BidResponseDTO } from '../../interface/dto/bid/BidResponseDTO';
+import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetBidsUseCase implements IGetBidsUseCase {
   constructor(
-      @inject(TYPES.IUserService) private readonly _userService: IUserService,
-    @inject(TYPES.IBidRepository) private readonly bidRepository: IBidRepository
+    @inject(TYPES.IUserService) private readonly _userService: IUserService,
+    @inject(TYPES.IBidRepository)
+    private readonly bidRepository: IBidRepository,
   ) {}
 
   async execute(
     auctionId: string,
     page: number = 1,
-    limit: number = 10
+    limit: number = 10,
   ): Promise<{ bids: BidResponseDTO[]; total: number }> {
     const { bids, total } = await this.bidRepository.findByAuctionId(
       auctionId,
       page,
-      limit
+      limit,
     );
 
     if (bids.length === 0) {

@@ -1,8 +1,8 @@
-import express from "express";
-import { container } from "../../infrastructure/Inversify/inversify.config";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { ROUTES } from "../../constants/routes";
-import { IAIController } from "../interface/IAIController";
+import express from 'express';
+import { container } from '../../infrastructure/Inversify/inversify.config';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { ROUTES } from '../../constants/routes';
+import { IAIController } from '../interface/IAIController';
 
 const router = express.Router();
 

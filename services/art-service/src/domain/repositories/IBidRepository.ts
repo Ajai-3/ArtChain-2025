@@ -1,5 +1,5 @@
-import { IBaseRepository } from "./IBaseRepository";
-import { Bid } from "../entities/Bid";
+import { IBaseRepository } from './IBaseRepository';
+import { Bid } from '../entities/Bid';
 
 export interface IBidRepository extends IBaseRepository<Bid> {
   findByAuctionId(auctionId: string, page?: number, limit?: number): Promise<{ bids: Bid[]; total: number }>;

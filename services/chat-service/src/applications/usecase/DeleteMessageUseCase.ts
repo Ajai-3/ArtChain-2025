@@ -1,15 +1,15 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { BadRequestError, NotFoundError } from "art-chain-shared";
-import { DeleteMode, Message } from "../../domain/entities/Message";
-import { DeleteMessageDto } from "../interface/dto/DeleteMessageDto";
-import { ConversationType } from "../../domain/entities/Conversation";
-import { IMessageCacheService } from "../interface/service/IMessageCacheService";
-import { IMessageRepository } from "../../domain/repositories/IMessageRepositories";
-import { IDeleteMessageUseCase } from "./../interface/usecase/IDeleteMessageUseCase";
-import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { DeleteMode, Message } from '../../domain/entities/Message';
+import { DeleteMessageDto } from '../interface/dto/DeleteMessageDto';
+import { ConversationType } from '../../domain/entities/Conversation';
+import { IMessageCacheService } from '../interface/service/IMessageCacheService';
+import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
+import { IDeleteMessageUseCase } from './../interface/usecase/IDeleteMessageUseCase';
+import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 @injectable()
 export class DeleteMessageUseCase implements IDeleteMessageUseCase {
@@ -36,9 +36,9 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     const message = await this._repo.findById(messageId);
     if (!message) throw new NotFoundError(ERROR_MESSAGES.MESSAGE_NOT_FOUND);
 
-    if (mode === "ME") {
+    if (mode === 'ME') {
       return this.deleteForMe(message, userId);
-    } else if (mode === "EVERYONE") {
+    } else if (mode === 'EVERYONE') {
       return this.deleteForEveryone(message, userId);
     } else {
       throw new BadRequestError(ERROR_MESSAGES.INVALID_DELETE_MODE);

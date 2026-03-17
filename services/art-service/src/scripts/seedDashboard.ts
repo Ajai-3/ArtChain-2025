@@ -59,7 +59,7 @@ async function seed() {
         
         previewUrl: `https://picsum.photos/seed/${i}/400/400`, // Mapped from image to previewUrl
         watermarkedUrl: `https://picsum.photos/seed/${i}/400/400?blur=2`, // Required
-        aspectRatio: "1:1", // Required
+        aspectRatio: '1:1', // Required
 
         isForSale: !isSold,
         isSold: isSold,

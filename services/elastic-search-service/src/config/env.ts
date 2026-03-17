@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 dotenv.config();
 // import { getArtChainSecrets } from "art-chain-shared";
 
@@ -7,12 +7,12 @@ dotenv.config();
 
 // Using hardcoded values from .env file instead
 const secrets = {
-  aws_cdn_domain: process.env.AWS_CDN_DOMAIN || "your-cdn-domain-here.cloudfront.net",
+  aws_cdn_domain: process.env.AWS_CDN_DOMAIN || 'your-cdn-domain-here.cloudfront.net',
 };
 
 export const config = {
   port: process.env.PORT,
   elastic_url: process.env.ELASTIC_URL,
   aws_cdn_domain: secrets.aws_cdn_domain,
-  rabbitmq_url: process.env.RABBITMQ_URL || "",
+  rabbitmq_url: process.env.RABBITMQ_URL || '',
 };

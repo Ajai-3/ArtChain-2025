@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { INotificationRepository } from "../../domain/repositories/INotificationRepository";
-import { Notification } from "../../domain/entities/Notification";
-import { NotificationType } from "../../domain/enums/NotificationType";
-import { emitToUser } from "../../infrastructure/sockets/socketHandler";
-import { logger } from "../../infrastructure/utils/logger";
-import { ISupportEventHandler } from "../interfaces/handlers/ISupportEventHandler";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { INotificationRepository } from '../../domain/repositories/INotificationRepository';
+import { Notification } from '../../domain/entities/Notification';
+import { NotificationType } from '../../domain/enums/NotificationType';
+import { emitToUser } from '../../infrastructure/sockets/socketHandler';
+import { logger } from '../../infrastructure/utils/logger';
+import { ISupportEventHandler } from '../interfaces/handlers/ISupportEventHandler';
 
 @injectable()
 export class SupportEventHandler implements ISupportEventHandler {
@@ -36,9 +36,9 @@ export class SupportEventHandler implements ISupportEventHandler {
         senderName: event.senderName,
         senderImage: event.senderProfile
       };
-      await emitToUser(event.userId, "notification", realTimeData);
+      await emitToUser(event.userId, 'notification', realTimeData);
     } catch (error) {
-      logger.error("Error handling support event", error);
+      logger.error('Error handling support event', error);
       throw error;
     }
   }

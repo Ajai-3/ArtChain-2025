@@ -1,20 +1,20 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { validateWithZod } from "../../utils/validateWithZod";
-import { COMMENT_MESSAGES } from "../../constants/CommentMessages";
-import { ICommentController } from "../interface/ICommentController";
-import { createCommentSchema } from "../validators/createCommentSchema";
-import { CreateCommentDTO } from "../../application/interface/dto/comment/CreateCommentDTO";
-import { ICreateCommentUseCase } from "../../application/interface/usecase/comment/ICreateCommentUseCase";
-import { IGetCommentsUseCase } from "../../application/interface/usecase/comment/IGetCommentsUseCase";
-import { IGetCommentByIdUseCase } from "../../application/interface/usecase/comment/IGetCommentByIdUseCase";
-import { IEditCommentUseCase } from "../../application/interface/usecase/comment/IEditCommentUseCase";
-import { IDeleteCommentUseCase } from "../../application/interface/usecase/comment/IDeleteCommentUseCase";
-import { EditCommentDTO } from "../../application/interface/dto/comment/EditCommentDTO";
-import { ERROR_MESSAGES } from "../../constants/ErrorMessages";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { COMMENT_MESSAGES } from '../../constants/CommentMessages';
+import { ICommentController } from '../interface/ICommentController';
+import { createCommentSchema } from '../validators/createCommentSchema';
+import { CreateCommentDTO } from '../../application/interface/dto/comment/CreateCommentDTO';
+import { ICreateCommentUseCase } from '../../application/interface/usecase/comment/ICreateCommentUseCase';
+import { IGetCommentsUseCase } from '../../application/interface/usecase/comment/IGetCommentsUseCase';
+import { IGetCommentByIdUseCase } from '../../application/interface/usecase/comment/IGetCommentByIdUseCase';
+import { IEditCommentUseCase } from '../../application/interface/usecase/comment/IEditCommentUseCase';
+import { IDeleteCommentUseCase } from '../../application/interface/usecase/comment/IDeleteCommentUseCase';
+import { EditCommentDTO } from '../../application/interface/dto/comment/EditCommentDTO';
+import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 
 @injectable()
 export class CommentController implements ICommentController {
@@ -44,7 +44,7 @@ export class CommentController implements ICommentController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       const result = validateWithZod(createCommentSchema, req.body);
 
@@ -59,7 +59,7 @@ export class CommentController implements ICommentController {
         .status(HttpStatus.CREATED)
         .json({ message: COMMENT_MESSAGES.CREATE_SUCCESS, comment: comment });
     } catch (error) {
-      logger.error("Error in createComment", error);
+      logger.error('Error in createComment', error);
       next(error);
     }
   };
@@ -79,7 +79,7 @@ export class CommentController implements ICommentController {
     try {
       const { id } = req.params;
       const { content } = req.body;
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       logger.info(`Editing comment id=${id} by userId=${userId}`);
 
@@ -90,7 +90,7 @@ export class CommentController implements ICommentController {
         .status(HttpStatus.OK)
         .json({ message: COMMENT_MESSAGES.EDIT_SUCCESS, comment: updatedComment });
     } catch (error) {
-      logger.error("Error in editComment", error);
+      logger.error('Error in editComment', error);
       next(error);
     }
   };
@@ -109,7 +109,7 @@ export class CommentController implements ICommentController {
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
@@ -127,7 +127,7 @@ export class CommentController implements ICommentController {
         .status(HttpStatus.OK)
         .json({ message: COMMENT_MESSAGES.FETCH_SUCCESS, data: comments });
     } catch (error) {
-      logger.error("Error in getComments", error);
+      logger.error('Error in getComments', error);
       next(error);
     }
   };
@@ -161,7 +161,7 @@ export class CommentController implements ICommentController {
         .status(HttpStatus.OK)
         .json({ message: COMMENT_MESSAGES.FETCH_SUCCESS, comment });
     } catch (error) {
-      logger.error("Error in getCommentById", error);
+      logger.error('Error in getCommentById', error);
       next(error);
     }
   };
@@ -180,7 +180,7 @@ export class CommentController implements ICommentController {
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
 
       logger.info(`Deleting comment id=${id} by userId=${userId}`);
 
@@ -190,7 +190,7 @@ export class CommentController implements ICommentController {
         .status(HttpStatus.OK)
         .json({ message: COMMENT_MESSAGES.DELETE_SUCCESS });
     } catch (error) {
-      logger.error("Error in delete", error);
+      logger.error('Error in delete', error);
       next(error);
     }
   };

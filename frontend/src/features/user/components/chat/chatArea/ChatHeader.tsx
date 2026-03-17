@@ -1,6 +1,8 @@
 // components/chat/chatArea/ChatHeader.tsx
 import React from "react";
 import { Video, MoreVertical } from "lucide-react";
+import { useSelector } from "react-redux";
+import { selectUserCache } from "../../../../../redux/selectors/chatSelectors";
 import type { Conversation } from "../../../../../types/chat/chat";
 import { usePresence } from "../../../hooks/chat/usePresence";
 
@@ -22,24 +24,28 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   // showDetails,
   onVideoCall,
 }) => {
+  const userCache = useSelector(selectUserCache);
+
   console.log("🟢 ChatHeader - Conversation:", conversation);
 
-  const partnerId = conversation.type === "PRIVATE" 
-    ? (conversation.memberIds?.find(id => id !== currentUserId) || conversation.partner?.id)
+  const partnerId = conversation.type === "PRIVATE" || conversation.type === "REQUEST"
+    ? (conversation.memberIds?.find((id) => id !== currentUserId) || conversation.partner?.id)
     : undefined;
   
+  const resolvedPartner = partnerId ? (userCache[partnerId] || conversation.partner) : conversation.partner;
+
   const { isOnline, typingUsers, onlineUsers } = usePresence(partnerId, conversation.id);
 
   const getConversationName = () => {
     if (conversation.type === "GROUP") {
       return conversation.name || conversation.group?.name || "Unnamed Group";
     }
-    return conversation.partner?.name || "Unknown User";
+    return resolvedPartner?.name || "Unknown User";
   };
 
   const getProfileImage = () => {
-    if ((conversation.type === "PRIVATE" || conversation.type === "REQUEST") && conversation.partner?.profileImage) {
-      return conversation.partner.profileImage;
+    if ((conversation.type === "PRIVATE" || conversation.type === "REQUEST") && resolvedPartner?.profileImage) {
+      return resolvedPartner.profileImage;
     }
     if (conversation.type === "GROUP" && conversation?.group?.profileImage) {
       return conversation?.group?.profileImage;
@@ -72,11 +78,11 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
     <div className="flex items-center justify-between py-2 px-4 border-b border-border bg-background/80 backdrop-blur-sm">
       {/* Left side - Back button and conversation info */}
       <div className="flex items-center space-x-3">
-        {/* Back button (mobile only) */}
+        {/* Back button */}
         {onBack && (
           <button
             onClick={onBack}
-            className="md:hidden p-2 hover:bg-muted rounded-full transition-colors"
+            className="p-2 hover:bg-muted rounded-full transition-colors"
           >
             <svg
               className="w-5 h-5"

@@ -1,5 +1,5 @@
-import { Server } from "socket.io";
-import { socketStore } from "./socketStore";
+import { Server } from 'socket.io';
+import { socketStore } from './socketStore';
 
 let io: Server | null = null;
 
@@ -12,7 +12,7 @@ export async function emitToUser(
   event: string,
   payload: any
 ) {
-  if (!io) throw new Error("Socket.io not initialized.");
+  if (!io) throw new Error('Socket.io not initialized.');
 
   const socketId = socketStore.getSocketId(userId);
   if (socketId) {

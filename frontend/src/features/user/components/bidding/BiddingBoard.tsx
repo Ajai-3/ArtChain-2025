@@ -12,8 +12,7 @@ interface BiddingBoardProps {
 
 export const BiddingBoard = ({ auctionId: _auctionId, bids, isEnded = false }: BiddingBoardProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  // Removed local socket hook usage, data is passed from parent
-  // const { bids } = useBiddingSocket(auctionId); -> Lifted to DetailBidFeed using it via props
+
 
   useEffect(() => {
     // Redux setBids dispatch removed as it's handled by parent's socket hook or page load events

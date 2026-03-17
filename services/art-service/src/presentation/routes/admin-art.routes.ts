@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { container } from "../../infrastructure/Inversify/inversify.config";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IAdminArtController } from "../interface/IAdminArtController";
+import { Router } from 'express';
+import { container } from '../../infrastructure/Inversify/inversify.config';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IAdminArtController } from '../interface/IAdminArtController';
 
-import { ROUTES } from "../../constants/routes";
+import { ROUTES } from '../../constants/routes';
 
 const adminArtRouter = Router();
 const adminArtController = container.get<IAdminArtController>(TYPES.IAdminArtController);

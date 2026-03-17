@@ -110,7 +110,7 @@ export class ReportRepository implements IReportRepository {
     ]);
 
     // Add domain to profile images
-    const CDN = config.aws_cdn_domain
+    const CDN = config.aws_cdn_domain;
     const transformedReports = reports.map((report: any) => ({
       ...report,
       reporter: report.reporter ? {

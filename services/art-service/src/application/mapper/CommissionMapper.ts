@@ -1,5 +1,5 @@
-import { Commission } from "../../domain/entities/Commission";
-import { mapCdnUrl } from "../../utils/mapCdnUrl";
+import { Commission } from '../../domain/entities/Commission';
+import { mapCdnUrl } from '../../utils/mapCdnUrl';
 
 export class CommissionMapper {
   static toDTO(commission: Commission, requester?: any, artist?: any) {

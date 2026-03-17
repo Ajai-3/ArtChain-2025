@@ -1,4 +1,4 @@
-import { IndexedUser } from "../interface/indexUser";
+import { IndexedUser } from '../interface/indexUser';
 
 export interface IUserElasticRepository {
   indexUser(user: IndexedUser): Promise<void>;

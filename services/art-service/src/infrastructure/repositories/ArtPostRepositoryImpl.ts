@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { ArtPostModel } from "../models/ArtPostModel";
-import { ArtPost } from "../../domain/entities/ArtPost";
-import { BaseRepositoryImpl } from "../repositories/BaseRepositoryImpl";
-import { IArtPostRepository } from "../../domain/repositories/IArtPostRepository";
+import { injectable } from 'inversify';
+import { ArtPostModel } from '../models/ArtPostModel';
+import { ArtPost } from '../../domain/entities/ArtPost';
+import { BaseRepositoryImpl } from '../repositories/BaseRepositoryImpl';
+import { IArtPostRepository } from '../../domain/repositories/IArtPostRepository';
 
 @injectable()
 export class ArtPostRepositoryImpl
@@ -82,7 +82,7 @@ export class ArtPostRepositoryImpl
     const arts = await ArtPostModel.find({
       userId,
       isForSale: true,
-      status: "active",
+      status: 'active',
     })
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -95,7 +95,7 @@ export class ArtPostRepositoryImpl
     const updated = await ArtPostModel.findOneAndUpdate({ _id: id }, post, {
       new: true,
     }).lean();
-    if (!updated) throw new Error("Art not found");
+    if (!updated) throw new Error('Art not found');
     return updated as ArtPost;
   }
 
@@ -110,7 +110,7 @@ export class ArtPostRepositoryImpl
   async findAll(
     page: number,
     limit: number,
-    filters?: import("../../domain/repositories/IArtPostRepository").AdminArtFilters
+    filters?: import('../../domain/repositories/IArtPostRepository').AdminArtFilters
   ): Promise<{ arts: any[]; total: number }> {
     const query: any = {};
 
@@ -167,7 +167,7 @@ export class ArtPostRepositoryImpl
     return { total, free, premium, aiGenerated };
   }
 
-  async updateStatus(id: string, status: import("../../domain/entities/ArtPost").PostStatus): Promise<ArtPost | null> {
+  async updateStatus(id: string, status: import('../../domain/entities/ArtPost').PostStatus): Promise<ArtPost | null> {
     const updated = await ArtPostModel.findByIdAndUpdate(
       id,
       { status },
@@ -200,7 +200,7 @@ export class ArtPostRepositoryImpl
       { $match: { status: 'active', isSold: false } },
       { 
           $addFields: { 
-              strId: { $toString: "$_id" } 
+              strId: { $toString: '$_id' } 
           } 
       },
       {
@@ -211,7 +211,7 @@ export class ArtPostRepositoryImpl
           as: 'likesData'
         }
       },
-      { $addFields: { likes: { $size: "$likesData" } } },
+      { $addFields: { likes: { $size: '$likesData' } } },
       { $sort: { likes: -1 } },
       { $limit: limit },
       { $project: { likesData: 0, strId: 0 } }
@@ -233,8 +233,8 @@ export class ArtPostRepositoryImpl
          $addFields: {
              catId: { 
                  $cond: {
-                     if: { $regexMatch: { input: "$_id", regex: /^[0-9a-fA-F]{24}$/ } },
-                     then: { $toObjectId: "$_id" },
+                     if: { $regexMatch: { input: '$_id', regex: /^[0-9a-fA-F]{24}$/ } },
+                     then: { $toObjectId: '$_id' },
                      else: null
                  }
              }
@@ -252,9 +252,9 @@ export class ArtPostRepositoryImpl
           $project: {
               category: {
                   $cond: {
-                      if: { $gt: [{ $size: "$catDocs" }, 0] },
-                      then: { $arrayElemAt: ["$catDocs.name", 0] },
-                      else: "$_id"
+                      if: { $gt: [{ $size: '$catDocs' }, 0] },
+                      then: { $arrayElemAt: ['$catDocs.name', 0] },
+                      else: '$_id'
                   }
               },
               count: 1

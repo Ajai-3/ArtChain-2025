@@ -1,8 +1,8 @@
-import express from "express";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { container } from "../../infrastructure/inversify/inversify.config";
-import { IAdminWalletController } from "../interface/IAdminWalletController";
-import { ROUTES } from "../../constants/routes";
+import express from 'express';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { container } from '../../infrastructure/inversify/inversify.config';
+import { IAdminWalletController } from '../interface/IAdminWalletController';
+import { ROUTES } from '../../constants/routes';
 
 const router = express.Router();
 
@@ -35,7 +35,7 @@ router.get(ROUTES.ADMIN.TRANSACTION_STATS, adminWalletController.getTransactionS
 router.get(ROUTES.ADMIN.ADMIN_TRANSACTIONS, adminWalletController.getAdminTransactions);
 
 // Admin Withdrawal Management
-import { IAdminWithdrawalController } from "../interface/IAdminWithdrawalController";
+import { IAdminWithdrawalController } from '../interface/IAdminWithdrawalController';
 const adminWithdrawalController = container.get<IAdminWithdrawalController>(
   TYPES.IAdminWithdrawalController
 );

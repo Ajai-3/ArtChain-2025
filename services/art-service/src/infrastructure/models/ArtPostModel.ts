@@ -1,5 +1,5 @@
-import mongoose, { Schema, Document, model } from "mongoose";
-import { ArtPost, PriceType, PostType, PostStatus } from "../../domain/entities/ArtPost";
+import mongoose, { Schema, Document, model } from 'mongoose';
+import { ArtPost, PriceType, PostType, PostStatus } from '../../domain/entities/ArtPost';
 
 export interface ArtPostDocument extends ArtPost, Document {}
 
@@ -21,14 +21,14 @@ const ArtPostSchema = new Schema<ArtPostDocument>(
     isForSale: { type: Boolean, default: false },
     isSold: { type: Boolean, default: false },
 
-    priceType: { type: String, enum: ["artcoin", "fiat"] as PriceType[] },
+    priceType: { type: String, enum: ['artcoin', 'fiat'] as PriceType[] },
     artcoins: { type: Number },
     fiatPrice: { type: Number },
 
-    postType: { type: String, enum: ["original", "repost", "purchased"] as PostType[], default: "original" },
-    status: { type: String, enum: ["active", "archived", "deleted"] as PostStatus[], default: "active" },
+    postType: { type: String, enum: ['original', 'repost', 'purchased'] as PostType[], default: 'original' },
+    status: { type: String, enum: ['active', 'archived', 'deleted'] as PostStatus[], default: 'active' },
   },
   { timestamps: true }
 );
 
-export const ArtPostModel = model<ArtPostDocument>("ArtPost", ArtPostSchema);
+export const ArtPostModel = model<ArtPostDocument>('ArtPost', ArtPostSchema);

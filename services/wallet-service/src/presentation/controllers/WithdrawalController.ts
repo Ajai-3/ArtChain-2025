@@ -1,16 +1,16 @@
-import { logger } from "../../utils/logger";
-import { HttpStatus } from "art-chain-shared";
-import { inject, injectable } from "inversify";
-import { Request, Response, NextFunction } from "express";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { WALLET_MESSAGES } from "../../constants/WalletMessages";
-import { IWithdrawalController } from "../interface/IWithdrawalController";
-import { ICreateWithdrawalRequestUseCase } from "../../application/interface/usecase/withdrawal/ICreateWithdrawalRequestUseCase";
-import { IGetWithdrawalRequestsUseCase } from "../../application/interface/usecase/withdrawal/IGetWithdrawalRequestsUseCase";
-import { createWithdrawalRequestSchema } from "../../application/validation/withdrawalValidation";
-import { CreateWithdrawalRequestDTO } from "../../application/interface/dto/withdrawal/CreateWithdrawalRequestDTO";
-import { GetWithdrawalRequestsDTO } from "../../application/interface/dto/withdrawal/GetWithdrawalRequestsDTO";
-import { validateWithZod } from "../../utils/zodValidator";
+import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { WALLET_MESSAGES } from '../../constants/WalletMessages';
+import { IWithdrawalController } from '../interface/IWithdrawalController';
+import { ICreateWithdrawalRequestUseCase } from '../../application/interface/usecase/withdrawal/ICreateWithdrawalRequestUseCase';
+import { IGetWithdrawalRequestsUseCase } from '../../application/interface/usecase/withdrawal/IGetWithdrawalRequestsUseCase';
+import { createWithdrawalRequestSchema } from '../../application/validation/withdrawalValidation';
+import { CreateWithdrawalRequestDTO } from '../../application/interface/dto/withdrawal/CreateWithdrawalRequestDTO';
+import { GetWithdrawalRequestsDTO } from '../../application/interface/dto/withdrawal/GetWithdrawalRequestsDTO';
+import { validateWithZod } from '../../utils/zodValidator';
 
 @injectable()
 export class WithdrawalController implements IWithdrawalController {
@@ -35,7 +35,7 @@ export class WithdrawalController implements IWithdrawalController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       logger.info(`[WithdrawalController] Creating withdrawal request for userId: ${userId}`);
 
       const validatedData = validateWithZod(createWithdrawalRequestSchema, req.body);
@@ -80,7 +80,7 @@ export class WithdrawalController implements IWithdrawalController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const userId = req.headers["x-user-id"] as string;
+      const userId = req.headers['x-user-id'] as string;
       const page = req.query.page ? parseInt(req.query.page as string) : 1;
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
       const status = req.query.status as string;

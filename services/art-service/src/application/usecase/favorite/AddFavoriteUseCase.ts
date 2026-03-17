@@ -1,16 +1,16 @@
-import { inject, injectable } from "inversify";
-import { Favorite } from "../../../domain/entities/Favorite";
-import { ART_MESSAGES } from "../../../constants/ArtMessages";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { FAVORITE_MESSAGES } from "../../../constants/FavoriteMessages";
+import { inject, injectable } from 'inversify';
+import { Favorite } from '../../../domain/entities/Favorite';
+import { ART_MESSAGES } from '../../../constants/ArtMessages';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { FAVORITE_MESSAGES } from '../../../constants/FavoriteMessages';
 import {
   BadRequestError,
   NotFoundError,
   ConflictError,
-} from "art-chain-shared";
-import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
-import { IFavoriteRepository } from "../../../domain/repositories/IFavoriteRepository";
-import { IAddFavoriteUseCase } from "../../interface/usecase/favorite/IAddFavoriteUseCase";
+} from 'art-chain-shared';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IAddFavoriteUseCase } from '../../interface/usecase/favorite/IAddFavoriteUseCase';
 
 @injectable()
 export class AddFavoriteUseCase implements IAddFavoriteUseCase {

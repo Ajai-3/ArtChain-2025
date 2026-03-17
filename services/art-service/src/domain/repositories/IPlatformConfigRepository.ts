@@ -1,4 +1,4 @@
-import { PlatformConfig } from "../entities/PlatformConfig";
+import { PlatformConfig } from '../entities/PlatformConfig';
 
 export interface IPlatformConfigRepository {
   getConfig(): Promise<PlatformConfig>;

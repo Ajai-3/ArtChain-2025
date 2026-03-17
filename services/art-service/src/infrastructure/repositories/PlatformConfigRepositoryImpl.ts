@@ -1,7 +1,7 @@
-import { injectable } from "inversify";
-import { IPlatformConfigRepository } from "../../domain/repositories/IPlatformConfigRepository";
-import { PlatformConfig } from "../../domain/entities/PlatformConfig";
-import { PlatformConfigModel, PlatformConfigDocument } from "../models/PlatformConfigModel";
+import { injectable } from 'inversify';
+import { IPlatformConfigRepository } from '../../domain/repositories/IPlatformConfigRepository';
+import { PlatformConfig } from '../../domain/entities/PlatformConfig';
+import { PlatformConfigModel, PlatformConfigDocument } from '../models/PlatformConfigModel';
 
 @injectable()
 export class PlatformConfigRepositoryImpl implements IPlatformConfigRepository {

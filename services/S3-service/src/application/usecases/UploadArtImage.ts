@@ -1,12 +1,12 @@
-import { inject, injectable } from "inversify";
-import { FILE_CATEGORIES } from "../../types/FileCategory";
-import { TYPES } from "../../infrastructure/inversify/types";
-import { UploadFileDTO } from "../interface/dto/UploadFileDTO";
-import { UploadedFileDTO } from "../interface/dto/UploadedFileDTO";
-import { IUploadArtImage } from "../interface/usecases/IUploadArtImage";
-import { IFileRepository } from "../../domain/repositories/IFileRepository";
-import { FileHashService } from "../../presentation/service/FileHashService";
-import { WatermarkService } from "../../presentation/service/WatermarkService";
+import { inject, injectable } from 'inversify';
+import { FILE_CATEGORIES } from '../../types/FileCategory';
+import { TYPES } from '../../infrastructure/inversify/types';
+import { UploadFileDTO } from '../interface/dto/UploadFileDTO';
+import { UploadedFileDTO } from '../interface/dto/UploadedFileDTO';
+import { IUploadArtImage } from '../interface/usecases/IUploadArtImage';
+import { IFileRepository } from '../../domain/repositories/IFileRepository';
+import { FileHashService } from '../../presentation/service/FileHashService';
+import { WatermarkService } from '../../presentation/service/WatermarkService';
 
 @injectable()
 export class UploadArtImage implements IUploadArtImage {

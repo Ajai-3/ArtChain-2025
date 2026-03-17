@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
 export interface AIGenerationDocument extends Document {
   userId: string;
@@ -47,6 +47,6 @@ const AIGenerationSchema = new Schema<AIGenerationDocument>(
 AIGenerationSchema.index({ userId: 1, isFree: 1, createdAt: 1 });
 
 export const AIGenerationModel = mongoose.model<AIGenerationDocument>(
-  "AIGeneration",
+  'AIGeneration',
   AIGenerationSchema
 );

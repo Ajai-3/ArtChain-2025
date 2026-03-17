@@ -7,7 +7,6 @@ const PORT = config.port;
 
 const server = http.createServer(app);
 
-
 // const DELAY_MS = 20000;
 
 // setTimeout(async () => {
@@ -20,8 +19,8 @@ const server = http.createServer(app);
 //   }
 // }, DELAY_MS);
 
-await startConsumers()
+await startConsumers();
 
 server.listen(PORT, () => {
-    console.log(`User-Admin Service starts on port ${PORT}`);
+  console.log(`User-Admin Service starts on port ${PORT}`);
 });

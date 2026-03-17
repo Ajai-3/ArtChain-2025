@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
-import { Commission, CommissionStatus } from "../../domain/entities/Commission";
+import { Schema, model } from 'mongoose';
+import { Commission, CommissionStatus } from '../../domain/entities/Commission';
 
-export interface ICommissionDocument extends Omit<Commission, "_id"> {
+export interface ICommissionDocument extends Omit<Commission, '_id'> {
   _id: string;
 }
 
@@ -44,6 +44,6 @@ const CommissionSchema = new Schema<ICommissionDocument>(
 );
 
 export const CommissionModel = model<ICommissionDocument>(
-  "Commission",
+  'Commission',
   CommissionSchema
 );

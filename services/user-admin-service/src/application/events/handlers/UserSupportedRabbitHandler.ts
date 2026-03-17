@@ -1,8 +1,8 @@
-import { inject, injectable } from "inversify";
-import { UserSupportedEvent } from "../../../domain/events/UserSupportedEvent";
-import { EventType } from "../../../domain/events/EventType";
-import { TYPES } from "../../../infrastructure/inversify/types";
-import { IMessagePublisher } from "../../interface/messaging/IMessagePublisher";
+import { inject, injectable } from 'inversify';
+import { UserSupportedEvent } from '../../../domain/events/UserSupportedEvent';
+import { EventType } from '../../../domain/events/EventType';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { IMessagePublisher } from '../../interface/messaging/IMessagePublisher';
 
 @injectable()
 export class UserSupportedRabbitHandler {

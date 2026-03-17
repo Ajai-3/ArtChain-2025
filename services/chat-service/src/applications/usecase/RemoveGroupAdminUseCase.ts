@@ -1,11 +1,11 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../infrastructure/Inversify/types";
-import { IRemoveGroupAdminUseCase } from "../interface/usecase/IRemoveGroupAdminUseCase";
-import { AddGroupAdminDto } from "../interface/dto/AddGroupAdminDto"; // Reusing DTO as it has same fields
-import { IConversationRepository } from "../../domain/repositories/IConversationRepository";
-import { IMessageBroadcastService } from "../../domain/service/IMessageBroadcastService";
-import { BadRequestError, NotFoundError, ForbiddenError } from "art-chain-shared";
-import { ERROR_MESSAGES } from "../../constants/messages";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IRemoveGroupAdminUseCase } from '../interface/usecase/IRemoveGroupAdminUseCase';
+import { AddGroupAdminDto } from '../interface/dto/AddGroupAdminDto'; // Reusing DTO as it has same fields
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
+import { BadRequestError, NotFoundError, ForbiddenError } from 'art-chain-shared';
+import { ERROR_MESSAGES } from '../../constants/messages';
 
 @injectable()
 export class RemoveGroupAdminUseCase implements IRemoveGroupAdminUseCase {
@@ -24,7 +24,7 @@ export class RemoveGroupAdminUseCase implements IRemoveGroupAdminUseCase {
       throw new NotFoundError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
     }
 
-    if (conversation.type !== "GROUP") {
+    if (conversation.type !== 'GROUP') {
       throw new BadRequestError(ERROR_MESSAGES.NOT_A_GROUP_CONVERSATION);
     }
 
@@ -42,7 +42,7 @@ export class RemoveGroupAdminUseCase implements IRemoveGroupAdminUseCase {
       adminIds: newAdminIds
     });
 
-    await this._broadcastService.publishGroupUpdate(conversationId, "ADMIN_REMOVED", {
+    await this._broadcastService.publishGroupUpdate(conversationId, 'ADMIN_REMOVED', {
       userId: targetUserId,
       removedBy: requesterId
     });

@@ -1,7 +1,7 @@
-import axios from "axios";
-import { injectable } from "inversify";
-import { config } from "../config/env";
-import { IWalletService } from "../../domain/interfaces/IWalletService";
+import axios from 'axios';
+import { injectable } from 'inversify';
+import { config } from '../config/env';
+import { IWalletService } from '../../domain/interfaces/IWalletService';
 
 @injectable()
 export class WalletService implements IWalletService {
@@ -22,7 +22,7 @@ export class WalletService implements IWalletService {
       });
       return response.status === 200 || response.status === 201;
     } catch (error) {
-      console.error("Process Split Purchase Error:", error);
+      console.error('Process Split Purchase Error:', error);
       return false;
     }
   }
@@ -35,7 +35,7 @@ export class WalletService implements IWalletService {
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
-      console.error("Error locking funds:", error);
+      console.error('Error locking funds:', error);
       return false;
     }
   }
@@ -48,7 +48,7 @@ export class WalletService implements IWalletService {
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
-      console.error("Error unlocking funds:", error);
+      console.error('Error unlocking funds:', error);
       return false;
     }
   }
@@ -67,7 +67,7 @@ export class WalletService implements IWalletService {
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
-      console.error("Error settling auction:", error);
+      console.error('Error settling auction:', error);
       return false;
     }
   }
@@ -87,7 +87,7 @@ export class WalletService implements IWalletService {
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
-      console.error("Error processing payment:", error);
+      console.error('Error processing payment:', error);
       return false;
     }
   }
@@ -105,9 +105,9 @@ export class WalletService implements IWalletService {
         `${config.api_gateway_url}/api/v1/wallet/transaction/commission/distribute`,
         params
       );
-      return response.data.message === "Funds distributed successfully";
+      return response.data.message === 'Funds distributed successfully';
     } catch (error) {
-      console.error("Error distributing commission funds:", error);
+      console.error('Error distributing commission funds:', error);
       return false;
     }
   }
@@ -122,9 +122,9 @@ export class WalletService implements IWalletService {
         `${config.api_gateway_url}/api/v1/wallet/transaction/commission/refund`,
         params
       );
-      return response.data.message === "Funds refunded successfully";
+      return response.data.message === 'Funds refunded successfully';
     } catch (error) {
-      console.error("Error refunding commission funds:", error);
+      console.error('Error refunding commission funds:', error);
       return false;
     }
   }

@@ -1,8 +1,8 @@
-import { Socket } from "socket.io";
-import { ISendMessageUseCase } from "../../../applications/interface/usecase/ISendMessageUseCase";
-import { SendMessageDto } from "../../../applications/interface/dto/SendMessageDto";
-import { MediaType, CallStatus } from "../../../domain/entities/Message";
-import { IUpdateCallMessageUseCase } from "../../../applications/interface/usecase/IUpdateCallMessageUseCase";
+import { Socket } from 'socket.io';
+import { ISendMessageUseCase } from '../../../applications/interface/usecase/ISendMessageUseCase';
+import { SendMessageDto } from '../../../applications/interface/dto/SendMessageDto';
+import { MediaType, CallStatus } from '../../../domain/entities/Message';
+import { IUpdateCallMessageUseCase } from '../../../applications/interface/usecase/IUpdateCallMessageUseCase';
 
 export class CallHandler {
   constructor(
@@ -20,7 +20,7 @@ export class CallHandler {
       conversationId: payload.conversationId,
       senderId,
       receiverId: payload.receiverId,
-      content: "Call started",
+      content: 'Call started',
       mediaType: MediaType.CALL_LOG,
       callId: payload.callId || `${payload.conversationId}-${Date.now()}`,
       callStatus: CallStatus.STARTED,
@@ -40,15 +40,15 @@ export class CallHandler {
       };
 
       if (payload.isGroup) {
-         socket.to(payload.conversationId).emit("call:incoming", incomingCallPayload);
+         socket.to(payload.conversationId).emit('call:incoming', incomingCallPayload);
       } else {
          const receiverSocketId = this.onlineUsers.get(payload.receiverId);
          if (receiverSocketId) {
-            socket.to(receiverSocketId).emit("call:incoming", incomingCallPayload);
+            socket.to(receiverSocketId).emit('call:incoming', incomingCallPayload);
          }
       }
     } catch (error) {
-      console.error("Error initiating call:", error);
+      console.error('Error initiating call:', error);
     }
   };
 
@@ -59,14 +59,14 @@ export class CallHandler {
       // Notify caller
       const callerSocketId = this.onlineUsers.get(payload.callerId);
       if (callerSocketId) {
-          socket.to(callerSocketId).emit("call:accepted", {
+          socket.to(callerSocketId).emit('call:accepted', {
               accepterId: userId,
               callId: payload.callId
           });
       }
       
       // For group calls, we might broadcast to room
-      socket.to(payload.conversationId).emit("call:accepted", {
+      socket.to(payload.conversationId).emit('call:accepted', {
           accepterId: userId,
           callId: payload.callId
       });
@@ -79,16 +79,16 @@ export class CallHandler {
       try {
           await this._updateCallMessageUseCase.execute(payload.callId, {
               callStatus: CallStatus.DECLINED,
-              content: "Call declined"
+              content: 'Call declined'
           });
       } catch (error) {
-          console.error("Error setting call to missed:", error);
+          console.error('Error setting call to missed:', error);
       }
 
       // Notify caller
       const callerSocketId = this.onlineUsers.get(payload.callerId);
       if (callerSocketId) {
-          socket.to(callerSocketId).emit("call:rejected", {
+          socket.to(callerSocketId).emit('call:rejected', {
               rejecterId: userId,
               callId: payload.callId
           });
@@ -101,7 +101,7 @@ export class CallHandler {
 
       const duration = payload.duration || 0;
       const status = duration > 0 ? CallStatus.ENDED : CallStatus.MISSED;
-      const content = duration > 0 ? "Call ended" : "Missed call";
+      const content = duration > 0 ? 'Call ended' : 'Missed call';
 
       try {
           // Update existing message
@@ -116,16 +116,16 @@ export class CallHandler {
               callId: payload.callId
           };
 
-          socket.to(payload.conversationId).emit("call:ended", endPayload);
+          socket.to(payload.conversationId).emit('call:ended', endPayload);
           
           if (payload.to) {
               const receiverSocketId = this.onlineUsers.get(payload.to);
               if (receiverSocketId) {
-                  socket.to(receiverSocketId).emit("call:ended", endPayload);
+                  socket.to(receiverSocketId).emit('call:ended', endPayload);
               }
           }
       } catch (error) {
-          console.error("Error ending call:", error);
+          console.error('Error ending call:', error);
       }
   };
 
@@ -135,7 +135,7 @@ export class CallHandler {
       
       const receiverSocketId = this.onlineUsers.get(payload.to);
       if (receiverSocketId) {
-          socket.to(receiverSocketId).emit("call:signal", {
+          socket.to(receiverSocketId).emit('call:signal', {
               from: senderId,
               signal: payload.signal
           });

@@ -13,7 +13,7 @@ export interface CreateArtPostDTO {
   isSensitive?: boolean;
   supporterOnly?: boolean;
   isForSale?: boolean;
-  priceType?: "artcoin" | "fiat";
+  priceType?: 'artcoin' | 'fiat';
   artcoins?: number;
   fiatPrice?: number | null;
 }
