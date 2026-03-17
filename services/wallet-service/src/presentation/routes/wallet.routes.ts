@@ -62,6 +62,10 @@ router.post(
   transactionController.refundCommissionFunds,
 );
 router.post(ROUTES.TRANSACTION.TRANSACTION_LOCK, walletController.lockAmount);
+router.post(
+  ROUTES.TRANSACTION.TRANSACTION_UNLOCK,
+  walletController.unlockAmount,
+);
 
 // Stripe Controller Routes
 router.post(
@@ -69,10 +73,7 @@ router.post(
   stripeController.createCheckoutSession,
 );
 router.get(ROUTES.STRIPE.SESSION_BY_ID, stripeController.getSession);
-router.post(
-  ROUTES.STRIPE.WEBHOOK,
-  stripeController.handleWebhook,
-);
+router.post(ROUTES.STRIPE.WEBHOOK, stripeController.handleWebhook);
 
 router.post(
   ROUTES.WITHDRAWAL.CREATE_REQUEST,

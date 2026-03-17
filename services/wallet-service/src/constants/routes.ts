@@ -28,6 +28,7 @@ export const ROUTES = {
     COMMISSION_DISTRIBUTE: '/transaction/commission/distribute',
     COMMISSION_REFUND: '/transaction/commission/refund',
     TRANSACTION_LOCK: '/transaction/lock',
+    TRANSACTION_UNLOCK: '/transaction/unlock',
   },
 
   // Withdrawal routes
@@ -51,7 +52,8 @@ export const ROUTES = {
     WALLET_UPDATE: '/api/v1/wallet/update',
     GET_TRANSACTIONS: '/api/v1/wallet/get-transactions',
     CREATE_TRANSACTION: '/api/v1/wallet/create-transaction',
-    STRIPE_CREATE_CHECKOUT_SESSION: '/api/v1/wallet/stripe/create-checkout-session',
+    STRIPE_CREATE_CHECKOUT_SESSION:
+      '/api/v1/wallet/stripe/create-checkout-session',
     STRIPE_SESSION_BY_ID: '/api/v1/wallet/stripe/session/:id',
     STRIPE_WEBHOOK: '/api/v1/wallet/stripe/webhook',
   },
@@ -72,4 +74,3 @@ export const ROUTES = {
     UPDATE_WITHDRAWAL_STATUS: '/admin/withdrawal/requests/:withdrawalId/status',
   },
 } as const;
-

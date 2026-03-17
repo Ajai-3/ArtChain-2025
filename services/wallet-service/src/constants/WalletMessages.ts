@@ -47,4 +47,5 @@ export enum WALLET_MESSAGES {
   RECEIVER_NOT_ACTIVE = 'Receiver wallet is not active',
   FUNDS_LOCKED_SUCCESS = 'Funds locked successfully',
   FUNDS_UNLOCKED_SUCCESS = 'Funds unlocked successfully',
+  INSUFFICIENT_LOCKED_FUNDS = 'Insufficient locked funds to unlock',
 }
