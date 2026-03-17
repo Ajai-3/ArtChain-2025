@@ -12,9 +12,8 @@ export const ROUTES = {
     UPDATE: '/update',
     LOCK: '/lock',
     UNLOCK: '/unlock',
-    SETTLE_AUCTION: '/settle-auction',
     STATS_CHART: '/stats/chart',
-    GIFT: '/gift',
+    GIFT: '/gift'
   },
 
   // Transaction routes
@@ -22,13 +21,14 @@ export const ROUTES = {
     GET_TRANSACTIONS: '/get-transactions',
     CREATE_TRANSACTION: '/create-transaction',
     PURCHASE: '/transaction/purchase',
-    SPLIT_PURCHASE: '/transaction/split-purchase',
     PAYMENT: '/transaction/payment',
     COMMISSION_LOCK: '/transaction/commission/lock',
     COMMISSION_DISTRIBUTE: '/transaction/commission/distribute',
     COMMISSION_REFUND: '/transaction/commission/refund',
     TRANSACTION_LOCK: '/transaction/lock',
     TRANSACTION_UNLOCK: '/transaction/unlock',
+    SETTLE_AUCTION: '/transaction/settle-auction',
+     SPLIT_PURCHASE: '/transaction/split-purchase',
   },
 
   // Withdrawal routes
