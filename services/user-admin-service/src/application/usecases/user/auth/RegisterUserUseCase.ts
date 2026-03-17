@@ -72,7 +72,7 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
     const refreshToken = this._tokenGenerator.generateRefresh(payload);
     const accessToken = this._tokenGenerator.generateAccess(payload);
 
-    await this._eventBus.publish(new UserCreatedEvent(formattedUser));
+    await this._eventBus.publish(new UserCreatedEvent(user));
 
     return { user: formattedUser, accessToken, refreshToken };
   }

@@ -99,7 +99,8 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
     };
 
     if (isNewUser) {
-          await this._eventBus.publish(new UserCreatedEvent(formattedUser));
+          await this._eventBus.publish(new UserCreatedEvent(existingUser));
+          console.log('Published UserCreatedEvent for new user google user:', existingUser.id);
     }
 
     const refreshToken = this._tokenGenerator.generateRefresh(payload);
