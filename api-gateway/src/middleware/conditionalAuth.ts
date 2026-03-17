@@ -20,7 +20,6 @@ export function conditionalAuth(
       return isMatch && route.methods.includes(method);
     });
 
-  console.log("f");
   if (matchRoute(authRoutesConfig.user_optional)) {
     console.log("user_optional");
 
