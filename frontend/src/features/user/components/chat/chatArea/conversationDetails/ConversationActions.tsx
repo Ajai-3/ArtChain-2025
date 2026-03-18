@@ -26,7 +26,7 @@ const ConversationActions: React.FC<ConversationActionsProps> = ({ conversation 
           </button>
         ) : (
           <>
-            <button className="w-full text-left p-3 md:p-4 rounded-lg hover:bg-muted transition-colors flex items-center space-x-2 md:space-x-3">
+            {/* <button className="w-full text-left p-3 md:p-4 rounded-lg hover:bg-muted transition-colors flex items-center space-x-2 md:space-x-3">
               <svg
                 className="w-4 h-4 md:w-5 md:h-5"
                 fill="none"
@@ -41,9 +41,9 @@ const ConversationActions: React.FC<ConversationActionsProps> = ({ conversation 
                 />
               </svg>
               <span className="text-sm">Mute Notifications</span>
-            </button>
+            </button> */}
 
-            {conversation.type === ConversationType.PRIVATE && (
+            {/* {conversation.type === ConversationType.PRIVATE && (
               <button className="w-full text-left p-3 md:p-4 rounded-lg text-red-600 hover:bg-red-50 transition-colors flex items-center space-x-2 md:space-x-3">
                 <svg
                   className="w-4 h-4 md:w-5 md:h-5"
@@ -60,7 +60,7 @@ const ConversationActions: React.FC<ConversationActionsProps> = ({ conversation 
                 </svg>
                 <span className="text-sm">Delete Conversation</span>
               </button>
-            )}
+            )} */}
           </>
         )}
       </div>

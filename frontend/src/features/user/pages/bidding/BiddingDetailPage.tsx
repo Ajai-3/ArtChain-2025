@@ -59,8 +59,9 @@ export default function BiddingDetailPage() {
   // Derive granular status
   const isLive = auction.status === 'ACTIVE';
   const isEnded = auction.status === 'ENDED';
-  const isScheduled = auction.status === 'SCHEDULED' || (!isLive && !isEnded);
-  const isUnsold = isEnded && (!auction.bids || auction.bids.length === 0);
+  const isScheduled = auction.status === 'SCHEDULED';
+  const isUnsold =
+    auction.status === 'UNSOLD' && (!auction.bids || auction.bids.length === 0);
 
   return (
     <div className="flex flex-col md:flex-row gap-4 w-full max-w-[1600px] mx-auto md:h-[calc(100vh-80px)] md:overflow-hidden">
@@ -70,11 +71,13 @@ export default function BiddingDetailPage() {
           navigate={navigate}
           isLive={isLive}
           isEnded={isEnded}
+          isScheduled={isScheduled}
           isUnsold={isUnsold}
           onRefresh={refetch}
         />
 
         <DetailImageSection
+          isScheduled={isScheduled}
           auction={auction}
           isLive={isLive}
           isEnded={isEnded}

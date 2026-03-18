@@ -1,10 +1,10 @@
 // components/chat/chatArea/ChatHeader.tsx
-import React from "react";
-import { Video, MoreVertical } from "lucide-react";
-import { useSelector } from "react-redux";
-import { selectUserCache } from "../../../../../redux/selectors/chatSelectors";
-import type { Conversation } from "../../../../../types/chat/chat";
-import { usePresence } from "../../../hooks/chat/usePresence";
+import React from 'react';
+import { Video, MoreVertical } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { selectUserCache } from '../../../../../redux/selectors/chatSelectors';
+import type { Conversation } from '../../../../../types/chat/chat';
+import { usePresence } from '../../../hooks/chat/usePresence';
 
 interface ChatHeaderProps {
   conversation: Conversation;
@@ -26,28 +26,38 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   const userCache = useSelector(selectUserCache);
 
-  console.log("🟢 ChatHeader - Conversation:", conversation);
+  console.log('🟢 ChatHeader - Conversation:', conversation);
 
-  const partnerId = conversation.type === "PRIVATE" || conversation.type === "REQUEST"
-    ? (conversation.memberIds?.find((id) => id !== currentUserId) || conversation.partner?.id)
-    : undefined;
-  
-  const resolvedPartner = partnerId ? (userCache[partnerId] || conversation.partner) : conversation.partner;
+  const partnerId =
+    conversation.type === 'PRIVATE' || conversation.type === 'REQUEST'
+      ? conversation.memberIds?.find((id) => id !== currentUserId) ||
+        conversation.partner?.id
+      : undefined;
 
-  const { isOnline, typingUsers, onlineUsers } = usePresence(partnerId, conversation.id);
+  const resolvedPartner = partnerId
+    ? userCache[partnerId] || conversation.partner
+    : conversation.partner;
+
+  const { isOnline, typingUsers, onlineUsers } = usePresence(
+    partnerId,
+    conversation.id,
+  );
 
   const getConversationName = () => {
-    if (conversation.type === "GROUP") {
-      return conversation.name || conversation.group?.name || "Unnamed Group";
+    if (conversation.type === 'GROUP') {
+      return conversation.name || conversation.group?.name || 'Unnamed Group';
     }
-    return resolvedPartner?.name || "Unknown User";
+    return resolvedPartner?.name || 'Unknown User';
   };
 
   const getProfileImage = () => {
-    if ((conversation.type === "PRIVATE" || conversation.type === "REQUEST") && resolvedPartner?.profileImage) {
+    if (
+      (conversation.type === 'PRIVATE' || conversation.type === 'REQUEST') &&
+      resolvedPartner?.profileImage
+    ) {
       return resolvedPartner.profileImage;
     }
-    if (conversation.type === "GROUP" && conversation?.group?.profileImage) {
+    if (conversation.type === 'GROUP' && conversation?.group?.profileImage) {
       return conversation?.group?.profileImage;
     }
     return null;
@@ -57,21 +67,22 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
   const getInitials = (name: string) => {
     return name
-      .split(" ")
+      .split(' ')
       .map((n) => n[0])
-      .join("")
+      .join('')
       .toUpperCase();
   };
 
   const getStatusText = () => {
-    if (conversation.type === "REQUEST") return "Commission Chat";
-    if (conversation.locked) return "Secured Chat";
-    if (typingUsers.length > 0) return "typing...";
-    if (conversation.type === "GROUP") {
-       const onlineCount = conversation.memberIds?.filter(id => onlineUsers.has(id)).length || 0;
-       return `${onlineCount} online`;
+    if (conversation.type === 'REQUEST') return 'Commission Chat';
+    if (conversation.locked) return 'Secured Chat';
+    if (typingUsers.length > 0) return 'typing...';
+    if (conversation.type === 'GROUP') {
+      const onlineCount =
+        conversation.memberIds?.filter((id) => onlineUsers.has(id)).length || 0;
+      return `${onlineCount} online`;
     }
-    return isOnline ? "Online" : "Offline";
+    return isOnline ? 'Online' : 'Offline';
   };
 
   return (
@@ -101,29 +112,36 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
 
         {/* Conversation avatar and info */}
-        <div className="flex items-center space-x-3 cursor-pointer" onClick={onToggleDetails}>
-          <div className="relative w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-            {profileImage ? (
-              <img
-                src={profileImage}
-                alt={getConversationName()}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="text-sm font-medium text-primary">
-                {getInitials(getConversationName())}
-              </span>
-            )}
-            {/* Green dot for online status */}
-            {conversation.type === "PRIVATE" && isOnline && (
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+        <div
+          className="flex items-center space-x-3 cursor-pointer"
+          onClick={onToggleDetails}
+        >
+          <div className="relative w-11 h-11">
+            <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+              {profileImage ? (
+                <img
+                  src={profileImage}
+                  alt={getConversationName()}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-sm font-medium text-primary">
+                  {getInitials(getConversationName())}
+                </span>
+              )}
+            </div>
+            {/* Dot is now outside overflow-hidden, positioned relative to the outer wrapper */}
+            {conversation.type === 'PRIVATE' && isOnline && (
+              <span className="absolute z-50 -bottom-0.5 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
             )}
           </div>
           <div>
             <h2 className="font-semibold text-foreground">
               {getConversationName()}
             </h2>
-            <p className={`text-xs ${typingUsers.length > 0 ? "text-green-500" : "text-muted-foreground"}`}>
+            <p
+              className={`text-xs ${typingUsers.length > 0 ? 'text-green-500' : 'text-muted-foreground'}`}
+            >
               {getStatusText()}
             </p>
           </div>
@@ -131,18 +149,19 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
 
       <div className="flex items-center space-x-1">
+        {onVideoCall &&
+          (conversation.type === 'PRIVATE' ||
+            conversation.type === 'REQUEST') && (
+            <button
+              onClick={onVideoCall}
+              className="p-2 hover:bg-muted rounded-full transition-colors"
+              title="Video call"
+            >
+              <Video className="w-5 h-5" />
+            </button>
+          )}
 
-        {onVideoCall && (conversation.type === "PRIVATE" || conversation.type === "REQUEST") && (
-          <button
-            onClick={onVideoCall}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
-            title="Video call"
-          >
-            <Video className="w-5 h-5" />
-          </button>
-        )}
-
-        {conversation.type !== "REQUEST" && (
+        {conversation.type !== 'REQUEST' && (
           <button
             onClick={onToggleDetails}
             className="p-2 hover:bg-muted rounded-full transition-colors"

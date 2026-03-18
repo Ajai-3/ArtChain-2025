@@ -3,7 +3,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '../../../../../components/ui/avatar';
-import { CheckCircle2, TrendingUp, Clock } from 'lucide-react';
+import { CheckCircle2, TrendingUp, Clock, AlertCircle } from 'lucide-react';
 import { formatNumber } from '../../../../../libs/formatNumber';
 import type { Auction } from '../../../../../types/auction';
 import { useNavigate } from 'react-router-dom';
@@ -12,6 +12,7 @@ interface DetailImageSectionProps {
   auction: Auction;
   isLive: boolean;
   isEnded: boolean;
+  isScheduled: boolean;
   isUnsold: boolean;
 }
 
@@ -19,19 +20,31 @@ export const DetailImageSection = ({
   auction,
   isLive,
   isEnded,
+  isScheduled,
   isUnsold,
 }: DetailImageSectionProps) => {
   const navigate = useNavigate();
 
   const handleProfileClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent triggering other events
+    e.stopPropagation();
     if (auction.winner?.username) {
       navigate(`/${auction.winner.username}`);
     }
   };
+
   return (
     <div
-      className={`flex-1 relative rounded-2xl border-2 bg-card overflow-hidden group shadow-sm ${isEnded ? 'grayscale-[0.5] border-border' : 'border-border'}`}
+      className={`flex-1 relative rounded-2xl border-2 bg-card overflow-hidden group shadow-sm ${
+        isScheduled
+          ? 'border-indigo-500/10 shadow-indigo-500/50'
+          : isUnsold
+            ? 'border-neutral-400/10 shadow-neutral-500/50'
+            : isEnded
+              ? 'border-amber-500/10 shadow-amber-500/50'
+              : isLive
+                ? 'border-emerald-500/10 shadow-emerald-500/50'
+                : 'border-border'
+      }`}
     >
       <img
         src={
@@ -42,29 +55,9 @@ export const DetailImageSection = ({
         alt={auction.title}
         className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-[1.02]"
       />
+{/*  */}
 
-      {/* Overlay Details */}
-      <div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
-        {isLive && (
-          <div className="bg-emerald-500/90 backdrop-blur-md text-white px-3 py-1 rounded-full flex items-center gap-2 text-xs font-bold shadow-lg animate-pulse">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-            </span>
-            LIVE
-          </div>
-        )}
-        {isEnded && (
-          <div
-            className={`${isUnsold ? 'bg-neutral-600/90' : 'bg-red-500/90'} backdrop-blur-md text-white px-3 py-1 rounded-full flex items-center gap-2 text-xs font-bold shadow-lg`}
-          >
-            <CheckCircle2 className="h-4 w-4" />
-            {isUnsold ? 'Ended (Unsold)' : 'Ended'}
-          </div>
-        )}
-      </div>
-
-      {/* Big Winner Overlay on Image for Impact */}
+      {/* Winner Overlay */}
       {isEnded && !isUnsold && auction.winner && (
         <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/95 via-black/80 to-transparent p-6 pt-12 flex flex-col items-center justify-end text-center animate-in slide-in-from-bottom-5">
           <p className="text-amber-300 font-bold tracking-widest uppercase text-sm mb-3 drop-shadow-md">
@@ -100,7 +93,7 @@ export const DetailImageSection = ({
       )}
 
       {/* Unsold Overlay */}
-      {isEnded && isUnsold && (
+      {isUnsold && (
         <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pt-12 flex flex-col items-center justify-end text-center animate-in slide-in-from-bottom-5">
           <div className="bg-neutral-800 p-3 rounded-full mb-2">
             <Clock className="h-8 w-8 text-neutral-400" />

@@ -41,10 +41,16 @@ export const AuctionCardImage = ({ auction, isLive, isEnded, isScheduled, isUnso
                 </Badge>
              )}
              {isEnded && (
-                <Badge className={`!text-white border-0 shadow-sm h-6 px-2.5 text-xs font-bold tracking-wide ${isUnsold ? '!bg-neutral-800 hover:!bg-neutral-900' : '!bg-red-600 hover:!bg-red-700'}`}>
-                    {isUnsold ? 'Unsold' : 'Ended'}
+                <Badge className={`!text-white border-0 shadow-sm h-6 px-2.5 text-xs font-bold tracking-wide ${isUnsold ? '!bg-neutral-800 hover:!bg-neutral-900' : '!bg-yellow-600 hover:!bg-yellow-700'}`}>
+                    Ended
                 </Badge>
              )}
+             {isUnsold && (
+                <Badge className={`!text-white border-0 shadow-sm h-6 px-2.5 text-xs font-bold tracking-wide ${isUnsold ? '!bg-neutral-800 hover:!bg-neutral-900' : '!bg-gray-600 hover:!bg-gray-700'}`}>
+                    Un sold
+                </Badge>
+             )}
+             
         </div>
 
         {/* Host Avatar (Overlay) */}
@@ -74,11 +80,11 @@ export const AuctionCardImage = ({ auction, isLive, isEnded, isScheduled, isUnso
         )}
 
         {/* Winner Overlay for Ended Auctions (IF SOLD) */}
-        {isEnded && !isUnsold && (auction as any).winner && (
+        {isEnded && !isUnsold && (auction).winner && (
            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent p-3 pt-8 flex items-center gap-3 animate-in slide-in-from-bottom-2">
               <div className="relative">
                   <Avatar className="h-10 w-10 border-2 border-amber-400 shadow-amber-500/20 shadow-lg">
-                      <AvatarImage src={(auction as any).winner?.profileImage} />
+                      <AvatarImage src={(auction).winner?.profileImage} />
                       <AvatarFallback className="text-amber-700 bg-amber-100 font-bold">W</AvatarFallback>
                   </Avatar>
                   <div className="absolute -top-1 -right-1 bg-amber-400 text-amber-900 rounded-full p-0.5 shadow-sm">
