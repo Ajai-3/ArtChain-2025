@@ -32,6 +32,7 @@
         id: user.id,
         name: user.name,
         username: user.username,
+        email: user.email,
         plan: user.plan,
         role: user.role,
         status: user.status,
