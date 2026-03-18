@@ -963,7 +963,7 @@ export class WalletRepositoryImpl
       where,
       skip,
       take: limit,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { updatedAt: 'desc' },
       include: {
         transactions: {
           orderBy: { createdAt: 'desc' },
