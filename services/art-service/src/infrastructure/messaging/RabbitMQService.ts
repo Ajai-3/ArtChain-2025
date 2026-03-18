@@ -110,23 +110,27 @@ export class RabbitMQService {
     // Process only one message at a time to prevent overloading
     this.channel!.prefetch(1);
 
-    this.channel!.consume(queue, async (msg: any) => {
-      if (!msg) return;
-      try {
-        const content = JSON.parse(msg.content.toString());
-        const success = await handler(content);
+    this.channel!.consume(
+      queue,
+      async (msg: any) => {
+        if (!msg) return;
+        try {
+          const content = JSON.parse(msg.content.toString());
+          const success = await handler(content);
 
-        if (success) {
-          this.channel!.ack(msg);
-        } else {
-          // nack(message, requeue: false) -> sends to Dead Letter Exchange (Retry Queue)
+          if (success) {
+            this.channel!.ack(msg);
+          } else {
+            // nack(message, requeue: false) -> sends to Dead Letter Exchange (Retry Queue)
+            this.channel!.nack(msg, false, false);
+          }
+        } catch (error) {
+          logger.error('Consumer Processing Error', error);
           this.channel!.nack(msg, false, false);
         }
-      } catch (error) {
-        logger.error('Consumer Processing Error', error);
-        this.channel!.nack(msg, false, false);
-      }
-    });
+      },
+      { noAck: false },
+    );
   }
 
   getEndedQueueName() {

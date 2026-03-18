@@ -6,6 +6,7 @@ import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { BadRequestError, NotFoundError, UnauthorizedError } from 'art-chain-shared';
 import { CommissionStatus } from '../../../domain/entities/Commission';
 import { IWalletService } from '../../../domain/interfaces/IWalletService';
+import { COMMISSION_MESSAGES } from '../../../constants/CommissionMessage';
 
 @injectable()
 export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
@@ -20,20 +21,20 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
     const commission = await this._commissionRepository.getById(id);
     
     if (!commission) {
-      throw new NotFoundError('Commission not found');
+      throw new NotFoundError(COMMISSION_MESSAGES.COMMISSION_NOT_FOUND);
     }
 
     const isRequester = commission.requesterId === userId;
     const isArtist = commission.artistId === userId;
 
     if (!isRequester && !isArtist) {
-      throw new UnauthorizedError('Not authorized to update this commission');
+      throw new UnauthorizedError(COMMISSION_MESSAGES.USER_NOT_AUTHORIZED);
     }
 
     // Only allow update if in initial stages
     const allowUpdateStatus: CommissionStatus[] = [CommissionStatus.REQUESTED, CommissionStatus.NEGOTIATING];
     if (!allowUpdateStatus.includes(commission.status) && !data.status) {
-        throw new BadRequestError(`Cannot update commission in ${commission.status} status`);
+        throw new BadRequestError(COMMISSION_MESSAGES.COMMISSION_NOT_IN_UPDATABLE_STATUS);
     }
 
     const extractKey = (url: string) => {
@@ -58,11 +59,11 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
 
     // 1. Handle Status-Specific workflows
     if (data.status === CommissionStatus.DELIVERED) {
-        if (!isArtist) throw new UnauthorizedError('Only artist can deliver');
+        if (!isArtist) throw new UnauthorizedError(COMMISSION_MESSAGES.USER_NOT_AUTHORIZED);
         if (commission.status !== CommissionStatus.LOCKED && commission.status !== CommissionStatus.IN_PROGRESS) {
-            throw new BadRequestError('Commission not in progress');
+            throw new BadRequestError(COMMISSION_MESSAGES.COMMISSION_NOT_IN_PROGRESS);
         }
-        if (!data.finalArtwork) throw new BadRequestError('Final artwork is required for delivery');
+        if (!data.finalArtwork) throw new BadRequestError(COMMISSION_MESSAGES.FINAL_ARTWORK_REQUIRED);
         
         updatedData.status = CommissionStatus.DELIVERED;
         updatedData.finalArtwork = extractKey(data.finalArtwork);
@@ -71,7 +72,7 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         historyDetails = 'Artist delivered the final artwork';
     } 
     else if (data.status === CommissionStatus.COMPLETED) {
-        if (!isRequester) throw new UnauthorizedError('Only requester can approve completion');
+        if (!isRequester) throw new UnauthorizedError(COMMISSION_MESSAGES.USER_NOT_AUTHORIZED);
         if (commission.status !== CommissionStatus.DELIVERED) {
             throw new BadRequestError('Commission must be delivered before completion');
         }
@@ -92,7 +93,7 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         });
 
         if (!distributeSuccess) {
-            throw new BadRequestError('Failed to release funds. Please try again or contact support.');
+            throw new BadRequestError(COMMISSION_MESSAGES.FUND_RELEASE_FAILED);
         }
 
         updatedData.status = CommissionStatus.COMPLETED;
@@ -101,13 +102,13 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         historyDetails = 'Requester approved the delivery. Project completed.';
     }
     else if (data.status === CommissionStatus.DISPUTE_RAISED) {
-        if (!isRequester) throw new UnauthorizedError('Only requester can raise dispute');
+        if (!isRequester) throw new UnauthorizedError(COMMISSION_MESSAGES.USER_NOT_AUTHORIZED);
         
         const isPastDeadline = new Date() > new Date(commission.deadline);
         const isInProgressOrLocked = commission.status === CommissionStatus.LOCKED || commission.status === CommissionStatus.IN_PROGRESS;
 
         if (commission.status !== CommissionStatus.DELIVERED && (!isInProgressOrLocked || !isPastDeadline)) {
-            throw new BadRequestError('Can only raise dispute after delivery or if deadline passed');
+            throw new BadRequestError(COMMISSION_MESSAGES.DISPUTE_CAN_ONLY_BE_RAISED_AFTER_DELIVERY_OR_DEADLINE);
         }
 
         updatedData.status = CommissionStatus.DISPUTE_RAISED;
@@ -118,7 +119,7 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         // Initial stages negotiation
         const negotiationStatuses: CommissionStatus[] = [CommissionStatus.REQUESTED, CommissionStatus.NEGOTIATING];
         if (!negotiationStatuses.includes(commission.status)) {
-            throw new BadRequestError(`Cannot update commission in ${commission.status} status`);
+            throw new BadRequestError(COMMISSION_MESSAGES.COMMISSION_NOT_IN_UPDATABLE_STATUS);
         }
         updatedData = {
             ...updatedData,
@@ -130,7 +131,7 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         // Artist can only update budget, deadline, and status in initial stages
         const negotiationStatuses: CommissionStatus[] = [CommissionStatus.REQUESTED, CommissionStatus.NEGOTIATING];
         if (!negotiationStatuses.includes(commission.status)) {
-             throw new BadRequestError(`Cannot update commission in ${commission.status} status`);
+             throw new BadRequestError(COMMISSION_MESSAGES.COMMISSION_NOT_IN_UPDATABLE_STATUS);
         }
         if (data.status) {
             updatedData.status = data.status;
@@ -140,7 +141,7 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         if (data.budget || data.deadline) {
             updatedData.budget = data.budget ?? commission.budget;
             updatedData.deadline = data.deadline ?? commission.deadline;
-            updatedData.status = CommissionStatus.NEGOTIATING; // Suggesting changes
+            updatedData.status = CommissionStatus.NEGOTIATING;
             historyDetails = 'Artist suggested changes to budget/deadline';
         }
     }

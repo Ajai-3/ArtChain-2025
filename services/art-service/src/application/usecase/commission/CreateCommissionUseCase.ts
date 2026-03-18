@@ -10,10 +10,12 @@ import { UserService } from '../../../infrastructure/service/UserService';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
+import { COMMISSION_MESSAGES } from '../../../constants/CommissionMessage';
 
 @injectable()
 export class CreateCommissionUseCase implements ICreateCommissionUseCase {
   constructor(
+    @inject(TYPES.IUserService) private readonly _userService: UserService,
     @inject(TYPES.ICommissionRepository)
     private readonly _commissionRepository: ICommissionRepository,
     @inject(TYPES.IChatService)
@@ -26,25 +28,25 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
     const { requesterId, artistId, title, description, referenceImages, budget, deadline } = dto;
 
     if (!requesterId || !artistId) {
-      throw new BadRequestError('Requester and Artist IDs are required');
+      throw new BadRequestError(COMMISSION_MESSAGES.REQUESTER_AND_ARTIST_REQUIRED);
     }
 
     if (requesterId === artistId) {
-      throw new BadRequestError('Cannot request commission from yourself');
+      throw new BadRequestError(COMMISSION_MESSAGES.REQUESTER_AND_ARTIST_REQUIRED);
     }
 
     console.log(requesterId, artistId);
     console.log('Validating artist:', artistId);
-    const artist = await UserService.getUserById(artistId);
+    const artist = await this._userService.getUserById(artistId);
     if (!artist) {
       console.error('Artist validation failed for ID:', artistId);
-      throw new NotFoundError('Artist not found');
+      throw new NotFoundError(COMMISSION_MESSAGES.ARTIST_NOT_FOUND);
     }
     console.log(artist);
     
     if (artist.role !== 'artist') {
       console.error('User is not an artist:', artistId);
-      throw new BadRequestError('Artist role is not valid');
+      throw new BadRequestError(COMMISSION_MESSAGES.INVALID_ARTIST_ROLE);
     }
     console.log('Artist validated:', artist.name || artist.username);
 
@@ -56,7 +58,7 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
     );
 
     if (activeCommissionForArtist) {
-        throw new BadRequestError('You already have an active commission request with this artist. Please complete or cancel it before starting a new one.');
+        throw new BadRequestError(COMMISSION_MESSAGES.ACTIVE_COMMISSION_EXISTS);
     }
 
     // 1. Create Conversation in Chat Service (Type: REQUEST)
@@ -67,7 +69,7 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
         console.log('Conversation created with ID:', conversationId);
     } catch (error) {
         console.error('Failed to create conversation:', error);
-        throw new BadRequestError('Failed to initialize communication channel');
+        throw new BadRequestError(COMMISSION_MESSAGES.CONVERSATION_CREATION_FAILED);
     }
 
     // 2. Create Commission Entity

@@ -75,11 +75,11 @@ export class WalletService implements IWalletService {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/wallet/transaction/settle-auction`,
         {
-          buyerId: winnerId,
+          winnerId,
           sellerId,
           totalAmount,
           commissionAmount,
-          artId: auctionId,
+          auctionId,
         },
       );
       return response.status === 200 || response.status === 201;

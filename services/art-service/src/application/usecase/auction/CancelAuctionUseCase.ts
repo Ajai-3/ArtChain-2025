@@ -4,6 +4,7 @@ import { ICancelAuctionUseCase } from '../../interface/usecase/auction/ICancelAu
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
 import { NotFoundError, ValidationError } from 'art-chain-shared';
+import { AUCTION_MESSAGES } from '../../../constants/AuctionMessages';
 
 @injectable()
 export class CancelAuctionUseCase implements ICancelAuctionUseCase {
@@ -16,11 +17,11 @@ export class CancelAuctionUseCase implements ICancelAuctionUseCase {
     const auction = await this._auctionRepository.getById(id);
 
     if (!auction) {
-      throw new NotFoundError('Auction not found');
+      throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
     }
 
     if (auction.status === 'ENDED' || auction.status === 'CANCELLED') {
-      throw new ValidationError('Cannot cancel an auction that is already ended or cancelled');
+      throw new ValidationError(AUCTION_MESSAGES.CANNOT_CANCEL_ENDED_OR_CANCELLED_AUCTION);
     }
 
     await this._auctionRepository.updateStatus(id, 'CANCELLED');

@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { ERROR_MESSAGES } from '../../../constants/ErrorMessages';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
-import { UserService } from '../../../infrastructure/service/UserService';
+import { IUserService } from '../../interface/service/IUserService';
 import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
 import { toArtWithUserResponse } from '../../mapper/artWithUserMapper';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
@@ -13,6 +13,7 @@ import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepos
 export class GetUserFavoritedArtsUseCase {
   constructor(
     @inject(TYPES.ILikeRepository) private readonly _likeRepo: ILikeRepository,
+    @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
     @inject(TYPES.ICommentRepository)
@@ -32,7 +33,7 @@ export class GetUserFavoritedArtsUseCase {
 
     if (!favorites.length) return [];
 
-    const userRes = await UserService.getUserById(userId, currentUserId);
+    const userRes = await this._userService.getUserById(userId, currentUserId);
     if (!userRes) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
 
     const arts = await Promise.all(

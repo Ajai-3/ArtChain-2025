@@ -12,4 +12,5 @@ export const AUCTION_MESSAGES = {
   BID_TOO_LOW: 'Bid amount must be higher than current bid',
   BID_BELOW_START_PRICE: 'Bid amount must be at least start price',
   FUNDS_LOCK_FAILED: 'Failed to lock funds. Insufficient balance or wallet service error.',
+  CANNOT_CANCEL_ENDED_OR_CANCELLED_AUCTION: 'Cannot cancel an auction that is already ended or cancelled',
 } as const;
