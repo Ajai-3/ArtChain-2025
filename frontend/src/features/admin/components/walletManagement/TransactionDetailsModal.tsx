@@ -43,7 +43,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [methodFilter, setMethodFilter] = useState('all');
-  const limit = 5;
+  const limit = 4;
 
   const { data, isLoading } = useGetUserTransactions({
     walletId,
@@ -64,12 +64,12 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[80vw] max-h-[80vh]">
+      <DialogContent className="!max-w-[80vw] !max-h-[90vh] overflow-y-auto scrollbar">
         <DialogHeader>
           <DialogTitle>Transactions for {userName}</DialogTitle>
         </DialogHeader>
 
-        <div className="bg-zinc-50/50 dark:bg-zinc-900/50 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 mb-6 backdrop-blur-sm">
+        <div className="bg-zinc-50/50 dark:bg-zinc-900/50 p-4 rounded-lg border border-zinc-200 dark:border-zinc-800 mb-1 backdrop-blur-sm">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-xs font-medium text-zinc-500 uppercase tracking-wider">
@@ -225,11 +225,10 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
                         {tx.status}
                       </span>
                     </TableCell>
-                    <TableCell
-                      className="max-w-[200px] truncate px-4 py-2"
-                      title={tx.description}
-                    >
-                      {tx.description}
+                    <TableCell className="px-4 py-2" title={tx.description}>
+                      <div className="max-w-[200px] break-words whitespace-normal">
+                        {tx.description}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

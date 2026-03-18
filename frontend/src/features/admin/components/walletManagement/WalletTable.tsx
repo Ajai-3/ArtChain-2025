@@ -46,7 +46,7 @@ const WalletTable: React.FC<WalletTableProps> = ({
 
     const visiblePages = 3;
     let startPage = Math.max(page - 1, 1);
-    let endPage = Math.min(startPage + visiblePages - 1, totalPages);
+    const endPage = Math.min(startPage + visiblePages - 1, totalPages);
 
     if (endPage - startPage < visiblePages - 1) {
       startPage = Math.max(endPage - visiblePages + 1, 1);

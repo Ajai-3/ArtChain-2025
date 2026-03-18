@@ -18,7 +18,7 @@ const WalletManagement: React.FC = () => {
   const debouncedMinBalance = useDebounce(minBalance, 500);
   const debouncedMaxBalance = useDebounce(maxBalance, 500);
 
-  const limit = 4;
+  const limit = 6;
 
   const { data, isLoading } = useGetAllWallets({
     page,
