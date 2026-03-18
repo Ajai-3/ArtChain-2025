@@ -1,22 +1,22 @@
-import { Request, Response, NextFunction } from 'express';
-import { injectable, inject } from 'inversify';
-import { HttpStatus } from 'art-chain-shared';
 import { logger } from '../../utils/logger';
-import { IAuctionController } from '../interface/IAuctionController';
+import { HttpStatus } from 'art-chain-shared';
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../infrastructure/Inversify/types';
-import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { createAuctionSchema } from '../validators/auction.schema';
+import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
+import { IAuctionController } from '../interface/IAuctionController';
+import { GetAuctionsDTO } from '../../application/interface/dto/auction/GetAuctionsDTO';
+import { CreateAuctionDTO } from '../../application/interface/dto/auction/CreateAuctionDTO';
+import { GetAuctionByIdDTO } from '../../application/interface/dto/auction/GetAuctionByIdDTO';
 import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction/IGetAuctionsUseCase';
+import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
+import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
 import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
 import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
-import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
 import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
-import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
 
-import { createAuctionSchema } from '../validators/auction.schema';
-import { CreateAuctionDTO } from '../../application/interface/dto/auction/CreateAuctionDTO';
-import { GetAuctionsDTO } from '../../application/interface/dto/auction/GetAuctionsDTO';
-import { GetAuctionByIdDTO } from '../../application/interface/dto/auction/GetAuctionByIdDTO';
-import { validateWithZod } from '../../utils/validateWithZod';
 
 @injectable()
 export class AuctionController implements IAuctionController {
@@ -254,12 +254,14 @@ export class AuctionController implements IAuctionController {
   ): Promise<Response | void> => {
     try {
       const id = req.params.id;
+      const userId = req.headers['x-user-id'] as string;
+
       logger.info(`Cancelling auction id=${id}`);
 
-      await this._cancelAuctionUseCase.execute(id);
+      await this._cancelAuctionUseCase.execute(id, userId);
 
       return res.status(HttpStatus.OK).json({
-        message: 'Auction cancelled successfully',
+        message: AUCTION_MESSAGES.AUCTION_CANCELLED,
       });
     } catch (error) {
       logger.error('Error in cancelAuction', error);
@@ -267,6 +269,13 @@ export class AuctionController implements IAuctionController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET RECENT AUCTIONS
+  //# ================================================================================================================
+  //# GET /api/v1/art/admin/auctions/recent
+  //# Query: limit
+  //# This controller fetches a list of recent auctions, limited by the specified number.
+  //# ================================================================================================================
   getRecentAuctions = async (
     req: Request,
     res: Response,
@@ -276,7 +285,7 @@ export class AuctionController implements IAuctionController {
       const limit = parseInt(req.query.limit as string) || 5;
       const auctions = await this._getRecentAuctionsUseCase.execute(limit);
       return res.status(HttpStatus.OK).json({
-        message: 'Recent auctions fetched successfully',
+        message: AUCTION_MESSAGES.RECENT_AUCTIONS_FETCHED,
         data: auctions,
       });
     } catch (error) {

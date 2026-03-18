@@ -14,4 +14,7 @@ export const AUCTION_MESSAGES = {
   FUNDS_LOCK_FAILED: 'Failed to lock funds. Insufficient balance or wallet service error.',
   CANNOT_CANCEL_ENDED_OR_CANCELLED_AUCTION: 'Cannot cancel an auction that is already ended or cancelled',
   CANNOT_CANCEL_ACTIVE_AUCTION: 'Cannot cancel an active auction.',
+  UNAUTHORIZED_TO_CANCEL_AUCTION: 'Only the host or platform admin can cancel this auction.',
+  AUCTION_CANCELLED: 'Auction cancelled successfully',
+  RECENT_AUCTIONS_FETCHED: 'Recent auctions fetched successfully',
 } as const;

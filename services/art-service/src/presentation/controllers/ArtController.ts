@@ -7,19 +7,17 @@ import { IArtController } from '../interface/IArtController';
 import { TYPES } from '../../infrastructure/Inversify/types';
 import { validateWithZod } from '../../utils/validateWithZod';
 import { createArtPostSchema } from '../validators/artPost.schema';
-import { UserService } from '../../infrastructure/service/UserService';
 import { publishNotification } from '../../infrastructure/messaging/rabbitmq';
 import { CreateArtPostDTO } from '../../application/interface/dto/art/CreateArtPostDTO';
+import { IBuyArtUseCase } from '../../application/interface/usecase/art/IBuyArtUseCase';
 import { IGetAllArtUseCase } from '../../application/interface/usecase/art/IGetAllArtUseCase';
 import { IGetArtByIdUseCase } from '../../application/interface/usecase/art/IGetArtByIdUseCase';
+import { IDownloadArtUseCase } from '../../application/interface/usecase/art/IDownloadArtUseCase';
 import { IGetArtByNameUseCase } from '../../application/interface/usecase/art/IGetArtByNameUseCase';
 import { ICountArtWorkUseCase } from '../../application/interface/usecase/art/ICountArtWorkUseCase';
 import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/ICreateArtPostUseCase';
 import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
 import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
-import { IBuyArtUseCase } from '../../application/interface/usecase/art/IBuyArtUseCase';
-import { IDownloadArtUseCase } from '../../application/interface/usecase/art/IDownloadArtUseCase';
-import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 
 @injectable()
 export class ArtController implements IArtController {
@@ -41,7 +39,7 @@ export class ArtController implements IArtController {
     @inject(TYPES.IBuyArtUseCase)
     private readonly _buyArtUseCase: IBuyArtUseCase,
     @inject(TYPES.IDownloadArtUseCase)
-    private readonly _downloadArtUseCase: IDownloadArtUseCase
+    private readonly _downloadArtUseCase: IDownloadArtUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -54,7 +52,7 @@ export class ArtController implements IArtController {
   getArtByArtName = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { artname } = req.params;
@@ -62,7 +60,7 @@ export class ArtController implements IArtController {
 
       const data = await this._getArtByNameUseCase.execute(
         artname,
-        currentUserId
+        currentUserId,
       );
 
       logger.info(`${data.art.artName} fetched succefully.`);
@@ -94,7 +92,7 @@ export class ArtController implements IArtController {
         page,
         limit,
         currentUserId,
-        categoryId
+        categoryId,
       );
 
       return res.status(HttpStatus.OK).json({
@@ -115,7 +113,11 @@ export class ArtController implements IArtController {
   //# Query params: page (number), limit (number)
   //# This controller fetches recommended art items with pagination support.
   //# ================================================================================================================
-  getRecommendedArt = async (req: Request, res: Response, next: NextFunction) => {
+  getRecommendedArt = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const currentUserId = req.headers['x-user-id'] as string;
       const page = parseInt(req.query.page as string) || 1;
@@ -126,7 +128,7 @@ export class ArtController implements IArtController {
         page,
         limit,
         currentUserId,
-        categoryId
+        categoryId,
       );
 
       return res.status(HttpStatus.OK).json({
@@ -150,7 +152,7 @@ export class ArtController implements IArtController {
   getArtWithUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId as string;
@@ -159,14 +161,14 @@ export class ArtController implements IArtController {
       const currentUserId = req.headers['x-user-id'] as string;
 
       logger.info(
-        `Fetching art for user ID: ${userId}, page=${page}, limit=${limit}`
+        `Fetching art for user ID: ${userId}, page=${page}, limit=${limit}`,
       );
 
       const arts = await this._getAllArtWithUserIdUseCase.execute(
         page,
         limit,
         userId,
-        currentUserId
+        currentUserId,
       );
 
       return res.status(HttpStatus.OK).json({
@@ -191,31 +193,14 @@ export class ArtController implements IArtController {
   getArtById = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
 
       logger.info(`Fetching art by id=${id}`);
 
-      const art = await this._getArtByIdUseCase.execute(id);
-
-      if (!art) {
-        logger.warn(`Art not found: ${id}`);
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: `Art ${id} not found` });
-      }
-
-      const user = await UserService.getUserById(art?.userId);
-      if (!user) {
-        logger.warn(`User not found: ${art?.userId}`);
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: ERROR_MESSAGES.USER_NOT_FOUND });
-      }
-
-      console.log(user, art);
+      const { art, user } = await this._getArtByIdUseCase.execute(id);
 
       return res.status(HttpStatus.OK).json({
         message: `${ART_MESSAGES.FETCH_BY_ID_SUCCESS} ${id}`,
@@ -238,7 +223,7 @@ export class ArtController implements IArtController {
   createArt = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
@@ -254,8 +239,8 @@ export class ArtController implements IArtController {
 
       logger.info(
         `Art created successfully by userId=${userId}, title=${JSON.stringify(
-          createdArt
-        )}`
+          createdArt,
+        )}`,
       );
 
       return res
@@ -278,14 +263,14 @@ export class ArtController implements IArtController {
   updateArt = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const updateData = req.body;
 
       logger.info(
-        `Updating art id=${id} with data=${JSON.stringify(updateData)}`
+        `Updating art id=${id} with data=${JSON.stringify(updateData)}`,
       );
 
       // TODO: Replace with actual DB/service call
@@ -309,7 +294,7 @@ export class ArtController implements IArtController {
   countArtwork = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { userId } = req.params;
@@ -317,7 +302,7 @@ export class ArtController implements IArtController {
       const artworksCount = await this._countArtWorkUseCase.execute(userId);
 
       logger.info(
-        `ArtController: User ${userId} has ${artworksCount} artworks`
+        `ArtController: User ${userId} has ${artworksCount} artworks`,
       );
       return res.status(HttpStatus.OK).json({
         message: ART_MESSAGES.ART_COUNTED,
@@ -339,7 +324,7 @@ export class ArtController implements IArtController {
   deleteArt = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
@@ -366,7 +351,7 @@ export class ArtController implements IArtController {
   buyArt = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
@@ -377,7 +362,7 @@ export class ArtController implements IArtController {
       await this._buyArtUseCase.execute(id, currentUserId);
 
       return res.status(HttpStatus.OK).json({
-        message: 'Art purchased successfully',
+        message: ART_MESSAGES.BUY_SUCCESS,
       });
     } catch (error) {
       logger.error('Error in buyArt', error);
@@ -395,7 +380,7 @@ export class ArtController implements IArtController {
   downloadArt = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
@@ -403,10 +388,13 @@ export class ArtController implements IArtController {
 
       logger.info(`User ${currentUserId} downloading art ${id}`);
 
-      const signedUrl = await this._downloadArtUseCase.execute(id, currentUserId);
+      const signedUrl = await this._downloadArtUseCase.execute(
+        id,
+        currentUserId,
+      );
 
       return res.status(HttpStatus.OK).json({
-        message: 'Download link generated successfully',
+        message: ART_MESSAGES.DOWNLOAD_SUCCESS,
         downloadUrl: signedUrl,
       });
     } catch (error) {

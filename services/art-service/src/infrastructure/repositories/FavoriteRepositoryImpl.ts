@@ -14,7 +14,7 @@ export class FavoriteRepositoryImpl
   }
 
   async findFavorite(postId: string, userId: string): Promise<Favorite | null> {
-    return await FavoriteModel.findOne({ postId, userId });
+    return await FavoriteModel.findOne({ postId, userId }).lean();
   }
 
   async favoriteCountByPostId(postId: string): Promise<number> {

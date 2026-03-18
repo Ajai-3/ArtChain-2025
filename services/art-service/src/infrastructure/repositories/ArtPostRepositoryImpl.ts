@@ -1,8 +1,8 @@
 import { injectable } from 'inversify';
 import { ArtPostModel } from '../models/ArtPostModel';
-import { ArtPost } from '../../domain/entities/ArtPost';
+import { ArtPost, PostStatus } from '../../domain/entities/ArtPost';
 import { BaseRepositoryImpl } from '../repositories/BaseRepositoryImpl';
-import { IArtPostRepository } from '../../domain/repositories/IArtPostRepository';
+import { AdminArtFilters, IArtPostRepository } from '../../domain/repositories/IArtPostRepository';
 
 @injectable()
 export class ArtPostRepositoryImpl
@@ -14,22 +14,22 @@ export class ArtPostRepositoryImpl
   }
 
   async findById(postId: string): Promise<any> {
-    const art = await ArtPostModel.findById({ _id: postId });
+    const art = await ArtPostModel.findById({ _id: postId, status: 'active' });
     return art;
   }
 
   async findByArtName(artName: string): Promise<any> {
-    const art = await ArtPostModel.findOne({ artName }).lean();
+    const art = await ArtPostModel.findOne({ artName, status: 'active' }).lean();
     if (!art) throw new Error(`Art with name ${artName} not found`);
     return art as ArtPost;
   }
 
   async countByUser(userId: string): Promise<number> {
-    return ArtPostModel.countDocuments({ userId });
+    return ArtPostModel.countDocuments({ userId, status: 'active' });
   }
 
   async getAllArt(page = 1, limit = 10): Promise<any[]> {
-    const arts = await ArtPostModel.find()
+    const arts = await ArtPostModel.find({ status: 'active' })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -38,7 +38,7 @@ export class ArtPostRepositoryImpl
   }
 
   async getAllByUser(userId: string, page = 1, limit = 10): Promise<ArtPost[]> {
-    const arts = await ArtPostModel.find({ userId })
+    const arts = await ArtPostModel.find({ userId, status: 'active' })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -51,7 +51,7 @@ export class ArtPostRepositoryImpl
     page = 1,
     limit = 10
   ): Promise<any[]> {
-    return await ArtPostModel.find({ artType: categoryId })
+    return await ArtPostModel.find({ artType: categoryId, status: 'active' })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
@@ -65,7 +65,7 @@ export class ArtPostRepositoryImpl
     sort: any = { createdAt: -1 }
   ): Promise<ArtPost[]> {
     const skip = (page - 1) * limit;
-    const arts = await ArtPostModel.find(query)
+    const arts = await ArtPostModel.find({ ...query, status: 'active' })
       .sort(sort)
       .skip(skip)
       .limit(limit)
@@ -110,8 +110,8 @@ export class ArtPostRepositoryImpl
   async findAll(
     page: number,
     limit: number,
-    filters?: import('../../domain/repositories/IArtPostRepository').AdminArtFilters
-  ): Promise<{ arts: any[]; total: number }> {
+    filters?: AdminArtFilters
+  ): Promise<{ arts: any[]; total: number}> {
     const query: any = {};
 
     if (filters?.status && filters.status !== ('all' as any)) query.status = filters.status;
@@ -137,7 +137,7 @@ export class ArtPostRepositoryImpl
       ArtPostModel.countDocuments(query),
     ]);
 
-    // Map _id to id for frontend consistency
+
     const mappedArts = arts.map((art: any) => ({
       ...art,
       id: art._id.toString(),
@@ -167,7 +167,7 @@ export class ArtPostRepositoryImpl
     return { total, free, premium, aiGenerated };
   }
 
-  async updateStatus(id: string, status: import('../../domain/entities/ArtPost').PostStatus): Promise<ArtPost | null> {
+  async updateStatus(id: string, status: PostStatus): Promise<ArtPost | null> {
     const updated = await ArtPostModel.findByIdAndUpdate(
       id,
       { status },

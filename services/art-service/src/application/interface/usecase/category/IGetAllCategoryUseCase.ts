@@ -6,5 +6,5 @@ export interface IGetAllCategoryUseCase {
     search?: string,
     status?: string,
     countFilter?: number
-  ): Promise<{ data: Category[]; total: number }>;
+  ): Promise<{ data: Category[]; total: number, stats: {} }>;
 }

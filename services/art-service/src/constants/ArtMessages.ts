@@ -12,4 +12,12 @@ export enum ART_MESSAGES {
   ART_ALREADY_OWNED = 'You already own this art',
   INVALID_PRICE = 'Invalid price',
   PURCHASE_FAILED = 'Purchase failed',
+  ART_ALREADY_FOR_SALE = 'Art is already for sale',
+  ART_NOT_OWNED_BY_USER = 'You do not own this art',
+  ART_ALREADY_OWNED_BY_USER = 'You already own this art',
+  DOWNLOAD_SUCCESS = 'Art downloaded successfully',
+  DOWNLOAD_FAILED = 'Failed to download art',
+  ART_NOT_AVAILABLE_FOR_DOWNLOAD = 'Art is not available for download',
+  BUY_SUCCESS = 'Art purchased successfully',
+  BUY_FAILED = 'Failed to purchase art',
 }

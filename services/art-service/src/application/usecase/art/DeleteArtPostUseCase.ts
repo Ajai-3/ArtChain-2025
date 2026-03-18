@@ -7,7 +7,7 @@ import { IDeleteArtPostUseCase } from '../../interface/usecase/art/IDeleteArtPos
 export class DeleteArtPostUseCase implements IDeleteArtPostUseCase {
   constructor(
     @inject(TYPES.IArtPostRepository)
-    private readonly _artRepo: IArtPostRepository
+    private readonly _artRepo: IArtPostRepository,
   ) {}
 
   async execute(id: string): Promise<void> {

@@ -1,3 +1,3 @@
 export interface ICancelAuctionUseCase {
-  execute(id: string): Promise<void>;
+  execute(id: string, userId: string): Promise<void>;
 }

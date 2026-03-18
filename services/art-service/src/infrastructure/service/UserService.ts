@@ -5,7 +5,7 @@ import { IUserService } from '../../application/interface/service/IUserService';
 
 @injectable()
 export class UserService implements IUserService {
-  async getUserById(userId: string, currentUserId?: string): Promise<any> {
+  async getUserById(userId: string, currentUserId?: string): Promise<unknown> {
     try {
      
       const response = await axios.get(

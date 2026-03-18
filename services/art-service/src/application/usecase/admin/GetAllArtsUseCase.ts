@@ -13,7 +13,7 @@ import { IUserService } from '../../interface/service/IUserService';
 export class GetAllArtsUseCase implements IGetAllArtsUseCase {
   constructor(
     @inject(TYPES.IUserService) private readonly _userService: IUserService,
-    @inject(TYPES.IArtPostRepository) private readonly _repository: IArtPostRepository,
+    @inject(TYPES.IArtPostRepository) private readonly _artRepo: IArtPostRepository,
     @inject(TYPES.ILikeRepository) private readonly _likeRepository: ILikeRepository,
     @inject(TYPES.ICommentRepository) private readonly _commentRepository: ICommentRepository,
     @inject(TYPES.IFavoriteRepository) private readonly _favoriteRepository: IFavoriteRepository,
@@ -24,7 +24,6 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
     page: number,
     limit: number,
     filters: any,
-    token?: string
   ): Promise<{ data: any[]; meta: any }> {
     let arts: any[];
     let total: number;
@@ -45,13 +44,12 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
         };
       }
 
-      // Remove search from filters and add artIds
       const { search, ...otherFilters } = filters;
-      const result = await this._repository.findAll(page, limit, { ...otherFilters, artIds });
+      const result = await this._artRepo.findAll(page, limit, { ...otherFilters, artIds });
       arts = result.arts;
       total = result.total;
     } else {
-      const result = await this._repository.findAll(page, limit, filters);
+      const result = await this._artRepo.findAll(page, limit, filters);
       arts = result.arts;
       total = result.total;
     }
@@ -61,7 +59,7 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
 
     if (userIds.length > 0) {
       try {
-        const users = await this._userService.getUsersByIds(userIds, token);
+        const users = await this._userService.getUsersByIds(userIds);
         userMap = new Map(users.map((u) => [u.id, u]));
       } catch (error) {
         console.error('Failed to fetch users', error);

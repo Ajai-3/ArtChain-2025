@@ -1,14 +1,14 @@
+import { HttpStatus } from 'art-chain-shared';
 import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { platformConfigSchema } from '../validators/PlatformConfigSchema';
+import { PLATFORM_CONFIG_MESSAGES } from '../../constants/PlatformConfigMessages';
 import { IAdminPlatformConfigController } from '../interface/IAdminPlatformConfigController';
+import { UpdatePlatformConfigDTO } from '../../application/interface/dto/admin/UpdatePlatformConfigDTO';
 import { IGetPlatformConfigUseCase } from '../../application/interface/usecase/admin/IGetPlatformConfigUseCase';
 import { IUpdatePlatformConfigUseCase } from '../../application/interface/usecase/admin/IUpdatePlatformConfigUseCase';
-import { TYPES } from '../../infrastructure/Inversify/types';
-import { platformConfigSchema } from '../validators/PlatformConfigSchema';
-import { UpdatePlatformConfigDTO } from '../../application/interface/dto/admin/UpdatePlatformConfigDTO';
-import { validateWithZod } from '../../utils/validateWithZod';
-import { HttpStatus } from 'art-chain-shared';
-import { PLATFORM_CONFIG_MESSAGES } from '../../constants/PlatformConfigMessages';
 
 @injectable()
 export class AdminPlatformConfigController implements IAdminPlatformConfigController {
@@ -16,7 +16,7 @@ export class AdminPlatformConfigController implements IAdminPlatformConfigContro
     @inject(TYPES.IGetPlatformConfigUseCase)
     private readonly _getPlatformConfigUseCase: IGetPlatformConfigUseCase,
     @inject(TYPES.IUpdatePlatformConfigUseCase)
-    private readonly _updatePlatformConfigUseCase: IUpdatePlatformConfigUseCase
+    private readonly _updatePlatformConfigUseCase: IUpdatePlatformConfigUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -29,15 +29,15 @@ export class AdminPlatformConfigController implements IAdminPlatformConfigContro
   getConfig = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const config = await this._getPlatformConfigUseCase.execute();
 
       console.log('haii');
-      res.status(HttpStatus.OK).json({ 
-          message: PLATFORM_CONFIG_MESSAGES.FETCH_SUCCESS, 
-          data: config 
+      res.status(HttpStatus.OK).json({
+        message: PLATFORM_CONFIG_MESSAGES.FETCH_SUCCESS,
+        data: config,
       });
     } catch (error) {
       next(error);
@@ -54,17 +54,17 @@ export class AdminPlatformConfigController implements IAdminPlatformConfigContro
   updateConfig = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const parseResult = validateWithZod(platformConfigSchema, req.body);
-      
+
       const dto: UpdatePlatformConfigDTO = { ...parseResult };
 
       const config = await this._updatePlatformConfigUseCase.execute(dto);
-      res.status(HttpStatus.OK).json({ 
-          message: PLATFORM_CONFIG_MESSAGES.UPDATE_SUCCESS, 
-          data: config 
+      res.status(HttpStatus.OK).json({
+        message: PLATFORM_CONFIG_MESSAGES.UPDATE_SUCCESS,
+        data: config,
       });
     } catch (error) {
       next(error);

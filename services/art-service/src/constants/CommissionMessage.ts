@@ -14,4 +14,12 @@ export enum COMMISSION_MESSAGES {
   USER_NOT_AUTHORIZED = 'User not authorized to perform this action',
   DISPUTE_CAN_ONLY_BE_RAISED_AFTER_DELIVERY_OR_DEADLINE = 'Dispute can only be raised after delivery or if deadline has passed',
   COMMISSION_NOT_IN_PROGRESS = 'Commission must be in progress to be delivered',
+  COMMISSION_LIST_FETCH_SUCCESS = 'Commission list fetched successfully',
+  COMMISSION_DISPUTE_RESOLVED = 'Commission dispute resolved successfully',
+  COMMISSION_STATS_FETCH_SUCCESS = 'Commission stats fetched successfully',
+  RECENT_COMMISSIONS_FETCH_SUCCESS = 'Recent commissions fetched successfully',
+  COMMISSION_FETCH_SUCCESS = 'Commission details fetched successfully',
+  UPDATE_SUCCESS = 'Commission updated successfully',
+  REQUEST_SUCCESS = 'Commission request created successfully',
+
 }
