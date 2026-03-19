@@ -117,7 +117,7 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
         user: user ? {
           username: user.username,
           name: user.name,
-          profileImage: mapCdnUrl(user.profileImage)
+          profileImage: user.profileImage ? mapCdnUrl(user.profileImage) : ''
         } : null
       };
     });
