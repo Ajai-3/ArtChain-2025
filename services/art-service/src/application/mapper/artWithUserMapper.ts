@@ -107,3 +107,43 @@ export const toShopArtListResponse = (
       : null,
   };
 };
+
+export const toArtWithUserForFavoriteResponse = (art: any, user: any) => {
+  return {
+    art: {
+      id: art?._id?.toString() || art?.id,
+      title: art.title,
+      artName: art.artName,
+      description: art.description,
+      imageUrl: mapCdnUrl(art.previewUrl), 
+      isForSale: art.isForSale || false,
+      createdAt: art.createdAt,
+    },
+    user: {
+      id: user?.id || user?._id?.toString(),
+      name: user?.name || 'Unknown Artist',
+      username: user?.username || 'unknown',
+      profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : '',
+    }
+  };
+};
+
+export const toArtWithUserForLikeResponse = (art: any, user: any) => {
+  return {
+    art: {
+      id: art?._id?.toString() || art?.id,
+      title: art.title,
+      artName: art.artName,
+      description: art.description,
+      imageUrl: mapCdnUrl(art.previewUrl), 
+      isForSale: art.isForSale || false,
+      createdAt: art.createdAt,
+    },
+    user: {
+      id: user?.id || user?._id?.toString(),
+      name: user?.name || 'Unknown Artist',
+      username: user?.username || 'unknown',
+      profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : '',
+    }
+  };
+};  

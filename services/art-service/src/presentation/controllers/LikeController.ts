@@ -161,11 +161,15 @@ export class LikeController implements ILikeController {
       const limit = Number(req.query.limit) || 15;
       const userId = req.headers['x-user-id'] as string;
 
+      console.log(userId);
+
       const arts = await this._getUserLikedArtsUseCase.execute(
         userId,
         page,
         limit
       );
+
+      console.log(arts);
 
       logger.info(
         `✅ [GetUserLikedArts] Fetched ${arts.length} liked arts for userId=${userId}`
