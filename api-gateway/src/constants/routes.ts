@@ -48,6 +48,11 @@ export const ROUTES = {
     COMMISSION_REQUEST: "/api/v1/art/commission/request",
     COMMISSION_BY_CONVERSATION: "/api/v1/art/commission/conversation/:conversationId",
     COMMISSION_UPDATE: "/api/v1/art/commission/:id",
+    SALED: "/api/v1/art/saled",
+    PURCHASED: "/api/v1/art/purchased",
+    DOWNLOAD: "/api/v1/art/download/:id",
+    SALES_ANALYTICS: "/api/v1/art/sales-analytics",
+    PURCHASE_ANALYTICS: "/api/v1/art/purchase-analytics",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",

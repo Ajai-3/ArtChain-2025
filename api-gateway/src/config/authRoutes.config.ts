@@ -31,6 +31,13 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.LIKED_ARTS, methods: ["GET"] },
     { path: ROUTES.ART.DISLIKE, methods: ["DELETE"] },
 
+    { path: ROUTES.ART.BUY, methods: ["POST"] },
+    { path: ROUTES.ART.DOWNLOAD, methods: ["GET"] },
+    { path: ROUTES.ART.SALED, methods: ["GET"] },
+    { path: ROUTES.ART.PURCHASED, methods: ["GET"] },
+    { path: ROUTES.ART.SALES_ANALYTICS, methods: ["GET"] },
+    { path: ROUTES.ART.PURCHASE_ANALYTICS, methods: ["GET"] },
+
     { path: ROUTES.UPLOAD.BASE, methods: ["POST", "PATCH"] },
     { path: ROUTES.UPLOAD.ART, methods: ["POST", "PATCH"] },
     { path: ROUTES.UPLOAD.DELETE, methods: ["POST"] },
