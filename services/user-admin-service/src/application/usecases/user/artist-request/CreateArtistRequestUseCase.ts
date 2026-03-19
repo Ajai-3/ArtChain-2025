@@ -43,9 +43,9 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
 
     const accountAgeInDays =
       (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-    if (accountAgeInDays < 10) {
+    if (accountAgeInDays < 3) {
       throw new BadRequestError(
-        'User account must be at least 10 days old to create an artist request.'
+        'User account must be at least 3 days old to create an artist request.'
       );
     }
 
