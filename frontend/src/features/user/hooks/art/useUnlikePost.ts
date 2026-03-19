@@ -75,7 +75,7 @@ export const useUnlikePost = () => {
           queryClient.setQueryData(key, newUserArt);
         });
 
-        queryClient
+      queryClient
         .getQueriesData<any>({ queryKey: ["userFavorites"] })
         .forEach(([key, prevUserArt]) => {
           if (!prevUserArt) return;
@@ -91,6 +91,22 @@ export const useUnlikePost = () => {
             })),
           };
           queryClient.setQueryData(key, newUserArt);
+        });
+
+      queryClient
+        .getQueriesData<any>({ queryKey: ["userLikedArts"] })
+        .forEach(([key, prevLikedArts]) => {
+          if (!prevLikedArts) return;
+
+          const newLikedArts = {
+            ...prevLikedArts,
+            pages: prevLikedArts.pages.map((page: any) => ({
+              ...page,
+              data: page.data.filter((art: ArtWithUser) => art.art.id !== postId)
+            })),
+          };
+
+          queryClient.setQueryData(key, newLikedArts);
         });
 
       return { prevArt } as OnMutateContext;

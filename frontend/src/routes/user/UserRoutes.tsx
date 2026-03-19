@@ -78,7 +78,7 @@ const SalesHistory = lazy(
   () => import("../../features/user/components/settings/SalesHistory")
 );
 const LikedItems = lazy(
-  () => import("../../features/user/components/settings/LikedItems")
+  () => import("../../features/user/components/settings/liked items/LikedItems")
 );
 const BlockedUsers = lazy(
   () => import("../../features/user/components/settings/BlockedUsers")

@@ -84,8 +84,10 @@ export const useLikePost = () => {
         queryClient.setQueryData(key, newUserArt);
       });
 
-
       return { prevArt } as OnMutateContext;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userLikedArts"] });
     },
   });
 };
