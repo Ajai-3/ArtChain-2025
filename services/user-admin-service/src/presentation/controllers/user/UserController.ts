@@ -331,8 +331,6 @@ export class UserController implements IUserController {
         req.body,
       );
 
-      console.log(ids, currentUserId);
-
       const users = await this._getUsersByIdsUserUseCase.execute(
         ids,
         currentUserId,
@@ -340,7 +338,6 @@ export class UserController implements IUserController {
 
       logger.info('user with id fetched correctly');
 
-      console.log(users);
 
       return res
         .status(HttpStatus.OK)
