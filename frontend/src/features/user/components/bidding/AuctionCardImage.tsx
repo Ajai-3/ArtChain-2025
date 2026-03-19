@@ -10,9 +10,10 @@ interface AuctionCardImageProps {
   isEnded: boolean;
   isScheduled: boolean;
   isUnsold: boolean;
+  isCanceled: boolean;
 }
 
-export const AuctionCardImage = ({ auction, isLive, isEnded, isScheduled, isUnsold }: AuctionCardImageProps) => {
+export const AuctionCardImage = ({ auction, isLive, isEnded, isScheduled, isUnsold, isCanceled }: AuctionCardImageProps) => {
   return (
     <div className="relative aspect-[16/9] overflow-hidden bg-muted">
         <img
@@ -48,6 +49,11 @@ export const AuctionCardImage = ({ auction, isLive, isEnded, isScheduled, isUnso
              {isUnsold && (
                 <Badge className={`!text-white border-0 shadow-sm h-6 px-2.5 text-xs font-bold tracking-wide ${isUnsold ? '!bg-neutral-800 hover:!bg-neutral-900' : '!bg-gray-600 hover:!bg-gray-700'}`}>
                     Un sold
+                </Badge>
+             )}
+             {isCanceled && (
+                <Badge className="!bg-red-600 hover:!bg-red-700 !text-white border-0 shadow-sm h-6 px-2.5 text-xs font-bold tracking-wide">
+                    Canceled
                 </Badge>
              )}
              

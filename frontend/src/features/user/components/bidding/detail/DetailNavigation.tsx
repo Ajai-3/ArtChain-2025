@@ -31,6 +31,7 @@ interface DetailNavigationProps {
   isLive: boolean;
   isEnded: boolean;
   isScheduled: boolean;
+  isCanceled: boolean;
   isUnsold: boolean;
   onRefresh?: () => void;
 }
@@ -41,6 +42,7 @@ export const DetailNavigation = ({
   isLive,
   isEnded,
   isScheduled,
+  isCanceled,
   isUnsold,
   onRefresh,
 }: DetailNavigationProps) => {
@@ -53,6 +55,8 @@ export const DetailNavigation = ({
       return 'bg-neutral-500 hover:bg-neutral-600 text-white border-transparent';
     if (isEnded)
       return 'bg-amber-500 hover:bg-amber-600 text-white border-transparent';
+    if (isCanceled)
+      return 'bg-red-600 hover:bg-red-700 text-white border-transparent';
     return '';
   };
 
@@ -61,6 +65,7 @@ export const DetailNavigation = ({
     if (isScheduled) return 'SCHEDULED';
     if (isUnsold) return 'UNSOLD';
     if (isEnded) return 'SOLD';
+    if (isCanceled) return 'CANCELLED';
     return auction.status;
   };
 

@@ -25,6 +25,7 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
   const isScheduled = status === 'SCHEDULED';
   const isUnsold =
     status === 'UNSOLD' && (!auction.bids || auction.bids.length === 0);
+  const isCanceled = status === 'CANCELLED';
 
   return (
     <Card
@@ -37,7 +38,9 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
               ? 'border-indigo-600/50 shadow-indigo-500/20'
             : isUnsold
               ? 'border-neutral-600/50 shadow-neutral-500/20'
-              : ''
+              : isCanceled
+                ? 'border-red-600/50 shadow-red-500/20'
+                : ''
       }`}
     >
       <AuctionCardImage
@@ -45,6 +48,7 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
         isLive={isLive}
         isEnded={isEnded}
         isScheduled={isScheduled}
+        isCanceled={isCanceled}
         isUnsold={isUnsold}
       />
 
@@ -60,6 +64,7 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
         isEnded={isEnded}
         isScheduled={isScheduled}
         isUnsold={isUnsold}
+        isCanceled={isCanceled}
         status={status}
       />
 
@@ -68,6 +73,7 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
         isLive={isLive}
         isEnded={isEnded}
         isScheduled={isScheduled}
+        isCanceled={isCanceled}
         isUnsold={isUnsold}
       />
     </Card>

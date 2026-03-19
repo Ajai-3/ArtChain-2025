@@ -11,6 +11,7 @@ interface AuctionCardDetailsProps {
   isScheduled: boolean;
   isUnsold: boolean;
   status: string;
+  isCanceled: boolean;
 }
 
 export const AuctionCardDetails = ({
@@ -20,6 +21,7 @@ export const AuctionCardDetails = ({
   isScheduled,
   isUnsold,
   status,
+  isCanceled,
 }: AuctionCardDetailsProps) => {
   function formatDate(date: string) {
     const d = new Date(date);
@@ -103,12 +105,12 @@ export const AuctionCardDetails = ({
         </div>
       )}
 
-      {!isEnded && !isUnsold && (
+      {!isEnded && !isUnsold && !isCanceled && (
         <div className="space-y-1.5">
           <div className="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Clock className="h-3.5 w-3.5" />
-              {isLive ? 'Ends In' : 'Starts In'}
+              Ends In
             </span>
             <span className="text-[10px] normal-case opacity-90 font-semibold bg-muted px-1.5 py-0.5 rounded border border-border">
               {new Date(
@@ -165,6 +167,39 @@ export const AuctionCardDetails = ({
           <div className="flex items-center gap-2 justify-center mt-2 p-2 bg-muted/40 rounded-lg border border-border/40 text-muted-foreground text-xs font-medium">
             <Clock className="h-4 w-4" />
             <span>Auction Ended on {formatDate(auction.endTime)}</span>
+          </div>
+        </div>
+      )}
+      {isCanceled && (
+        <div>
+          <div
+            className={`p-3 rounded-xl border shadow-sm grayscale-[0.2] ${isCanceled ? 'bg-red-500/5 border-red-500/20' : 'bg-amber-500/5 border-amber-500/20'}`}
+          >
+            <span
+              className={`text-[10px] uppercase font-bold tracking-wider mb-0.5 block ${isCanceled ? 'text-red-500' : 'text-amber-700 dark:text-amber-500'}`}
+            >
+              Canceled Price
+            </span>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={`text-2xl font-black tabular-nums ${isCanceled ? 'text-red-500' : 'text-amber-700 dark:text-amber-500'}`}
+              >
+                {formatNumber(
+                  auction.currentBid > 0
+                    ? auction.currentBid
+                    : auction.startPrice,
+                )}
+              </span>
+              <span
+                className={`text-xs font-bold self-end mb-1.5 ${isCanceled ? 'text-red-400' : 'text-amber-600/60'}`}
+              >
+                AC
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 justify-center mt-2 p-2 bg-muted/40 rounded-lg border border-border/40 text-muted-foreground text-xs font-medium">
+            <Clock className="h-4 w-4" />
+            <span>Auction Canceled</span>
           </div>
         </div>
       )}

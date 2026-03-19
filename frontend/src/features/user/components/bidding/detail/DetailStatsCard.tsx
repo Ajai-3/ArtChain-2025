@@ -10,6 +10,7 @@ interface DetailStatsCardProps {
   isLive: boolean;
   isEnded: boolean;
   isScheduled: boolean;
+  isCanceled: boolean;
   isUnsold: boolean;
   onPlaceBid: () => void;
   refetch: () => void;
@@ -18,8 +19,9 @@ interface DetailStatsCardProps {
 export const DetailStatsCard = ({
   auction,
   isLive,
-  isEnded,
+  isEnded,  
   isScheduled,
+  isCanceled,
   isUnsold,
   onPlaceBid,
   refetch,
@@ -66,6 +68,16 @@ export const DetailStatsCard = ({
         text: 'text-amber-600 dark:text-amber-400',
         priceBg: 'bg-amber-500/5 border-amber-500/20',
         btn: 'bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-400 border-amber-300 dark:border-amber-800',
+      };
+
+    if (isCanceled)
+      return {
+        border: 'border-red-500 shadow-red-500/10',
+        blob: 'bg-red-500',
+        badge: 'bg-red-500/10 text-red-600',
+        text: 'text-red-600 dark:text-red-400',
+        priceBg: 'bg-red-500/5 border-red-500/20',
+        btn: 'bg-red-100 dark:bg-red-900/40 text-red-900 dark:text-red-400 border-red-300 dark:border-red-800',
       };
 
     return {
@@ -127,7 +139,9 @@ export const DetailStatsCard = ({
                 ? 'Starting Price'
                 : isEnded
                   ? 'Sold Price'
-                  : 'Starting Price'}
+                  : isCanceled
+                    ? 'Canceled'
+                    : 'Starting Price'}
           </span>
           <div className="flex items-baseline gap-1">
             <span
@@ -207,6 +221,11 @@ export const DetailStatsCard = ({
         {isEnded && !isUnsold && (
           <span className="flex items-center gap-2">
             <Trophy className="h-5 w-5" /> Auction Sold
+          </span>
+        )}
+        {isCanceled && (
+          <span className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5" /> Auction Canceled
           </span>
         )}
       </button>

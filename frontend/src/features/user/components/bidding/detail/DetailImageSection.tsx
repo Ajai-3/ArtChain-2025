@@ -13,6 +13,7 @@ interface DetailImageSectionProps {
   isLive: boolean;
   isEnded: boolean;
   isScheduled: boolean;
+  isCanceled: boolean;
   isUnsold: boolean;
 }
 
@@ -21,6 +22,7 @@ export const DetailImageSection = ({
   isLive,
   isEnded,
   isScheduled,
+  isCanceled,
   isUnsold,
 }: DetailImageSectionProps) => {
   const navigate = useNavigate();
@@ -43,7 +45,9 @@ export const DetailImageSection = ({
               ? 'border-amber-500/10 shadow-amber-500/50'
               : isLive
                 ? 'border-emerald-500/10 shadow-emerald-500/50'
-                : 'border-border'
+                : isCanceled
+                  ? 'border-red-500/10 shadow-red-500/50'
+                  : 'border-border'
       }`}
     >
       <img

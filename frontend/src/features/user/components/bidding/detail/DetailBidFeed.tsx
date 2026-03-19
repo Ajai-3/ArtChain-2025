@@ -9,6 +9,7 @@ interface DetailBidFeedProps {
   isLive: boolean;
   isEnded: boolean;
   isScheduled: boolean;
+  isCanceled: boolean;
   isUnsold: boolean;
   initialBids?: any[];
 }
@@ -18,6 +19,7 @@ export const DetailBidFeed = ({
   isLive,
   isEnded,
   isScheduled,
+  isCanceled,
   isUnsold,
   initialBids,
 }: DetailBidFeedProps) => {
@@ -28,6 +30,7 @@ export const DetailBidFeed = ({
     if (isScheduled) return 'border-indigo-500/50';
     if (isUnsold) return 'border-neutral-500/50';
     if (isEnded) return 'border-amber-500/50';
+    if (isCanceled) return 'border-red-500/50';
     return 'border-border';
   };
 
@@ -36,6 +39,7 @@ export const DetailBidFeed = ({
     if (isScheduled) return 'bg-indigo-500/5 border-indigo-500/10';
     if (isUnsold) return 'bg-neutral-500/5 border-neutral-500/10';
     if (isEnded) return 'bg-amber-500/5 border-amber-500/10';
+    if (isCanceled) return 'bg-red-500/5 border-red-500/10';
     return 'bg-muted/5 border-border';
   };
 
@@ -44,6 +48,7 @@ export const DetailBidFeed = ({
     if (isScheduled) return 'Waiting Room';
     if (isUnsold) return 'Final Bids Log';
     if (isEnded) return 'Final Bids Log';
+    if (isCanceled) return 'Canceled Bids Log';
     return 'Bids';
   };
 

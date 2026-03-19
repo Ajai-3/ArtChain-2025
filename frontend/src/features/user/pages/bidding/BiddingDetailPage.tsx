@@ -62,6 +62,7 @@ export default function BiddingDetailPage() {
   const isScheduled = auction.status === 'SCHEDULED';
   const isUnsold =
     auction.status === 'UNSOLD' && (!auction.bids || auction.bids.length === 0);
+  const isCanceled = auction.status === 'CANCELLED';
 
   return (
     <div className="flex flex-col md:flex-row gap-4 w-full max-w-[1600px] mx-auto md:h-[calc(100vh-80px)] md:overflow-hidden">
@@ -72,6 +73,7 @@ export default function BiddingDetailPage() {
           isLive={isLive}
           isEnded={isEnded}
           isScheduled={isScheduled}
+          isCanceled={isCanceled}
           isUnsold={isUnsold}
           onRefresh={refetch}
         />
@@ -81,6 +83,7 @@ export default function BiddingDetailPage() {
           auction={auction}
           isLive={isLive}
           isEnded={isEnded}
+          isCanceled={isCanceled}
           isUnsold={isUnsold}
         />
 
@@ -94,6 +97,7 @@ export default function BiddingDetailPage() {
           isLive={isLive}
           isEnded={isEnded}
           isScheduled={isScheduled}
+          isCanceled={isCanceled}
           isUnsold={isUnsold}
           onPlaceBid={() => setIsModalOpen(true)}
           refetch={refetch}
@@ -104,6 +108,7 @@ export default function BiddingDetailPage() {
           isLive={isLive}
           isEnded={isEnded}
           isScheduled={isScheduled}
+          isCanceled={isCanceled}
           isUnsold={isUnsold}
           initialBids={auction.bids || []}
         />
