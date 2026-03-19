@@ -1,15 +1,16 @@
 import { inject, injectable } from 'inversify';
-import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
-import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
 import { TYPES } from '../../../infrastructure/Inversify/types';
-import { IUserService } from '../../interface/service/IUserService';
 import { ERROR_MESSAGES, NotFoundError } from 'art-chain-shared';
-import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
-import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IUserService } from '../../interface/service/IUserService';
 import { toArtWithUserResponse } from '../../mapper/artWithUserMapper';
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IGetUserLikedArtsWithUseCase } from '../../interface/usecase/like/IGetUserLikedArtsWithUseCase';
 
 @injectable()
-export class GetLikedArtsWithUserId {
+export class GetUserLikedArtsWithUseCase implements IGetUserLikedArtsWithUseCase {
   constructor(
     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.ILikeRepository) private readonly _likeRepo: ILikeRepository,
@@ -61,6 +62,6 @@ export class GetLikedArtsWithUserId {
       }),
     );
 
-    return arts.filter((item) => item !== null);
+    return arts.filter(Boolean);
   }
 }

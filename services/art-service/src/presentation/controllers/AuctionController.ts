@@ -14,6 +14,7 @@ import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction
 import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
 import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
 import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
+import { IGetWonAuctionsUseCase } from '../../application/interface/usecase/auction/IGetWonAuctionsUseCase';
 import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
 import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
 
@@ -21,6 +22,8 @@ import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/a
 @injectable()
 export class AuctionController implements IAuctionController {
   constructor(
+    @inject(TYPES.IGetWonAuctionsUseCase)
+    private readonly _getWonAuctionsUseCase: IGetWonAuctionsUseCase,
     @inject(TYPES.ICreateAuctionUseCase)
     private readonly _createAuctionUseCase: ICreateAuctionUseCase,
     @inject(TYPES.IGetAuctionsUseCase)
@@ -290,6 +293,34 @@ export class AuctionController implements IAuctionController {
       });
     } catch (error) {
       logger.error('Error in getRecentAuctions', error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET WON AUCTIONS
+  //# ================================================================================================================
+  //# GET /api/v1/art/auctions/won
+  //# This controller fetches a list of auctions won by the user.
+  //# ================================================================================================================
+  getWonAuctions = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const userId = req.headers['x-user-id'] as string;
+
+      const auctions = await this._getWonAuctionsUseCase.execute(userId);
+
+      logger.info(`Fetched ${auctions.length} won auctions for user id=${userId}`);
+
+      return res.status(HttpStatus.OK).json({
+        message: AUCTION_MESSAGES.WON_AUCTIONS_FETCHED,
+        data: auctions,
+      });
+    } catch (error) {
+      logger.error('Error in getWonAuctions', error);
       next(error);
     }
   };

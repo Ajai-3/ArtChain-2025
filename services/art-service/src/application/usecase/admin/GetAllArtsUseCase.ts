@@ -1,13 +1,13 @@
 import { injectable, inject } from 'inversify';
-import { IGetAllArtsUseCase } from '../../interface/usecase/admin/IGetAllArtsUseCase';
-import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
 import { TYPES } from '../../../infrastructure/Inversify/types';
-import { UserService } from '../../../infrastructure/service/UserService';
+import { IUserService } from '../../interface/service/IUserService';
+import { toGetAllArtForAdmin } from '../../mapper/admin/ArtMappersForAdmin';
 import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
 import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
+import { IGetAllArtsUseCase } from '../../interface/usecase/admin/IGetAllArtsUseCase';
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
 import { IElasticSearchClient } from '../../../application/interface/clients/IElasticSearchClient';
-import { IUserService } from '../../interface/service/IUserService';
 
 @injectable()
 export class GetAllArtsUseCase implements IGetAllArtsUseCase {
@@ -74,20 +74,12 @@ export class GetAllArtsUseCase implements IGetAllArtsUseCase {
           this._favoriteRepository.favoriteCountByPostId(art.id),
         ]);
 
-        return {
-          ...art,
-          user: userMap.get(art.userId) || {
-            username: 'Unknown',
-            email: 'N/A',
-            profileImage: '',
-          },
-          counts: {
-            likes: likeCount,
-            comments: commentCount,
-            favorites: favoriteCount,
-            downloads: 0,
-          },
-        };
+        return toGetAllArtForAdmin(art, userMap.get(art.userId), {
+          likes: likeCount,
+          comments: commentCount,
+          favorites: favoriteCount,
+          downloads: art.downloads || 0, 
+        });
       })
     );
 

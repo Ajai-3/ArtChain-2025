@@ -20,4 +20,5 @@ export enum ART_MESSAGES {
   ART_NOT_AVAILABLE_FOR_DOWNLOAD = 'Art is not available for download',
   BUY_SUCCESS = 'Art purchased successfully',
   BUY_FAILED = 'Failed to purchase art',
+  PURCHASED_ARTWORKS_FETCH_SUCCESS = 'Fetched purchased artworks successfully',
 }

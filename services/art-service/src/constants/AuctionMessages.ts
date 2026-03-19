@@ -17,4 +17,5 @@ export const AUCTION_MESSAGES = {
   UNAUTHORIZED_TO_CANCEL_AUCTION: 'Only the host or platform admin can cancel this auction.',
   AUCTION_CANCELLED: 'Auction cancelled successfully',
   RECENT_AUCTIONS_FETCHED: 'Recent auctions fetched successfully',
+  WON_AUCTIONS_FETCHED: 'Won auctions fetched successfully',
 } as const;

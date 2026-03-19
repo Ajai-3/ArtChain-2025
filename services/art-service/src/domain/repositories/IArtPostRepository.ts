@@ -16,6 +16,7 @@ export interface IArtPostRepository extends IBaseRepository<ArtPost> {
   findById(postId: string): Promise<any>;
   findByArtName(artName: string): Promise<any>;
   countByUser(userId: string): Promise<number>;
+  findByIds(artIds: string[]): Promise<any[]>;
   getAllByUser(
     userId: string,
     page?: number,

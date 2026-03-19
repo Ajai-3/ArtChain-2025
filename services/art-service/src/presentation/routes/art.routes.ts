@@ -65,6 +65,7 @@ router.post(ROUTES.LIKE.BASE, likeController.likePost);
 router.delete(ROUTES.LIKE.UNLIKE, likeController.unlikePost);
 router.get(ROUTES.LIKE.LIKES_BY_POST_ID, likeController.getLikedUsers);
 router.get(ROUTES.LIKE.LIKES_COUNT_BY_POST_ID, likeController.getLikeCount);
+router.get(ROUTES.LIKE.LIKES_BY_USER_ID, likeController.getUserLikedArts);
 
 // Favorites
 router.post(ROUTES.FAVORITE.BASE, favoriteController.addFavorite);

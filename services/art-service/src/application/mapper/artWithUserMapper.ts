@@ -1,4 +1,10 @@
-export const toArtWithUserResponse = (art: any, userData?: any, purchaser?: any) => {
+import { mapCdnUrl } from '../../utils/mapCdnUrl';
+
+export const toArtWithUserResponse = (
+  art: any,
+  userData?: any,
+  purchaser?: any,
+) => {
   return {
     user: {
       id: userData?.id,
@@ -33,7 +39,10 @@ export const toArtWithUserResponse = (art: any, userData?: any, purchaser?: any)
       status: art.status,
       createdAt: art.createdAt,
       updatedAt: art.updatedAt,
-      imageUrl: art.isForSale || art.downloadingDisabled ? art.watermarkedUrl : art.previewUrl,
+      imageUrl:
+        art.isForSale || art.downloadingDisabled
+          ? mapCdnUrl(art.watermarkedUrl)
+          : mapCdnUrl(art.previewUrl),
     },
     ...(art.isForSale && {
       price: {
@@ -62,7 +71,7 @@ export const toShopItemResponse = (art: any, user: any) => {
       fiat: art.fiatPrice,
       type: art.priceType,
     },
-    imageUrl: art.previewUrl,
+    imageUrl: mapCdnUrl(art.previewUrl),
     artist: {
       id: user?.id,
       username: user?.username,
@@ -72,12 +81,16 @@ export const toShopItemResponse = (art: any, user: any) => {
   };
 };
 
-export const toShopArtListResponse = (art: any, user: any, favoriteCount: number) => {
+export const toShopArtListResponse = (
+  art: any,
+  user: any,
+  favoriteCount: number,
+) => {
   return {
     id: art._id ?? art.id,
     title: art.title,
     artName: art.artName,
-    previewUrl: art.previewUrl,
+    previewUrl: mapCdnUrl(art.previewUrl),
     artType: art.artType,
     priceType: art.priceType,
     artcoins: art.artcoins,

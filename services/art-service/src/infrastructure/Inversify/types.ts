@@ -18,6 +18,7 @@ export const TYPES = {
   IPurchaseRepository: Symbol.for('IPurchaseRepository'),
 
   // Use Cases - Art
+  IBuyArtUseCase: Symbol.for('IBuyArtUseCase'),
   IGetAllArtUseCase: Symbol.for('IGetAllArtUseCase'),
   IGetArtByIdUseCase: Symbol.for('IGetArtByIdUseCase'),
   ICountArtWorkUseCase: Symbol.for('ICountArtWorkUseCase'),
@@ -27,7 +28,7 @@ export const TYPES = {
   IGetShopArtsByUserUseCase: Symbol.for('IGetShopArtsByUserUseCase'),
   IArtToElasticSearchUseCase: Symbol.for('IArtToElasticSearchUseCase'),
   IGetAllArtWithUserIdUseCase: Symbol.for('IGetAllArtWithUserIdUseCase'),
-  IBuyArtUseCase: Symbol.for('IBuyArtUseCase'),
+  IGetPurchasedArtWorksUseCase: Symbol.for('IGetPurchasedArtWorksUseCase'),
 
   // Use Cases - Category
   IEditCategoryUseCase: Symbol.for('IEditCategoryUseCase'),
@@ -53,6 +54,7 @@ export const TYPES = {
   IUnlikePostUseCase: Symbol.for('IUnlikePostUseCase'),
   IGetLikeCountUseCase: Symbol.for('IGetLikeCountUseCase'),
   IGetLikedUsersUseCase: Symbol.for('IGetLikedUsersUseCase'),
+  IGetUserLikedArtsWithUseCase: Symbol.for('IGetUserLikedArtsWithUseCase'),
 
   // Use Cases - AI
   IGenerateAIImageUseCase: Symbol.for('IGenerateAIImageUseCase'),
@@ -83,11 +85,13 @@ export const TYPES = {
   IGetBidsUseCase: Symbol.for('IGetBidsUseCase'),
   IGetUserBidsUseCase: Symbol.for('IGetUserBidsUseCase'),
   ICancelAuctionUseCase: Symbol.for('ICancelAuctionUseCase'),
-  IArtController: Symbol.for('IArtController'),
+  IGetWonAuctionsUseCase: Symbol.for('IGetWonAuctionsUseCase'),
+
   IShopController: Symbol.for('IShopController'),
   ILikeController: Symbol.for('ILikeController'),
   ICommentController: Symbol.for('ICommentController'),
   IFavoriteController: Symbol.for('IFavoriteController'),
+  IArtController: Symbol.for('IArtController'),
   ICategoryController: Symbol.for('ICategoryController'),
   IAIController: Symbol.for('IAIController'),
   IAdminAIController: Symbol.for('IAdminAIController'),

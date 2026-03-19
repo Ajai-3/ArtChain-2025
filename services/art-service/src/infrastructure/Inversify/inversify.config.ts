@@ -56,6 +56,7 @@ import { IGetAllShopArtsUseCase } from '../../application/interface/usecase/art/
 import { IGetShopArtsByUserUseCase } from '../../application/interface/usecase/art/IGetAllShopArtsUseCase';
 import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
 import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
+import { IGetPurchasedArtWorksUseCase } from '../../application/interface/usecase/art/IGetPurchasedArtWorksUseCase';
 
 import { GetAllArtUseCase } from '../../application/usecase/art/GetAllArtUseCase';
 import { GetArtByIdUseCase } from '../../application/usecase/art/GetArtByIdUseCase';
@@ -66,6 +67,8 @@ import { GetAllShopArtsUseCase } from '../../application/usecase/shop/GetAllShop
 import { GetShopArtsByUserUseCase } from '../../application/usecase/shop/GetShopArtsByUserUseCase';
 import { ArtToElasticSearchUseCase } from '../../application/usecase/art/ArtToElasticSearchUseCase';
 import { GetAllArtWithUserIdUseCase } from '../../application/usecase/art/GetAllArtWithUserIdUseCase';
+import { GetPurchasedArtWorksUseCase } from '../../application/usecase/art/GetPurchasedArtWorksUseCase';
+
 import { IBuyArtUseCase } from '../../application/interface/usecase/art/IBuyArtUseCase';
 import { BuyArtUseCase } from '../../application/usecase/art/BuyArtUseCase';
 import { IDownloadArtUseCase } from '../../application/interface/usecase/art/IDownloadArtUseCase';
@@ -113,11 +116,13 @@ import { ILikePostUseCase } from '../../application/interface/usecase/like/ILike
 import { IUnlikePostUseCase } from '../../application/interface/usecase/like/IUnlikePostUseCase';
 import { IGetLikeCountUseCase } from '../../application/interface/usecase/like/IGetLikeCountUseCase';
 import { IGetLikedUsersUseCase } from '../../application/interface/usecase/like/IGetLikedUsersUseCase';
+import { IGetUserLikedArtsWithUseCase } from '../../application/interface/usecase/like/IGetUserLikedArtsWithUseCase';
 
 import { LikePostUseCase } from '../../application/usecase/like/LikePostUseCase';
 import { UnlikePostUseCase } from '../../application/usecase/like/UnlikePostUseCase';
 import { GetLikeCountUseCase } from '../../application/usecase/like/GetLikeCountUseCase';
 import { GetLikedUsersUseCase } from '../../application/usecase/like/GetLikedUsersUseCase';
+import { GetUserLikedArtsWithUseCase } from '../../application/usecase/like/GetUserLikedArtsWithUseCase';
 
 // Use Cases - AI
 import { IGenerateAIImageUseCase } from '../../application/interface/usecase/ai/IGenerateAIImageUseCase';
@@ -201,35 +206,72 @@ import { IBidController } from '../../presentation/interface/IBidController';
 import { BidController } from '../../presentation/controllers/BidController';
 import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGetUserBidsUseCase';
 import { GetUserBidsUseCase } from '../../application/usecase/bid/GetUserBidsUseCase';
+import { IGetWonAuctionsUseCase } from '../../application/interface/usecase/auction/IGetWonAuctionsUseCase';
+import { GetWonAuctionsUseCase } from '../../application/usecase/auction/GetWonAuctionsUseCase';
+
 
 
 // AI Repositories
-container.bind<IArtPostRepository>(TYPES.IArtPostRepository).to(ArtPostRepositoryImpl);
-container.bind<ICategoryRepository>(TYPES.ICategoryRepository).to(CategoryRepositoryImpl);
+container
+  .bind<IArtPostRepository>(TYPES.IArtPostRepository)
+  .to(ArtPostRepositoryImpl);
+container
+  .bind<ICategoryRepository>(TYPES.ICategoryRepository)
+  .to(CategoryRepositoryImpl);
 container.bind<ILikeRepository>(TYPES.ILikeRepository).to(LikeRepositoryImpl);
-container.bind<ICommentRepository>(TYPES.ICommentRepository).to(CommentRepositoryImpl);
-container.bind<IFavoriteRepository>(TYPES.IFavoriteRepository).to(FavoriteRepositoryImpl);
-container.bind<IAIGenerationRepository>(TYPES.IAIGenerationRepository).to(AIGenerationRepositoryImpl);
+container
+  .bind<ICommentRepository>(TYPES.ICommentRepository)
+  .to(CommentRepositoryImpl);
+container
+  .bind<IFavoriteRepository>(TYPES.IFavoriteRepository)
+  .to(FavoriteRepositoryImpl);
+container
+  .bind<IAIGenerationRepository>(TYPES.IAIGenerationRepository)
+  .to(AIGenerationRepositoryImpl);
 
-container.bind<IAIConfigRepository>(TYPES.IAIConfigRepository).to(AIConfigRepositoryImpl);
-container.bind<IPurchaseRepository>(TYPES.IPurchaseRepository).to(PurchaseRepositoryImpl);
+container
+  .bind<IAIConfigRepository>(TYPES.IAIConfigRepository)
+  .to(AIConfigRepositoryImpl);
+container
+  .bind<IPurchaseRepository>(TYPES.IPurchaseRepository)
+  .to(PurchaseRepositoryImpl);
 
 // AI Use Cases
-container.bind<IGenerateAIImageUseCase>(TYPES.IGenerateAIImageUseCase).to(GenerateAIImageUseCase);
-container.bind<IGetMyAIGenerationsUseCase>(TYPES.IGetMyAIGenerationsUseCase).to(GetMyAIGenerationsUseCase);
-container.bind<ICheckAIQuotaUseCase>(TYPES.ICheckAIQuotaUseCase).to(CheckAIQuotaUseCase);
-container.bind<IGetEnabledAIConfigsUseCase>(TYPES.IGetEnabledAIConfigsUseCase).to(GetEnabledAIConfigsUseCase);
-container.bind<IUpdateAIConfigUseCase>(TYPES.IUpdateAIConfigUseCase).to(UpdateAIConfigUseCase);
-container.bind<IGetAIConfigsUseCase>(TYPES.IGetAIConfigsUseCase).to(GetAIConfigsUseCase);
-container.bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase).to(GetAIAnalyticsUseCase);
-container.bind<IDeleteAIGenerationUseCase>(TYPES.IDeleteAIGenerationUseCase).to(DeleteAIGenerationUseCase);
-container.bind<AIProviderService>(TYPES.AIProviderService).to(AIProviderService);
+container
+  .bind<IGenerateAIImageUseCase>(TYPES.IGenerateAIImageUseCase)
+  .to(GenerateAIImageUseCase);
+container
+  .bind<IGetMyAIGenerationsUseCase>(TYPES.IGetMyAIGenerationsUseCase)
+  .to(GetMyAIGenerationsUseCase);
+container
+  .bind<ICheckAIQuotaUseCase>(TYPES.ICheckAIQuotaUseCase)
+  .to(CheckAIQuotaUseCase);
+container
+  .bind<IGetEnabledAIConfigsUseCase>(TYPES.IGetEnabledAIConfigsUseCase)
+  .to(GetEnabledAIConfigsUseCase);
+container
+  .bind<IUpdateAIConfigUseCase>(TYPES.IUpdateAIConfigUseCase)
+  .to(UpdateAIConfigUseCase);
+container
+  .bind<IGetAIConfigsUseCase>(TYPES.IGetAIConfigsUseCase)
+  .to(GetAIConfigsUseCase);
+container
+  .bind<IGetAIAnalyticsUseCase>(TYPES.IGetAIAnalyticsUseCase)
+  .to(GetAIAnalyticsUseCase);
+container
+  .bind<IDeleteAIGenerationUseCase>(TYPES.IDeleteAIGenerationUseCase)
+  .to(DeleteAIGenerationUseCase);
+container
+  .bind<AIProviderService>(TYPES.AIProviderService)
+  .to(AIProviderService);
 container.bind<IWalletService>(TYPES.IWalletService).to(WalletService);
 container.bind<IUserService>(TYPES.IUserService).to(UserService);
 
 // AI Controllers
 container.bind<IAIController>(TYPES.IAIController).to(AIController);
-container.bind<IAdminAIController>(TYPES.IAdminAIController).to(AdminAIController);
+container
+  .bind<IAdminAIController>(TYPES.IAdminAIController)
+  .to(AdminAIController);
 
 // Use Cases - Art
 container.bind<IGetAllArtUseCase>(TYPES.IGetAllArtUseCase).to(GetAllArtUseCase);
@@ -258,11 +300,19 @@ container
   .bind<IGetAllArtWithUserIdUseCase>(TYPES.IGetAllArtWithUserIdUseCase)
   .to(GetAllArtWithUserIdUseCase);
 container.bind<IBuyArtUseCase>(TYPES.IBuyArtUseCase).to(BuyArtUseCase);
-container.bind<IDownloadArtUseCase>(TYPES.IDownloadArtUseCase).to(DownloadArtUseCase);
+container
+  .bind<IDownloadArtUseCase>(TYPES.IDownloadArtUseCase)
+  .to(DownloadArtUseCase);
+container
+  .bind<IGetPurchasedArtWorksUseCase>(TYPES.IGetPurchasedArtWorksUseCase)
+  .to(GetPurchasedArtWorksUseCase);
 
 // Services
 container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
-container.bind<ISocketService>(TYPES.ISocketService).to(SocketService).inSingletonScope();
+container
+  .bind<ISocketService>(TYPES.ISocketService)
+  .to(SocketService)
+  .inSingletonScope();
 container.bind<IChatService>(TYPES.IChatService).to(ChatService);
 
 // Use Cases - Category
@@ -321,6 +371,9 @@ container
 container
   .bind<IGetLikedUsersUseCase>(TYPES.IGetLikedUsersUseCase)
   .to(GetLikedUsersUseCase);
+container
+  .bind<IGetUserLikedArtsWithUseCase>(TYPES.IGetUserLikedArtsWithUseCase)
+  .to(GetUserLikedArtsWithUseCase);
 
 // Controllers
 container.bind<IArtController>(TYPES.IArtController).to(ArtController);
@@ -333,41 +386,85 @@ container
   .bind<IFavoriteController>(TYPES.IFavoriteController)
   .to(FavoriteController);
 container;
-container.bind<ICategoryController>(TYPES.ICategoryController).to(CategoryController);
-
+container
+  .bind<ICategoryController>(TYPES.ICategoryController)
+  .to(CategoryController);
 
 // Admin Art (using consolidated IArtPostRepository)
-container.bind<IGetAllArtsUseCase>(TYPES.IGetAllArtsUseCase).to(GetAllArtsUseCase);
-container.bind<IGetArtStatsUseCase>(TYPES.IGetArtStatsUseCase).to(GetArtStatsUseCase);
+container
+  .bind<IGetAllArtsUseCase>(TYPES.IGetAllArtsUseCase)
+  .to(GetAllArtsUseCase);
+container
+  .bind<IGetArtStatsUseCase>(TYPES.IGetArtStatsUseCase)
+  .to(GetArtStatsUseCase);
 
-container.bind<IGetTopArtsUseCase>(TYPES.IGetTopArtsUseCase).to(GetTopArtsUseCase);
-container.bind<IGetCategoryStatsUseCase>(TYPES.IGetCategoryStatsUseCase).to(GetCategoryStatsUseCase);
-container.bind<IGetRecentAuctionsUseCase>(TYPES.IGetRecentAuctionsUseCase).to(GetRecentAuctionsUseCase);
-container.bind<IGetRecentCommissionsUseCase>(TYPES.IGetRecentCommissionsUseCase).to(GetRecentCommissionsUseCase);
-container.bind<IUpdateArtStatusUseCase>(TYPES.IUpdateArtStatusUseCase).to(UpdateArtStatusUseCase);
-container.bind<IAdminArtController>(TYPES.IAdminArtController).to(AdminArtController);
+container
+  .bind<IGetTopArtsUseCase>(TYPES.IGetTopArtsUseCase)
+  .to(GetTopArtsUseCase);
+container
+  .bind<IGetCategoryStatsUseCase>(TYPES.IGetCategoryStatsUseCase)
+  .to(GetCategoryStatsUseCase);
+container
+  .bind<IGetRecentAuctionsUseCase>(TYPES.IGetRecentAuctionsUseCase)
+  .to(GetRecentAuctionsUseCase);
+container
+  .bind<IGetRecentCommissionsUseCase>(TYPES.IGetRecentCommissionsUseCase)
+  .to(GetRecentCommissionsUseCase);
+container
+  .bind<IUpdateArtStatusUseCase>(TYPES.IUpdateArtStatusUseCase)
+  .to(UpdateArtStatusUseCase);
+container
+  .bind<IAdminArtController>(TYPES.IAdminArtController)
+  .to(AdminArtController);
 
 // Bidding Bindings
-container.bind<IAuctionRepository>(TYPES.IAuctionRepository).to(AuctionRepositoryImpl);
+container
+  .bind<IAuctionRepository>(TYPES.IAuctionRepository)
+  .to(AuctionRepositoryImpl);
 container.bind<IBidRepository>(TYPES.IBidRepository).to(BidRepositoryImpl);
 
-container.bind<ICreateAuctionUseCase>(TYPES.ICreateAuctionUseCase).to(CreateAuctionUseCase);
-container.bind<IGetAuctionsUseCase>(TYPES.IGetAuctionsUseCase).to(GetAuctionsUseCase);
-container.bind<IGetAuctionStatsUseCase>(TYPES.IGetAuctionStatsUseCase).to(GetAuctionStatsUseCase);
-container.bind<IGetAuctionByIdUseCase>(TYPES.IGetAuctionByIdUseCase).to(GetAuctionByIdUseCase);
+container
+  .bind<ICreateAuctionUseCase>(TYPES.ICreateAuctionUseCase)
+  .to(CreateAuctionUseCase);
+container
+  .bind<IGetAuctionsUseCase>(TYPES.IGetAuctionsUseCase)
+  .to(GetAuctionsUseCase);
+container
+  .bind<IGetAuctionStatsUseCase>(TYPES.IGetAuctionStatsUseCase)
+  .to(GetAuctionStatsUseCase);
+container
+  .bind<IGetAuctionByIdUseCase>(TYPES.IGetAuctionByIdUseCase)
+  .to(GetAuctionByIdUseCase);
 container.bind<IPlaceBidUseCase>(TYPES.IPlaceBidUseCase).to(PlaceBidUseCase);
 container.bind<IGetBidsUseCase>(TYPES.IGetBidsUseCase).to(GetBidsUseCase);
-container.bind<IGetUserBidsUseCase>(TYPES.IGetUserBidsUseCase).to(GetUserBidsUseCase);
-container.bind<ICancelAuctionUseCase>(TYPES.ICancelAuctionUseCase).to(CancelAuctionUseCase);
+container
+  .bind<IGetUserBidsUseCase>(TYPES.IGetUserBidsUseCase)
+  .to(GetUserBidsUseCase);
+container
+  .bind<ICancelAuctionUseCase>(TYPES.ICancelAuctionUseCase)
+  .to(CancelAuctionUseCase);
 
-container.bind<IAuctionController>(TYPES.IAuctionController).to(AuctionController);
+container
+  .bind<IAuctionController>(TYPES.IAuctionController)
+  .to(AuctionController);
 container.bind<IBidController>(TYPES.IBidController).to(BidController);
+container
+  .bind<IGetWonAuctionsUseCase>(TYPES.IGetWonAuctionsUseCase)
+  .to(GetWonAuctionsUseCase);
 
 // Platform Config
-container.bind<IPlatformConfigRepository>(TYPES.IPlatformConfigRepository).to(PlatformConfigRepositoryImpl);
-container.bind<IGetPlatformConfigUseCase>(TYPES.IGetPlatformConfigUseCase).to(GetPlatformConfigUseCase);
-container.bind<IUpdatePlatformConfigUseCase>(TYPES.IUpdatePlatformConfigUseCase).to(UpdatePlatformConfigUseCase);
-container.bind<IAdminPlatformConfigController>(TYPES.IAdminPlatformConfigController).to(AdminPlatformConfigController);
+container
+  .bind<IPlatformConfigRepository>(TYPES.IPlatformConfigRepository)
+  .to(PlatformConfigRepositoryImpl);
+container
+  .bind<IGetPlatformConfigUseCase>(TYPES.IGetPlatformConfigUseCase)
+  .to(GetPlatformConfigUseCase);
+container
+  .bind<IUpdatePlatformConfigUseCase>(TYPES.IUpdatePlatformConfigUseCase)
+  .to(UpdatePlatformConfigUseCase);
+container
+  .bind<IAdminPlatformConfigController>(TYPES.IAdminPlatformConfigController)
+  .to(AdminPlatformConfigController);
 
 // Commission
 import { ICommissionRepository } from '../../domain/repositories/ICommissionRepository';
@@ -385,14 +482,32 @@ import { GetAllCommissionsUseCase } from '../../application/usecase/commission/G
 import { ResolveCommissionDisputeUseCase } from '../../application/usecase/commission/ResolveCommissionDisputeUseCase';
 import { AdminCommissionController } from '../../presentation/controllers/AdminCommissionController';
 
-container.bind<ICommissionRepository>(TYPES.ICommissionRepository).to(CommissionRepositoryImpl);
-container.bind<ICreateCommissionUseCase>(TYPES.ICreateCommissionUseCase).to(CreateCommissionUseCase);
-container.bind<IGetCommissionByConversationUseCase>(TYPES.IGetCommissionByConversationUseCase).to(GetCommissionByConversationUseCase);
-container.bind<IUpdateCommissionUseCase>(TYPES.IUpdateCommissionUseCase).to(UpdateCommissionUseCase);
-container.bind<ICommissionController>(TYPES.ICommissionController).to(CommissionController);
-container.bind<GetAllCommissionsUseCase>(GetAllCommissionsUseCase).to(GetAllCommissionsUseCase);
-container.bind<ResolveCommissionDisputeUseCase>(ResolveCommissionDisputeUseCase).to(ResolveCommissionDisputeUseCase);
-container.bind<AdminCommissionController>(AdminCommissionController).to(AdminCommissionController);
+container
+  .bind<ICommissionRepository>(TYPES.ICommissionRepository)
+  .to(CommissionRepositoryImpl);
+container
+  .bind<ICreateCommissionUseCase>(TYPES.ICreateCommissionUseCase)
+  .to(CreateCommissionUseCase);
+container
+  .bind<IGetCommissionByConversationUseCase>(
+    TYPES.IGetCommissionByConversationUseCase,
+  )
+  .to(GetCommissionByConversationUseCase);
+container
+  .bind<IUpdateCommissionUseCase>(TYPES.IUpdateCommissionUseCase)
+  .to(UpdateCommissionUseCase);
+container
+  .bind<ICommissionController>(TYPES.ICommissionController)
+  .to(CommissionController);
+container
+  .bind<GetAllCommissionsUseCase>(GetAllCommissionsUseCase)
+  .to(GetAllCommissionsUseCase);
+container
+  .bind<ResolveCommissionDisputeUseCase>(ResolveCommissionDisputeUseCase)
+  .to(ResolveCommissionDisputeUseCase);
+container
+  .bind<AdminCommissionController>(AdminCommissionController)
+  .to(AdminCommissionController);
 
 // RabbitMQ & Auction Ending
 import { RabbitMQService } from '../messaging/RabbitMQService';
@@ -400,15 +515,27 @@ import { IEndAuctionUseCase } from '../../application/interface/usecase/auction/
 import { EndAuctionUseCase } from '../../application/usecase/auction/EndAuctionUseCase';
 import { AuctionEndedConsumer } from '../messaging/consumers/AuctionEndedConsumer';
 
-container.bind<RabbitMQService>(TYPES.RabbitMQService).to(RabbitMQService).inSingletonScope();
-container.bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase).to(EndAuctionUseCase);
-container.bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer).to(AuctionEndedConsumer).inSingletonScope();
+container
+  .bind<RabbitMQService>(TYPES.RabbitMQService)
+  .to(RabbitMQService)
+  .inSingletonScope();
+container
+  .bind<IEndAuctionUseCase>(TYPES.IEndAuctionUseCase)
+  .to(EndAuctionUseCase);
+container
+  .bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer)
+  .to(AuctionEndedConsumer)
+  .inSingletonScope();
 import { IGetCommissionStatsUseCase } from '../../application/interface/usecase/commission/IGetCommissionStatsUseCase';
 
-container.bind<IGetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase).to(GetCommissionStatsUseCase);
+container
+  .bind<IGetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase)
+  .to(GetCommissionStatsUseCase);
 
 // Elasticsearch Client
 import { ElasticSearchClient } from '../clients/ElasticSearchClient';
-container.bind<ElasticSearchClient>(TYPES.IElasticSearchClient).to(ElasticSearchClient);
+container
+  .bind<ElasticSearchClient>(TYPES.IElasticSearchClient)
+  .to(ElasticSearchClient);
 
 export { container };

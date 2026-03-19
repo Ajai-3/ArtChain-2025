@@ -3,14 +3,15 @@ import { TYPES } from '../../../infrastructure/Inversify/types';
 import { ERROR_MESSAGES } from '../../../constants/ErrorMessages';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { IUserService } from '../../interface/service/IUserService';
-import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
 import { toArtWithUserResponse } from '../../mapper/artWithUserMapper';
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
 import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
+import { IGetUserFavoritedArtsUseCase } from '../../interface/usecase/favorite/IGetUserFavoritedArtsUseCase';
 
 @injectable()
-export class GetUserFavoritedArtsUseCase {
+export class GetUserFavoritedArtsUseCase implements IGetUserFavoritedArtsUseCase {
   constructor(
     @inject(TYPES.ILikeRepository) private readonly _likeRepo: ILikeRepository,
     @inject(TYPES.IUserService) private readonly _userService: IUserService,

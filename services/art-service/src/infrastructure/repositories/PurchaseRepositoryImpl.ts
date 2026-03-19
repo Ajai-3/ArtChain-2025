@@ -13,13 +13,27 @@ export class PurchaseRepositoryImpl
     super(PurchaseModel);
   }
 
-  async findByUserAndArt(userId: string, artId: string): Promise<Purchase | null> {
+  async findByUserAndArt(
+    userId: string,
+    artId: string,
+  ): Promise<Purchase | null> {
     const purchase = await PurchaseModel.findOne({ userId, artId });
     return purchase ? purchase.toObject() : null;
   }
 
+  async findByUserId(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<Purchase[]> {
+    const purchases = await PurchaseModel.find({ userId })
+      .skip((page - 1) * limit)
+      .limit(limit);
+    return purchases.map((p) => p.toObject());
+  }
+
   async findByArtId(artId: string): Promise<Purchase | null> {
-     const purchase = await PurchaseModel.findOne({ artId }); 
-     return purchase ? purchase.toObject() : null;
+    const purchase = await PurchaseModel.findOne({ artId });
+    return purchase ? purchase.toObject() : null;
   }
 }

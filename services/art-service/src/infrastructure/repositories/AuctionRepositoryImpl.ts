@@ -18,6 +18,14 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     return AuctionModel.find({ hostId }).sort({ createdAt: -1 }).lean() as unknown as Auction[];
   }
 
+  async findWonAuctions(userId: string, page = 1, limit = 10): Promise<Auction[]> {
+    return AuctionModel.find({ winnerId: userId, status: 'ENDED' })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean() as unknown as Auction[];
+  }
+
   async findRecent(limit: number): Promise<Auction[]> {
     return AuctionModel.find({})
       .sort({ createdAt: -1 })

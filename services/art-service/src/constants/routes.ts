@@ -43,6 +43,7 @@ export const ROUTES = {
     UNLIKE: '/unlike',
     LIKES_BY_POST_ID: '/likes/:postId',
     LIKES_COUNT_BY_POST_ID: '/likes-count/:postId',
+    LIKES_BY_USER_ID: '/likes/user/:userId',
   },
 
   // Favorite routes

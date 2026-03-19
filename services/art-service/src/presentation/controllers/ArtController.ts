@@ -18,6 +18,7 @@ import { ICountArtWorkUseCase } from '../../application/interface/usecase/art/IC
 import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/ICreateArtPostUseCase';
 import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
 import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
+import { IGetPurchasedArtWorksUseCase } from '../../application/interface/usecase/art/IGetPurchasedArtWorksUseCase';
 
 @injectable()
 export class ArtController implements IArtController {
@@ -40,6 +41,8 @@ export class ArtController implements IArtController {
     private readonly _buyArtUseCase: IBuyArtUseCase,
     @inject(TYPES.IDownloadArtUseCase)
     private readonly _downloadArtUseCase: IDownloadArtUseCase,
+    @inject(TYPES.IGetPurchasedArtWorksUseCase)
+    private readonly _getPurchasedArtWorksUseCase: IGetPurchasedArtWorksUseCase
   ) {}
 
   //# ================================================================================================================
@@ -399,6 +402,43 @@ export class ArtController implements IArtController {
       });
     } catch (error) {
       logger.error('Error in downloadArt', error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# PURCHASED ART WORKS
+  //# ================================================================================================================
+  //# GET /api/v1/art/purchased
+  //# Query params: page (number), limit (number)
+  //# This controller fetches the art works purchased by the user.
+  //# ================================================================================================================
+  purchasedArtWorks = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 15;
+      const userId = req.headers['x-user-id'] as string;
+
+      const arts = await this._getPurchasedArtWorksUseCase.execute(
+        userId,
+        page,
+        limit,
+      );
+
+      logger.info(
+        `✅ [PurchasedArtWorks] Fetched ${arts.length} purchased arts for userId=${userId}`,
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.PURCHASED_ARTWORKS_FETCH_SUCCESS,
+        data: arts,
+      });
+    } catch (error) {
+      logger.error('Error in purchasedArtWorks', error);
       next(error);
     }
   };

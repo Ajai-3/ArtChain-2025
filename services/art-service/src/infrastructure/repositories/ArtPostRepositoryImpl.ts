@@ -24,6 +24,11 @@ export class ArtPostRepositoryImpl
     return art as ArtPost;
   }
 
+  async findByIds(artIds: string[]): Promise<any[]> {
+    const arts = await ArtPostModel.find({ _id: { $in: artIds }, status: 'active' }).lean();
+    return arts;
+  }
+
   async countByUser(userId: string): Promise<number> {
     return ArtPostModel.countDocuments({ userId, status: 'active' });
   }
