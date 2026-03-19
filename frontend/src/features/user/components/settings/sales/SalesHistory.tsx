@@ -12,7 +12,7 @@ const SalesHistory: React.FC = () => {
   const { data: analytics, isLoading: isChartLoading } = useSalesAnalytics(range);
   const { data: salesData, isLoading: isTableLoading } = useSalesHistory(page, limit);
 
-  // Check if there is absolutely no data to show
+  const isFetching = isChartLoading || isTableLoading;
   const hasNoData = !isChartLoading && !isTableLoading && (!analytics || analytics.length === 0) && (!salesData || salesData.length === 0);
 
   return (
@@ -28,7 +28,7 @@ const SalesHistory: React.FC = () => {
           </p>
         </div>
 
-        {hasNoData ? <></> : <div className="flex gap-1 bg-zinc-900/80 p-1 rounded-xl border border-white/5 backdrop-blur-md">
+        {!isFetching && !hasNoData && (<div className="flex gap-1 bg-zinc-900/80 p-1 rounded-xl border border-white/5 backdrop-blur-md">
           {['today', '7d', '30d', 'all'].map((r) => (
             <button
               key={r}
@@ -41,22 +41,25 @@ const SalesHistory: React.FC = () => {
               {r}
             </button>
           ))}
-        </div>
+        </div>)
         }
 
       </div>
 
-      {hasNoData ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="w-16 h-16 mb-4 rounded-full bg-zinc-800/50 flex items-center justify-center">
-            <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-            </svg>
+      {isFetching ? (
+        <div className="flex items-center justify-center py-40">
+          <div className="w-10 h-10 border-4 border-emerald-600/20 border-t-emerald-600 rounded-full animate-spin"></div>
+        </div>) : hasNoData ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-16 h-16 mb-4 rounded-full bg-zinc-800/50 flex items-center justify-center">
+              <svg className="w-8 h-8 text-zinc-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-bold text-zinc-400">No Sales Found</h3>
+            <p className="text-zinc-600 text-sm mt-1">There are no records for the selected period.</p>
           </div>
-          <h3 className="text-lg font-bold text-zinc-400">No Sales Found</h3>
-          <p className="text-zinc-600 text-sm mt-1">There are no records for the selected period.</p>
-        </div>
-      ) : (
+        ) : (
         <>
           <SalesAnalyticsHero
             analytics={analytics}

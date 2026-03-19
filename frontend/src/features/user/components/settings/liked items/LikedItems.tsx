@@ -44,33 +44,37 @@ const LikedItems: React.FC = () => {
     </div>
   );
 
-  if (arts.length === 0) return (
-    <div className="flex flex-col items-center justify-center py-32 text-zinc-500">
-      <Gem className="w-12 h-12 mb-4 opacity-20" />
-      <h3 className="text-3xl font-semibold">No liked items</h3>
-      <p className="text-sm">Arts you like will appear here.</p>
-    </div>
-  );
-
   return (
     <div className="w-full px-2 lg:px-4 pb-10">
-      <div>
-         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Liked Arts
-      </h1>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Liked Arts
+        </h1>
+        <p className="text-zinc-500 text-sm">
+          Arts you like will appear here.
+        </p>
       </div>
+
       {/* Modern CSS Masonry */}
-      <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-        {arts.map((item, index) => (
-          <div 
-            key={item.art?.id || index} 
-            ref={index === arts.length - 1 ? lastArtRef : null}
-            className="break-inside-avoid"
-          >
-            <LikedArtCard item={item} />
-          </div>
-        ))}
-      </div>
+      {arts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-32 text-zinc-500">
+          <Gem className="w-12 h-12 mb-4 opacity-20" />
+          <h3 className="text-3xl font-semibold">No liked items</h3>
+          <p className="text-sm">Arts you like will appear here.</p>
+        </div>
+      ) : (
+        <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+          {arts.map((item, index) => (
+            <div
+              key={item.art?.id || index}
+              ref={index === arts.length - 1 ? lastArtRef : null}
+              className="break-inside-avoid"
+            >
+              <LikedArtCard item={item} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {isFetchingNextPage && (
         <div className="mt-8 flex justify-center">
