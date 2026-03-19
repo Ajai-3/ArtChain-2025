@@ -99,6 +99,7 @@ export const ROUTES = {
     BIDS: '/bids/:auctionId',
     PLACE_BID: '/bids',
     USER_BIDS: '/my-bids',
+    USER_BIDDING_HISTORY: '/my-bidding-history',
   },
 
   // Admin Auction routes

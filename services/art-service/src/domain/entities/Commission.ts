@@ -39,6 +39,8 @@ export class Commission {
     public readonly platformFee?: number,
     public readonly finalArtwork?: string,
     public readonly deliveryDate?: Date,
+    public readonly completedAt?: Date,
+    public readonly completedArtImage?: string,
     public readonly autoReleaseDate?: Date,
     public readonly disputeReason?: string,
     public readonly platformFeePercentage?: number,

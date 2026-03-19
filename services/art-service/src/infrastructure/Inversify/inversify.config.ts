@@ -212,8 +212,8 @@ import { IBidController } from '../../presentation/interface/IBidController';
 import { BidController } from '../../presentation/controllers/BidController';
 import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGetUserBidsUseCase';
 import { GetUserBidsUseCase } from '../../application/usecase/bid/GetUserBidsUseCase';
-import { IGetWonAuctionsUseCase } from '../../application/interface/usecase/auction/IGetWonAuctionsUseCase';
-import { GetWonAuctionsUseCase } from '../../application/usecase/auction/GetWonAuctionsUseCase';
+import { IGetUserBiddingHistoryUseCase } from '../../application/interface/usecase/auction/IGetUserBiddingHistoryUseCase';
+import { GetUserBiddingHistoryUseCase } from '../../application/usecase/auction/GetUserBiddingHistoryUseCase';
 
 
 
@@ -464,8 +464,8 @@ container
   .to(AuctionController);
 container.bind<IBidController>(TYPES.IBidController).to(BidController);
 container
-  .bind<IGetWonAuctionsUseCase>(TYPES.IGetWonAuctionsUseCase)
-  .to(GetWonAuctionsUseCase);
+  .bind<IGetUserBiddingHistoryUseCase>(TYPES.IGetUserBiddingHistoryUseCase)
+  .to(GetUserBiddingHistoryUseCase);
 
 // Platform Config
 container

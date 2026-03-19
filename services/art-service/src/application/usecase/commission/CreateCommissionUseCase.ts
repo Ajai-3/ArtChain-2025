@@ -27,6 +27,8 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
   async execute(dto: CreateCommissionDto): Promise<any> {
     const { requesterId, artistId, title, description, referenceImages, budget, deadline } = dto;
 
+    console.log(referenceImages);
+
     if (!requesterId || !artistId) {
       throw new BadRequestError(COMMISSION_MESSAGES.REQUESTER_AND_ARTIST_REQUIRED);
     }

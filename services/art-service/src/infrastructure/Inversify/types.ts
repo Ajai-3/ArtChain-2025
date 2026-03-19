@@ -88,7 +88,9 @@ export const TYPES = {
   IGetBidsUseCase: Symbol.for('IGetBidsUseCase'),
   IGetUserBidsUseCase: Symbol.for('IGetUserBidsUseCase'),
   ICancelAuctionUseCase: Symbol.for('ICancelAuctionUseCase'),
-  IGetWonAuctionsUseCase: Symbol.for('IGetWonAuctionsUseCase'),
+  IGetUserBiddingHistoryUseCase: Symbol.for('IGetUserBiddingHistoryUseCase'),
+
+
 
   IShopController: Symbol.for('IShopController'),
   ILikeController: Symbol.for('ILikeController'),

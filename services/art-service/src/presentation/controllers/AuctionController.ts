@@ -14,7 +14,7 @@ import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction
 import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
 import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
 import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
-import { IGetWonAuctionsUseCase } from '../../application/interface/usecase/auction/IGetWonAuctionsUseCase';
+import { IGetUserBiddingHistoryUseCase } from '../../application/interface/usecase/auction/IGetUserBiddingHistoryUseCase';
 import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
 import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
 
@@ -22,8 +22,8 @@ import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/a
 @injectable()
 export class AuctionController implements IAuctionController {
   constructor(
-    @inject(TYPES.IGetWonAuctionsUseCase)
-    private readonly _getWonAuctionsUseCase: IGetWonAuctionsUseCase,
+    @inject(TYPES.IGetUserBiddingHistoryUseCase)
+    private readonly _getUserBiddingHistoryUseCase: IGetUserBiddingHistoryUseCase,
     @inject(TYPES.ICreateAuctionUseCase)
     private readonly _createAuctionUseCase: ICreateAuctionUseCase,
     @inject(TYPES.IGetAuctionsUseCase)
@@ -36,7 +36,7 @@ export class AuctionController implements IAuctionController {
     private readonly _cancelAuctionUseCase: ICancelAuctionUseCase,
     @inject(TYPES.IGetRecentAuctionsUseCase)
     private readonly _getRecentAuctionsUseCase: IGetRecentAuctionsUseCase
-  ) {}
+  ) { }
 
   //# ================================================================================================================
   //# CREATE AUCTION
@@ -56,7 +56,7 @@ export class AuctionController implements IAuctionController {
       logger.info(`Creating auction for host: ${hostId}`);
 
       const validatedBody = validateWithZod(createAuctionSchema, req.body);
-      
+
       const dto: CreateAuctionDTO = {
         hostId,
         title: validatedBody.title,
@@ -170,7 +170,6 @@ export class AuctionController implements IAuctionController {
         hostId: req.query.hostId as string
       };
 
-      // Fetch both auctions and stats in parallel
       const [auctionsResult, stats] = await Promise.all([
         this._getAuctionsUseCase.execute(dto),
         this._getAuctionStatsUseCase.execute('all')
@@ -298,29 +297,34 @@ export class AuctionController implements IAuctionController {
   };
 
   //# ================================================================================================================
-  //# GET WON AUCTIONS
+  //# GET USER BIDDING HISTORY
   //# ================================================================================================================
-  //# GET /api/v1/art/auctions/won
+  //# GET /api/v1/art/auctions/bidding-history
   //# This controller fetches a list of auctions won by the user.
   //# ================================================================================================================
-  getWonAuctions = async (
+  getUserBiddingHistory = async (
     req: Request,
     res: Response,
     next: NextFunction
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const status = req.query.status as string;
 
-      const auctions = await this._getWonAuctionsUseCase.execute(userId);
+      console.log(`Fetching bidding history for user id=${userId} with page=${page}, limit=${limit}, status=${status}`);
+
+      const auctions = await this._getUserBiddingHistoryUseCase.execute(userId, page, limit, status);
 
       logger.info(`Fetched ${auctions.length} won auctions for user id=${userId}`);
 
       return res.status(HttpStatus.OK).json({
-        message: AUCTION_MESSAGES.WON_AUCTIONS_FETCHED,
+        message: AUCTION_MESSAGES.BIDDING_HISTORY_FETCHED,
         data: auctions,
       });
     } catch (error) {
-      logger.error('Error in getWonAuctions', error);
+      logger.error('Error in getUserBiddingHistory', error);
       next(error);
     }
   };

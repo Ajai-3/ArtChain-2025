@@ -19,6 +19,8 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
 
   async execute(id: string, userId: string, data: any): Promise<any> {
     const commission = await this._commissionRepository.getById(id);
+
+    console.log(data, id, userId);
     
     if (!commission) {
       throw new NotFoundError(COMMISSION_MESSAGES.COMMISSION_NOT_FOUND);
@@ -128,7 +130,6 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         };
         historyDetails = data.status ? `Status changed to ${data.status} by requester` : 'Commission details updated by requester';
     } else if (isArtist) {
-        // Artist can only update budget, deadline, and status in initial stages
         const negotiationStatuses: CommissionStatus[] = [CommissionStatus.REQUESTED, CommissionStatus.NEGOTIATING];
         if (!negotiationStatuses.includes(commission.status)) {
              throw new BadRequestError(COMMISSION_MESSAGES.COMMISSION_NOT_IN_UPDATABLE_STATUS);
@@ -146,7 +147,6 @@ export class UpdateCommissionUseCase implements IUpdateCommissionUseCase {
         }
     }
 
-    // Add to history
     const historyEntry = {
         action: action,
         userId: userId,

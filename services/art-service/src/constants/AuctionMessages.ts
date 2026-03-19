@@ -18,4 +18,6 @@ export const AUCTION_MESSAGES = {
   AUCTION_CANCELLED: 'Auction cancelled successfully',
   RECENT_AUCTIONS_FETCHED: 'Recent auctions fetched successfully',
   WON_AUCTIONS_FETCHED: 'Won auctions fetched successfully',
+  USER_ID_REQUIRED: 'User ID is required',
+  BIDDING_HISTORY_FETCHED: 'Bidding history fetched successfully',
 } as const;

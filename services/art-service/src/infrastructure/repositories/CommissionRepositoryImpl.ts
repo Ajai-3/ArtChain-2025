@@ -46,6 +46,11 @@ export class CommissionRepositoryImpl
     return (docs as unknown) as Commission[];
   }
 
+  async findByRequesterIdAndArtistId(requesterId: string, artistId: string): Promise<Commission[]> {
+    const docs = await CommissionModel.find({ requesterId, artistId }).sort({ createdAt: -1 }).lean();
+    return (docs as unknown) as Commission[];
+  }
+
   async findAllFiltered(filter: any, page: number, limit: number): Promise<{ commissions: Commission[], total: number }> {
     const query = CommissionModel.find(filter);
     const total = await CommissionModel.countDocuments(filter);
