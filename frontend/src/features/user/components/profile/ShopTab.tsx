@@ -41,6 +41,8 @@ const ShopUser: React.FC = () => {
 
   const allArts = data?.pages?.flatMap((page: any) => page.data) || [];
 
+  console.log(allArts)
+
   // Infinite scroll
   useEffect(() => {
     const handleScroll = () => {

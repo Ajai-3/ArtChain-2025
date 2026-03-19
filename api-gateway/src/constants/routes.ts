@@ -53,11 +53,13 @@ export const ROUTES = {
     DOWNLOAD: "/api/v1/art/download/:id",
     SALES_ANALYTICS: "/api/v1/art/sales-analytics",
     PURCHASE_ANALYTICS: "/api/v1/art/purchase-analytics",
+    MY_BIDDING_HISTORY: "/api/v1/art/my-bidding-history",
   },
   UPLOAD: {
     BASE: "/api/v1/upload",
     ART: "/api/v1/upload/art",
     DELETE: "/api/v1/upload/delete",
+    COMMISSION: "/api/v1/upload/commission",
   },
   WALLET: {
     BASE: "/api/v1/wallet",

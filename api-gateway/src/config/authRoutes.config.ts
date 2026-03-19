@@ -41,6 +41,7 @@ export const authRoutesConfig = {
     { path: ROUTES.UPLOAD.BASE, methods: ["POST", "PATCH"] },
     { path: ROUTES.UPLOAD.ART, methods: ["POST", "PATCH"] },
     { path: ROUTES.UPLOAD.DELETE, methods: ["POST"] },
+    { path: ROUTES.UPLOAD.COMMISSION, methods: ["POST"] },
 
     { path: ROUTES.WALLET.BASE, methods: ["POST", "GET", "PATCH"] },
     { path: ROUTES.WALLET.DETAILS, methods: ["GET"] },
@@ -95,7 +96,7 @@ export const authRoutesConfig = {
     { path: ROUTES.WALLET.COMMISSION_LOCK, methods: ["POST"] },
     { path: ROUTES.WALLET.COMMISSION_DISTRIBUTE, methods: ["POST"] },
 
-
+    { path: ROUTES.ART.MY_BIDDING_HISTORY, methods: ["GET"] },
     { path: ROUTES.ART.BUY, methods: ["POST"] },
   ],
   
