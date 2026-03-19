@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 import { config } from './env';
 
-const getBucketConfig = (category: 'profile' | 'banner' | 'art' | 'background' | 'chat' | 'bidding') => {
+const getBucketConfig = (category: 'profile' | 'banner' | 'art' | 'background' | 'chat' | 'bidding' | 'commission') => {
   if (category === 'art') {
     return {
       privateBucket: config.aws.art_bucket_private!,
@@ -12,13 +12,19 @@ const getBucketConfig = (category: 'profile' | 'banner' | 'art' | 'background' |
   if (category === 'chat') {
     return {
       bucket: config.aws.chat_bucket!,
-      acl: config.aws.upload_acl!, // Reusing upload ACL for now, or add specific one if needed
+      acl: config.aws.upload_acl!, 
     };
   }
   if (category === 'bidding') {
     return {
        bucket: config.aws.bidding_bucket!,
        acl: config.aws.upload_acl!,
+    };
+  }
+  if (category === 'commission') {
+    return {
+      bucket: config.aws.commission_bucket!,
+      acl: config.aws.upload_acl!,
     };
   }
   return {

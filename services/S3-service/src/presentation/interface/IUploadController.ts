@@ -16,6 +16,12 @@ export interface IUploadController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+
+  uploadCommissionImage(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
   getSignedUrl(
     req: Request,
     res: Response,

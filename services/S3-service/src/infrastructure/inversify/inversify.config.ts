@@ -12,6 +12,8 @@ import { IDeleteImageUseCase } from '../../application/interface/usecases/IDelet
 import { IUploadImageUseCase } from '../../application/interface/usecases/IUploadImageUseCase';
 import { IGetSignedUrlUseCase } from '../../application/interface/usecases/IGetSignedUrlUseCase';
 import { GetSignedUrlUseCase } from '../../application/usecases/GetSignedUrlUseCase';
+import { UploadCommissionImageUseCase } from '../../application/usecases/UploadCommissionImage';
+import { IUploadCommissionImageUseCase } from '../../application/interface/usecases/IUploadCommissionImageUseCase';
 
 const container = new Container();
 
@@ -32,6 +34,9 @@ container
 container
   .bind<IGetSignedUrlUseCase>(TYPES.IGetSignedUrlUseCase)
   .to(GetSignedUrlUseCase);
+container
+  .bind<IUploadCommissionImageUseCase>(TYPES.IUploadCommissionImageUseCase)
+  .to(UploadCommissionImageUseCase);
 
 // Controllers
 container.bind<IUploadController>(TYPES.IUploadController).to(UploadController);

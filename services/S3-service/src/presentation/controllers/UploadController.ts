@@ -25,7 +25,7 @@ export class UploadController implements IUploadController {
     private readonly _deleteImageUseCase: IDeleteImageUseCase,
     @inject(TYPES.IGetSignedUrlUseCase)
     private readonly _getSignedUrlUseCase: IGetSignedUrlUseCase
-  ) {}
+  ) { }
 
   //# =============================================================================================================
   //# UPLOAD PROFILE RELATED IAMGES
@@ -106,6 +106,46 @@ export class UploadController implements IUploadController {
         .json({ data: result, message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS });
     } catch (error: any) {
       logger.error(`Upload art error | message=${error.message}`);
+      next(error);
+    }
+  };
+
+  //# =============================================================================================================
+  //#   UPLOAD COMMISSION IMAGE
+  //# =============================================================================================================
+  //# POST /api/v1/upload/commission
+  //# Request body: multipart/form-data { file }
+  //# This controller will help you to upload the commission related images like commission images.
+  //# =============================================================================================================
+  uploadCommissionImage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const { userId, file } = validateUpload(req, 'commission');
+      logger.info(`Commission image upload request recived ${userId} ${file}`);
+      
+      const dto: UploadFileDTO = {
+        fileBuffer: file.buffer,
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        category: 'commission',
+        userId,
+      };
+
+      const result = await this._uploadImageUseCase.execute(dto);
+
+      logger.info(`${JSON.stringify(result)}`);
+      logger.info(
+        `Commission image uploaded successfully | userId=${userId} | file=${file.originalname}`
+      );
+
+      res
+        .status(HttpStatus.CREATED)
+        .json({ data: result, message: UPLOAD_MESSAGES.IMAGE_UPLOAD_SUCCESS });
+    } catch (error: any) {
+      logger.error(`Upload commission image error | message=${error.message}`);
       next(error);
     }
   };

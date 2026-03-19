@@ -23,5 +23,7 @@ export const generateFileName = (
       return `chat/${userId}/${userId}-${uniqueId}.${ext}`;
     case 'bidding':
       return `bidding/${userId}/${uniqueId}.${ext}`;
+    case 'commission':
+      return `commission/${userId}/${userId}-${uniqueId}.${ext}`;
   }
 };

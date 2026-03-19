@@ -10,6 +10,7 @@ export const ROUTES = {
   UPLOAD_PROFILE: '/profile',
   UPLOAD_BANNER: '/banner',
   SIGNED_URL: '/signed-url',
+  UPLOAD_COMMISSION: '/commission',
 
   // Full paths
   UPLOAD: '/api/v1/upload',
