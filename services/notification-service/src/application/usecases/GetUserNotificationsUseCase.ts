@@ -53,7 +53,7 @@ export class GetUserNotificationsUseCase implements IGetUserNotificationsUseCase
         }
       });
     }
-    
+
     return responseNotifications;
   }
 }
