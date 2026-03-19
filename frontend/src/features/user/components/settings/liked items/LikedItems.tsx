@@ -2,7 +2,7 @@ import React, { useRef, useCallback, useMemo } from "react";
 import { useGetUserLikedArts } from "../../../hooks/profile/likes/useGetUserLikedArts";
 import { LikedArtCard } from "./LikedArtCard.tsx";
 import { Skeleton } from "../../../../../components/ui/skeleton";
-import { HeartOff, AlertCircle } from "lucide-react";
+import { Gem, AlertCircle } from "lucide-react";
 
 const LikedItems: React.FC = () => {
 
@@ -38,7 +38,7 @@ const LikedItems: React.FC = () => {
   if (isLoading) return <LoadingGrid />;
 
   if (isError) return (
-    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+    <div className="flex flex-col items-center justify-center py-32 text-muted-foreground">
       <AlertCircle className="w-10 h-10 mb-2 opacity-20" />
       <p>Failed to load likes. Please try again.</p>
     </div>
@@ -46,8 +46,8 @@ const LikedItems: React.FC = () => {
 
   if (arts.length === 0) return (
     <div className="flex flex-col items-center justify-center py-32 text-zinc-500">
-      <HeartOff className="w-12 h-12 mb-4 opacity-20" />
-      <h3 className="text-xl font-semibold">No liked items</h3>
+      <Gem className="w-12 h-12 mb-4 opacity-20" />
+      <h3 className="text-3xl font-semibold">No liked items</h3>
       <p className="text-sm">Arts you like will appear here.</p>
     </div>
   );
