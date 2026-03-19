@@ -32,6 +32,7 @@ export const ROUTES = {
     COMMENTS_BY_ID: "/api/v1/art/comments/:id",
     COMMENTS_BY_POST_ID: "/api/v1/art/comments/:postId",
     LIKE: "/api/v1/art/like",
+    LIKED_ARTS: "/api/v1/art/like/liked-arts",
     DISLIKE: "/api/v1/art/disLike",
     UNLIKE: "/api/v1/art/unlike",
     LIKES_BY_POST_ID: "/api/v1/art/likes/:postId",

@@ -28,6 +28,7 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.COMMENTS_BY_ID, methods: ["PUT", "DELETE"] },
 
     { path: ROUTES.ART.LIKE, methods: ["POST"] },
+    { path: ROUTES.ART.LIKED_ARTS, methods: ["GET"] },
     { path: ROUTES.ART.DISLIKE, methods: ["DELETE"] },
 
     { path: ROUTES.UPLOAD.BASE, methods: ["POST", "PATCH"] },
