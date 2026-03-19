@@ -19,6 +19,9 @@ import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/I
 import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
 import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
 import { IGetPurchasedArtWorksUseCase } from '../../application/interface/usecase/art/IGetPurchasedArtWorksUseCase';
+import { ISaledArtworkOfuserUseCase } from '../../application/interface/usecase/art/ISaledArtworkOfuserUseCase';
+import { IGetSalesAnalyticsUseCase } from '../../application/interface/usecase/art/IGetSalesAnalyticsUseCase';
+import { IGetPurchaseAnalyticsUseCase } from '../../application/interface/usecase/art/IGetPurchaseAnalyticsUseCase';
 
 @injectable()
 export class ArtController implements IArtController {
@@ -41,8 +44,14 @@ export class ArtController implements IArtController {
     private readonly _buyArtUseCase: IBuyArtUseCase,
     @inject(TYPES.IDownloadArtUseCase)
     private readonly _downloadArtUseCase: IDownloadArtUseCase,
+    @inject(TYPES.ISaledArtworkOfuserUseCase)
+    private readonly _saledArtworkOfuserUseCase: ISaledArtworkOfuserUseCase,
     @inject(TYPES.IGetPurchasedArtWorksUseCase)
-    private readonly _getPurchasedArtWorksUseCase: IGetPurchasedArtWorksUseCase
+    private readonly _getPurchasedArtWorksUseCase: IGetPurchasedArtWorksUseCase,
+    @inject(TYPES.IGetSalesAnalyticsUseCase)
+    private readonly _getSalesAnalyticsUseCase: IGetSalesAnalyticsUseCase,
+    @inject(TYPES.IGetPurchaseAnalyticsUseCase)
+    private readonly _getPurchaseAnalyticsUseCase: IGetPurchaseAnalyticsUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -406,6 +415,78 @@ export class ArtController implements IArtController {
     }
   };
 
+  //# ===============================================================================================================
+  //# SALED ART WORKS
+  //# ================================================================================================================
+  //# GET /api/v1/art/saled
+  //# Query params: page (number), limit (number)
+  //# This controller fetches the art works sold by the user.
+  //# ================================================================================================================
+  saledArtWorks = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 15;
+      const userId = req.headers['x-user-id'] as string;
+
+      const arts = await this._saledArtworkOfuserUseCase.execute(
+        userId,
+        page,
+        limit,
+      );
+
+      logger.info(
+        `✅ [SaledArtWorks] Fetched ${arts.length} saled arts for userId=${userId}`,
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.SALED_ARTWORKS_FETCH_SUCCESS,
+        data: arts,
+      });
+    } catch (error) {
+      logger.error('Error in saledArtWorks', error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# SALES ANALYTICS
+  //# ================================================================================================================
+  //# GET /api/v1/art/sales-analytics
+  //# Query params: range (string: today, 7d, 30d, all)
+  //# This controller fetches sales analytics for the user.
+  //# ================================================================================================================
+  salesAnalytics = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const range = req.query.range as string || '7d';
+      const userId = req.headers['x-user-id'] as string;
+
+      const analytics = await this._getSalesAnalyticsUseCase.execute(
+        userId,
+        range,
+      );
+
+      logger.info(
+        `✅ [SalesAnalytics] Fetched sales analytics for userId=${userId} with range=${range}`,
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.SALES_ANALYTICS_FETCH_SUCCESS,
+        data: analytics,
+      });
+    } catch (error) {
+      logger.error('Error in salesAnalytics', error);
+      next(error);
+    }
+  };
+
   //# ================================================================================================================
   //# PURCHASED ART WORKS
   //# ================================================================================================================
@@ -442,4 +523,39 @@ export class ArtController implements IArtController {
       next(error);
     }
   };
+
+  //# ================================================================================================================
+  //# PURCHASE ANALYTICS
+  //# ================================================================================================================
+  //# GET /api/v1/art/purchase-analytics
+  //# Query params: range (string: today, 7d, 30d, all)
+  //# This controller fetches purchase analytics for the user.
+  //# ================================================================================================================
+  purchaseAnalytics = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const range = req.query.range as string || '7d';
+      const userId = req.headers['x-user-id'] as string;
+
+      const analytics = await this._getPurchaseAnalyticsUseCase.execute(
+        userId,
+        range,
+      );
+
+      logger.info(
+        `✅ [PurchaseAnalytics] Fetched purchase analytics for userId=${userId} with range=${range}`,
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: ART_MESSAGES.PURCHASE_ANALYTICS_FETCH_SUCCESS,
+        data: analytics,
+      });
+    } catch (error) {
+      logger.error('Error in purchaseAnalytics', error);
+      next(error);
+    }
+  }; 
 }

@@ -49,9 +49,13 @@ router.get(ROUTES.ART.BY_USER_ID, artController.getArtWithUser);
 router.get(ROUTES.ART.COUNT, artController.countArtwork);
 router.get(ROUTES.ART.BY_ART_NAME, artController.getArtByArtName);
 router.get(ROUTES.ART.RECOMMENDED, artController.getRecommendedArt);
-router.get(ROUTES.ART.BY_ID, artController.getArtById);
 router.post(ROUTES.ART.BUY, artController.buyArt);
 router.get(ROUTES.ART.DOWNLOAD, artController.downloadArt);
+router.get(ROUTES.ART.SALED, artController.saledArtWorks);
+router.get(ROUTES.ART.SALES_ANALYTICS, artController.salesAnalytics);
+router.get(ROUTES.ART.PURCHASED, artController.purchasedArtWorks);
+router.get(ROUTES.ART.PURCHASE_ANALYTICS, artController.purchaseAnalytics);
+router.get(ROUTES.ART.BY_ID, artController.getArtById);
 
 // Comment
 router.put(ROUTES.COMMENT.EDIT, commentController.editComment);

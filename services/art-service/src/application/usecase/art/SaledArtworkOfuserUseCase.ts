@@ -1,0 +1,58 @@
+import { inject, injectable } from "inversify";
+import { NotFoundError } from "art-chain-shared";
+import { TYPES } from "../../../infrastructure/Inversify/types";
+import { ERROR_MESSAGES } from "../../../constants/ErrorMessages";
+import { IUserService } from "../../interface/service/IUserService";
+import { IArtPostRepository } from "../../../domain/repositories/IArtPostRepository";
+import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
+import { ISaledArtworkOfuserUseCase } from "../../interface/usecase/art/ISaledArtworkOfuserUseCase";
+import { toSaleHistoryResponse } from "../../mapper/artWithUserMapper";
+
+@injectable()
+export class SaledArtworkOfuserUseCase implements ISaledArtworkOfuserUseCase {
+    constructor(
+        @inject(TYPES.IUserService)
+        private readonly _userService: IUserService,
+        @inject(TYPES.IArtPostRepository)
+        private readonly _artRepo: IArtPostRepository,
+        @inject(TYPES.IPurchaseRepository)
+        private readonly _purchaseRepo: IPurchaseRepository,
+    ) { }
+
+    async execute(userId: string, page: number, limit: number) {
+        const user = await this._userService.getUserById(userId);
+        if (!user) throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
+
+        const purchases = await this._purchaseRepo.findBySellerId(userId, page, limit);
+        if (!purchases || purchases.length === 0) return [];
+
+        const artIds = [...new Set(purchases.map(p => p.artId).filter(Boolean))];
+        const buyerIds = [...new Set(purchases.map(p => p.userId).filter(Boolean))];
+
+        const [allArts, allBuyers] = await Promise.all([
+            this._artRepo.findByIds(artIds),
+            this._userService.getUsersByIds(buyerIds)
+        ]);
+
+        const artMap = new Map(
+            allArts
+                .filter(art => !!art) 
+                .map(art => [(art._id || art.id).toString(), art])
+        );
+
+        const buyerMap = new Map(
+            allBuyers
+                .filter(b => !!b)
+                .map(b => [(b._id || b.id).toString(), b])
+        );
+        return purchases.map((purchase) => {
+            const purchaseArtId = purchase.artId?.toString();
+            const purchaseBuyerId = purchase.userId?.toString();
+
+            const art = purchaseArtId ? artMap.get(purchaseArtId) : null;
+            const buyer = purchaseBuyerId ? buyerMap.get(purchaseBuyerId) : null;
+
+            return toSaleHistoryResponse(purchase, art, buyer);
+        });
+    }
+}

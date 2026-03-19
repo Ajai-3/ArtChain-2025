@@ -26,9 +26,12 @@ export const TYPES = {
   ICreateArtPostUseCase: Symbol.for('ICreateArtPostUseCase'),
   IGetAllShopArtsUseCase: Symbol.for('IGetAllShopArtsUseCase'),
   IGetShopArtsByUserUseCase: Symbol.for('IGetShopArtsByUserUseCase'),
+  IGetSalesAnalyticsUseCase: Symbol.for('IGetSalesAnalyticsUseCase'),
+  ISaledArtworkOfuserUseCase: Symbol.for('ISaledArtworkOfuserUseCase'),
   IArtToElasticSearchUseCase: Symbol.for('IArtToElasticSearchUseCase'),
   IGetAllArtWithUserIdUseCase: Symbol.for('IGetAllArtWithUserIdUseCase'),
   IGetPurchasedArtWorksUseCase: Symbol.for('IGetPurchasedArtWorksUseCase'),
+  IGetPurchaseAnalyticsUseCase: Symbol.for('IGetPurchaseAnalyticsUseCase'),
 
   // Use Cases - Category
   IEditCategoryUseCase: Symbol.for('IEditCategoryUseCase'),

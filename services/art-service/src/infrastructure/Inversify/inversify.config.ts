@@ -54,9 +54,12 @@ import { IGetArtByNameUseCase } from '../../application/interface/usecase/art/IG
 import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/ICreateArtPostUseCase';
 import { IGetAllShopArtsUseCase } from '../../application/interface/usecase/art/IGetShopArtsByUserUseCase';
 import { IGetShopArtsByUserUseCase } from '../../application/interface/usecase/art/IGetAllShopArtsUseCase';
+import { ISaledArtworkOfuserUseCase } from '../../application/interface/usecase/art/ISaledArtworkOfuserUseCase';
 import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
 import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
 import { IGetPurchasedArtWorksUseCase } from '../../application/interface/usecase/art/IGetPurchasedArtWorksUseCase';
+import { IGetSalesAnalyticsUseCase } from '../../application/interface/usecase/art/IGetSalesAnalyticsUseCase';
+import { IGetPurchaseAnalyticsUseCase } from '../../application/interface/usecase/art/IGetPurchaseAnalyticsUseCase';
 
 import { GetAllArtUseCase } from '../../application/usecase/art/GetAllArtUseCase';
 import { GetArtByIdUseCase } from '../../application/usecase/art/GetArtByIdUseCase';
@@ -64,10 +67,13 @@ import { CountArtWorkUseCase } from '../../application/usecase/art/CountArtWorkU
 import { GetArtByNameUseCase } from '../../application/usecase/art/GetArtByNameUseCase';
 import { CreateArtPostUseCase } from '../../application/usecase/art/CreateArtPostUseCase';
 import { GetAllShopArtsUseCase } from '../../application/usecase/shop/GetAllShopArtsUseCase';
+import { GetSalesAnalyticsUseCase } from '../../application/usecase/art/GetSalesAnalyticsUseCase';
 import { GetShopArtsByUserUseCase } from '../../application/usecase/shop/GetShopArtsByUserUseCase';
 import { ArtToElasticSearchUseCase } from '../../application/usecase/art/ArtToElasticSearchUseCase';
+import { SaledArtworkOfuserUseCase } from '../../application/usecase/art/SaledArtworkOfuserUseCase';
 import { GetAllArtWithUserIdUseCase } from '../../application/usecase/art/GetAllArtWithUserIdUseCase';
 import { GetPurchasedArtWorksUseCase } from '../../application/usecase/art/GetPurchasedArtWorksUseCase';
+import { GetPurchaseAnalyticsUseCase } from '../../application/usecase/art/GetPurchaseAnalyticsUseCase';
 
 import { IBuyArtUseCase } from '../../application/interface/usecase/art/IBuyArtUseCase';
 import { BuyArtUseCase } from '../../application/usecase/art/BuyArtUseCase';
@@ -131,7 +137,7 @@ import { ICheckAIQuotaUseCase } from '../../application/interface/usecase/ai/ICh
 import { IUpdateAIConfigUseCase } from '../../application/interface/usecase/ai/admin/IUpdateAIConfigUseCase';
 import { IGetAIConfigsUseCase } from '../../application/interface/usecase/ai/admin/IGetAIConfigsUseCase';
 import { IGetAIAnalyticsUseCase } from '../../application/interface/usecase/ai/admin/IGetAIAnalyticsUseCase';
-import { IDeleteAIGenerationUseCase } from '../../application/interface/usecase/ai/IDeleteAIGenerationUseCase'; // Added
+import { IDeleteAIGenerationUseCase } from '../../application/interface/usecase/ai/IDeleteAIGenerationUseCase';
 
 import { GenerateAIImageUseCase } from '../../application/usecase/ai/GenerateAIImageUseCase';
 import { GetMyAIGenerationsUseCase } from '../../application/usecase/ai/GetMyAIGenerationsUseCase';
@@ -306,6 +312,15 @@ container
 container
   .bind<IGetPurchasedArtWorksUseCase>(TYPES.IGetPurchasedArtWorksUseCase)
   .to(GetPurchasedArtWorksUseCase);
+container
+  .bind<ISaledArtworkOfuserUseCase>(TYPES.ISaledArtworkOfuserUseCase)
+  .to(SaledArtworkOfuserUseCase);
+container
+  .bind<IGetSalesAnalyticsUseCase>(TYPES.IGetSalesAnalyticsUseCase)
+  .to(GetSalesAnalyticsUseCase);
+container
+  .bind<IGetPurchaseAnalyticsUseCase>(TYPES.IGetPurchaseAnalyticsUseCase)
+  .to(GetPurchaseAnalyticsUseCase);
 
 // Services
 container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);

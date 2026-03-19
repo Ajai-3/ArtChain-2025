@@ -21,5 +21,8 @@ export enum ART_MESSAGES {
   BUY_SUCCESS = 'Art purchased successfully',
   BUY_FAILED = 'Failed to purchase art',
   USER_ID_REQUIRED = 'User ID is required',
+  SALED_ARTWORKS_FETCH_SUCCESS = 'Fetched saled artworks successfully',
   PURCHASED_ARTWORKS_FETCH_SUCCESS = 'Fetched purchased artworks successfully',
+  SALES_ANALYTICS_FETCH_SUCCESS = 'Fetched sales analytics successfully',
+  PURCHASE_ANALYTICS_FETCH_SUCCESS = 'Fetched purchase analytics successfully',
 }

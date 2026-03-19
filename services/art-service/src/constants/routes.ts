@@ -27,6 +27,10 @@ export const ROUTES = {
     RECOMMENDED: '/recommended',
     BUY: '/buy/:id',
     DOWNLOAD: '/download/:id',
+    SALED: '/saled',
+    PURCHASED: '/purchased',
+    SALES_ANALYTICS: '/sales-analytics',
+    PURCHASE_ANALYTICS: '/purchase-analytics',
   },
 
   // Comment routes

@@ -147,3 +147,46 @@ export const toArtWithUserForLikeResponse = (art: any, user: any) => {
     }
   };
 };  
+
+export const toSaleHistoryResponse = (purchase: any, art: any, buyer: any) => {
+  return {
+    transactionId: purchase.transactionId,
+    purchaseDate: purchase.purchaseDate,
+    amount: purchase.amount,
+    art: art ? {
+      id: art._id?.toString() || art.id,
+      title: art.title,
+      artName: art.artName,
+      imageUrl: mapCdnUrl(art.previewUrl),
+      category: art.category,
+    } : null,
+    buyer: buyer ? {
+      id: buyer.id || buyer._id?.toString(),
+      name: buyer.name,
+      username: buyer.username,
+      profileImage: buyer.profileImage ? mapCdnUrl(buyer.profileImage) : '',
+    } : null,
+  };
+};
+
+export const toPurchaseHistoryResponse = (purchase: any, art: any, seller: any) => {
+  return {
+    transactionId: purchase.transactionId,
+    purchaseDate: purchase.purchaseDate,
+    amount: purchase.amount,
+    art: art ? {
+      id: art._id?.toString() || art.id,
+      title: art.title,
+      artName: art.artName,
+      imageUrl: mapCdnUrl(art.previewUrl),
+      category: art.category,
+      createdAt: art.createdAt,
+    } : null,
+    seller: seller ? {
+      id: seller.id || seller._id?.toString(),
+      name: seller.name,
+      username: seller.username,
+      profileImage: seller.profileImage ? mapCdnUrl(seller.profileImage) : '',
+    } : null,
+  };
+};
