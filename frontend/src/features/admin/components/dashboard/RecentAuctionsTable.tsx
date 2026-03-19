@@ -49,7 +49,7 @@ const RecentAuctionsTable: React.FC<RecentAuctionsTableProps> = ({ auctions }) =
               <TableRow key={auction.id}>
                 <TableCell className="font-medium text-muted-foreground text-xs">{index + 1}</TableCell>
                 <TableCell>
-                  <img src={auction.image || (auction as any).imageKey} alt={auction.title} className="h-10 w-10 rounded-md bg-muted object-cover" />
+                  <img src={auction.imageKey} alt={auction.title} className="h-10 w-10 rounded-md bg-muted object-cover" />
                 </TableCell>
                 <TableCell>
                     <div className="flex flex-col gap-1">

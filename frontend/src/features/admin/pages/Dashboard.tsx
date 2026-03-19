@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
     const artCoinRate = useSelector((state: RootState) => state.platform.artCoinRate);
 
     // Data Fetching
-    const { stats: dashboardStats, loading: dashboardLoading, error: dashboardError } = useDashboardStats(); // General stats (tables)
+    const { stats: dashboardStats, loading: dashboardLoading, error: dashboardError } = useDashboardStats(); 
     const { stats: revenueStats } = useRevenueStats(revenueFilter);
     const { data: transactionStats } = useTransactionStats(transactionFilter);
     const { data: commissionStats } = useCommissionStats(commissionFilter);
