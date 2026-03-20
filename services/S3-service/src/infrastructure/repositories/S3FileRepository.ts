@@ -102,9 +102,6 @@ export class S3FileRepository implements IFileRepository {
       //   //  publicUrl = createSignedUrl(publicUrl);
       // }
 
-      if (category === 'commission') {
-      }
-
       logger.info(
         `✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`,
       );
