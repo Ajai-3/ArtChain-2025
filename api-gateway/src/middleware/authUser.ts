@@ -1,4 +1,5 @@
 import { logger } from '../utils/logger';
+import { checkUserStatus } from '../utils/checkUserStatus';
 import { tokenService } from '../service/tokenService';
 import { Request, Response, NextFunction } from 'express';
 import {
@@ -33,6 +34,8 @@ export const authUser = async (
     if (decoded.role !== 'user' && decoded.role !== 'artist' && decoded.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
+
+    await checkUserStatus(decoded.id, req.method, 'auth');
 
     req.headers['x-user-id'] = decoded.id;
 

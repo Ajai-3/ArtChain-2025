@@ -1,3 +1,4 @@
+import { checkUserStatus } from '../utils/checkUserStatus';
 import { tokenService } from '../service/tokenService';
 import { Request, Response, NextFunction } from 'express';
 import {
@@ -35,6 +36,8 @@ export const optionalAuthUser = async (
     ) {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
+
+    await checkUserStatus(decoded.id, req.method, 'optional auth');
 
     req.headers['x-user-id'] = decoded.id;
     (req as any).user = decoded;

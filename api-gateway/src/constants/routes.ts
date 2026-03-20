@@ -14,6 +14,7 @@ export const ROUTES = {
     DEACTIVATE: '/api/v1/user/deactivate',
     PROFILE: '/api/v1/user/profile',
     PROFILE_BY_USERNAME: '/api/v1/user/profile/:username',
+    PROFILE_BY_ID_SERVICE: '/api/v1/user/profile-id/:userId',
     SUPPORTERS: '/api/v1/user/:id/supporters',
     SUPPORTING: '/api/v1/user/:id/supporting',
     REPORT: '/api/v1/user/report',
