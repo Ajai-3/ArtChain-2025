@@ -61,7 +61,11 @@ const RecentCommissionsTable: React.FC<RecentCommissionsTableProps> = ({ commiss
                     {/* Client & Message */}
                     <div className="pl-8 flex flex-col gap-1">
                         <div className="flex items-center gap-1.5">
+                           
                              <span className="text-[10px] uppercase text-muted-foreground">Client:</span>
+                             <div className="h-6 w-6 rounded-full overflow-hidden bg-zinc-200 flex-shrink-0">
+                             <img src={(comm as any).clientProfileImage || `https://ui-avatars.com/api/?name=${comm.clientName}&background=random`} alt="" className="h-full w-full object-cover" />
+                           </div>
                              <span className="text-xs font-medium">{comm.clientName}</span>
                         </div>
                         <span className="text-xs text-muted-foreground italic truncate max-w-[200px]" title={(comm as any).requestMessage || 'No details'}>
@@ -71,7 +75,7 @@ const RecentCommissionsTable: React.FC<RecentCommissionsTableProps> = ({ commiss
                   </div>
                 </TableCell>
                 <TableCell>
-                    <span className="font-mono text-sm">{comm.amount > 0 ? `${comm.amount} AC` : '-'}</span>
+                    <span className="font-mono text-emerald-500 font-bold text-sm">{comm.amount > 0 ? `${comm.amount} AC` : '-'}</span>
                 </TableCell>
                 <TableCell>
                     <Badge variant={getStatusVariant(comm.status) as any} className="text-[10px] px-2 py-0.5 h-6">
