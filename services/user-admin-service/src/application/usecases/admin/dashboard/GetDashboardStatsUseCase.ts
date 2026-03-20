@@ -96,9 +96,11 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
       amount: c.budget || c.price || 0,
       status: c.status,
       artistName: commUserMap.get(c.artistId)?.name || 'Unknown Artist',
-      artistProfileImage: commUserMap.get(c.artistId)?.profileImage,
+      artistUsername: commUserMap.get(c.artistId)?.username,
+      artistProfileImage: mapCdnUrl(commUserMap.get(c.artistId)?.profileImage),
       clientName: commUserMap.get(c.requesterId)?.name || 'Unknown Client',
-      clientProfileImage: commUserMap.get(c.requesterId)?.profileImage,
+      clientUsername: commUserMap.get(c.requesterId)?.username,
+      clientProfileImage: mapCdnUrl(commUserMap.get(c.requesterId)?.profileImage),
       requestMessage: c.requestMessage,
       createdAt: c.createdAt
     }));
@@ -140,7 +142,7 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
       },
       artworkCounts,
       auctionCounts: auctionCounts?.overall || auctionCounts || { active: 0, ended: 0, sold: 0, unsold: 0 },
-      commissionCounts: commissionCounts?.overall || commissionCounts || { REQUESTED: 0, AGREED: 0, IN_PROGRESS: 0, COMPLETED: 0 },
+      commissionCounts: commissionCounts?.overall || commissionCounts || { REQUESTED: 0, AGREED: 0, IN_PROGRESS: 0, COMPLETED: 0, CANCELLED: 0 },
       transactionStats: transactionStats || []
     };
   }
