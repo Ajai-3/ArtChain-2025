@@ -84,6 +84,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ isOpen, onClose }) => {
           postDetails={postDetails}
           setPostDetails={setPostDetails}
           onSubmit={handleSubmitPost}
+          isLoading={createPostMutation.isPending}
         />
       </div>
     </div>

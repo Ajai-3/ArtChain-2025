@@ -9,12 +9,14 @@ interface PostDetailsFormProps {
   postDetails: any;
   setPostDetails: (val: any) => void;
   onSubmit: () => void;
+  isLoading?: boolean;
 }
 
 const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
   postDetails,
   setPostDetails,
   onSubmit,
+  isLoading = false,
 }) => {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -85,9 +87,17 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
             <Button
               onClick={onSubmit}
               variant="transparant"
-              className="hover:text-main-color"
+              className={`hover:text-main-color ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+              disabled={isLoading}
             >
-              Post
+              {isLoading ? (
+                <>
+                  <span className="h-4 w-4 border-2 border-current border-t-transparent animate-spin rounded-full mr-2"></span>
+                  Posting...
+                </>
+              ) : (
+                "Post"
+              )}
             </Button>
           </div>
           <StepTwoForm
