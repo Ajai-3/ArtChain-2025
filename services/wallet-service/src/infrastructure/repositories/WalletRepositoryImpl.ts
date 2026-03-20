@@ -323,23 +323,35 @@ export class WalletRepositoryImpl
     }));
   }
 
-  async getDailyStats(walletId: string, startDate?: Date): Promise<any[]> {
-    const dateFilter = startDate
-      ? `AND "createdAt" >= ${startDate.toISOString() ? `'${startDate.toISOString()}'` : 'NOW()'}`
-      : '';
+  async getDailyStats(walletId: string, startDate?: Date) {
+    const results = await prisma.transaction.groupBy({
+      by: ['type', 'category', 'createdAt'],
+      where: {
+        walletId,
+        ...(startDate && {
+          createdAt: {
+            gte: startDate,
+          },
+        }),
+      },
+      _sum: {
+        amount: true,
+      },
+      _count: {
+        _all: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
 
-    return await prisma.$queryRawUnsafe(`
-      SELECT 
-        "createdAt"::DATE as date,
-        "type",
-        SUM("amount") as total_amount,
-        COUNT(*) as count_tx
-      FROM "Transaction"
-      WHERE "walletId" = '${walletId}'
-      ${startDate ? `AND "createdAt" >= '${startDate.toISOString()}'` : ''}
-      GROUP BY "createdAt"::DATE, "type"
-      ORDER BY date ASC
-    `);
+    return results.map((item) => ({
+      date: item.createdAt.toISOString().split('T')[0],
+      type: item.type,
+      category: item.category,
+      total_amount: Number(item._sum.amount || 0),
+      count_tx: item._count._all,
+    }));
   }
 
   async getCategoryStats(walletId: string, startDate?: Date): Promise<any[]> {
