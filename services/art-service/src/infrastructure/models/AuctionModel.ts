@@ -15,10 +15,15 @@ const AuctionSchema = new Schema<AuctionDocument>(
     endTime: { type: Date, required: true },
     status: { 
       type: String, 
-      enum: ['SCHEDULED', 'ACTIVE', 'ENDED', 'CANCELLED'] as AuctionStatus[], 
+      enum: ['SCHEDULED', 'ACTIVE', 'ENDED', 'CANCELLED', 'UNSOLD'] as AuctionStatus[], 
       default: 'SCHEDULED' 
     },
     winnerId: { type: String, default: null },
+    paymentStatus: {
+      type: String,
+      enum: ['PENDING', 'SUCCESS', 'FAILED', 'NONE'],
+      default: 'NONE',
+    },
     bids: [{ type: Schema.Types.ObjectId, ref: 'Bid' }]
   },
   { timestamps: true }

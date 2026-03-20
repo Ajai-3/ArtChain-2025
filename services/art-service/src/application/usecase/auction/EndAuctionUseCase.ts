@@ -55,7 +55,16 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       const totalAmount = winningBid.amount;
       const commissionAmount = totalAmount * commissionRate;
 
-      // We use hostId as sellerId
+      // 4. Update Auction to PENDING payment
+      await this._auctionRepository.update(auctionId, {
+        paymentStatus: 'PENDING',
+      });
+
+      logger.info(
+        `[EndAuctionUseCase] Attempting settlement for auction ${auctionId}. Winner: ${winningBid.bidderId}, Seller: ${auction.hostId}, Amount: ${totalAmount}`,
+      );
+
+      // 5. Settle Funds (External Service)
       const settlementSuccess = await this._walletService.settleAuction(
         winningBid.bidderId,
         auction.hostId,
@@ -64,27 +73,45 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
         auctionId,
       );
 
+      logger.info(`[EndAuctionUseCase] Settlement result for ${auctionId}: ${settlementSuccess}`);
+
       if (settlementSuccess) {
-        // 5. Update Auction Status
+        // 5. Success Flow
+        if (winningBid._id) {
+          await this._bidRepository.update(winningBid._id, { isWinner: true });
+        }
+
         await this._auctionRepository.update(auctionId, {
           status: 'ENDED',
           winnerId: winningBid.bidderId,
+          paymentStatus: 'SUCCESS',
         });
 
-        // 6. Notify
         this._socketService.publishAuctionEnded({
           auctionId,
           winnerId: winningBid.bidderId,
           winningBidAmount: winningBid.amount,
           status: 'ENDED',
         });
-        logger.info(
-          `Auction ${auctionId} settled successfully. Winner: ${winningBid.bidderId}`,
-        );
+
+        logger.info(`[EndAuctionUseCase] Auction ${auctionId} settled and ended successfully.`);
       } else {
-        logger.error(
-          `Failed to settle funds for auction ${auctionId}. Auction status remains ACTIVE.`,
-        );
+        // 6. Failure Flow
+        logger.error(`[EndAuctionUseCase] Settlement FAILED for auction ${auctionId}. Marking paymentStatus as FAILED.`);
+        
+        await this._auctionRepository.update(auctionId, {
+          status: 'ENDED', // Still ended because time is up
+          winnerId: winningBid.bidderId,
+          paymentStatus: 'FAILED',
+        });
+
+        this._socketService.publishAuctionEnded({
+          auctionId,
+          winnerId: winningBid.bidderId,
+          winningBidAmount: winningBid.amount,
+          status: 'ENDED',
+        });
+
         return false;
       }
     } else {

@@ -12,6 +12,7 @@ export class Auction {
     public readonly currentBid: number = 0,
     public readonly status: AuctionStatus = 'SCHEDULED',
     public readonly winnerId: string | null = null,
+    public readonly paymentStatus: 'PENDING' | 'SUCCESS' | 'FAILED' | 'NONE' = 'NONE',
     public readonly bids: string[] = [],
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date,
