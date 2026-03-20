@@ -55,6 +55,7 @@ export const ROUTES = {
     SALES_ANALYTICS: '/api/v1/art/sales-analytics',
     PURCHASE_ANALYTICS: '/api/v1/art/purchase-analytics',
     MY_BIDDING_HISTORY: '/api/v1/art/my-bidding-history',
+    AUCTION_COUNTS: '/api/v1/art/auctions/counts',
   },
   UPLOAD: {
     BASE: '/api/v1/upload',
