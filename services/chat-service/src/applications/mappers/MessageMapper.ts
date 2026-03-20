@@ -38,7 +38,7 @@ export class MessageMapper {
       mediaUrl:
         message.mediaType === MediaType.IMAGE
           ? mapCdnUrl(message.content) ?? null
-          : message.mediaUrl ?? null,
+          : mapCdnUrl(message.mediaUrl) ?? null,
       isDeleted: false,
       readBy: message.readBy,
       deletedAt: message.deletedAt ?? null,

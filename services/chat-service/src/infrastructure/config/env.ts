@@ -1,6 +1,5 @@
-import dotenv from 'dotenv';
+import 'dotenv-flow/config';
 // import { getArtChainSecrets } from "art-chain-shared";
-dotenv.config();
 
 // COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
 // const secrets = await getArtChainSecrets("ArtChainCommonSecret");

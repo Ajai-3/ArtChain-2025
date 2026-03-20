@@ -29,11 +29,28 @@ export class SendMessageUseCase implements ISendMessageUseCase {
   ) {}
 
   async execute(dto: SendMessageDto): Promise<void> {
-    let { senderId, receiverId, content, conversationId, tempId, mediaType } =
-      dto;
+    let { 
+      senderId, 
+      receiverId, 
+      content, 
+      conversationId, 
+      tempId, 
+      mediaType, 
+      mediaUrl 
+    } = dto;
 
-    if (!content?.trim()) {
+    const isTextMessage = !mediaType || mediaType === MediaType.TEXT;
+    const hasMedia = !!mediaUrl || (!!content && mediaType !== MediaType.TEXT);
+
+    if (!content?.trim() && isTextMessage) {
       throw new BadRequestError(ERROR_MESSAGES.MESSAGE_CONTENT_EMPTY);
+    }
+
+    // Ensure content is not null for DB 'required' constraint
+    const safeContent = content?.trim() || mediaUrl || '';
+
+    if (!safeContent && !hasMedia) {
+       throw new BadRequestError(ERROR_MESSAGES.MESSAGE_CONTENT_EMPTY);
     }
 
     conversationId = await this.resolveConversation(
@@ -45,8 +62,9 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     const message = await this._messageRepo.create({
       conversationId,
       senderId,
-      content: content.trim(),
+      content: safeContent,
       mediaType: (mediaType as MediaType) || MediaType.TEXT,
+      mediaUrl,
       readBy: [senderId],
       deleteMode: DeleteMode.NONE,
       callId: dto.callId,
@@ -57,7 +75,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     await this._cacheService.cacheMessage(message);
 
     const broadcastMessage = { ...message };
-    if (message.mediaType === MediaType.IMAGE) {
+    if (message.mediaType === MediaType.IMAGE && !message.mediaUrl) {
       // @ts-ignore
       broadcastMessage.mediaUrl = mapCdnUrl(message.content);
     }
