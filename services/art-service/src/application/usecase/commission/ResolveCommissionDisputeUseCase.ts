@@ -29,6 +29,7 @@ export class ResolveCommissionDisputeUseCase {
       // Return funds to requester
       success = await this._walletService.refundCommissionFunds({
         userId: commission.requesterId,
+        artistId: commission.artistId,
         commissionId: commission._id,
         amount: commission.budget
       });

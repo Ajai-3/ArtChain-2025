@@ -46,22 +46,13 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
     }
     console.log(artist);
     
-    if (artist.role !== 'artist') {
+    if ((artist as any).role !== 'artist') {
       console.error('User is not an artist:', artistId);
       throw new BadRequestError(COMMISSION_MESSAGES.INVALID_ARTIST_ROLE);
     }
-    console.log('Artist validated:', artist.name || artist.username);
+    console.log('Artist validated:', (artist as any).name || (artist as any).username);
 
-    // Check for existing active commissions for this pair
-    const existingCommissions = await this._commissionRepository.findByRequesterId(requesterId);
-    const activeCommissionForArtist = existingCommissions.find(c => 
-        c.artistId === artistId && 
-        ![CommissionStatus.COMPLETED, CommissionStatus.CANCELLED].includes(c.status as any)
-    );
-
-    if (activeCommissionForArtist) {
-        throw new BadRequestError(COMMISSION_MESSAGES.ACTIVE_COMMISSION_EXISTS);
-    }
+    // User is now able to create multiple commissions instead of blocking if one exists
 
     // 1. Create Conversation in Chat Service (Type: REQUEST)
     let conversationId: string;
@@ -103,6 +94,8 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
       deadline,
       status: CommissionStatus.REQUESTED,
       platformFeePercentage: feePercentage,
+      requesterAgreed: false,
+      artistAgreed: false,
       history: [
           {
               action: CommissionStatus.REQUESTED,

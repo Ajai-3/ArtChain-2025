@@ -6,6 +6,7 @@ import { TYPES } from '../../../infrastructure/Inversify/types';
 import { IUserService } from '../../interface/service/IUserService';
 import { IGetArtByIdUseCase } from '../../interface/usecase/art/IGetArtByIdUseCase';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { mapCdnUrl } from '../../../utils/mapCdnUrl';
 
 @injectable()
 export class GetArtByIdUseCase implements IGetArtByIdUseCase {
@@ -13,7 +14,7 @@ export class GetArtByIdUseCase implements IGetArtByIdUseCase {
     @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository
-  ) {}
+  ) { }
 
   async execute(id: string): Promise<{ art: ArtPost | null; user: unknown }> {
     const art = await this._artRepo.getById(id);
@@ -23,7 +24,11 @@ export class GetArtByIdUseCase implements IGetArtByIdUseCase {
     }
 
     const user = await this._userService.getUserById(art.userId);
-    
-    return { art, user };
+
+    return {
+      art: { ...art, previewUrl: mapCdnUrl(art.previewUrl) || art.previewUrl, watermarkedUrl: mapCdnUrl(art.watermarkedUrl) || art.watermarkedUrl },
+
+      user
+    };
   }
 }

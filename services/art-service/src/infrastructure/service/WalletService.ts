@@ -131,6 +131,7 @@ export class WalletService implements IWalletService {
 
   async refundCommissionFunds(params: {
     userId: string;
+    artistId: string;
     commissionId: string;
     amount: number;
   }): Promise<boolean> {
@@ -142,6 +143,24 @@ export class WalletService implements IWalletService {
       return response.data.message === 'Funds refunded successfully';
     } catch (error) {
       console.error('Error refunding commission funds:', error);
+      return false;
+    }
+  }
+
+  async transferLockedCommissionFunds(params: {
+    fromUserId: string;
+    toUserId: string;
+    commissionId: string;
+    amount: number;
+  }): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        `${config.api_gateway_url}/api/v1/wallet/transaction/commission/transfer-locked`,
+        params,
+      );
+      return response.status === 200 || response.status === 201;
+    } catch (error) {
+      console.error('Error transferring locked commission funds:', error);
       return false;
     }
   }

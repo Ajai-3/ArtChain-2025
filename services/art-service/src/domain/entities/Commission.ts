@@ -44,6 +44,9 @@ export class Commission {
     public readonly autoReleaseDate?: Date,
     public readonly disputeReason?: string,
     public readonly platformFeePercentage?: number,
+    public readonly requesterAgreed: boolean = false,
+    public readonly artistAgreed: boolean = false,
+    public readonly finalImageUrl?: string,
     public readonly createdAt?: Date,
     public readonly updatedAt?: Date
   ) {}
