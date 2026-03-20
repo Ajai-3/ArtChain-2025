@@ -1,4 +1,5 @@
-import { Clock, AlertCircle, Trophy } from 'lucide-react';
+import { Clock, AlertCircle, Trophy, DownloadCloud, Loader2 } from 'lucide-react';
+import { useDownloadFileMutation } from '../../../hooks/art/useDownloadFileMutation';
 import { CountdownTimer } from '../CountdownTimer';
 import { formatNumber } from '../../../../../libs/formatNumber';
 import type { Auction } from '../../../../../types/auction';
@@ -19,7 +20,7 @@ interface DetailStatsCardProps {
 export const DetailStatsCard = ({
   auction,
   isLive,
-  isEnded,  
+  isEnded,
   isScheduled,
   isCanceled,
   isUnsold,
@@ -28,6 +29,9 @@ export const DetailStatsCard = ({
 }: DetailStatsCardProps) => {
   const currentUserId = useSelector((state: RootState) => state.user.user?.id);
   const isCurrentUserIsHost = auction?.host?.id === currentUserId;
+  const isWinner = (auction?.winnerId === currentUserId) || (auction?.winner?.id === currentUserId);
+
+  const { mutate: downloadFile, isPending: downloading } = useDownloadFileMutation();
 
   const getTheme = () => {
     if (isLive)
@@ -96,17 +100,24 @@ export const DetailStatsCard = ({
     if (isLive && isCurrentUserIsHost) {
       return 'bg-muted text-muted-foreground border-muted-foreground/20 cursor-not-allowed';
     }
+    if (isEnded && isWinner && !isUnsold) {
+      return 'bg-yellow-600 hover:bg-yellow-500 text-white border-yellow-700 cursor-pointer';
+    }
     return theme.btn;
   };
 
   const handleClick = () => {
+    if (isEnded && isWinner && !isUnsold) {
+      downloadFile({ id: auction.id, category: 'bidding' });
+      return;
+    }
     if (!isLive || isCurrentUserIsHost) return;
     onPlaceBid();
   };
 
   return (
     <div
-      className={`relative rounded-2xl p-4 shadow-xl h-[32%] shrink-0 flex flex-col gap-4 overflow-hidden border-2 bg-card transition-all duration-300 ${theme.border}`}
+      className={`relative rounded-2xl p-3 shadow-xl h-[32%] shrink-0 flex flex-col gap-4 overflow-hidden border-2 bg-card transition-all duration-300 ${theme.border}`}
     >
       <div
         className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[50px] opacity-20 pointer-events-none ${theme.blob}`}
@@ -170,7 +181,20 @@ export const DetailStatsCard = ({
                 Status
               </span>
               <span className="font-bold text-sm text-amber-600">Sold</span>
-              <span className="text-[9px] text-muted-foreground">
+              {/* <div className="flex flex-col mt-1">
+                <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block mb-0.5">
+                    Payment
+                </span>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full w-fit ${
+                    auction.paymentStatus === 'SUCCESS' ? 'bg-emerald-500/10 text-emerald-500' :
+                    auction.paymentStatus === 'FAILED' ? 'bg-red-500/10 text-red-500' :
+                    auction.paymentStatus === 'PENDING' ? 'bg-indigo-500/10 text-indigo-500 animate-pulse' :
+                    'bg-neutral-500/10 text-neutral-500'
+                }`}>
+                    {auction.paymentStatus || 'NONE'}
+                </span>
+              </div> */}
+              <span className="text-[9px] text-muted-foreground mt-1">
                 Ended {new Date(auction.endTime).toLocaleDateString()}
               </span>
             </>
@@ -193,7 +217,8 @@ export const DetailStatsCard = ({
 
       <button
         type="button"
-        className={`w-full h-10 text-lg font-bold shadow-lg transition-all active:scale-[0.98] uppercase tracking-wide border-b-4 rounded-md flex items-center justify-center ${getButtonClass()} ${!isLive || isCurrentUserIsHost ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+        disabled={downloading}
+        className={`w-full h-10 text-lg font-bold shadow-lg transition-all active:scale-[0.98] uppercase tracking-wide border-b-4 rounded-md flex items-center justify-center ${getButtonClass()} ${(!isLive || isCurrentUserIsHost) && !(isEnded && isWinner) ? 'cursor-not-allowed' : 'cursor-pointer'}`}
         onClick={handleClick}
       >
         {isLive && !isCurrentUserIsHost && (
@@ -220,7 +245,17 @@ export const DetailStatsCard = ({
         )}
         {isEnded && !isUnsold && (
           <span className="flex items-center gap-2">
-            <Trophy className="h-5 w-5" /> Auction Sold
+            {isWinner ? (
+              <>
+                {downloading ? (
+                  <><Loader2 className="animate-spin h-5 w-5" /> Downloading...</>
+                ) : (
+                  <><DownloadCloud className="h-5 w-5" /> Download ArtWork</>
+                )}
+              </>
+            ) : (
+              <><Trophy className="h-5 w-5" /> Auction Sold</>
+            )}
           </span>
         )}
         {isCanceled && (

@@ -23,50 +23,55 @@ export const createAuctionSchema = z.object({
 }).superRefine((data, ctx) => {
   const { startDate, startTime, endDate, endTime } = data;
   
-  if (!startDate || !startTime || !endDate || !endTime) return;
-
-  const start = new Date(startDate);
-  const [startHours, startMinutes] = startTime.split(":").map(Number);
-  start.setHours(startHours, startMinutes, 0, 0);
-
-  const end = new Date(endDate);
-  const [endHours, endMinutes] = endTime.split(":").map(Number);
-  end.setHours(endHours, endMinutes, 0, 0);
-
   const now = new Date();
-  // const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60 * 1000);
+  const thirtyMinutesInMs = 30 * 60 * 1000;
 
-  const thirtyMinutesFromNow = new Date(now.getTime() + 60000);
+  // 1. Start Time Validation (can be checked if startDate and startTime exist)
+  if (startDate && startTime) {
+    const start = new Date(startDate);
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+    start.setHours(startHours, startMinutes, 0, 0);
 
-  // 1. Start time must be at least 30 minutes in the future
-  if (start < thirtyMinutesFromNow) {
-     ctx.addIssue({
-       code: z.ZodIssueCode.custom,
-       message: "Start time must be at least 30 minutes from now",
-       path: ["startTime"],
-     });
+    const thirtyMinutesFromNow = new Date(now.getTime() + thirtyMinutesInMs);
+
+    if (start < thirtyMinutesFromNow) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Start time must be at least 30 minutes from now",
+        path: ["startTime"],
+      });
+    }
   }
 
-  // 2. ✅ FIX: End must be after start (catches end date 16 < start date 19)
-  if (end <= start) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "End date & time must be after start date & time",
-      path: ["endTime"],
-    });
-    return; // no point checking the 30min gap if end is already before start
-  }
+  // 2. Cross-field Validation (Total Duration & Date Order)
+  if (startDate && startTime && endDate && endTime) {
+    const start = new Date(startDate);
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+    start.setHours(startHours, startMinutes, 0, 0);
 
-  // 3. End time must be at least 30 minutes after start time
-  // const thirtyMinutesAfterStart = new Date(start.getTime() + 30 * 60 * 1000);
-  const thirtyMinutesAfterStart = new Date(start.getTime() + 60000);
+    const end = new Date(endDate);
+    const [endHours, endMinutes] = endTime.split(":").map(Number);
+    end.setHours(endHours, endMinutes, 0, 0);
 
-  if (end < thirtyMinutesAfterStart) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom, 
-      message: "End time must be at least 30 minutes after start time",
-      path: ["endTime"],
-    });
+    // End must be after start
+    if (end <= start) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "End date & time must be after start date & time",
+        path: ["endTime"],
+      });
+      return; 
+    }
+
+    // End time must be at least 30 minutes after start time
+    const thirtyMinutesAfterStart = new Date(start.getTime() + thirtyMinutesInMs);
+    if (end < thirtyMinutesAfterStart) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom, 
+        message: "End time must be at least 30 minutes after start time",
+        path: ["endTime"],
+      });
+    }
   }
 });
 

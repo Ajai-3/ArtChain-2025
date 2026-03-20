@@ -10,6 +10,7 @@ export interface Auction {
   endTime: string;
   status: "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED" | "UNSOLD";
   winnerId?: string;
+  paymentStatus?: 'PENDING' | 'SUCCESS' | 'FAILED' | 'NONE';
   bids?: Bid[];
   host?: {
     id: string;

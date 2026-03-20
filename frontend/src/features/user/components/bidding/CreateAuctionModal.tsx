@@ -144,12 +144,11 @@ export const CreateAuctionModal = ({
         description: data.description,
         imageKey: uploadedImageKey,
         startPrice: Number(data.startPrice),
-         startDate: startDateTime.toISOString(),
-      startTime: startDateTime.toISOString(),
-      endDate: endDateTime.toISOString(),     
-      endTime: endDateTime.toISOString(),
+        startDate: startDateTime.toISOString(),
+        startTime: startDateTime.toISOString(),
+        endDate: endDateTime.toISOString(),
+        endTime: endDateTime.toISOString(),
       });
-      toast.success('Auction created successfully!');
       onAuctionCreated();
       onClose();
     } catch (error: any) {
@@ -185,8 +184,8 @@ export const CreateAuctionModal = ({
       open={isOpen}
       onOpenChange={(val) => !val && !creating && !uploadingImage && onClose()}
     >
-      <DialogContent className="w-screen h-screen sm:max-w-6xl sm:w-[50vw] sm:max-h-[75vh] overflow-y-auto overflow-x-hidden lg:overflow-hidden bg-white dark:bg-secondary-color p-0 gap-0 rounded-none sm:rounded-2xl grid grid-cols-1 lg:grid-cols-5">
-        <div className="order-1 lg:col-span-5 border-b border-border/40 p-4">
+      <DialogContent className="scrollbar w-screen h-screen sm:max-w-6xl sm:w-[50vw] sm:max-h-[75vh] overflow-y-auto overflow-x-hidden lg:overflow-hidden bg-white dark:bg-secondary-color p-0 gap-0 rounded-none sm:rounded-2xl grid grid-cols-1 lg:grid-cols-5">
+        <div className="order-1 lg:col-span-5 border-b border-border/40 p-0">
           <DialogTitle className="text-xl lg:text-3xl font-bold">
             Create Auction
           </DialogTitle>
@@ -196,7 +195,7 @@ export const CreateAuctionModal = ({
         </div>
 
         {/* Left Side: Image Upload */}
-        <div className="order-2 lg:order-1 lg:col-span-2 border-b lg:border-b-0 lg:border-r border-border p-4 flex flex-col items-center justify-center min-h-[250px]">
+        <div className="order-2 lg:order-1 lg:col-span-2 border-b lg:border-b-0 lg:border-r border-border p-6 flex flex-col items-center justify-center min-h-[250px]">
           {previewUrl ? (
             <div className="relative w-full flex flex-col items-center">
               <img
