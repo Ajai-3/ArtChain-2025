@@ -21,11 +21,15 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({ isOpen, onClo
   const notifications: Notification[] = useSelector(
     (state: RootState) => state.notification.notifications
   );
+  const unreadCount = useSelector(
+    (state: RootState) => state.notification.unreadCount
+  );
   
   const observer = useRef<IntersectionObserver | null>(null);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useNotifications();
   const markAllMutation = useMarkAllAsRead();
 
+  // Fetch and sync notifications
   useEffect(() => {
     if (!data?.pages.length) return;
 
@@ -36,15 +40,18 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({ isOpen, onClo
     if (newNotifications.length > 0) {
       dispatch(setNotifications([...notifications, ...newNotifications]));
     }
+  }, [data, dispatch, notifications]); 
 
-    if (isOpen && markAllMutation.status === "idle") {
+  // Mark all as read when sidebar is open and there are unread notifications
+  useEffect(() => {
+    if (isOpen && unreadCount > 0 && markAllMutation.status !== "pending") {
       markAllMutation.mutate(undefined, {
         onSuccess: () => {
           dispatch(markAllAsRead());
         },
       });
     }
-  }, [data, dispatch, notifications, markAllMutation, isOpen]);
+  }, [isOpen, unreadCount, markAllMutation.status, dispatch]);
 
   const lastNotificationRef = useCallback(
     (node: HTMLDivElement | null) => {

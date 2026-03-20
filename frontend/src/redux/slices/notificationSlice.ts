@@ -23,7 +23,7 @@ const notificationSlice = createSlice({
       if (!existingNotification) {
         state.notifications.unshift(action.payload);
       }
-      state.unreadCount = +1
+      state.unreadCount += 1;
     },
     setNotifications: (state, action: PayloadAction<Notification[]>) => {
       state.notifications = action.payload;
