@@ -1,12 +1,12 @@
-import { logger } from "../utils/logger";
-import { tokenService } from "../service/tokenService";
-import { Request, Response, NextFunction } from "express";
+import { logger } from '../utils/logger';
+import { tokenService } from '../service/tokenService';
+import { Request, Response, NextFunction } from 'express';
 import {
   ERROR_MESSAGES,
   ForbiddenError,
   HttpStatus,
   UnauthorizedError,
-} from "art-chain-shared";
+} from 'art-chain-shared';
 
 export const authUser = async (
   req: Request,
@@ -15,30 +15,30 @@ export const authUser = async (
 ): Promise<any> => {
   try {
     const authHeader = req.headers.authorization;
-    const accessToken = authHeader?.split(" ")[1];
+    const accessToken = authHeader?.split(' ')[1];
 
     if (!accessToken) {
       throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
 
-    console.log(accessToken)
+    console.log(accessToken);
 
     const decoded = tokenService.verifyAccessToken(accessToken);
 
-    if (!decoded || typeof decoded !== "object" || !decoded.id) {
+    if (!decoded || typeof decoded !== 'object' || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
     
-    console.log(decoded.id)
-    if (decoded.role !== "user" && decoded.role !== "artist" && decoded.role !== "admin") {
+    console.log(decoded.id);
+    if (decoded.role !== 'user' && decoded.role !== 'artist' && decoded.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 
-    req.headers["x-user-id"] = decoded.id;
+    req.headers['x-user-id'] = decoded.id;
 
 
     (req as any).user = decoded;
-    logger.info(`User auth middleware called ${req.path} - ${req.method}`)
+    logger.info(`User auth middleware called ${req.path} - ${req.method}`);
     next();
   } catch (error) {
     if (error instanceof UnauthorizedError) {
@@ -53,7 +53,7 @@ export const authUser = async (
         error: error.message,
       });
     }
-    console.error("Authentication error:", error);
+    console.error('Authentication error:', error);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: ERROR_MESSAGES.SERVER_ERROR,

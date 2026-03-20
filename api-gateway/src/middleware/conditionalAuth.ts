@@ -1,9 +1,9 @@
-import { authUser } from "./authUser";
-import { match } from "path-to-regexp";
-import { adminAuth } from "./adminAuth";
-import { Request, Response, NextFunction } from "express";
-import { authRoutesConfig } from "../config/authRoutes.config";
-import { optionalAuthUser } from "./optionalAuthUser";
+import { authUser } from './authUser';
+import { match } from 'path-to-regexp';
+import { adminAuth } from './adminAuth';
+import { Request, Response, NextFunction } from 'express';
+import { authRoutesConfig } from '../config/authRoutes.config';
+import { optionalAuthUser } from './optionalAuthUser';
 
 export function conditionalAuth(
   req: Request,
@@ -21,18 +21,18 @@ export function conditionalAuth(
     });
 
   if (matchRoute(authRoutesConfig.user_optional)) {
-    console.log("user_optional");
+    console.log('user_optional');
 
     return optionalAuthUser(req, res, next);
   }
 
   if (matchRoute(authRoutesConfig.user)) {
-    console.log("uaer_auth_middleware");
+    console.log('uaer_auth_middleware');
     return authUser(req, res, next);
   }
 
   if (matchRoute(authRoutesConfig.admin)) {
-    console.log("admi_auth_middleware");
+    console.log('admi_auth_middleware');
     return adminAuth(req, res, next);
   }
 

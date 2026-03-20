@@ -1,5 +1,5 @@
-import { config } from "../config/env";
-import { TokenService } from "art-chain-shared";
+import { config } from '../config/env';
+import { TokenService } from 'art-chain-shared';
 
 export const tokenService = new TokenService({
   accessSecret: config.jwt.accessSecret,
