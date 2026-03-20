@@ -19,6 +19,7 @@ import { IRemoveGroupAdminUseCase } from '../../applications/interface/usecase/I
 import { IAddGroupMemberUseCase } from '../../applications/interface/usecase/IAddGroupMemberUseCase';
 import { SUCCESS_MESSAGES } from '../../constants/messages';
 import { ROUTES } from '../../constants/routes';
+import { CHAT_MESSAGE } from '../../constants/ChatMessages';
 
 @injectable()
 export class ConversationController {
@@ -40,7 +41,7 @@ export class ConversationController {
     @inject(TYPES.IRemoveGroupAdminUseCase)
     private readonly _removeGroupAdminUseCase: IRemoveGroupAdminUseCase,
     @inject(TYPES.IAddGroupMemberUseCase)
-    private readonly _addGroupMemberUseCase: IAddGroupMemberUseCase
+    private readonly _addGroupMemberUseCase: IAddGroupMemberUseCase,
   ) {}
 
   //#========================================================================================================================
@@ -54,7 +55,7 @@ export class ConversationController {
   createPrivateConversation = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { otherUserId } = req.body;
@@ -66,7 +67,7 @@ export class ConversationController {
       });
 
       logger.info(
-        `ConversationController.createPrivateConversation: userId: ${userId}, otherUserId: ${otherUserId}`
+        `ConversationController.createPrivateConversation: userId: ${userId}, otherUserId: ${otherUserId}`,
       );
 
       const dto: CreatePrivateConversationDto = {
@@ -88,18 +89,22 @@ export class ConversationController {
     }
   };
 
+  //#========================================================================================================================
+  //# CREATE REQUEST CONVERSATION
+  //#========================================================================================================================
+  //# POST ROUTES.API_V1_CHAT + ROUTES.CHAT.CONVERSATION_REQUEST
+  //# Request Body: { artistId }
+  //# x-user-id
+  //# This endpoint allows a user create a request chat conversation with an artist
+  //#========================================================================================================================
   createRequestConversation = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const { artistId } = req.body; // Expecting artistId for request
+      const { artistId } = req.body;
       const userId = req.headers['x-user-id'] as string;
-
-      // Reuse private schema if it's just userId + otherId, or strict separate schema?
-      // Using private schema for MVP as 'otherUserId' map to 'artistId' or just manual check
-      if (!artistId) throw new Error('Artist ID is required');
 
       const dto = {
         userId,
@@ -129,7 +134,7 @@ export class ConversationController {
   createGroupConversation = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { name, memberIds } = req.body;
@@ -142,7 +147,7 @@ export class ConversationController {
       });
 
       logger.info(
-        `ConversationController.createGroupConversation: userId: ${userId}, name: ${name}, members: ${memberIds.length}`
+        `ConversationController.createGroupConversation: userId: ${userId}, name: ${name}, members: ${memberIds.length}`,
       );
 
       const dto: CreateGroupConversationDto = {
@@ -151,7 +156,8 @@ export class ConversationController {
         memberIds: validatedData.memberIds,
       };
 
-      const conversation = await this._createGroupConversationUseCase.execute(dto);
+      const conversation =
+        await this._createGroupConversationUseCase.execute(dto);
 
       return res.status(HttpStatus.CREATED).json({
         message: SUCCESS_MESSAGES.CONVERSATION_CREATED_SUCCESSFULLY,
@@ -172,7 +178,7 @@ export class ConversationController {
   getResendConversations = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const limit = Number(req.query.limit) || 10;
@@ -183,13 +189,13 @@ export class ConversationController {
       console.log(userId);
 
       logger.info(
-        `ConversationController.getAllResendConversation: userId: ${userId}`
+        `ConversationController.getAllResendConversation: userId: ${userId}`,
       );
 
       const data = await this._getAllResendConversationUseCase.execute(
         userId,
         page,
-        limit
+        limit,
       );
 
       return res.status(HttpStatus.OK).json({
@@ -201,11 +207,18 @@ export class ConversationController {
     }
   };
 
-
+  //#========================================================================================================================
+  //# GET GROUP MEMBERS
+  //#========================================================================================================================
+  //# GET ROUTES.API_V1_CHAT + ROUTES.CHAT.CONVERSATION_MEMBERS
+  //# Request Header: x-user-id
+  //# Request Param: conversationId
+  //# This endpoint allows a user get all members in a group conversation
+  //#========================================================================================================================
   getGroupMembers = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { conversationId } = req.params;
@@ -219,7 +232,7 @@ export class ConversationController {
       });
 
       return res.status(HttpStatus.OK).json({
-        message: 'Members fetched successfully',
+        message: CHAT_MESSAGE.GROUP_MEMBERS_RETRIEVED_SUCCESSFULLY,
         data: result,
       });
     } catch (error) {
@@ -230,7 +243,7 @@ export class ConversationController {
   removeGroupMember = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
@@ -253,7 +266,7 @@ export class ConversationController {
   addGroupAdmin = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
@@ -276,7 +289,7 @@ export class ConversationController {
   removeGroupAdmin = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
@@ -299,7 +312,7 @@ export class ConversationController {
   addGroupMember = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { conversationId, userId } = req.params;
