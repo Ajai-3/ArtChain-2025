@@ -18,7 +18,7 @@ export class S3FileRepository implements IFileRepository {
     category: FileCategory,
     userId: string,
     previewBuffer?: Buffer,
-    watermarkedBuffer?: Buffer
+    watermarkedBuffer?: Buffer,
   ): Promise<UploadResult> {
     const bucketConfig = getBucketConfig(category);
     const keyBase = generateFileName(userId, originalName, category);
@@ -62,11 +62,11 @@ export class S3FileRepository implements IFileRepository {
         }
 
         const publicPreviewUrl = previewBuffer
-          ? `${getCdnDomain()}/art/${userId}/preview_${keyBase}`
+          ? `/art/${userId}/preview_${keyBase}`
           : undefined;
 
         const publicWatermarkedUrl = watermarkedBuffer
-          ? `${getCdnDomain()}/art/${userId}/watermarked_${keyBase}`
+          ? `/art/${userId}/watermarked_${keyBase}`
           : undefined;
 
         const privateSignedUrl = s3Client.getSignedUrl('getObject', {
@@ -76,7 +76,7 @@ export class S3FileRepository implements IFileRepository {
         });
 
         logger.info(
-          `✅ Art uploaded | privateBucket=${bucketConfig.privateBucket} | publicBucket=${bucketConfig.publicBucket} | key=${keyBase}`
+          `✅ Art uploaded | privateBucket=${bucketConfig.privateBucket} | publicBucket=${bucketConfig.publicBucket} | key=${keyBase}`,
         );
 
         return { privateSignedUrl, publicPreviewUrl, publicWatermarkedUrl };
@@ -96,18 +96,17 @@ export class S3FileRepository implements IFileRepository {
         .promise();
 
       let publicUrl = `${config.aws.cdn_domain}/${keyBase}`;
-      
+
       // if (category === 'bidding') {
       //   console.log(publicUrl)
       //   //  publicUrl = createSignedUrl(publicUrl);
       // }
 
       if (category === 'commission') {
-        
       }
 
       logger.info(
-        `✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`
+        `✅ File uploaded | bucket=${bucketConfig.bucket} | key=${keyBase}`,
       );
 
       return { publicUrl, key: keyBase };
@@ -151,7 +150,7 @@ export class S3FileRepository implements IFileRepository {
         .deleteObject({ Bucket: bucketConfig.bucket!, Key: key })
         .promise();
       logger.info(
-        `✅ File deleted | bucket=${bucketConfig.bucket} | key=${key}`
+        `✅ File deleted | bucket=${bucketConfig.bucket} | key=${key}`,
       );
     } catch (err) {
       logger.error(`❌ Error deleting file ${fileUrl}:`, err);
@@ -159,23 +158,32 @@ export class S3FileRepository implements IFileRepository {
     }
   }
 
-  async getSignedUrl(key: string, category: FileCategory): Promise<string> {
+  async getSignedUrl(
+    key: string,
+    category: FileCategory,
+    fileName: string,
+  ): Promise<string> {
     const bucketConfig = getBucketConfig(category);
-    
+
+    console.log(
+      `🔍 getSignedUrl called for category: ${category} | Key: ${key}`,
+    );
+    console.log('Bucket Config:', bucketConfig);
+
     if (category === 'art') {
       return s3Client.getSignedUrlPromise('getObject', {
         Bucket: bucketConfig.privateBucket,
-        Key: `art/${key}`, // Assuming key passed is relative to art/
-        Expires: 3600, // 1 hour expiration
+        Key: `art/${key}`,
+        Expires: 3600,
+        ResponseContentDisposition: `attachment; filename="${fileName}"`,
       });
     }
 
     if (category === 'bidding') {
-       const url = `${config.aws.cdn_domain}/${key}`;
-       return createSignedUrl(url);
+      const url = `${config.aws.cdn_domain}/${key}`;
+      return createSignedUrl(url);
     }
 
-    // For other categories, if needed (though mostly public)
     return s3Client.getSignedUrlPromise('getObject', {
       Bucket: bucketConfig.bucket,
       Key: key,
