@@ -338,7 +338,6 @@ export class UserController implements IUserController {
 
       logger.info('user with id fetched correctly');
 
-
       return res
         .status(HttpStatus.OK)
         .json({ message: 'User fetch correcly', data: users });
