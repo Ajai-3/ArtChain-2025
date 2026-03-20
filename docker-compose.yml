@@ -189,7 +189,7 @@ services:
     build: ./services/chat-service
     env_file:
       - .env
-      - ./services/chat-service/.env
+      - ./services/chat-service/.env.docker
     ports:
       - '4007:4007'
     networks:

@@ -7,7 +7,7 @@ export const useChatUpload = () => {
 
   const uploadImage = async (
     file: File,
-  ): Promise<{ key: string; publicUrl: string } | null> => {
+  ): Promise<{ data: { key: string; url: string }; message: string } | null> => {
     setUploading(true);
     const formData = new FormData();
     formData.append('file', file);

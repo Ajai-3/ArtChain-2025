@@ -115,9 +115,13 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     const result = await uploadImage(previewImage);
 
     if (result) {
-      const { key } = result;
-      const mediaUrl = URL.createObjectURL(previewImage);
-      onSendMessage({ content: key, mediaType: 'IMAGE', tempId, mediaUrl });
+      const { url } = result.data;
+      onSendMessage({ 
+        content: url, 
+        mediaType: 'IMAGE', 
+        tempId, 
+        mediaUrl: url 
+      });
       setPreviewImage(null);
     }
   };

@@ -96,10 +96,17 @@ const ChatInput: React.FC<ChatInputProps> = ({
               type='file'
               id='chat-image-input'
               className='hidden'
-              accept='image/*'
+              accept='.png,.jpg,.jpeg,.webp'
               onChange={(e) => {
                 const file = e.target.files?.[0];
                 if (file) {
+                  // Validate type
+                  const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+                  if (!allowedTypes.includes(file.type)) {
+                    toast.error('Only PNG, WEBP, JPG, and JPEG are allowed');
+                    return;
+                  }
+                  
                   // Validate size (e.g. 5MB)
                   if (file.size > 5 * 1024 * 1024) {
                     toast.error('File too large (max 5MB)');
