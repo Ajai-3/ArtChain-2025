@@ -46,7 +46,14 @@ export interface IWalletRepository extends IBaseRepository<Wallet> {
   
   lockCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean>;
   
-  refundCommissionFunds(userId: string, commissionId: string, amount: number): Promise<boolean>;
+  refundCommissionFunds(userId: string, artistId: string, commissionId: string, amount: number): Promise<boolean>;
+
+  transferLockedCommissionFunds(params: {
+    fromUserId: string;
+    toUserId: string;
+    commissionId: string;
+    amount: number;
+  }): Promise<boolean>;
 
   // Admin wallet management methods (merged from IAdminWalletRepository)
   findAllWallets(

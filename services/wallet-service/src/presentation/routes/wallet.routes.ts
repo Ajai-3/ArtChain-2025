@@ -56,6 +56,10 @@ router.post(
   ROUTES.TRANSACTION.COMMISSION_REFUND,
   transactionController.refundCommissionFunds,
 );
+router.post(
+  ROUTES.TRANSACTION.COMMISSION_TRANSFER_LOCKED,
+  transactionController.transferLockedCommissionFunds,
+);
 router.post(ROUTES.TRANSACTION.TRANSACTION_LOCK, walletController.lockAmount);
 router.post(
   ROUTES.TRANSACTION.TRANSACTION_UNLOCK,

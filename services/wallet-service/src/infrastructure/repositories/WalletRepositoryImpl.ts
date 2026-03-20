@@ -793,12 +793,18 @@ export class WalletRepositoryImpl
 
         if (!userWallet) throw new Error('User wallet not found');
         if (!artistWallet) throw new Error('Artist wallet not found');
-        if (userWallet.lockedAmount < totalAmount)
-          throw new Error('Insufficient locked funds');
 
-        // 1. Update User Wallet (Deduct from lockedAmount)
+        // Identify which wallet has the locked funds (support both old and new flow)
+        let sourceWalletForLockedFunds = userWallet;
+        if (artistWallet.lockedAmount >= totalAmount) {
+          sourceWalletForLockedFunds = artistWallet;
+        } else if (userWallet.lockedAmount < totalAmount) {
+          throw new Error('Insufficient locked funds in both user and artist wallets');
+        }
+
+        // 1. Update Source Wallet (Deduct from lockedAmount)
         await tx.wallet.update({
-          where: { userId },
+          where: { id: sourceWalletForLockedFunds.id },
           data: {
             lockedAmount: { decrement: totalAmount },
           },
@@ -832,7 +838,7 @@ export class WalletRepositoryImpl
             method: 'art_coin',
             status: 'success',
             description: `Commission payment received for ${commissionId}`,
-            meta: { commissionId, type: 'RELEASE' },
+            meta: { commissionId, type: 'RELEASE', from: sourceWalletForLockedFunds.id === userWallet.id ? 'USER_LOCKED' : 'ARTIST_LOCKED' },
           },
         });
 
@@ -926,41 +932,56 @@ export class WalletRepositoryImpl
 
   async refundCommissionFunds(
     userId: string,
+    artistId: string,
     commissionId: string,
     amount: number,
   ): Promise<boolean> {
     try {
       await prisma.$transaction(async (tx) => {
-        const wallet = await tx.wallet.findUnique({ where: { userId } });
+        const userWallet = await tx.wallet.findUnique({ where: { userId } });
+        const artistWallet = await tx.wallet.findUnique({ where: { userId: artistId } });
 
-        if (!wallet) throw new Error('Wallet not found');
-        if (wallet.lockedAmount < amount)
-          throw new Error('Insufficient locked funds for refund');
+        if (!userWallet) throw new Error('User wallet not found');
+        if (!artistWallet) throw new Error('Artist wallet not found');
 
-        // 1. Update wallet (Reduce lockedAmount, increase balance)
+        // Identify where the locked funds are
+        let sourceWalletForRefund = userWallet;
+        if (artistWallet.lockedAmount >= amount) {
+          sourceWalletForRefund = artistWallet;
+        } else if (userWallet.lockedAmount < amount) {
+          throw new Error('Insufficient locked funds for refund in both user and artist wallets');
+        }
+
+        // 1. Deduct from wherever it was locked
         await tx.wallet.update({
-          where: { userId },
+          where: { id: sourceWalletForRefund.id },
           data: {
-            balance: { increment: amount },
             lockedAmount: { decrement: amount },
           },
         });
 
-        // 2. Create transaction record for audit
+        // 2. Increment user balance (Refund)
+        await tx.wallet.update({
+          where: { userId },
+          data: {
+            balance: { increment: amount },
+          },
+        });
+
+        // 3. Create transaction records
         await tx.transaction.create({
           data: {
-            walletId: wallet.id,
+            walletId: userWallet.id,
             type: 'credited',
             category: TransactionCategory.COMMISSION,
             amount: amount,
             method: 'art_coin',
             status: 'success',
             description: `Refund for commission dispute ${commissionId}`,
-            meta: { commissionId, type: 'REFUND' },
+            meta: { commissionId, type: 'REFUND', from: sourceWalletForRefund.id === userWallet.id ? 'USER_LOCKED' : 'ARTIST_LOCKED' },
           },
         });
       });
-
       return true;
     } catch (error) {
       console.error('RefundCommissionFunds failed:', error);
@@ -1249,5 +1270,70 @@ export class WalletRepositoryImpl
       data,
       meta: { total, page, limit },
     };
+  }
+  async transferLockedCommissionFunds(params: {
+    fromUserId: string;
+    toUserId: string;
+    commissionId: string;
+    amount: number;
+  }): Promise<boolean> {
+    const { fromUserId, toUserId, commissionId, amount } = params;
+    try {
+      await prisma.$transaction(async (tx) => {
+        const fromWallet = await tx.wallet.findUnique({ where: { userId: fromUserId } });
+        const toWallet = await tx.wallet.findUnique({ where: { userId: toUserId } });
+
+        if (!fromWallet) throw new Error('From wallet not found');
+        if (!toWallet) throw new Error('To wallet not found');
+        if (fromWallet.lockedAmount < amount) throw new Error('Insufficient locked funds for transfer');
+
+        // 1. Update From Wallet (Deduct from lockedAmount)
+        await tx.wallet.update({
+          where: { userId: fromUserId },
+          data: {
+            lockedAmount: { decrement: amount },
+          },
+        });
+
+        // 2. Update To Wallet (Add to lockedAmount)
+        await tx.wallet.update({
+          where: { userId: toUserId },
+          data: {
+            lockedAmount: { increment: amount },
+          },
+        });
+
+        // 3. Create Transaction Record
+        await tx.transaction.create({
+          data: {
+            walletId: fromWallet.id,
+            type: 'debited',
+            category: TransactionCategory.COMMISSION,
+            amount: amount,
+            method: 'art_coin',
+            status: 'success',
+            description: `Locked funds transferred to artist for delivery of commission ${commissionId}`,
+            meta: { commissionId, type: 'TRANSFER_LOCKED', recipientId: toUserId },
+          },
+        });
+
+        await tx.transaction.create({
+          data: {
+            walletId: toWallet.id,
+            type: 'credited',
+            category: TransactionCategory.COMMISSION,
+            amount: amount,
+            method: 'art_coin',
+            status: 'success',
+            description: `Locked funds received for delivery of commission ${commissionId}`,
+            meta: { commissionId, type: 'RECEIVE_LOCKED', senderId: fromUserId },
+          },
+        });
+      });
+      return true;
+    } catch (error) {
+      console.error('TransferLockedCommissionFunds failed:', error);
+      return false;
+    }
   }
 }

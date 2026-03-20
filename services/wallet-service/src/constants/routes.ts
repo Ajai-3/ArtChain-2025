@@ -25,6 +25,7 @@ export const ROUTES = {
     COMMISSION_LOCK: '/transaction/commission/lock',
     COMMISSION_DISTRIBUTE: '/transaction/commission/distribute',
     COMMISSION_REFUND: '/transaction/commission/refund',
+    COMMISSION_TRANSFER_LOCKED: '/transaction/commission/transfer-locked',
     TRANSACTION_LOCK: '/transaction/lock',
     TRANSACTION_UNLOCK: '/transaction/unlock',
     SETTLE_AUCTION: '/transaction/settle-auction',

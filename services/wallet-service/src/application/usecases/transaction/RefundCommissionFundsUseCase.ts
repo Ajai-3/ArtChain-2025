@@ -10,7 +10,7 @@ export class RefundCommissionFundsUseCase implements IRefundCommissionFundsUseCa
     private readonly _walletRepository: IWalletRepository
   ) {}
 
-  async execute(userId: string, commissionId: string, amount: number): Promise<boolean> {
-    return this._walletRepository.refundCommissionFunds(userId, commissionId, amount);
+  async execute(userId: string, artistId: string, commissionId: string, amount: number): Promise<boolean> {
+    return this._walletRepository.refundCommissionFunds(userId, artistId, commissionId, amount);
   }
 }
