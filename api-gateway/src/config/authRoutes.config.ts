@@ -93,8 +93,7 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.COMMISSION_UPDATE, methods: ['PATCH'] },
 
     { path: ROUTES.AI.DELETE_GENERATION, methods: ['DELETE'] },
-    { path: ROUTES.WALLET.COMMISSION_LOCK, methods: ['POST'] },
-    { path: ROUTES.WALLET.COMMISSION_DISTRIBUTE, methods: ['POST'] },
+    { path: ROUTES.AI.DELETE_GENERATION, methods: ['DELETE'] },
 
     { path: ROUTES.ART.MY_BIDDING_HISTORY, methods: ['GET'] },
     { path: ROUTES.ART.BUY, methods: ['POST'] },

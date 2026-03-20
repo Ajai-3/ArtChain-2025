@@ -86,6 +86,7 @@ export const ROUTES = {
     COMMISSION_LOCK: '/api/v1/wallet/transaction/commission/lock',
     COMMISSION_DISTRIBUTE: '/api/v1/wallet/transaction/commission/distribute',
     COMMISSION_REFUND: '/api/v1/wallet/transaction/commission/refund',
+    COMMISSION_TRANSFER_LOCKED: '/api/v1/wallet/transaction/commission/transfer-locked',
   },
   CHAT: {
     PRIVATE: '/api/v1/chat/conversation/private',
