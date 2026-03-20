@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
+import ChatUserListSkeleton from "./chatUserList/ChatUserListSkeleton";
 import ConversationItem from "./chatUserList/ConversationItem";
 import { selectConversations, selectCurrentUserId, selectUserCache } from "../../../../redux/selectors/chatSelectors";
 import CreateGroupModal from "./chatUserList/CreateGroupModal";
@@ -10,6 +11,7 @@ interface ChatUserListProps {
   onSelectConversation: (id: string) => void;
   onScrollToLoadMore: () => void;
   isFetchingNextPage: boolean;
+  isLoading: boolean;
 }
 
 type TabType = "private" | "group" | "requests";
@@ -19,6 +21,7 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
   onSelectConversation,
   onScrollToLoadMore,
   isFetchingNextPage,
+  isLoading,
 }) => {
   const [activeTab, setActiveTab] = useState<TabType>("private");
   const [searchQuery, setSearchQuery] = useState("");
@@ -180,7 +183,9 @@ const ChatUserList: React.FC<ChatUserListProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto" onScroll={handleScroll}>
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <ChatUserListSkeleton count={8} />
+        ) : filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-32 text-muted-foreground p-4">
             <p className="text-sm text-center">No conversations found</p>
           </div>

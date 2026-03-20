@@ -33,6 +33,7 @@ interface ChatAreaProps {
     mediaType?: 'TEXT' | 'IMAGE';
     tempId?: string;
   }) => void;
+  onSendImage?: (mediaUrl?: string) => void;
   onDeleteMessage: (messageId: string, deleteForAll: boolean) => void;
 }
 

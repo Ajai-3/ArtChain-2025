@@ -122,6 +122,7 @@ const Chat: React.FC = () => {
             hasNextPage && !isFetchingNextPage && fetchNextPage()
           }
           isFetchingNextPage={isFetchingNextPage}
+          isLoading={!data && !isFetchingNextPage}
         />
       </div>
 

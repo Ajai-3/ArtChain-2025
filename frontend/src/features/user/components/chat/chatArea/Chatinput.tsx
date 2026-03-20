@@ -3,6 +3,7 @@ import { Input } from '../../../../../components/ui/input';
 import { Button } from '../../../../../components/ui/button';
 import EmojiPicker, { Theme, type EmojiClickData } from 'emoji-picker-react';
 import toast from 'react-hot-toast';
+import { Send } from 'lucide-react';
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -179,19 +180,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
           disabled={!message.trim() || disabled}
           className='h-12 w-12 rounded-full'
         >
-          <svg
-            className='w-5 h-5'
-            fill='none'
-            stroke='currentColor'
-            viewBox='0 0 24 24'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth={2}
-              d='M12 19l9 2-9-18-9 18 9-2zm0 0v-8'
-            />
-          </svg>
+          <Send />
         </Button>
       </form>
     </div>

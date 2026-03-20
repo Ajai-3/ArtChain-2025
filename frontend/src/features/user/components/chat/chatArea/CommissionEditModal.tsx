@@ -76,15 +76,15 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
   const budgetValue = watch("budget");
 
   useEffect(() => {
-     if (commission) {
-         form.reset({
-            title: commission.title,
-            description: commission.description,
-            budget: commission.budget,
-            deadline: new Date(commission.deadline),
-         });
-         setUploadedImageUrls(commission.referenceImages || []);
-     }
+    if (commission) {
+      form.reset({
+        title: commission.title,
+        description: commission.description,
+        budget: commission.budget,
+        deadline: new Date(commission.deadline),
+      });
+      setUploadedImageUrls(commission.referenceImages || []);
+    }
   }, [commission, form]);
 
   useEffect(() => {
@@ -109,10 +109,10 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setFilePreviews((prev) => prev.filter((_, i) => i !== index));
   };
-  
+
   const handleRemoveUploadedUrl = (index: number) => {
-      if (!isRequester) return;
-      setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index));
+    if (!isRequester) return;
+    setUploadedImageUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleUploadImages = async () => {
@@ -122,11 +122,11 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
     try {
       for (const file of selectedFiles) {
         const response = await uploadImageMutation.mutateAsync(file);
-        const url = response?.data?.data || response?.data?.url; 
+        const url = response?.data?.data || response?.data?.url;
         if (url) urls.push(url);
       }
       setUploadedImageUrls((prev) => [...prev, ...urls]);
-      setSelectedFiles([]); 
+      setSelectedFiles([]);
       setFilePreviews([]);
       toast.success("Images uploaded!");
     } catch (error) {
@@ -138,8 +138,8 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
 
   const onSubmit = async (values: CommissionRequestFormValues) => {
     if (isRequester && selectedFiles.length > 0) {
-        toast.error("Please upload reference images first!");
-        return;
+      toast.error("Please upload reference images first!");
+      return;
     }
 
     updateCommissionMutation.mutate(
@@ -214,9 +214,9 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
                       <div className="relative">
                         <Input type="number" {...field} className="bg-zinc-900 border-zinc-700" />
                         {budgetValue > 0 && (
-                            <div className="absolute right-3 top-2.5 text-xs text-green-400 font-medium bg-zinc-900/80 px-1 rounded">
-                                ≈ ₹ {(budgetValue * artCoinRate).toFixed(2)}
-                            </div>
+                          <div className="absolute right-3 top-2.5 text-xs text-green-400 font-medium bg-zinc-900/80 px-1 rounded">
+                            ≈ ₹ {(budgetValue * artCoinRate).toFixed(2)}
+                          </div>
                         )}
                       </div>
                     </FormControl>
@@ -260,45 +260,45 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
               <FormLabel>Reference Images</FormLabel>
               <div className="flex flex-wrap gap-3">
                 {uploadedImageUrls.map((url, index) => (
-                    <div key={index} className="relative w-20 h-20 rounded-md overflow-hidden border border-zinc-700 group">
-                        <img src={url} alt="Reference" className="w-full h-full object-cover" />
-                         {isRequester && (
-                           <button type="button" onClick={() => handleRemoveUploadedUrl(index)} className="absolute top-0 right-0 bg-red-500/90 p-1 opacity-0 group-hover:opacity-100 transition rounded-bl-md">
-                              <X size={14} className="text-white" />
-                            </button>
-                         )}
-                    </div>
+                  <div key={index} className="relative w-20 h-20 rounded-md overflow-hidden border border-zinc-700 group">
+                    <img src={url} alt="Reference" className="w-full h-full object-cover" />
+                    {isRequester && (
+                      <button type="button" onClick={() => handleRemoveUploadedUrl(index)} className="absolute top-0 right-0 bg-red-500/90 p-1 opacity-0 group-hover:opacity-100 transition rounded-bl-md">
+                        <X size={14} className="text-white" />
+                      </button>
+                    )}
+                  </div>
                 ))}
               </div>
               {isRequester && (
                 <>
                   <input type="file" id="edit-ref-upload" multiple accept="image/*" className="hidden" onChange={handleFileSelect} />
                   <label htmlFor="edit-ref-upload" className="cursor-pointer flex items-center gap-2 text-sm text-zinc-300 hover:text-green-400 transition border border-dashed border-zinc-700 px-4 py-3 rounded-lg w-full justify-center bg-zinc-900/30">
-                      <Upload size={16} /> Add More References
+                    <Upload size={16} /> Add More References
                   </label>
                 </>
               )}
               {selectedFiles.length > 0 && (
-                  <div className="space-y-2 border border-zinc-800 rounded-lg p-3 bg-zinc-900/50">
-                    <div className="text-xs text-zinc-400 font-medium mb-2">Pending Uploads:</div>
-                    <div className="flex flex-wrap gap-2">
-                       {filePreviews.map((preview, index) => (
-                          <div key={index} className="relative w-16 h-16 rounded overflow-hidden border border-zinc-600 group">
-                              <img src={preview} alt="Preview" className="w-full h-full object-cover opacity-80" />
-                              <button
-                                  type="button"
-                                  onClick={() => handleRemoveFile(index)}
-                                  className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition"
-                              >
-                                  <X size={16} className="text-white" />
-                              </button>
-                          </div>
-                       ))}
-                    </div>
-                    <Button type="button" variant="secondary" size="sm" onClick={handleUploadImages} disabled={isUploading} className="w-full mt-2 bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 text-[10px] h-7">
-                        {isUploading ? <CustomLoader /> : "Upload Pending"}
-                    </Button>
+                <div className="space-y-2 border border-zinc-800 rounded-lg p-3 bg-zinc-900/50">
+                  <div className="text-xs text-zinc-400 font-medium mb-2">Pending Uploads:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {filePreviews.map((preview, index) => (
+                      <div key={index} className="relative w-16 h-16 rounded overflow-hidden border border-zinc-600 group">
+                        <img src={preview} alt="Preview" className="w-full h-full object-cover opacity-80" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveFile(index)}
+                          className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition"
+                        >
+                          <X size={16} className="text-white" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
+                  <Button type="button" variant="secondary" size="sm" onClick={handleUploadImages} disabled={isUploading} className="w-full mt-2 bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 text-[10px] h-7">
+                    {isUploading ? <CustomLoader /> : "Upload Pending"}
+                  </Button>
+                </div>
               )}
             </div>
 

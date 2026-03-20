@@ -1,5 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Download, Loader2 } from 'lucide-react';
+import { useDownloadFileMutation } from '../../../hooks/art/useDownloadFileMutation';
+import { Button } from '../../../../../components/ui/button';
 
 interface Props {
   artworks: any[];
@@ -11,6 +14,12 @@ interface Props {
 
 const PurchasedArtGrid: React.FC<Props> = ({ artworks, isLoading, page, setPage, limit }) => {
   const navigate = useNavigate();
+  const downloadMutation = useDownloadFileMutation();
+
+  const handleDownload = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigating to art page
+    downloadMutation.mutate({ id, category: 'art' });
+  };
 
   return (
     <div className="space-y-8">
@@ -35,6 +44,22 @@ const PurchasedArtGrid: React.FC<Props> = ({ artworks, isLoading, page, setPage,
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                   alt="" 
                 />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                   <Button 
+                      variant="support" 
+                      size="sm" 
+                      className="rounded-full gap-2 px-6 h-10 shadow-xl"
+                      onClick={(e) => handleDownload(item.art?.id || item.artId, e)}
+                      disabled={downloadMutation.isPending && downloadMutation.variables?.id === (item.art?.id || item.artId)}
+                   >
+                      {downloadMutation.isPending && downloadMutation.variables?.id === (item.art?.id || item.artId) ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4" />
+                      )}
+                      Download Asset
+                   </Button>
+                </div>
               </div>
 
               {/* CONTENT AREA */}

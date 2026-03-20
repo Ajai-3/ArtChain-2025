@@ -80,8 +80,8 @@ const WithdrawalManagement: React.FC = () => {
 
   const handleFilterChange = (status: string) => {
     setStatusFilter(status);
-    setPage(1); // Reset to first page when filter changes
-    setSelectedIds([]); // Clear selections when filter changes
+    setPage(1); 
+    setSelectedIds([]); 
   };
 
   const renderPagination = () => {
@@ -171,7 +171,7 @@ const WithdrawalManagement: React.FC = () => {
                 <div className="h-4 w-px bg-zinc-700"></div>
                 <Button 
                     size="sm" 
-                    className="bg-green-600 hover:bg-green-700 text-white border-0"
+                    variant="support"
                     onClick={() => handleBulkAction("APPROVED")}
                     disabled={isBulkUpdating}
                 >

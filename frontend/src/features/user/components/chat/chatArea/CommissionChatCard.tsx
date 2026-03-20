@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { format } from "date-fns";
-import { 
-  DollarSign, 
-  Clock, 
-  ChevronDown, 
-  ChevronUp, 
-  Edit3, 
+import {
+  DollarSign,
+  Clock,
+  ChevronDown,
+  ChevronUp,
+  Edit3,
   ExternalLink,
   History,
   Plus,
@@ -17,6 +17,7 @@ import { useGetCommissionByConversation } from "../../../hooks/commission/useGet
 
 import { CommissionEditModal } from "./CommissionEditModal";
 import { useUpdateCommissionMutation } from "../../../hooks/commission/useUpdateCommissionMutation";
+import { useUploadCommissionImageMutation } from "../../../hooks/commission/useUploadCommitionImageMutation";
 import { useLockCommissionMutation } from "../../../hooks/commission/useLockCommissionMutation";
 import { cn } from "../../../../../libs/utils";
 import toast from "react-hot-toast";
@@ -28,8 +29,8 @@ import {
   DialogFooter,
 } from "../../../../../components/ui/dialog";
 import { Textarea } from "../../../../../components/ui/textarea";
-import { useUploadArtImageMutation } from "../../../hooks/art/useUploadArtImageMutation";
 import CustomLoader from "../../../../../components/CustomLoader";
+import { useNavigate } from "react-router-dom";
 
 interface CommissionChatCardProps {
   conversationId: string;
@@ -47,12 +48,14 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
   const [disputeReason, setDisputeReason] = useState("");
   const [showHistory, setShowHistory] = useState(false);
+  const navigate = useNavigate();
 
   const updateMutation = useUpdateCommissionMutation();
   const lockMutation = useLockCommissionMutation();
 
   const commission = res?.active;
   const history = res?.history || [];
+
 
   const handleStatusUpdate = (status: string, extraData: any = {}) => {
     if (!commission) return;
@@ -92,30 +95,44 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
 
   const isRequester = commission.requesterId === currentUserId;
   const isArtist = commission.artistId === currentUserId;
-  const isNegotiating = commission.status === "REQUESTED" || commission.status === "NEGOTIATING";
+  const isNegotiating = commission.status === "REQUESTED" || commission.status === "NEGOTIATING" || commission.status === "AGREED";
   const isCompletedOrCancelled = commission.status === "COMPLETED" || commission.status === "CANCELLED";
 
-  // Accept button visible if status is initial AND current user is NOT the one who made the last change
-  const canAccept = isNegotiating && commission.lastUpdatedBy !== currentUserId;
-  const canEdit = isNegotiating;
+
+  const hasIAgreed = isRequester ? commission.requesterAgreed : commission.artistAgreed;
+  const hasOtherAgreed = isRequester ? commission.artistAgreed : commission.requesterAgreed;
+
+  const canAccept = isNegotiating && !hasIAgreed;
+  const canEdit = isNegotiating && commission.status !== "AGREED";  
+
+
+  const handleRequestNew = () => {
+    if (commission?.artist?.username) {
+        navigate(`/${commission.artist.username}`);
+    } else {
+        toast.error("Artist profile not found");
+    }
+  };
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "REQUESTED": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
-      case "NEGOTIATING": return "bg-orange-500/10 text-orange-500 border-orange-500/20";
-      case "AGREED": return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
-      case "LOCKED": return "bg-purple-500/10 text-purple-500 border-purple-500/20";
-      case "IN_PROGRESS": return "bg-indigo-500/10 text-indigo-500 border-indigo-500/20";
-      case "COMPLETED": return "bg-green-600/10 text-green-600 border-green-600/20";
-      case "CANCELLED": return "bg-red-500/10 text-red-500 border-red-500/20";
-      default: return "bg-zinc-500/10 text-zinc-500 border-zinc-500/20";
+      case "REQUESTED": return "bg-blue-500/20 text-blue-400 border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.1)]";
+      case "NEGOTIATING": return "bg-amber-500/20 text-amber-400 border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.1)]";
+      case "AGREED": return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.1)]";
+      case "LOCKED": return "bg-violet-500/20 text-violet-400 border-violet-500/30 shadow-[0_0_15px_rgba(139,92,246,0.1)]";
+      case "IN_PROGRESS": return "bg-indigo-500/20 text-indigo-400 border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)]";
+      case "DELIVERED": return "bg-cyan-500/20 text-cyan-400 border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.1)]";
+      case "COMPLETED": return "bg-green-500/20 text-green-400 border-green-500/30 shadow-[0_0_15px_rgba(34,197,94,0.1)]";
+      case "CANCELLED": return "bg-rose-500/20 text-rose-400 border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.1)]";
+      default: return "bg-zinc-500/20 text-zinc-400 border-zinc-500/30";
     }
   };
 
   const isPastDeadline = new Date() > new Date(commission.deadline);
   const canRaiseDispute = isRequester && (
-      commission.status === "DELIVERED" || 
-      ((commission.status === "IN_PROGRESS" || commission.status === "LOCKED") && isPastDeadline)
+    commission.status === "DELIVERED" ||
+    ((commission.status === "IN_PROGRESS" || commission.status === "LOCKED") && isPastDeadline)
   );
 
   return (
@@ -124,9 +141,9 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
       <div className="bg-zinc-900/80 backdrop-blur-md border border-zinc-800 rounded-xl overflow-hidden shadow-2xl">
         {/* Compact Header */}
         <div className="p-3 flex items-center justify-between">
-            {/* ... left part ... */}
+          {/* ... left part ... */}
           <div className="flex items-center gap-3">
-             {/* ... */}
+            {/* ... */}
             <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20">
               <span className="text-xl">🎨</span>
             </div>
@@ -148,71 +165,88 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
                   )}
                 </span>
                 {isPastDeadline && commission.status !== 'COMPLETED' && commission.status !== 'CANCELLED' && (
-                    <span className="text-[10px] text-red-500 font-medium flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> Past Deadline
-                    </span>
+                  <span className="text-[10px] text-red-500 font-medium flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> Past Deadline
+                  </span>
                 )}
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            {canAccept && (
-               <div className="flex items-center gap-1.5 mr-2 pr-2 border-r border-zinc-800">
-                  <button 
-                    onClick={() => handleStatusUpdate("CANCELLED")}
-                    disabled={updateMutation.isPending}
-                    className="text-[10px] bg-red-500/10 hover:bg-red-500/20 text-red-500 px-2.5 py-1 rounded-md font-medium transition-colors border border-red-500/20"
-                  >
-                    Decline
-                  </button>
-                  <button 
-                    onClick={() => handleStatusUpdate("AGREED")}
-                    disabled={updateMutation.isPending}
-                    className="text-[10px] bg-emerald-500 hover:bg-emerald-600 text-black px-2.5 py-1 rounded-md font-bold transition-colors"
-                  >
-                    Accept Terms
-                  </button>
-               </div>
+            {isNegotiating && (
+              <div className="flex items-center gap-2 mr-3 pr-3 border-r border-zinc-800">
+                <div className="flex flex-col items-center">
+                  <span className="text-[9px] text-zinc-500 uppercase font-bold mb-0.5">Client</span>
+                  <div className={cn("w-2 h-2 rounded-full", commission.requesterAgreed ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-zinc-700")} />
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-[9px] text-zinc-500 uppercase font-bold mb-0.5">Artist</span>
+                  <div className={cn("w-2 h-2 rounded-full", commission.artistAgreed ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-zinc-700")} />
+                </div>
+              </div>
+            )}
+
+            {canAccept ? (
+              <div className="flex items-center gap-1.5 mr-2 pr-2 border-r border-zinc-800">
+                <button
+                  onClick={() => handleStatusUpdate("CANCELLED")}
+                  disabled={updateMutation.isPending}
+                  className="text-[10px] bg-red-500/10 hover:bg-red-500/20 text-red-500 px-2.5 py-1 rounded-md font-medium transition-colors border border-red-500/20"
+                >
+                  Decline
+                </button>
+                <button
+                  onClick={() => handleStatusUpdate("AGREED")}
+                  disabled={updateMutation.isPending}
+                  className="text-[10px] bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-3 py-1.5 rounded-lg font-bold transition-all shadow-lg shadow-emerald-900/40 hover:scale-105 active:scale-95"
+                >
+                  Accept Terms
+                </button>
+              </div>
+            ) : isNegotiating && hasIAgreed && !hasOtherAgreed && (
+              <div className="mr-3 px-3 py-1 bg-zinc-800/50 rounded-md border border-zinc-700">
+                <span className="text-[10px] text-zinc-400 font-medium italic">Waiting for {isRequester ? "Artist" : "Client"}...</span>
+              </div>
             )}
 
             {(commission.status === "LOCKED" || commission.status === "IN_PROGRESS") && isArtist && (
-               <Button 
+              <Button
                 size="sm"
-                className="bg-green-600 hover:bg-green-700 text-black font-bold h-7 text-[10px] px-3 mr-2"
+                className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-bold h-8 text-[10px] px-4 mr-2 rounded-lg shadow-lg shadow-indigo-900/40 border-none hover:scale-105 transition-all"
                 onClick={() => setIsDeliverModalOpen(true)}
-               >
-                 Deliver Artwork
-               </Button>
+              >
+                Deliver Artwork
+              </Button>
             )}
 
             <div className="flex items-center gap-1.5 mr-2">
-                {canRaiseDispute && (
-                    <Button 
-                        size="sm"
-                        variant="ghost"
-                        className="text-red-500 hover:bg-red-500/10 h-7 text-[10px]"
-                        onClick={() => setIsDisputeModalOpen(true)}
-                    >
-                    Raise Dispute
-                    </Button>
-                )}
-                {commission.status === "DELIVERED" && isRequester && (
-                    <Button 
-                        size="sm"
-                        className="bg-emerald-500 hover:bg-emerald-600 text-black font-bold h-7 text-[10px]"
-                        onClick={() => handleStatusUpdate("COMPLETED")}
-                        disabled={updateMutation.isPending}
-                    >
-                    Approve & Complete
-                    </Button>
-                )}
+              {canRaiseDispute && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-red-500 hover:bg-red-500/10 h-7 text-[10px]"
+                  onClick={() => setIsDisputeModalOpen(true)}
+                >
+                  Raise Dispute
+                </Button>
+              )}
+              {commission.status === "DELIVERED" && isRequester && (
+                <Button
+                  size="sm"
+                  className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-black font-extrabold h-8 text-[11px] px-4 shadow-lg shadow-green-900/40 transition-all hover:scale-105"
+                  onClick={() => handleStatusUpdate("COMPLETED")}
+                  disabled={updateMutation.isPending}
+                >
+                  Approve & Complete payment
+                </Button>
+              )}
             </div>
 
             {canEdit && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
                 onClick={() => setIsEditModalOpen(true)}
               >
@@ -247,6 +281,32 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
           </div>
         </div>
 
+        {/* Delivered Artwork Section (if status is delivered or completed) */}
+        {(commission.status === "DELIVERED" || commission.status === "COMPLETED") && (
+          <div className="mx-3 mb-3 p-4 bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-xl flex items-center justify-between shadow-inner">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-xl border border-emerald-500/40 overflow-hidden bg-zinc-800 shadow-2xl group relative cursor-zoom-in">
+                <img src={commission.finalImageUrl || commission.finalArtwork} alt="Delivered" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <ExternalLink className="w-4 h-4 text-white" />
+                </div>
+              </div>
+              <div>
+                <p className="text-[12px] font-black text-emerald-400 uppercase tracking-widest">Artwork Delivered! ✨</p>
+                <p className="text-[11px] text-zinc-400 mt-0.5">The final masterpiece is ready for your approval.</p>
+              </div>
+            </div>
+            <a
+              href={commission.finalImageUrl || commission.finalArtwork}
+              target="_blank"
+              rel="noreferrer"
+              className="text-[10px] flex items-center gap-2 bg-zinc-800 border border-zinc-700 text-white font-bold px-4 py-2 rounded-lg hover:bg-zinc-700 hover:border-emerald-500/50 transition-all shadow-md group"
+            >
+              <ExternalLink className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" /> View Full Art
+            </a>
+          </div>
+        )}
+
         {/* Expanded Content */}
         {isExpanded && (
           <div className="px-4 pb-4 pt-1 border-t border-zinc-800 animate-in slide-in-from-top-2 duration-200">
@@ -258,7 +318,7 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
                     {commission.description}
                   </p>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                   <div>
                     <label className="text-[10px] font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1">
@@ -276,10 +336,10 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
                 {commission.referenceImages && commission.referenceImages.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {commission.referenceImages.map((img: string, idx: number) => (
-                      <a 
-                        key={idx} 
-                        href={img} 
-                        target="_blank" 
+                      <a
+                        key={idx}
+                        href={img}
+                        target="_blank"
                         rel="noreferrer"
                         className="w-16 h-16 rounded-lg bg-zinc-800 border border-zinc-700 overflow-hidden hover:border-zinc-500 transition-colors relative group"
                       >
@@ -295,43 +355,43 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
                 )}
               </div>
             </div>
-            
+
             <div className="mt-4 pt-3 border-t border-zinc-800/50 flex justify-between items-center">
-                <div className="flex gap-2">
-                  {showHistory && history.map((prev: any, idx: number) => (
-                    <Badge key={idx} variant="outline" className="text-[9px] opacity-60">
-                      {prev.title} ({prev.status})
-                    </Badge>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                    {isCompletedOrCancelled && isRequester && (
-                      <Button 
-                        size="sm" 
-                        variant="ghost"
-                        className="text-white hover:bg-green-500/10 hover:text-green-500 border border-zinc-700 h-8 gap-1"
-                        onClick={() => setIsEditModalOpen(true)}
-                      >
-                        <Plus className="w-3 h-3" /> Request New
-                      </Button>
-                    )}
-                    {commission.status === "AGREED" && isRequester && (
-                      <Button 
-                        size="sm" 
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold h-8"
-                        onClick={handlePayment}
-                        disabled={lockMutation.isPending}
-                      >
-                        {lockMutation.isPending ? "Processing..." : "Pay & Start Commission"}
-                      </Button>
-                    )}
-                    {commission.status === "AGREED" && isArtist && (
-                      <span className="text-xs text-zinc-400 italic py-1">Waiting for payment from requester...</span>
-                    )}
-                    {commission.lastUpdatedBy === currentUserId && isNegotiating && (
-                       <span className="text-xs text-zinc-400 italic py-1">Waiting for {isRequester ? "Artist" : "Client"} to respond...</span>
-                    )}
-                </div>
+              <div className="flex gap-2">
+                {showHistory && history.map((prev: any, idx: number) => (
+                  <Badge key={idx} variant="outline" className="text-[9px] opacity-60">
+                    {prev.title} ({prev.status})
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                {isCompletedOrCancelled && isRequester && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-white hover:bg-green-500/10 hover:text-green-500 border border-zinc-700 h-8 gap-1"
+                    onClick={handleRequestNew}
+                  >
+                    <Plus className="w-3 h-3" /> Request New
+                  </Button>
+                )}
+                {commission.status === "AGREED" && isRequester && (
+                  <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold h-9 px-6 rounded-lg shadow-xl shadow-emerald-900/50 border-none transition-all hover:scale-105 active:scale-95"
+                    onClick={handlePayment}
+                    disabled={lockMutation.isPending}
+                  >
+                    {lockMutation.isPending ? "Processing..." : "Pay & Start Commission"}
+                  </Button>
+                )}
+                {commission.status === "AGREED" && isArtist && (
+                  <span className="text-xs text-zinc-400 italic py-1">Waiting for payment from requester...</span>
+                )}
+                {commission.lastUpdatedBy === currentUserId && isNegotiating && (
+                  <span className="text-xs text-zinc-400 italic py-1">Waiting for {isRequester ? "Artist" : "Client"} to respond...</span>
+                )}
+              </div>
             </div>
 
             {showHistory && (
@@ -358,14 +418,14 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
         )}
       </div>
 
-      <CommissionEditModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
-        commission={commission} 
+      <CommissionEditModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        commission={commission}
         isRequester={isRequester}
       />
 
-      <DeliverArtworkModal 
+      <DeliverArtworkModal
         isOpen={isDeliverModalOpen}
         onClose={() => setIsDeliverModalOpen(false)}
         onDeliver={handleDelivery}
@@ -380,7 +440,7 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
             <p className="text-sm text-zinc-400">
               Please describe why you are dissatisfied with the delivery. Admin will review this request.
             </p>
-            <Textarea 
+            <Textarea
               placeholder="Reason for dispute..."
               value={disputeReason}
               onChange={(e) => setDisputeReason(e.target.value)}
@@ -400,66 +460,71 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
 };
 
 const DeliverArtworkModal = ({ isOpen, onClose, onDeliver }: { isOpen: boolean; onClose: () => void; onDeliver: (url: string) => void }) => {
-    const [file, setFile] = useState<File | null>(null);
-    const [preview, setPreview] = useState<string | null>(null);
-    const uploadMutation = useUploadArtImageMutation();
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const uploadMutation = useUploadCommissionImageMutation();
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const selectedFile = e.target.files[0];
-            setFile(selectedFile);
-            setPreview(URL.createObjectURL(selectedFile));
-        }
-    };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      setPreview(URL.createObjectURL(selectedFile));
+    }
+  };
 
-    const handleUpload = async () => {
-        if (!file) return;
-        try {
-            const response = await uploadMutation.mutateAsync(file);
-            const url = response?.data?.data || response?.data?.url;
-            if (url) {
-                onDeliver(url);
-                setFile(null);
-                setPreview(null);
-            }
-        } catch (error) {
-            toast.error("Upload failed");
-        }
-    };
+  const handleUpload = async () => {
+    if (!file) return;
+    try {
+      const response = await uploadMutation.mutateAsync(file);
+      // The response format from commission upload seems to have url directly or via data.data
+      const url = response?.data?.data?.originalUrl || response?.data?.data?.url || response?.data?.url;
+      if (url) {
+        onDeliver(url);
+        setFile(null);
+        setPreview(null);
+      } else {
+        toast.error("Upload responded with no URL");
+        console.error("No URL found in response:", response);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Upload failed");
+    }
+  };
 
-    return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-[500px]">
-                <DialogHeader>
-                    <DialogTitle>Deliver Final Artwork</DialogTitle>
-                </DialogHeader>
-                <div className="py-6 flex flex-col items-center gap-4">
-                   {!preview ? (
-                     <label className="w-full aspect-video border-2 border-dashed border-zinc-800 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-green-500/50 hover:bg-green-500/5 transition-all">
-                        <Plus className="w-8 h-8 text-zinc-500 mb-2" />
-                        <span className="text-sm text-zinc-500">Click to select final artwork file</span>
-                        <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                     </label>
-                   ) : (
-                     <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-zinc-800">
-                        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                        <button 
-                            onClick={() => { setFile(null); setPreview(null); }}
-                            className="absolute top-2 right-2 bg-black/60 p-1.5 rounded-full hover:bg-red-500 transition-colors"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                     </div>
-                   )}
-                </div>
-                <DialogFooter>
-                    <Button variant="ghost" onClick={onClose} disabled={uploadMutation.isPending}>Cancel</Button>
-                    <Button className="bg-green-600 hover:bg-green-700" onClick={handleUpload} disabled={!file || uploadMutation.isPending}>
-                        {uploadMutation.isPending ? <CustomLoader /> : "Upload & Deliver"}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Deliver Final Artwork</DialogTitle>
+        </DialogHeader>
+        <div className="py-6 flex flex-col items-center gap-4">
+          {!preview ? (
+            <label className="w-full aspect-video border-2 border-dashed border-zinc-800 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-green-500/50 hover:bg-green-500/5 transition-all">
+              <Plus className="w-8 h-8 text-zinc-500 mb-2" />
+              <span className="text-sm text-zinc-500">Click to select final artwork file</span>
+              <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+            </label>
+          ) : (
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-zinc-800">
+              <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+              <button
+                onClick={() => { setFile(null); setPreview(null); }}
+                className="absolute top-2 right-2 bg-black/60 p-1.5 rounded-full hover:bg-red-500 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose} disabled={uploadMutation.isPending}>Cancel</Button>
+          <Button className="bg-green-600 hover:bg-green-700" onClick={handleUpload} disabled={!file || uploadMutation.isPending}>
+            {uploadMutation.isPending ? <CustomLoader /> : "Upload & Deliver"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
