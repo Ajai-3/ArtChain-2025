@@ -9,13 +9,13 @@ export const useCreatePostMutation = (onClose: ()=> void) => {
   const navigate= useNavigate()
   return useMutation({
     mutationFn: (data: CreatePostInput) => apiClient.post("/api/v1/art", data),
-    onSuccess: (res: any) => {
+    onSuccess: (res) => {
       console.log(res.data);
       toast.success("Post created successfully!");
       onClose()
       navigate(ROUTES.HOME)
     },
-    onError: (err: any) => {
+    onError: (err) => {
       console.log(err)
       toast.error(err?.message || "Failed to create post!");
     },

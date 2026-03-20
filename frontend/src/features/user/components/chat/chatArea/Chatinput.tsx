@@ -105,7 +105,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
                     return;
                   }
                   onSendImage(file);
-                  e.target.value = ''; // reset
+                  e.target.value = '';
                 }
               }}
             />
