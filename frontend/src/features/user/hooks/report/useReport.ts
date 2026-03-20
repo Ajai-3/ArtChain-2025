@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import toast from "react-hot-toast";
 
 export interface ReportData {
   targetId: string;
@@ -15,5 +16,8 @@ export const useReport = () => {
       await apiClient.post("/api/v1/user/report", data);
       return { success: true };
     },
-  });
+    onError: (error: any) => {
+      toast.error(error.fullError.data.message);
+    },
+  })
 };

@@ -40,7 +40,7 @@ const CommissionDetailModal: React.FC<CommissionDetailModalProps> = ({
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[700px] bg-zinc-950 border-zinc-800 text-zinc-100 p-0 overflow-hidden">
+            <DialogContent className="sm:max-w-[700px] bg-zinc-950 border-zinc-800 text-zinc-100 p-0 scrollbar overflow-hidden">
                 <DialogHeader className="p-6 pb-2 bg-zinc-900/50 border-b border-zinc-800">
                     <div className="flex items-center justify-between">
                          <div className="space-y-1">
