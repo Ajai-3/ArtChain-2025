@@ -253,8 +253,9 @@ export class WalletController implements IWalletController {
         req.body,
       );
 
-      await this._settleAuctionUseCase.execute(dto);
+      const result = await this._settleAuctionUseCase.execute(dto);
 
+      logger.info(`[WalletController] Auction settled successfully for user ${dto.winnerId}`);
       return res
         .status(HttpStatus.OK)
         .json({ message: WALLET_MESSAGES.AUCTION_SETTLED_SUCCESS });

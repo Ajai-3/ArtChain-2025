@@ -409,26 +409,35 @@ export class WalletRepositoryImpl
     try {
       const sellerAmount = totalAmount - commissionAmount;
 
+      logger.info(`[WalletRepository] Starting settlement transaction for auction ${auctionId}. Total: ${totalAmount}, SellerAmt: ${sellerAmount}, AdminAmt: ${commissionAmount}`);
+
       await prisma.$transaction(async (tx) => {
+        logger.info(`[WalletRepository] Updating winner wallet ${winnerId}. Decrementing lockedAmount by ${totalAmount}`);
         const winnerWallet = await tx.wallet.update({
           where: { userId: winnerId },
           data: {
             lockedAmount: { decrement: totalAmount },
           },
         });
+        logger.info(`[WalletRepository] Winner wallet updated. New lockedAmount: ${winnerWallet.lockedAmount}`);
 
+        logger.info(`[WalletRepository] Upserting seller wallet ${sellerId}. Incrementing balance by ${sellerAmount}`);
         const sellerWallet = await tx.wallet.upsert({
           where: { userId: sellerId },
           create: { userId: sellerId, balance: sellerAmount },
           update: { balance: { increment: sellerAmount } },
         });
+        logger.info(`[WalletRepository] Seller wallet updated. New balance: ${sellerWallet.balance}`);
 
+        logger.info(`[WalletRepository] Upserting admin wallet ${adminId}. Incrementing balance by ${commissionAmount}`);
         const adminWallet = await tx.wallet.upsert({
           where: { userId: adminId },
           create: { userId: adminId, balance: commissionAmount },
           update: { balance: { increment: commissionAmount } },
         });
+        logger.info(`[WalletRepository] Admin wallet updated. New balance: ${adminWallet.balance}`);
 
+        logger.info(`[WalletRepository] Creating debit transaction record for winner`);
         await tx.transaction.create({
           data: {
             walletId: winnerWallet.id,
@@ -443,6 +452,7 @@ export class WalletRepositoryImpl
           },
         });
 
+        logger.info(`[WalletRepository] Creating credit transaction record for seller`);
         await tx.transaction.create({
           data: {
             walletId: sellerWallet.id,
@@ -472,10 +482,11 @@ export class WalletRepositoryImpl
             },
           });
         }
+        logger.info(`[WalletRepository] Settlement transaction committed successfully for ${auctionId}`);
       });
       return true;
     } catch (error) {
-      console.error('Settle Auction Error:', error);
+      logger.error(`[WalletRepository] Settle Auction Transaction ERROR for ${auctionId}: ${error}`);
       return false;
     }
   }
