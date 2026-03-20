@@ -177,8 +177,12 @@ export class S3FileRepository implements IFileRepository {
     }
 
     if (category === 'bidding') {
-      const url = `${config.aws.cdn_domain}/${key}`;
-      return createSignedUrl(url);
+      return s3Client.getSignedUrlPromise('getObject', {
+        Bucket: bucketConfig.bucket,
+        Key: `${key}`,
+        Expires: 3600,
+        ResponseContentDisposition: `attachment; filename="${fileName}"`,
+      });
     }
 
     return s3Client.getSignedUrlPromise('getObject', {
