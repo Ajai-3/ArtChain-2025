@@ -108,6 +108,7 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
 
   async getStats(startDate?: Date, endDate?: Date): Promise<{
     active: number;
+    scheduled: number;
     ended: number;
     sold: number;
     unsold: number;
@@ -119,13 +120,14 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
       if (endDate) query.startTime.$lte = endDate;
     }
 
-    const [active, ended, sold, unsold] = await Promise.all([
+    const [active, scheduled, ended, sold, unsold] = await Promise.all([
       AuctionModel.countDocuments({ ...query, status: 'ACTIVE' }),
+      AuctionModel.countDocuments({ ...query, status: 'SCHEDULED' }),
       AuctionModel.countDocuments({ ...query, status: 'ENDED' }),
       AuctionModel.countDocuments({ ...query, status: 'ENDED', winnerId: { $ne: null } }),
       AuctionModel.countDocuments({ ...query, status: 'ENDED', winnerId: null })
     ]);
 
-    return { active, ended, sold, unsold };
+    return { active, scheduled, ended, sold, unsold };
   }
 }

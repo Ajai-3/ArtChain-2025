@@ -22,6 +22,7 @@ export interface IAuctionRepository extends IBaseRepository<Auction> {
   updateStatus(id: string, status: string): Promise<void>;
   getStats(startDate?: Date, endDate?: Date): Promise<{
     active: number;
+    scheduled: number;
     ended: number;
     sold: number;
     unsold: number;

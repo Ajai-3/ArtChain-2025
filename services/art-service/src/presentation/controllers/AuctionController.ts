@@ -328,4 +328,32 @@ export class AuctionController implements IAuctionController {
       next(error);
     }
   };
+
+  //# ================================================================================================================
+  //# GET AUCTION ALERT COUNTS
+  //# ================================================================================================================
+  //# GET /api/v1/art/auctions/counts
+  //# This controller fetches the counts of active and scheduled auctions.
+  //# ================================================================================================================
+  getAuctionAlertCounts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      logger.info('Fetching auction alert counts (active & scheduled)');
+      const stats = await this._getAuctionStatsUseCase.execute('all');
+      
+      return res.status(HttpStatus.OK).json({
+        message: AUCTION_MESSAGES.AUCTION_COUNTS_FETCHED,
+        data: {
+          active: stats.active,
+          scheduled: stats.scheduled
+        },
+      });
+    } catch (error) {
+      logger.error('Error in getAuctionAlertCounts', error);
+      next(error);
+    }
+  };
 }

@@ -98,6 +98,7 @@ export const ROUTES = {
     PLACE_BID: '/bids',
     USER_BIDS: '/my-bids',
     USER_BIDDING_HISTORY: '/my-bidding-history',
+    COUNTS: '/auctions/counts',
   },
 
   // Admin Auction routes

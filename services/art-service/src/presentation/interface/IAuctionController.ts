@@ -34,4 +34,5 @@ export interface IAuctionController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+  getAuctionAlertCounts(req: Request, res: Response, next: NextFunction): Promise<Response | void>;
 }

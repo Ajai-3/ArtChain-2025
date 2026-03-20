@@ -12,6 +12,7 @@ const bidController = container.get<IBidController>(TYPES.IBidController);
 
 // Auction Routes
 router.post(ROUTES.AUCTION.BASE, auctionController.createAuction);
+router.get(ROUTES.AUCTION.COUNTS, auctionController.getAuctionAlertCounts);
 router.get(ROUTES.AUCTION.BASE, auctionController.getAuctions);
 router.get(ROUTES.AUCTION.BY_ID, auctionController.getAuction);
 
