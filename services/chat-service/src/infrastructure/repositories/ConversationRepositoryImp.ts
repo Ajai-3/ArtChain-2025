@@ -30,10 +30,22 @@ export class ConversationRepositoryImp
     return this.mapDbToDomain(conversation);
   }
 
+  async findRequestConversation(
+    userId: string,
+    otherUserId: string
+  ): Promise<Conversation | null> {
+    const conversation = await this.model.findOne({
+      memberIds: { $all: [userId, otherUserId] },
+      type: ConversationType.REQUEST,
+    });
+    return this.mapDbToDomain(conversation);
+  }
+
   async listResentByUser(userId: string, page: number, limit: number) {
     const skip = (page - 1) * limit;
 
     const docs = await ConversationModel.find({ memberIds: { $in: [userId] } })
+      .sort({ updatedAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean();
@@ -44,5 +56,12 @@ export class ConversationRepositoryImp
 
     const conversations = this.mapDbArrayToDomain(docs);
     return { conversations, total };
+  }
+
+  async touch(conversationId: string): Promise<void> {
+    await ConversationModel.updateOne(
+      { _id: conversationId },
+      { $set: { updatedAt: new Date() } }
+    );
   }
 }

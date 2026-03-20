@@ -42,16 +42,26 @@ export class CreateRequestConversationUseCase {
 
     console.log(userId, artistId);
     
-    const conversation = await this._conversationRepo.create({
-      type: ConversationType.REQUEST,
-      memberIds: [userId, artistId],
-      locked: true,
-      adminIds: [],
-    });
+    let isNewConvo = false;
+    let conversation = await this._conversationRepo.findRequestConversation(
+      userId,
+      artistId
+    );
+
+    if (!conversation) {
+      conversation = await this._conversationRepo.create({
+        type: ConversationType.REQUEST,
+        memberIds: [userId, artistId],
+        locked: true,
+        adminIds: [],
+      });
+      isNewConvo = true;
+    } else {
+      // Update updatedAt to bring it to the top
+      await this._conversationRepo.touch(conversation.id);
+    }
 
     console.log(conversation);
-
-    const isNewConvo = true;
 
     const partnerUser = await this._userService.getUserById(artistId);
 
@@ -84,9 +94,21 @@ export class CreateRequestConversationUseCase {
 
     logger.info(`Request conversation created: ${conversation.id}`);
 
-    // Notify artist
+    // Notify artist with their perspective (Requester as partner)
+    const requesterUser = await this._userService.getUserById(userId);
+    const artistEnrichedMap = new Map<string, UserDto>();
+    if (requesterUser) artistEnrichedMap.set(userId, requesterUser);
+
+    const enrichedForArtist = mapConversation({
+      conversation: conversation,
+      userId: artistId, // Artist perspective
+      lastMap: lastMap,
+      unreadMap: new Map<string, number>(),
+      partnersMap: artistEnrichedMap,
+    });
+
     await this._broadcastService.publishNewPrivateConversation(
-      enrichedConversation,
+      enrichedForArtist,
       artistId
     );
 
