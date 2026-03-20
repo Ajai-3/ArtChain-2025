@@ -6,6 +6,8 @@ import { IS3Service } from '../../../domain/interfaces/IS3Service';
 import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepository';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { ART_MESSAGES } from '../../../constants/ArtMessages';
+import { AUCTION_MESSAGES } from '../../../constants/AuctionMessages';
+import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
 
 @injectable()
 export class DownloadArtUseCase implements IDownloadArtUseCase {
@@ -14,6 +16,8 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
     private readonly _artRepository: IArtPostRepository,
     @inject(TYPES.IS3Service)
     private readonly _s3Service: IS3Service,
+    @inject(TYPES.IAuctionRepository)
+    private readonly _auctionRepo: IAuctionRepository,
     @inject(TYPES.IPurchaseRepository)
     private readonly _purchaseRepo: IPurchaseRepository,
   ) {}
@@ -23,60 +27,82 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
       throw new BadRequestError(ART_MESSAGES.INVALID_REQUEST_PARAMETERS);
     }
 
-    const art = await this._artRepository.findById(id);
+    console.log(category, id, userId);
 
-    if (!art) {
-      throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
-    }
+    let originalKey: string = '';
+    let fileName: string = '';
 
-    const fileName = `${art.artName}.jpg`;
+    if (category === 'art') {
+      const art = await this._artRepository.findById(id);
 
-    let allowed = false;
+      if (!art) {
+        throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
+      }
 
-    if (art.userId === userId) {
-      allowed = true;
-    }
+      let allowed = false;
 
-    if (
-      !allowed &&
-      !art.isForSale &&
-      (art.artcoins === 0 || art.fiatPrice === 0)
-    ) {
-      allowed = true;
-    }
+      if (art.userId === userId) {
+        allowed = true;
+      }
 
-    if (!allowed && !art.isForSale) {
-      const purchase = await this._purchaseRepo.findByUserAndArt(userId, id);
+      if (
+        !allowed &&
+        !art.isForSale &&
+        (art.artcoins === 0 || art.fiatPrice === 0)
+      ) {
+        allowed = true;
+      }
 
-      if (!purchase) {
+      if (!allowed) {
+        const purchase = await this._purchaseRepo.findByUserAndArt(userId, id);
+        if (purchase) {
+          allowed = true;
+        }
+      }
+
+      if (!allowed) {
         throw new BadRequestError(ART_MESSAGES.YOU_ARE_NOT_PURCHASER);
       }
-      allowed = true;
+
+      if (!art.previewUrl) {
+        throw new BadRequestError(ART_MESSAGES.ART_NOT_AVAILABLE_FOR_DOWNLOAD);
+      }
+
+      const urlParts = art.previewUrl.split('/');
+      const s3Filename = urlParts[urlParts.length - 1];
+      const s3UserId = urlParts[2];
+
+      fileName = `${art.artName.replace(/\s+/g, '_')}.jpg`;
+      originalKey = `${s3UserId}/original_art/${s3Filename}`;
+    } else if (category === 'bidding') {
+      const auction = await this._auctionRepo.getById(id);
+
+      if (!auction) {
+        throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
+      }
+
+      console.log(auction);
+
+      if (auction.status !== 'ENDED') {
+        throw new BadRequestError(AUCTION_MESSAGES.AUCTION_NOT_ENDED);
+      }
+
+      if (auction.winnerId !== userId) {
+        throw new BadRequestError(AUCTION_MESSAGES.YOU_ARE_NOT_BIDDER);
+      }
+
+      if (!auction.imageKey) {
+        throw new BadRequestError('No image associated with this auction.');
+      }
+
+      fileName = `${auction.title.replace(/\s+/g, '_')}.jpg`;
+      originalKey = `${auction.imageKey}`;
+    } else {
+      throw new BadRequestError('Unsupported category');
     }
 
-    if (!allowed) {
-      throw new BadRequestError(ART_MESSAGES.ART_NOT_AVAILABLE_FOR_DOWNLOAD);
-    }
+    console.log('✅ Generating Signed URL for Key:', originalKey);
 
-    if (!art.previewUrl) {
-      throw new BadRequestError(ART_MESSAGES.ART_NOT_AVAILABLE_FOR_DOWNLOAD);
-    }
-
-    const urlParts = art.previewUrl.split('/');
-
-    const userIdFromUrl = urlParts[2];
-    const filename = urlParts[urlParts.length - 1];
-
-    const originalKey = `${userIdFromUrl}/original_art/${filename}`;
-
-    console.log('✅ Key being sent to S3 Service:', originalKey);
-
-    const url = this._s3Service.getSignedUrl(
-      originalKey,
-      'art' as any,
-      fileName,
-    );
-
-    return url;
+    return this._s3Service.getSignedUrl(originalKey, category as any, fileName);
   }
 }
