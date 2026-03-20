@@ -396,18 +396,24 @@ export class ArtController implements IArtController {
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
-      const currentUserId = req.headers['x-user-id'] as string;
+      const category = req.query.type as string;
+      const userId = req.headers['x-user-id'] as string;
 
-      logger.info(`User ${currentUserId} downloading art ${id}`);
+      logger.info(`User ${userId} downloading art ${id}`);
 
       const signedUrl = await this._downloadArtUseCase.execute(
         id,
-        currentUserId,
+        userId,
+        category,
       );
+
+      logger.info(`✅ [DownloadArt] Signed URL: ${signedUrl}`);
 
       return res.status(HttpStatus.OK).json({
         message: ART_MESSAGES.DOWNLOAD_SUCCESS,
-        downloadUrl: signedUrl,
+        data: {
+          downloadUrl: signedUrl,
+        },
       });
     } catch (error) {
       logger.error('Error in downloadArt', error);
@@ -465,7 +471,7 @@ export class ArtController implements IArtController {
     next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const range = req.query.range as string || '7d';
+      const range = (req.query.range as string) || '7d';
       const userId = req.headers['x-user-id'] as string;
 
       const analytics = await this._getSalesAnalyticsUseCase.execute(
@@ -537,7 +543,7 @@ export class ArtController implements IArtController {
     next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const range = req.query.range as string || '7d';
+      const range = (req.query.range as string) || '7d';
       const userId = req.headers['x-user-id'] as string;
 
       const analytics = await this._getPurchaseAnalyticsUseCase.execute(
@@ -557,5 +563,5 @@ export class ArtController implements IArtController {
       logger.error('Error in purchaseAnalytics', error);
       next(error);
     }
-  }; 
+  };
 }

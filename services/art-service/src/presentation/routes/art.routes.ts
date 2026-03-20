@@ -39,7 +39,7 @@ router.patch(ROUTES.CATEGORY.BY_ID, categoryController.editCategory);
 router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
 router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
 
-// Platform Config (Public) - Must be before /:id routes
+// Platform Config (Public) -
 router.get(ROUTES.CONFIG.BASE, adminConfigController.getConfig);
 
 // Art

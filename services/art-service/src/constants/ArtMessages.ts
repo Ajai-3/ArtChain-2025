@@ -1,4 +1,5 @@
 export enum ART_MESSAGES {
+  INVALID_REQUEST_PARAMETERS = 'Invalid request parameters',
   ART_COUNTED = 'Art counted',
   ART_NOT_FOUND = 'Art not found',
   FETCH_ALL_SUCCESS = 'Fetched all art items',
@@ -25,4 +26,6 @@ export enum ART_MESSAGES {
   PURCHASED_ARTWORKS_FETCH_SUCCESS = 'Fetched purchased artworks successfully',
   SALES_ANALYTICS_FETCH_SUCCESS = 'Fetched sales analytics successfully',
   PURCHASE_ANALYTICS_FETCH_SUCCESS = 'Fetched purchase analytics successfully',
+  INVALID_IMAGE_URL_FORMAT = 'Invalid image URL format',
+  YOU_ARE_NOT_PURCHASER = 'You are not the purchaser of this art',
 }

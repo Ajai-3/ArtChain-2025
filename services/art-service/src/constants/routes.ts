@@ -1,6 +1,6 @@
 /**
  * API Route Constants
- * 
+ *
  * This file contains all route path constants used throughout the application.
  * All route definitions should use these constants instead of hardcoded strings.
  */
@@ -8,8 +8,6 @@
 export const ROUTES = {
   // Base API route
   BASE: '/api/v1/art',
-
-  
 
   // Category routes
   CATEGORY: {
@@ -91,7 +89,7 @@ export const ROUTES = {
     STATS_CATEGORIES: '/stats/categories',
     STATUS: '/:id/status',
   },
-  
+
   // Auction routes
   AUCTION: {
     BASE: '/auctions',
@@ -115,7 +113,7 @@ export const ROUTES = {
   ADMIN_CONFIG: {
     BASE: '/admin/platform-config',
   },
-  
+
   CONFIG: {
     BASE: '/platform-config',
   },
@@ -133,6 +131,5 @@ export const ROUTES = {
     STATS: '/stats',
     RESOLVE: '/resolve/:id',
     RECENT: '/recent',
-  }
+  },
 } as const;
-
