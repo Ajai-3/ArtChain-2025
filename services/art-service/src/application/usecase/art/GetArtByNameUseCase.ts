@@ -25,7 +25,7 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
     @inject(TYPES.IPurchaseRepository)
     private readonly _purchaseRepo: IPurchaseRepository,
     @inject(TYPES.IUserService)
-    private readonly _userService: IUserService
+    private readonly _userService: IUserService,
   ) {}
 
   async execute(artName: string, currentUserId: string) {
@@ -36,7 +36,7 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
 
     const userRes = await this._userService.getUserById(
       artFull.userId,
-      currentUserId
+      currentUserId,
     );
     if (!userRes) {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
@@ -44,7 +44,7 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
 
     const likeCount = await this._likeRepo.likeCountByPostId(artFull._id);
     const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-      artFull._id
+      artFull._id,
     );
     const commentCount = await this._commentRepo.countByPostId(artFull._id);
 
@@ -58,11 +58,18 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
     );
 
     let purchaser = null;
-    if (artFull.isForSale && artFull.isSold) {
-        const purchase = await this._purchaseRepo.findByArtId(artFull._id);
-        if (purchase) {
-            purchaser = await this._userService.getUserById(purchase.userId, currentUserId);
-        }
+    if (!artFull.isForSale && artFull.isSold) {
+      console.log(
+        'artFull.isForSale && artFull.isSold',
+        artFull.isForSale && artFull.isSold,
+      );
+      const purchase = await this._purchaseRepo.findByArtId(artFull._id);
+      if (purchase) {
+        purchaser = await this._userService.getUserById(
+          purchase.userId,
+          currentUserId,
+        );
+      }
     }
 
     return {
