@@ -5,6 +5,7 @@ import { IArtPostRepository } from '../../../domain/repositories/IArtPostReposit
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
 import { IGetShopArtsByUserUseCase } from '../../interface/usecase/art/IGetAllShopArtsUseCase';
 import { IUserService } from '../../interface/service/IUserService';
+import { mapCdnUrl } from '../../../utils/mapCdnUrl';
 
 @injectable()
 export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
@@ -14,7 +15,7 @@ export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
     @inject(TYPES.IFavoriteRepository)
-    private readonly _favoriteRepo: IFavoriteRepository
+    private readonly _favoriteRepo: IFavoriteRepository,
   ) {}
 
   async execute(userId: string, page = 1, limit = 10): Promise<any[]> {
@@ -28,10 +29,15 @@ export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
     const artsWithFavorites = await Promise.all(
       arts.map(async (art: any) => {
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-          art._id.toString()
+          art._id.toString(),
         );
-        return { ...art, favoriteCount, user: userRes };
-      })
+        return {
+          ...art,
+          previewUrl: mapCdnUrl(art.previewUrl),
+          favoriteCount,
+          user: userRes,
+        };
+      }),
     );
 
     return artsWithFavorites;
