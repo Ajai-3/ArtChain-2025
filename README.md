@@ -1,12 +1,48 @@
 # ArtChain 2025
 
-> A decentralized, enterprise-grade platform connecting digital artists with art enthusiasts — built on a robust microservices ecosystem.
+> A decentralized, enterprise-grade platform connecting digital artists with art enthusiasts — built on a production-ready microservices ecosystem.
 
 ArtChain facilitates secure art commissions, peer-to-peer live communication, real-time bidding, and dynamic portfolio management. The platform is architected using **Clean Architecture** principles, ensuring exceptional scalability, strict separation of concerns, and long-term maintainability.
 
 ---
 
-## 🏗️ Tech Stack
+## System Design
+
+A full breakdown of the system architecture, service interactions, and data flow is documented here:
+
+**[View Full System Design](./docs/System-Design.md)**
+
+---
+
+## Top Features
+
+**Mutual-Agreement Commission Workflow**
+A trustworthy escrow-backed commission system where funds are locked upfront and released only after both parties approve each stage — Agreement, In Progress, Delivery, and Payout. Neither side can be exploited.
+
+**Live Peer-to-Peer Video & Messaging**
+Real-time text chat with inline image support and seamless WebRTC-powered video calling — all without leaving the platform. Signaling is handled entirely by the dedicated chat service.
+
+**Real-Time Bidding**
+Artists and collectors can participate in live auction-style bidding with instant updates powered by Socket.io, ensuring a fair and transparent process.
+
+**Artist Identity Verification**
+A structured verification pipeline ensures only legitimate artists can list work, building platform-wide trust for both buyers and creatives.
+
+**Stripe Escrow & Payouts**
+Integrated Stripe handles fund-locking during active commissions and automated artist payouts upon successful delivery — no manual intervention required.
+
+**Centralized Observability**
+Loki aggregates container logs from every microservice and feeds them into Grafana dashboards, giving complete visibility into platform health with zero blind spots.
+
+**Elasticsearch-Powered Search**
+High-performance vector search across artworks and user profiles, enabling fast and relevant discovery across the entire catalog.
+
+**Cloud Media CDN**
+All image uploads — avatars and full-resolution illustrations — are proxied through a dedicated S3 service acting as the platform's unified content delivery network.
+
+---
+
+## Tech Stack
 
 ### Frontend
 
@@ -18,7 +54,7 @@ ArtChain facilitates secure art commissions, peer-to-peer live communication, re
 | Tool | Purpose |
 |---|---|
 | **TanStack Query** | Server-state management, data fetching & intelligent caching |
-| **shadcn/ui** | Accessible, customizable UI components |
+| **shadcn/ui** | Accessible, customizable UI component library |
 | **Socket.io Client + WebRTC** | Real-time messaging & peer-to-peer video |
 | **Redux Toolkit** | Complex global client-state management |
 
@@ -31,28 +67,30 @@ ArtChain facilitates secure art commissions, peer-to-peer live communication, re
 ![PostgreSQL](https://img.shields.io/badge/postgresql-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch)
+![RabbitMQ](https://img.shields.io/badge/rabbitmq-%23FF6600.svg?style=for-the-badge&logo=rabbitmq&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![Grafana](https://img.shields.io/badge/grafana-%23F46800.svg?style=for-the-badge&logo=grafana&logoColor=white)
 ![Loki](https://img.shields.io/badge/loki-%23F5A623.svg?style=for-the-badge&logo=grafana&logoColor=white)
 
 | Tool | Purpose |
 |---|---|
-| **PostgreSQL** | Relational data (managed via Prisma & pgAdmin) |
-| **MongoDB** | Flexible, document-based storage |
+| **PostgreSQL** | Relational data, managed via Prisma & pgAdmin |
+| **MongoDB** | Flexible document-based storage |
 | **Redis** | High-speed caching layer |
+| **RabbitMQ** | Asynchronous inter-service event messaging |
 | **Elasticsearch** | Vector search & structured log indexing |
 | **Loki + Grafana** | Centralized observability & metrics dashboards |
 | **Docker + Compose** | Container orchestration across all services |
 
 ---
 
-## 📦 Microservices
+## Microservices
 
-Each service is strictly bounded to its own domain, with no cross-service coupling.
+Each service is strictly bounded to its own domain with no cross-service coupling.
 
 | Service | Port | Responsibility |
 |---|---|---|
-| `api-gateway` | 4000 | Edge proxy — routes requests, handles auth pass-through & global rate-limiting |
+| `api-gateway` | 4000 | Edge proxy — request routing, auth pass-through & global rate-limiting |
 | `user-admin-service` | 4001 | IAM — registration, OAuth (Google), authorization, artist verification & admin dashboards |
 | `art-service` | 4002 | Core art engine — artwork management, bidding pipelines & commission workflows |
 | `wallet-service` | 4003 | Finances & escrow — Stripe integration, fund-locking & artist payouts |
@@ -63,28 +101,12 @@ Each service is strictly bounded to its own domain, with no cross-service coupli
 
 ---
 
-## 🚀 Platform Features
-
-### 🤝 Mutual-Agreement Commissions
-A trustworthy escrow-backed commission system. Funds are locked upfront and released only after both parties sign off at each stage: **Agreement → In Progress → Delivery → Payout**.
-
-### 📹 Live WebRTC Communication
-Stay on-platform. Real-time text messaging supports inline images, and seamless peer-to-peer video calling is built directly into the experience.
-
-### ⚡ Dynamic Content Loading
-Custom skeleton screens built with `shadcn/ui` maintain a polished aesthetic while `TanStack Query` hydrates data in the background.
-
-### 📊 Centralized Observability
-Zero blind spots. **Loki** aggregates container logs from every microservice and pipes them into **Grafana** dashboards for live operational monitoring.
-
----
-
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- **Node.js** v18+
-- **Docker & Docker Compose**
+- Node.js v18+
+- Docker & Docker Compose
 
 ### Setup & Launch
 
@@ -115,14 +137,6 @@ docker-compose up -d --build
 | Frontend (Vite dev server) | `npm run dev` |
 | pgAdmin Dashboard | `http://localhost:8080` |
 | Grafana Observability | `http://localhost:3000` |
-
----
-
-## 🏛️ Architecture
-
-ArtChain is built on **Clean Architecture**, with strict separation across Domain, Application, and Infrastructure layers. SOLID principles — particularly Dependency Inversion and Single Responsibility — are applied throughout every service to ensure each module is independently testable and replaceable without affecting the broader system.
-
-📐 **[View Full System Design →](./docs/System-Design.md)**
 
 ---
 
