@@ -32,6 +32,8 @@ ArtChain facilitates secure art commissions, peer-to-peer live communication, re
 ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
 ![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Grafana](https://img.shields.io/badge/grafana-%23F46800.svg?style=for-the-badge&logo=grafana&logoColor=white)
+![Loki](https://img.shields.io/badge/loki-%23F5A623.svg?style=for-the-badge&logo=grafana&logoColor=white)
 
 | Tool | Purpose |
 |---|---|
@@ -119,6 +121,8 @@ docker-compose up -d --build
 ## 🏛️ Architecture
 
 ArtChain is built on **Clean Architecture**, with strict separation across Domain, Application, and Infrastructure layers. SOLID principles — particularly Dependency Inversion and Single Responsibility — are applied throughout every service to ensure each module is independently testable and replaceable without affecting the broader system.
+
+📐 **[View Full System Design →](./docs/System-Design.md)**
 
 ---
 
