@@ -23,13 +23,7 @@ A trustworthy escrow-backed commission system where funds are locked upfront and
 Real-time text chat with inline image support and seamless WebRTC-powered video calling — all without leaving the platform. Signaling is handled entirely by the dedicated chat service.
 
 **Real-Time Bidding**
-Artists and collectors can participate in live auction-style bidding with instant updates powered by Socket.io, ensuring a fair and transparent process.
-
-**Artist Identity Verification**
-A structured verification pipeline ensures only legitimate artists can list work, building platform-wide trust for both buyers and creatives.
-
-**Stripe Escrow & Payouts**
-Integrated Stripe handles fund-locking during active commissions and automated artist payouts upon successful delivery — no manual intervention required.
+Artists and users can participate in live auction-style bidding with instant updates powered by Socket.io, ensuring a fair and transparent process.
 
 **Centralized Observability**
 Loki aggregates container logs from every microservice and feeds them into Grafana dashboards, giving complete visibility into platform health with zero blind spots.
