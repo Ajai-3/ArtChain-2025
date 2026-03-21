@@ -17,6 +17,7 @@
   "description": "",
   "dependencies": {
     "art-chain-shared": "^1.0.26",
+    "axios": "^1.13.6",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "dotenv-flow": "^4.1.0",

@@ -8,32 +8,51 @@ import {
   TableRow 
 } from "../../../../components/ui/table";
 import { Button } from "../../../../components/ui/button";
-import { 
-  AlertCircle
-} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { format } from 'date-fns';
 import CustomLoader from '../../../../components/CustomLoader';
+import ConfirmModal from '../../../../components/modals/ConfirmModal';
 import { useCommissionsQuery } from '../../hooks/commissionManagement/useCommissionsQuery';
 import { useResolveDisputeMutation } from '../../hooks/commissionManagement/useResolveDisputeMutation'; 
 import CommissionDetailModal from './CommissionDetailModal';
 
 interface CommissionTableProps {
   statusFilter: string;
+  page: number;
+  onPageChange: (page: number) => void;
+  limit: number;
 }
 
-const CommissionTable: React.FC<CommissionTableProps> = ({ statusFilter }) => {
-  const [page, setPage] = useState(1);
+const CommissionTable: React.FC<CommissionTableProps> = ({ 
+  statusFilter, 
+  page, 
+  onPageChange,
+  limit 
+}) => {
   const [selectedCommission, setSelectedCommission] = useState<any>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [pendingResolution, setPendingResolution] = useState<{id: string, resolution: 'REFUND' | 'RELEASE'} | null>(null);
   
   // Only pass filter if it's not ALL
   const apiFilter = statusFilter === 'ALL' ? '' : statusFilter;
   
-  const { data, isLoading } = useCommissionsQuery(page, 10, apiFilter);
+  const { data, isLoading } = useCommissionsQuery(page, limit, apiFilter);
   const resolveMutation = useResolveDisputeMutation();
 
-  const handleResolve = (id: string, resolution: 'REFUND' | 'RELEASE') => {
-    if (confirm(`Are you sure you want to ${resolution.toLowerCase()} this commission?`)) {
-      resolveMutation.mutate({ id, resolution });
+  const handleResolveRequest = (id: string, resolution: 'REFUND' | 'RELEASE') => {
+    setPendingResolution({ id, resolution });
+    setIsConfirmOpen(true);
+  };
+
+  const handleConfirmResolve = () => {
+    if (pendingResolution) {
+      resolveMutation.mutate(pendingResolution, {
+        onSuccess: () => {
+           setIsConfirmOpen(false);
+           setPendingResolution(null);
+           setSelectedCommission(null); // Close detail modal if open
+        }
+      });
     }
   };
 
@@ -48,7 +67,7 @@ const CommissionTable: React.FC<CommissionTableProps> = ({ statusFilter }) => {
       case 'DISPUTE_RAISED': return 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20';
       case 'LOCKED': return 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:bg-blue-500/20';
       case 'IN_PROGRESS': return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20';
-      case 'CANCELLED': return 'bg-zinc-500/10 text-zinc-500 border-zinc-500/20';
+      case 'CANCELLED': return 'bg-pink-500/10 text-pink-500 border-pink-500/20';
       case 'REQUESTED': return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20 hover:bg-yellow-500/20';
       case 'NEGOTIATING': return 'bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20';
       case 'AGREED': return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:bg-cyan-500/20';
@@ -87,7 +106,7 @@ const CommissionTable: React.FC<CommissionTableProps> = ({ statusFilter }) => {
               commissions.map((c: any, index: number) => (
                 <TableRow key={c.id} className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors">
                   <TableCell className="px-4 py-2 font-mono text-zinc-500">
-                    {(page - 1) * 10 + index + 1}
+                    {(page - 1) * limit + index + 1}
                   </TableCell>
                   <TableCell className="px-4 py-2">
                     <div className="flex flex-col gap-1">
@@ -96,7 +115,7 @@ const CommissionTable: React.FC<CommissionTableProps> = ({ statusFilter }) => {
                     </div>
                   </TableCell>
                   <TableCell className="px-4 py-2">
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-1">
                        {/* Requester Info */}
                        <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-zinc-800 overflow-hidden flex-shrink-0 border border-zinc-700">
@@ -181,25 +200,58 @@ const CommissionTable: React.FC<CommissionTableProps> = ({ statusFilter }) => {
       {/* Pagination Controls */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
-             <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-            >
-                Previous
-            </Button>
-             <span className="text-sm text-zinc-500 px-2">
-                Page {page} of {totalPages}
-             </span>
-            <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-            >
-                Next
-            </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === 1}
+            onClick={() => onPageChange(1)}
+          >
+            First
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === 1}
+            onClick={() => onPageChange(Math.max(1, page - 1))}
+          >
+            Prev
+          </Button>
+
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+             let pageNum;
+             if (totalPages <= 5) pageNum = i + 1;
+             else if (page <= 3) pageNum = i + 1;
+             else if (page >= totalPages - 2) pageNum = totalPages - 4 + i;
+             else pageNum = page - 2 + i;
+             
+             return (
+               <Button
+                 key={pageNum}
+                 size="sm"
+                 variant={pageNum === page ? "default" : "outline"}
+                 onClick={() => onPageChange(pageNum)}
+               >
+                 {pageNum}
+               </Button>
+             );
+          })}
+
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === totalPages}
+            onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+          >
+            Next
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={page === totalPages}
+            onClick={() => onPageChange(totalPages)}
+          >
+            Last
+          </Button>
         </div>
       )}
 
@@ -208,8 +260,19 @@ const CommissionTable: React.FC<CommissionTableProps> = ({ statusFilter }) => {
          isOpen={!!selectedCommission}
          onClose={() => setSelectedCommission(null)}
          commission={selectedCommission}
-         onResolveDispute={handleResolve}
+         onResolveDispute={handleResolveRequest}
          isResolving={resolveMutation.isPending}
+      />
+
+      <ConfirmModal 
+        isOpen={isConfirmOpen}
+        onClose={() => setIsConfirmOpen(false)}
+        title={`Confirm ${pendingResolution?.resolution === 'REFUND' ? 'Refund' : 'Fund Release'}`}
+        description={`Are you sure you want to ${pendingResolution?.resolution === 'REFUND' ? 'refund the requester' : 'release the funds to the artist'} for this commission? This action cannot be undone.`}
+        confirmText={pendingResolution?.resolution === 'REFUND' ? 'Refund' : 'Release'}
+        confirmVariant={pendingResolution?.resolution === 'REFUND' ? 'destructive' : 'default'}
+        onConfirm={handleConfirmResolve}
+        isLoading={resolveMutation.isPending}
       />
     </div>
   );

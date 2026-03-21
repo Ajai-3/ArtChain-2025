@@ -1,3 +1,3 @@
 export interface IRefundCommissionFundsUseCase {
-  execute(userId: string, commissionId: string, amount: number): Promise<boolean>;
+  execute(userId: string, artistId: string, commissionId: string, amount: number): Promise<boolean>;
 }

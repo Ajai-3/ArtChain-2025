@@ -21,11 +21,15 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({ isOpen, onClo
   const notifications: Notification[] = useSelector(
     (state: RootState) => state.notification.notifications
   );
+  const unreadCount = useSelector(
+    (state: RootState) => state.notification.unreadCount
+  );
   
   const observer = useRef<IntersectionObserver | null>(null);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useNotifications();
   const markAllMutation = useMarkAllAsRead();
 
+  // Fetch and sync notifications
   useEffect(() => {
     if (!data?.pages.length) return;
 
@@ -36,15 +40,18 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({ isOpen, onClo
     if (newNotifications.length > 0) {
       dispatch(setNotifications([...notifications, ...newNotifications]));
     }
+  }, [data, dispatch, notifications]); 
 
-    if (isOpen && markAllMutation.status === "idle") {
+  // Mark all as read when sidebar is open and there are unread notifications
+  useEffect(() => {
+    if (isOpen && unreadCount > 0 && markAllMutation.status !== "pending") {
       markAllMutation.mutate(undefined, {
         onSuccess: () => {
           dispatch(markAllAsRead());
         },
       });
     }
-  }, [data, dispatch, notifications, markAllMutation, isOpen]);
+  }, [isOpen, unreadCount, markAllMutation.status, dispatch]);
 
   const lastNotificationRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -75,7 +82,7 @@ const NotificationSidebar: React.FC<NotificationSidebarProps> = ({ isOpen, onClo
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white dark:bg-black border-l border-zinc-200 dark:border-zinc-800 transform transition-transform duration-300 ease-in-out z-[9999] ${
+        className={`fixed scrollbar top-0 right-0 h-full w-full sm:w-[400px] bg-white dark:bg-black border-l border-zinc-200 dark:border-zinc-800 transform transition-transform duration-300 ease-in-out z-[9999] ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

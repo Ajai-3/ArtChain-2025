@@ -9,6 +9,7 @@ import { ILikePostUseCase } from '../../application/interface/usecase/like/ILike
 import { IUnlikePostUseCase } from '../../application/interface/usecase/like/IUnlikePostUseCase';
 import { IGetLikeCountUseCase } from '../../application/interface/usecase/like/IGetLikeCountUseCase';
 import { IGetLikedUsersUseCase } from '../../application/interface/usecase/like/IGetLikedUsersUseCase';
+import { IGetUserLikedArtsWithUseCase } from '../../application/interface/usecase/like/IGetUserLikedArtsWithUseCase';
 
 @injectable()
 export class LikeController implements ILikeController {
@@ -20,7 +21,9 @@ export class LikeController implements ILikeController {
     @inject(TYPES.IGetLikeCountUseCase)
     private readonly _getLikeCountUseCase: IGetLikeCountUseCase,
     @inject(TYPES.IGetLikedUsersUseCase)
-    private readonly _getLikedUsersUseCase: IGetLikedUsersUseCase
+    private readonly _getLikedUsersUseCase: IGetLikedUsersUseCase,
+    @inject(TYPES.IGetUserLikedArtsWithUseCase)
+    private readonly _getUserLikedArtsUseCase: IGetUserLikedArtsWithUseCase
   ) {}
 
   //# ================================================================================================================
@@ -134,6 +137,47 @@ export class LikeController implements ILikeController {
         message: LIKE_MESSAGES.LIKED_USERS_FETCHED_SUCCESS,
         users,
         likeCount,
+        page,
+        limit,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET USER LIKED ARTS
+  //# ================================================================================================================
+  //# GET /api/v1/art/likes/user/:userId
+  //# This endpoint returns a list of arts the user has liked, with pagination.
+  //# ================================================================================================================
+  getUserLikedArts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 15;
+      const userId = req.headers['x-user-id'] as string;
+
+      console.log(userId);
+
+      const arts = await this._getUserLikedArtsUseCase.execute(
+        userId,
+        page,
+        limit
+      );
+
+      console.log(arts);
+
+      logger.info(
+        `✅ [GetUserLikedArts] Fetched ${arts.length} liked arts for userId=${userId}`
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: LIKE_MESSAGES.FETCH_SUCCESS,
+        data: arts,
         page,
         limit,
       });

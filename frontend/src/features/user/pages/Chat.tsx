@@ -27,7 +27,6 @@ const Chat: React.FC = () => {
   const currentUserId = useSelector(selectCurrentUserId);
   const { deleteMessage } = useDeleteMessage(currentUserId || "");
 
-  // Safe socket subscription
   useConvoOpen(conversationId);
   useSocketMessages();
 
@@ -36,12 +35,10 @@ const Chat: React.FC = () => {
 
   const conversations = useSelector(selectConversations);
   
-  // Merge server conversations safely
   useEffect(() => {
     if (!data?.pages) return;
     const serverConversations = data.pages.flatMap((p) => p.conversations);
 
-    // Pre-cache any partner users we received from the initial fetch to prevent blank UI flashes
     const usersToCache: any[] = [];
     serverConversations.forEach((c) => {
       if (c.partner && c.partner.id) {
@@ -125,6 +122,7 @@ const Chat: React.FC = () => {
             hasNextPage && !isFetchingNextPage && fetchNextPage()
           }
           isFetchingNextPage={isFetchingNextPage}
+          isLoading={!data && !isFetchingNextPage}
         />
       </div>
 

@@ -5,7 +5,17 @@ export interface IClientEventHandler {
 
   sendMessage(
     socket: Socket,
-    payload: { conversationId: string; content: string; receiverId?: string },
+    payload: { 
+      conversationId: string; 
+      content: string; 
+      receiverId?: string;
+      tempId?: string;
+      mediaType?: string;
+      mediaUrl?: string;
+      callId?: string;
+      callStatus?: string;
+      callDuration?: number;
+    },
     callback?: (ack: boolean) => void
   ): Promise<void>;
 

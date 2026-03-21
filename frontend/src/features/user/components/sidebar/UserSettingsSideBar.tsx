@@ -23,12 +23,12 @@ import { ROUTES, SETTINGS_TABS } from "../../../../constants/routes";
 const userSettingsTabs = [
   { id: SETTINGS_TABS.PROFILE, path: ROUTES.SETTINGS_PROFILE, icon: User, label: "Edit Profile" },
   { id: SETTINGS_TABS.PASSWORD, path: ROUTES.SETTINGS_PASSWORD, icon: Lock, label: "Password & Security" },
-  { id: SETTINGS_TABS.PRIVACY, path: ROUTES.SETTINGS_PRIVACY, icon: Shield, label: "Privacy Settings" },
-  { id: SETTINGS_TABS.NOTIFICATIONS, path: ROUTES.SETTINGS_NOTIFICATIONS, icon: Bell, label: "Notifications" },
+  // { id: SETTINGS_TABS.PRIVACY, path: ROUTES.SETTINGS_PRIVACY, icon: Shield, label: "Privacy Settings" },
+  // { id: SETTINGS_TABS.NOTIFICATIONS, path: ROUTES.SETTINGS_NOTIFICATIONS, icon: Bell, label: "Notifications" },
   { id: SETTINGS_TABS.PURCHASES, path: ROUTES.SETTINGS_PURCHASES, icon: ShoppingBag, label: "Purchase History" },
   { id: SETTINGS_TABS.SALES, path: ROUTES.SETTINGS_SALES, icon: FileText, label: "Sales History" },
   { id: SETTINGS_TABS.LIKED, path: ROUTES.SETTINGS_LIKED, icon: Heart, label: "Liked Items" },
-  { id: SETTINGS_TABS.BLOCKED, path: ROUTES.SETTINGS_BLOCKED, icon: Ban, label: "Blocked Users" },
+  // { id: SETTINGS_TABS.BLOCKED, path: ROUTES.SETTINGS_BLOCKED, icon: Ban, label: "Blocked Users" },
   { id: SETTINGS_TABS.SUPPORT, path: ROUTES.SETTINGS_SUPPORT, icon: HelpCircle, label: "Help & Support" },
 ];
 

@@ -1,10 +1,27 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../../api/axios";
 
-export type Art = {
-  _id: string;
+
+export type ArtDetails = {
+  id: string;
+  title: string;
   artName: string;
+  description: string;
   imageUrl: string;
+  isForSale: boolean;
+  createdAt: string;
+};
+
+export type ArtUser = {
+  id: string;
+  name: string;
+  username: string;
+  profileImage: string;
+};
+
+export type ArtWithUser = {
+  art: ArtDetails;
+  user: ArtUser;
   likeCount: number;
   favoriteCount: number;
   commentCount: number;
@@ -13,7 +30,7 @@ export type Art = {
 };
 
 export type PaginatedResponse = {
-  data: Art[];
+  data: ArtWithUser[];
   page: number;
   total: number;
 };

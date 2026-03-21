@@ -1,30 +1,46 @@
-import { Request, Response, NextFunction } from 'express';
+import { HttpStatus } from 'art-chain-shared';
 import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../infrastructure/Inversify/types';
+import { validateWithZod } from '../../utils/validateWithZod';
+import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 import { IAdminArtController } from '../interface/IAdminArtController';
+import { updateArtStatusSchema } from '../validators/updateArtStatus.schema';
+import { PostStatus, PostType, PriceType } from '../../domain/entities/ArtPost';
+import { UpdateArtStatusDTO } from '../../application/interface/dto/admin/UpdateArtStatusDTO';
 import { IGetAllArtsUseCase } from '../../application/interface/usecase/admin/IGetAllArtsUseCase';
+import { IGetTopArtsUseCase } from '../../application/interface/usecase/admin/IGetTopArtsUseCase';
 import { IGetArtStatsUseCase } from '../../application/interface/usecase/admin/IGetArtStatsUseCase';
 import { IUpdateArtStatusUseCase } from '../../application/interface/usecase/admin/IUpdateArtStatusUseCase';
-import { PostStatus, PostType, PriceType } from '../../domain/entities/ArtPost';
-import { HttpStatus } from 'art-chain-shared';
-import { updateArtStatusSchema } from '../validators/updateArtStatus.schema';
-import { validateWithZod } from '../../utils/validateWithZod';
-import { UpdateArtStatusDTO } from '../../application/interface/dto/admin/UpdateArtStatusDTO';
-import { IGetTopArtsUseCase } from '../../application/interface/usecase/admin/IGetTopArtsUseCase';
 import { IGetCategoryStatsUseCase } from '../../application/interface/usecase/admin/IGetCategoryStatsUseCase';
-import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 
 @injectable()
 export class AdminArtController implements IAdminArtController {
   constructor(
-    @inject(TYPES.IGetAllArtsUseCase) private _getAllArtsUseCase: IGetAllArtsUseCase,
-    @inject(TYPES.IGetArtStatsUseCase) private _getArtStatsUseCase: IGetArtStatsUseCase,
-    @inject(TYPES.IUpdateArtStatusUseCase) private _updateArtStatusUseCase: IUpdateArtStatusUseCase,
-    @inject(TYPES.IGetTopArtsUseCase) private _getTopArtsUseCase: IGetTopArtsUseCase,
-    @inject(TYPES.IGetCategoryStatsUseCase) private _getCategoryStatsUseCase: IGetCategoryStatsUseCase
+    @inject(TYPES.IGetAllArtsUseCase)
+    private _getAllArtsUseCase: IGetAllArtsUseCase,
+    @inject(TYPES.IGetArtStatsUseCase)
+    private _getArtStatsUseCase: IGetArtStatsUseCase,
+    @inject(TYPES.IUpdateArtStatusUseCase)
+    private _updateArtStatusUseCase: IUpdateArtStatusUseCase,
+    @inject(TYPES.IGetTopArtsUseCase)
+    private _getTopArtsUseCase: IGetTopArtsUseCase,
+    @inject(TYPES.IGetCategoryStatsUseCase)
+    private _getCategoryStatsUseCase: IGetCategoryStatsUseCase,
   ) {}
 
-  getAllArts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  //# ================================================================================================================
+  //# GET ALL ART
+  //# ================================================================================================================
+  //# GET /api/v1/art/admin/art
+  //# This endpoint allows admin to retrieve a paginated list of all art posts with optional filters for status, post
+  //# type, price type, search keyword, and user ID. It also returns overall art statistics in the response.
+  //# ================================================================================================================
+  getAllArts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -34,30 +50,40 @@ export class AdminArtController implements IAdminArtController {
       const priceType = req.query.priceType as PriceType;
       const userId = req.query.userId as string;
 
-      const token = req.cookies?.token || req.headers.authorization?.split(' ')[1];
-
       const [result, stats] = await Promise.all([
-        this._getAllArtsUseCase.execute(
-          page,
-          limit,
-          { status, postType, priceType, search, userId },
-          token
-        ),
-        this._getArtStatsUseCase.execute()
+        this._getAllArtsUseCase.execute(page, limit, {
+          status,
+          postType,
+          priceType,
+          search,
+          userId,
+        }),
+        this._getArtStatsUseCase.execute(),
       ]);
 
       return res.status(HttpStatus.OK).json({
         success: true,
         data: result.data,
         meta: result.meta,
-        stats
+        stats,
       });
     } catch (error) {
       next(error);
     }
   };
 
-  getArtStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  //# ================================================================================================================
+  //# GET ART STATS
+  //# ================================================================================================================
+  //# GET /api/v1/art/stats
+  //# This endpoint allows admin to retrieve overall statistics about art posts, including total count, free vs premium
+  //# distribution, and AI-generated art count.
+  //# ================================================================================================================
+  getArtStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
     try {
       const stats = await this._getArtStatsUseCase.execute();
       return res.status(HttpStatus.OK).json({ success: true, data: stats });
@@ -66,10 +92,17 @@ export class AdminArtController implements IAdminArtController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET TOP ARTS
+  //# ================================================================================================================
+  //# GET /api/v1/art/stats/top
+  //# This endpoint allows admin to retrieve a list of top art posts based on either likes or price. The limit of results
+  //# can be specified via query parameters.
+  //# ================================================================================================================
   getTopArts = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const limit = Number(req.query.limit) || 5;
@@ -81,10 +114,17 @@ export class AdminArtController implements IAdminArtController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET CATEGORY STATS
+  //# ================================================================================================================
+  //# GET /api/v1/art/stats/categories
+  //# This endpoint allows admin to retrieve statistics about art posts grouped by category, including the count of posts
+  //# in each category.
+  //# ================================================================================================================
   getCategoryStats = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const stats = await this._getCategoryStatsUseCase.execute();
@@ -94,7 +134,18 @@ export class AdminArtController implements IAdminArtController {
     }
   };
 
-  updateArtStatus = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+  //# ================================================================================================================
+  //# UPDATE ART STATUS
+  //# ================================================================================================================
+  //# PUT /api/v1/art/admin/art/:id/status
+  //# This endpoint allows admin to update the status of an art post (active, archived, deleted). The art post is
+  //# identified by its ID in the URL path, and the new status is provided in the request body.
+  //# ================================================================================================================
+  updateArtStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
     try {
       const { id } = req.params;
       const validatedData = validateWithZod(updateArtStatusSchema, req.body);

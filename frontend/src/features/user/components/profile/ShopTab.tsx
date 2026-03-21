@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { useGetShopItemsByUser } from "../../hooks/shop/useGetShopItemsByUser";
 import { useOutletContext } from "react-router-dom";
 import ShopItemCard from "../shop/ShopItemCard";
+import { ShoppingBasket } from "lucide-react";
 
 const SkeletonCard = () => (
   <div className="rounded-xl flex flex-col bg-zinc-900/50 animate-pulse h-[320px] border border-white/5">
@@ -40,6 +41,8 @@ const ShopUser: React.FC = () => {
 
   const allArts = data?.pages?.flatMap((page: any) => page.data) || [];
 
+  console.log(allArts)
+
   // Infinite scroll
   useEffect(() => {
     const handleScroll = () => {
@@ -64,7 +67,7 @@ const ShopUser: React.FC = () => {
       {!isLoading && allArts.length === 0 && (
         <div className="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
           <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
-            <span className="text-3xl">🛍️</span>
+            <ShoppingBasket className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-lg font-medium text-white mb-1">No items yet</h3>
           <p className="text-sm">This user hasn't listed any items for sale.</p>

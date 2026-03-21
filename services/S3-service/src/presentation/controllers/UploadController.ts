@@ -13,6 +13,7 @@ import { DeleteImageRequestDTO } from '../../application/interface/dto/DeleteIma
 import { IDeleteImageUseCase } from '../../application/interface/usecases/IDeleteImageUseCase';
 import { IUploadImageUseCase } from '../../application/interface/usecases/IUploadImageUseCase';
 import { IGetSignedUrlUseCase } from '../../application/interface/usecases/IGetSignedUrlUseCase';
+import { FileCategory } from '../../types/FileCategory';
 
 @injectable()
 export class UploadController implements IUploadController {
@@ -24,7 +25,7 @@ export class UploadController implements IUploadController {
     @inject(TYPES.IDeleteImageUseCase)
     private readonly _deleteImageUseCase: IDeleteImageUseCase,
     @inject(TYPES.IGetSignedUrlUseCase)
-    private readonly _getSignedUrlUseCase: IGetSignedUrlUseCase
+    private readonly _getSignedUrlUseCase: IGetSignedUrlUseCase,
   ) {}
 
   //# =============================================================================================================
@@ -38,7 +39,7 @@ export class UploadController implements IUploadController {
   uploadImage = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const fileType = mapFrontendType(req.body.type);
@@ -57,7 +58,7 @@ export class UploadController implements IUploadController {
 
       logger.info(`${JSON.stringify(result)}`);
       logger.info(
-        `Image uploaded successfully | userId=${userId} | file=${file.originalname}`
+        `Image uploaded successfully | userId=${userId} | file=${file.originalname}`,
       );
 
       res
@@ -80,7 +81,7 @@ export class UploadController implements IUploadController {
   uploadArt = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { userId, file } = validateUpload(req, 'art');
@@ -98,7 +99,7 @@ export class UploadController implements IUploadController {
 
       logger.info(`${JSON.stringify(result)}`);
       logger.info(
-        `Art image uploaded successfully | userId=${userId} | file=${file.originalname}`
+        `Art image uploaded successfully | userId=${userId} | file=${file.originalname}`,
       );
 
       res
@@ -106,6 +107,46 @@ export class UploadController implements IUploadController {
         .json({ data: result, message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS });
     } catch (error: any) {
       logger.error(`Upload art error | message=${error.message}`);
+      next(error);
+    }
+  };
+
+  //# =============================================================================================================
+  //#   UPLOAD COMMISSION IMAGE
+  //# =============================================================================================================
+  //# POST /api/v1/upload/commission
+  //# Request body: multipart/form-data { file }
+  //# This controller will help you to upload the commission related images like commission images.
+  //# =============================================================================================================
+  uploadCommissionImage = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const { userId, file } = validateUpload(req, 'commission');
+      logger.info(`Commission image upload request recived ${userId} ${file}`);
+
+      const dto: UploadFileDTO = {
+        fileBuffer: file.buffer,
+        fileName: file.originalname,
+        mimeType: file.mimetype,
+        category: 'commission',
+        userId,
+      };
+
+      const result = await this._uploadImageUseCase.execute(dto);
+
+      logger.info(`${JSON.stringify(result)}`);
+      logger.info(
+        `Commission image uploaded successfully | userId=${userId} | file=${file.originalname}`,
+      );
+
+      res
+        .status(HttpStatus.CREATED)
+        .json({ data: result, message: UPLOAD_MESSAGES.IMAGE_UPLOAD_SUCCESS });
+    } catch (error: any) {
+      logger.error(`Upload commission image error | message=${error.message}`);
       next(error);
     }
   };
@@ -120,14 +161,18 @@ export class UploadController implements IUploadController {
   deleteImage = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { fileUrl } = req.body;
       const fileType = mapFrontendType(req.body.type);
       const userId = req.headers['x-user-id'] as string;
 
-      const dto: DeleteImageRequestDTO = { fileUrl, userId, category: fileType };
+      const dto: DeleteImageRequestDTO = {
+        fileUrl,
+        userId,
+        category: fileType,
+      };
       await this._deleteImageUseCase.execute(dto);
 
       return res
@@ -149,19 +194,27 @@ export class UploadController implements IUploadController {
   getSignedUrl = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const { key, type } = req.query;
-      const fileType = mapFrontendType(type as string);
+      const { key, category, fileName } = req.query;
 
-      if (!key) {
-        throw new Error('Key is required');
-      }
+      logger.info(`Request for signed URL | key=${key} | category=${category}`);
 
-      const signedUrl = await this._getSignedUrlUseCase.execute(key as string, fileType);
+      const signedUrl = await this._getSignedUrlUseCase.execute(
+        key as string,
+        category as FileCategory,
+        fileName as string,
+      );
 
-      return res.status(HttpStatus.OK).json({ signedUrl });
+      logger.info(
+        `Signed URL generated successfully | key=${key} | category=${category}`,
+      );
+
+      return res.status(HttpStatus.OK).json({
+        message: UPLOAD_MESSAGES.SIGNED_URL_GENERATED_SUCCESSFULLY,
+        data: signedUrl,
+      });
     } catch (error) {
       logger.error(`Error getting signed URL ${error}`);
       next(error);

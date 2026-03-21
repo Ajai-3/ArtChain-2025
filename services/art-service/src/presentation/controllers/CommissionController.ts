@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
-import { inject, injectable } from 'inversify';
-import { TYPES } from '../../infrastructure/Inversify/types';
-import { ICommissionController } from '../interface/ICommissionController';
-import { ICreateCommissionUseCase } from '../../application/interface/usecase/commission/ICreateCommissionUseCase';
-import { IGetCommissionByConversationUseCase } from '../../application/interface/usecase/commission/IGetCommissionByConversationUseCase';
-import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
-import { CreateCommissionDto } from '../../application/interface/dto/CreateCommissionDto';
 import { HttpStatus } from 'art-chain-shared';
+import { inject, injectable } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { COMMISSION_MESSAGES } from '../../constants/CommissionMessage';
+import { ICommissionController } from '../interface/ICommissionController';
+import { CreateCommissionDto } from '../../application/interface/dto/CreateCommissionDto';
+import { ICreateCommissionUseCase } from '../../application/interface/usecase/commission/ICreateCommissionUseCase';
+import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
+import { IGetCommissionByConversationUseCase } from '../../application/interface/usecase/commission/IGetCommissionByConversationUseCase';
 
 @injectable()
 export class CommissionController implements ICommissionController {
@@ -19,6 +20,14 @@ export class CommissionController implements ICommissionController {
     private readonly _updateCommissionUseCase: IUpdateCommissionUseCase
   ) {}
 
+  //# ================================================================================================================
+  //# REQUEST COMMISSION
+  //# ================================================================================================================
+  //# POST /api/v1/art/commissions
+  //# Request headers: x-user-id
+  //# Request body: { artistId, title, description, referenceImages?, budget, deadline }
+  //# This controller allows a user to request a commission from an artist.
+  //# ================================================================================================================
   requestCommission = async (
     req: Request,
     res: Response,
@@ -41,7 +50,7 @@ export class CommissionController implements ICommissionController {
       const result = await this._createCommissionUseCase.execute(dto);
 
       return res.status(HttpStatus.CREATED).json({
-        message: 'Commission requested successfully',
+        message: COMMISSION_MESSAGES.REQUEST_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -49,6 +58,12 @@ export class CommissionController implements ICommissionController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET COMMISSION BY CONVERSATION
+  //# ================================================================================================================
+  //# GET /api/v1/art/commissions/conversation/:conversationId
+  //# This controller fetches the commission details associated with a specific conversation.
+  //# ================================================================================================================
   getCommissionByConversation = async (
     req: Request,
     res: Response,
@@ -59,7 +74,7 @@ export class CommissionController implements ICommissionController {
       const result = await this._getCommissionByConversationUseCase.execute(conversationId);
 
       return res.status(HttpStatus.OK).json({
-        message: 'Commission details fetched successfully',
+        message: COMMISSION_MESSAGES.COMMISSION_FETCH_SUCCESS,
         data: result
       });
     } catch (error) {
@@ -67,6 +82,14 @@ export class CommissionController implements ICommissionController {
     }
   };
 
+  //# ================================================================================================================
+  //# UPDATE COMMISSION
+  //# ================================================================================================================
+  //# PATCH /api/v1/art/commissions/:id
+  //# Request headers: x-user-id
+  //# Request body: Partial<CreateCommissionDto>
+  //# This controller allows the requester or artist to update commission details such as title, description, reference images, budget, or deadline. Only certain fields can be updated based on the commission's current status.
+  //# ================================================================================================================
   updateCommission = async (
     req: Request,
     res: Response,
@@ -78,7 +101,7 @@ export class CommissionController implements ICommissionController {
       const result = await this._updateCommissionUseCase.execute(id, userId, req.body);
 
       return res.status(HttpStatus.OK).json({
-        message: 'Commission updated successfully',
+        message: COMMISSION_MESSAGES.UPDATE_SUCCESS,
         data: result
       });
     } catch (error) {

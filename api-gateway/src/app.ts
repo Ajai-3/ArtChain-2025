@@ -12,7 +12,7 @@ app.use(cookieParser());
 
 
 app.use((req, res, next) => {
-  console.log(req.headers['x-user-id'])
+  console.log(req.headers['x-user-id']);
   logger.info(`Incoming request: ${req.method} ${req.path}`);
   next();
 });
@@ -32,7 +32,7 @@ app.use(
   })
 );
 
-app.use(conditionalAuth)
+app.use(conditionalAuth);
 
 app.use('/', mainRoutes);
 

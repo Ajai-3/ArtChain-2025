@@ -4,17 +4,17 @@ import { inject, injectable } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../infrastructure/Inversify/types';
 import { validateWithZod } from '../../utils/validateWithZod';
+import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 import { COMMENT_MESSAGES } from '../../constants/CommentMessages';
 import { ICommentController } from '../interface/ICommentController';
 import { createCommentSchema } from '../validators/createCommentSchema';
-import { CreateCommentDTO } from '../../application/interface/dto/comment/CreateCommentDTO';
-import { ICreateCommentUseCase } from '../../application/interface/usecase/comment/ICreateCommentUseCase';
-import { IGetCommentsUseCase } from '../../application/interface/usecase/comment/IGetCommentsUseCase';
-import { IGetCommentByIdUseCase } from '../../application/interface/usecase/comment/IGetCommentByIdUseCase';
-import { IEditCommentUseCase } from '../../application/interface/usecase/comment/IEditCommentUseCase';
-import { IDeleteCommentUseCase } from '../../application/interface/usecase/comment/IDeleteCommentUseCase';
 import { EditCommentDTO } from '../../application/interface/dto/comment/EditCommentDTO';
-import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
+import { CreateCommentDTO } from '../../application/interface/dto/comment/CreateCommentDTO';
+import { IEditCommentUseCase } from '../../application/interface/usecase/comment/IEditCommentUseCase';
+import { IGetCommentsUseCase } from '../../application/interface/usecase/comment/IGetCommentsUseCase';
+import { IDeleteCommentUseCase } from '../../application/interface/usecase/comment/IDeleteCommentUseCase';
+import { ICreateCommentUseCase } from '../../application/interface/usecase/comment/ICreateCommentUseCase';
+import { IGetCommentByIdUseCase } from '../../application/interface/usecase/comment/IGetCommentByIdUseCase';
 
 @injectable()
 export class CommentController implements ICommentController {
@@ -150,12 +150,6 @@ export class CommentController implements ICommentController {
       logger.info(`Fetching comment by id=${id}`);
 
       const comment = await this._getCommentByIdUseCase.execute(id);
-
-      if (!comment) {
-        return res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: ERROR_MESSAGES.COMMENT_NOT_FOUND });
-      }
 
       return res
         .status(HttpStatus.OK)

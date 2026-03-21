@@ -7,6 +7,7 @@ export const TYPES = {
   IUploadImageUseCase: Symbol.for('IUploadImageUseCase'),
   IDeleteImageUseCase: Symbol.for('IDeleteImageUseCase'),
   IGetSignedUrlUseCase: Symbol.for('IGetSignedUrlUseCase'),
+  IUploadCommissionImageUseCase: Symbol.for('IUploadCommissionImageUseCase'),
 
   // Controllers
   IUploadController: Symbol.for('IUploadController'),

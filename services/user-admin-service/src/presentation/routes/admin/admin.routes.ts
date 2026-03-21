@@ -47,8 +47,8 @@ router.patch(
 
 // Report Routes
 router.get(ROUTES.ADMIN.REPORTS, adminReportController.getAllReports);
-router.get('/reports/grouped', adminReportController.getGroupedReports);
-router.patch('/reports/bulk-status', adminReportController.updateReportStatusBulk);
+router.get(ROUTES.ADMIN.REPORTS_GROUPED, adminReportController.getGroupedReports);
+router.patch(ROUTES.ADMIN.REPORTS_BULK_STATUS, adminReportController.updateReportStatusBulk);
 
 // Dashboard Routes
 router.get(ROUTES.ADMIN.REVENUE_STATS, adminDashboardController.getPlatformRevenueStats);

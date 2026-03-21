@@ -12,7 +12,8 @@ export const USER_MESSAGES = {
   // Followers & Supporters
   USER_ID_REQUIRED: 'User ID is missing.',
   SUPPORTERS_FETCH_SUCCESS: 'List of supporters fetched successfully.',
-  SUPPORTING_FETCH_SUCCESS: 'List of users you are supporting fetched successfully.',
+  SUPPORTING_FETCH_SUCCESS:
+    'List of users you are supporting fetched successfully.',
   SUPPORTER_ALREADY_EXISTS: 'You are already supporting this user.',
   NO_SUPPORTERS_FOUND: 'No supporters found.',
   NO_SUPPORTING_FOUND: 'You are not supporting any users.',
@@ -32,8 +33,10 @@ export const USER_MESSAGES = {
   GET_ALL_USERS_SUCCESS: 'All users fetched successfully.',
   GET_ALL_USERS_FAILED: 'Failed to fetch users.',
   MISSING_USER_IDS: 'User ID or Current User ID is missing.',
-  INVALID_SUPPORT_REQUEST: 'Invalid support action: userId or currentUserId is missing.',
+  INVALID_SUPPORT_REQUEST:
+    'Invalid support action: userId or currentUserId is missing.',
   ALREADY_SUPPORTING: 'User is already supporting this user.',
   NOT_SUPPORTING: 'You are not currently supporting this user.',
-  USER_NOT_FOUND: 'User not found.'
+  USER_NOT_FOUND: 'User not found.',
+  USERS_FETCH_SUCCESS: 'Users fetched successfully.',
 } as const;

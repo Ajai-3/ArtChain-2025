@@ -5,10 +5,12 @@ import { IGetCommissionByConversationUseCase } from '../../interface/usecase/com
 import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { NotFoundError } from 'art-chain-shared';
 import { UserService } from '../../../infrastructure/service/UserService';
+import { COMMISSION_MESSAGES } from '../../../constants/CommissionMessage';
 
 @injectable()
 export class GetCommissionByConversationUseCase implements IGetCommissionByConversationUseCase {
   constructor(
+    @inject(TYPES.IUserService) private readonly _userService: UserService,
     @inject(TYPES.ICommissionRepository)
     private readonly _commissionRepository: ICommissionRepository
   ) {}
@@ -17,7 +19,7 @@ export class GetCommissionByConversationUseCase implements IGetCommissionByConve
     const commissions = await this._commissionRepository.findAllByConversationId(conversationId);
     
     if (!commissions || commissions.length === 0) {
-      throw new NotFoundError('No commissions found for this conversation');
+      throw new NotFoundError(COMMISSION_MESSAGES.COMMISSION_NOT_FOUND);
     }
 
     // Latest is at index 0 because of repository sort
@@ -30,8 +32,8 @@ export class GetCommissionByConversationUseCase implements IGetCommissionByConve
 
     try {
         [requester, artist] = await Promise.all([
-            UserService.getUserById(latestCommission.requesterId),
-            UserService.getUserById(latestCommission.artistId)
+            this._userService.getUserById(latestCommission.requesterId),
+            this._userService.getUserById(latestCommission.artistId)
         ]);
     } catch (error) {
         console.warn('Failed to fetch user details for commission:', error);

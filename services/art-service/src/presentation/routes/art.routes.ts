@@ -39,7 +39,7 @@ router.patch(ROUTES.CATEGORY.BY_ID, categoryController.editCategory);
 router.get(ROUTES.SHOP.BASE, shopController.getAllShopItems);
 router.get(ROUTES.SHOP.BY_USER_ID, shopController.getShopItemsByUser);
 
-// Platform Config (Public) - Must be before /:id routes
+// Platform Config (Public) -
 router.get(ROUTES.CONFIG.BASE, adminConfigController.getConfig);
 
 // Art
@@ -49,9 +49,13 @@ router.get(ROUTES.ART.BY_USER_ID, artController.getArtWithUser);
 router.get(ROUTES.ART.COUNT, artController.countArtwork);
 router.get(ROUTES.ART.BY_ART_NAME, artController.getArtByArtName);
 router.get(ROUTES.ART.RECOMMENDED, artController.getRecommendedArt);
-router.get(ROUTES.ART.BY_ID, artController.getArtById);
 router.post(ROUTES.ART.BUY, artController.buyArt);
 router.get(ROUTES.ART.DOWNLOAD, artController.downloadArt);
+router.get(ROUTES.ART.SALED, artController.saledArtWorks);
+router.get(ROUTES.ART.SALES_ANALYTICS, artController.salesAnalytics);
+router.get(ROUTES.ART.PURCHASED, artController.purchasedArtWorks);
+router.get(ROUTES.ART.PURCHASE_ANALYTICS, artController.purchaseAnalytics);
+router.get(ROUTES.ART.BY_ID, artController.getArtById);
 
 // Comment
 router.put(ROUTES.COMMENT.EDIT, commentController.editComment);
@@ -65,6 +69,7 @@ router.post(ROUTES.LIKE.BASE, likeController.likePost);
 router.delete(ROUTES.LIKE.UNLIKE, likeController.unlikePost);
 router.get(ROUTES.LIKE.LIKES_BY_POST_ID, likeController.getLikedUsers);
 router.get(ROUTES.LIKE.LIKES_COUNT_BY_POST_ID, likeController.getLikeCount);
+router.get(ROUTES.LIKE.LIKED_ARTS, likeController.getUserLikedArts);
 
 // Favorites
 router.post(ROUTES.FAVORITE.BASE, favoriteController.addFavorite);

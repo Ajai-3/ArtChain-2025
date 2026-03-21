@@ -57,6 +57,8 @@ export const ROUTES = {
     REPORTS: '/reports',
     REVENUE_STATS: '/revenue-stats',
     DASHBOARD_STATS: '/dashboard-stats',
+    REPORTS_GROUPED: '/reports/grouped',
+    REPORTS_BULK_STATUS: '/reports/bulk-status',
   },
 
   // External service routes

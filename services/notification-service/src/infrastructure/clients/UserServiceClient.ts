@@ -24,7 +24,7 @@ export class UserServiceClient implements IUserServiceClient {
     async getUsers(userIds: string[]): Promise<UserDetails[]> {
         if (userIds.length === 0) return [];
         try {
-            const response = await axios.post(`${this._baseUrl}/api/v1/user/batch`, {
+            const response = await axios.post(`${process.env.API_GATEWAY_URL}/api/v1/user/batch`, {
                 ids: userIds
             });
             return response.data.data;

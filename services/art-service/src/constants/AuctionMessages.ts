@@ -11,5 +11,19 @@ export const AUCTION_MESSAGES = {
   AUCTION_NOT_STARTED: 'Auction has not started yet',
   BID_TOO_LOW: 'Bid amount must be higher than current bid',
   BID_BELOW_START_PRICE: 'Bid amount must be at least start price',
-  FUNDS_LOCK_FAILED: 'Failed to lock funds. Insufficient balance or wallet service error.',
+  FUNDS_LOCK_FAILED:
+    'Failed to lock funds. Insufficient balance or wallet service error.',
+  CANNOT_CANCEL_ENDED_OR_CANCELLED_AUCTION:
+    'Cannot cancel an auction that is already ended or cancelled',
+  CANNOT_CANCEL_ACTIVE_AUCTION: 'Cannot cancel an active auction.',
+  UNAUTHORIZED_TO_CANCEL_AUCTION:
+    'Only the host or platform admin can cancel this auction.',
+  AUCTION_CANCELLED: 'Auction cancelled successfully',
+  RECENT_AUCTIONS_FETCHED: 'Recent auctions fetched successfully',
+  WON_AUCTIONS_FETCHED: 'Won auctions fetched successfully',
+  USER_ID_REQUIRED: 'User ID is required',
+  BIDDING_HISTORY_FETCHED: 'Bidding history fetched successfully',
+  AUCTION_COUNTS_FETCHED: 'Auction counts fetched successfully',
+  YOU_ARE_NOT_BIDDER: 'You are not the bidder for this auction',
+  AUCTION_NOT_ENDED: 'Auction has not ended yet',
 } as const;

@@ -56,4 +56,24 @@ export interface IArtController {
     res: Response,
     next: NextFunction
   ): Promise<Response | void>;
+  saledArtWorks(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  salesAnalytics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  purchasedArtWorks(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  purchaseAnalytics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
 }

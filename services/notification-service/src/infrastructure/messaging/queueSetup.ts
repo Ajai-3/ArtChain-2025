@@ -8,10 +8,22 @@ export async function setupNotificationQueues(ch: Channel) {
   // Email queue + DLQ
   await ch.assertQueue('emails', {
     durable: true,
-    deadLetterExchange: '',
-    deadLetterRoutingKey: 'emails.dlq',
+    arguments: {
+      'x-dead-letter-exchange': '',
+      'x-dead-letter-routing-key': 'emails.dlq',
+    },
   });
   await ch.bindQueue('emails', exchange, 'email.*');
+
+  await ch.assertQueue('ended_queue', {
+    durable: true,
+    arguments: {
+      'x-dead-letter-exchange': 'auction_retry_exchange',
+      'x-dead-letter-routing-key': 'auction.retry',
+    },
+  });
+
+  await ch.bindQueue('ended_queue', 'global_exchange', 'auction.ended');
 
   // Elasticsearch indexing queue
   await ch.assertQueue('search_indexing', { durable: true });
@@ -35,8 +47,10 @@ export async function setupNotificationQueues(ch: Channel) {
   // Profile update queue
   await ch.assertQueue('profile_update', {
     durable: true,
-    deadLetterExchange: '',
-    deadLetterRoutingKey: 'profile_update.dlq',
+    arguments: {
+      'x-dead-letter-exchange': '',
+      'x-dead-letter-routing-key': 'profile_update.dlq',
+    },
   });
   await ch.bindQueue('profile_update', exchange, 'user.profile_update');
 

@@ -38,14 +38,11 @@ export class ClientEventHandler implements IClientEventHandler {
 
     try {
       const dto: SendMessageDto = {
-        tempId: payload.tempId,
-        conversationId: payload.conversationId,
+        ...payload,
         senderId: userId,
-        receiverId: payload.receiverId,
-        content: payload.content,
       };
 
-      console.log(dto);
+      console.log('📤 Sending message DTO:', dto);
 
       await this._sendMessageUseCase.execute(dto);
       if (callback) callback(true);

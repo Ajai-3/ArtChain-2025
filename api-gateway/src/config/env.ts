@@ -1,5 +1,5 @@
 import 'dotenv-flow/config';
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 // import { getArtChainSecrets } from "art-chain-shared";
 
 // COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
@@ -7,9 +7,9 @@ import jwt from "jsonwebtoken";
 
 // Using hardcoded values from .env file instead
 const secrets = {
-  jwtAccessSecret: process.env.JWT_ACCESS_SECRET || "your-access-secret-key-here",
-  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || "your-refresh-secret-key-here",
-  emailVerificationSecret: process.env.JWT_EMAIL_VERIFICATION_SECRET || "your-email-verification-secret-key-here",
+  jwtAccessSecret: process.env.JWT_ACCESS_SECRET || 'your-access-secret-key-here',
+  jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-here',
+  emailVerificationSecret: process.env.JWT_EMAIL_VERIFICATION_SECRET || 'your-email-verification-secret-key-here',
 };
 
 
@@ -31,12 +31,12 @@ export const config = {
     refreshSecret: secrets.jwtRefreshSecret,
     emailVerificationSecret: secrets.emailVerificationSecret,
     accessExpire: (process.env.JWT_ACCESS_EXPIRES_IN ||
-      "5m") as jwt.SignOptions["expiresIn"],
+      '5m') as jwt.SignOptions['expiresIn'],
     refreshExpire: (process.env.JWT_REFRESH_EXPIRES_IN ||
-      "30d") as jwt.SignOptions["expiresIn"],
+      '30d') as jwt.SignOptions['expiresIn'],
     emailVerificationExpire: (process.env.JWT_EMAIL_VERIFICATION_EXPIRES_IN ||
-      "5m") as jwt.SignOptions["expiresIn"],
+      '5m') as jwt.SignOptions['expiresIn'],
   },
 };
 
-console.log(config)
+console.log(config);

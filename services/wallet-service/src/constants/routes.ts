@@ -12,9 +12,8 @@ export const ROUTES = {
     UPDATE: '/update',
     LOCK: '/lock',
     UNLOCK: '/unlock',
-    SETTLE_AUCTION: '/settle-auction',
     STATS_CHART: '/stats/chart',
-    GIFT: '/gift',
+    GIFT: '/gift'
   },
 
   // Transaction routes
@@ -22,12 +21,15 @@ export const ROUTES = {
     GET_TRANSACTIONS: '/get-transactions',
     CREATE_TRANSACTION: '/create-transaction',
     PURCHASE: '/transaction/purchase',
-    SPLIT_PURCHASE: '/transaction/split-purchase',
     PAYMENT: '/transaction/payment',
     COMMISSION_LOCK: '/transaction/commission/lock',
     COMMISSION_DISTRIBUTE: '/transaction/commission/distribute',
     COMMISSION_REFUND: '/transaction/commission/refund',
+    COMMISSION_TRANSFER_LOCKED: '/transaction/commission/transfer-locked',
     TRANSACTION_LOCK: '/transaction/lock',
+    TRANSACTION_UNLOCK: '/transaction/unlock',
+    SETTLE_AUCTION: '/transaction/settle-auction',
+     SPLIT_PURCHASE: '/transaction/split-purchase',
   },
 
   // Withdrawal routes
@@ -51,7 +53,8 @@ export const ROUTES = {
     WALLET_UPDATE: '/api/v1/wallet/update',
     GET_TRANSACTIONS: '/api/v1/wallet/get-transactions',
     CREATE_TRANSACTION: '/api/v1/wallet/create-transaction',
-    STRIPE_CREATE_CHECKOUT_SESSION: '/api/v1/wallet/stripe/create-checkout-session',
+    STRIPE_CREATE_CHECKOUT_SESSION:
+      '/api/v1/wallet/stripe/create-checkout-session',
     STRIPE_SESSION_BY_ID: '/api/v1/wallet/stripe/session/:id',
     STRIPE_WEBHOOK: '/api/v1/wallet/stripe/webhook',
   },
@@ -72,4 +75,3 @@ export const ROUTES = {
     UPDATE_WITHDRAWAL_STATUS: '/admin/withdrawal/requests/:withdrawalId/status',
   },
 } as const;
-

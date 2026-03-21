@@ -26,7 +26,6 @@ const RecentTransactionsTable: React.FC<RecentTransactionsTableProps> = ({ trans
               <TableHead>User</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Amount</TableHead>
-              <TableHead className="text-right">Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -64,11 +63,14 @@ const RecentTransactionsTable: React.FC<RecentTransactionsTableProps> = ({ trans
                   </div>
                 </TableCell>
                 <TableCell>
-                  <span className={tx.type === 'Earned' ? 'text-green-600 font-bold text-sm' : 'text-red-500 font-bold text-sm'}>
-                     {tx.type === 'Earned' ? '+' : '-'} {tx.amount.toFixed(2)} AC
+                 <div className='flex'>
+                   <span className={tx.type === 'Earned' ? 'text-green-600 font-bold text-sm' : 'text-red-500 font-bold text-sm'}>
+                     {tx.type === 'Earned' ? '+' : '-'} {tx.amount.toFixed(2)} 
                   </span>
+                  <span className={tx.type === 'Earned' ? 'text-green-600 font-bold text-[10px] mt-1' : 'text-red-500 font-bold text-[10px] mt-1'}> AC</span>
+                 </div>
+                  <span className="text-xs text-muted-foreground">{new Date(tx.date).toLocaleDateString()}</span>
                 </TableCell>
-                <TableCell className="text-right text-muted-foreground text-xs">{new Date(tx.date).toLocaleDateString()}</TableCell>
               </TableRow>
             ))}
             {transactions.length === 0 && (

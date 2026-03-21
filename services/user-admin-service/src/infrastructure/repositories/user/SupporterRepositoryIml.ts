@@ -17,11 +17,11 @@ export class SupporterRepositoryImpl
     supportingCount: number;
   }> {
     const supportersCount = await this.model.count({
-      where: { targetUserId: userId , supporterId: { not: userId }, },
+      where: { targetUserId: userId, supporterId: { not: userId } },
     });
 
     const supportingCount = await this.model.count({
-      where: { supporterId: userId, targetUserId: { not: userId },  },
+      where: { supporterId: userId, targetUserId: { not: userId } },
     });
 
     return { supportersCount, supportingCount };
@@ -38,7 +38,7 @@ export class SupporterRepositoryImpl
 
   async removeSupport(
     supporterId: string,
-    targetUserId: string
+    targetUserId: string,
   ): Promise<void> {
     await this.model.delete({
       where: {
@@ -52,7 +52,7 @@ export class SupporterRepositoryImpl
 
   async isSupporting(
     currentUserId: string,
-    targetUserId: string
+    targetUserId: string,
   ): Promise<boolean> {
     const count = await this.model.count({
       where: {
@@ -67,7 +67,7 @@ export class SupporterRepositoryImpl
   async getSupporters(
     userId: string,
     page = 1,
-    limit = 10
+    limit = 10,
   ): Promise<UserPreview[]> {
     const skip = (page - 1) * limit;
 
@@ -95,7 +95,7 @@ export class SupporterRepositoryImpl
   async getSupporting(
     userId: string,
     page = 1,
-    limit = 10
+    limit = 10,
   ): Promise<UserPreview[]> {
     const skip = (page - 1) * limit;
 

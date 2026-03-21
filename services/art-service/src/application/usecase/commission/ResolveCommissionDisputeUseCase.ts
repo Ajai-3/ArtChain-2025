@@ -5,6 +5,7 @@ import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { CommissionStatus } from '../../../domain/entities/Commission';
 import { IWalletService } from '../../../domain/interfaces/IWalletService';
 import { CommissionMapper } from '../../mapper/CommissionMapper';
+import { COMMISSION_MESSAGES } from '../../../constants/CommissionMessage';
 
 @injectable()
 export class ResolveCommissionDisputeUseCase {
@@ -17,10 +18,10 @@ export class ResolveCommissionDisputeUseCase {
 
   async execute(id: string, resolution: 'REFUND' | 'RELEASE'): Promise<any> {
     const commission = await this._commissionRepository.getById(id);
-    if (!commission) throw new NotFoundError('Commission not found');
+    if (!commission) throw new NotFoundError(COMMISSION_MESSAGES.COMMISSION_NOT_FOUND);
 
     if (commission.status !== CommissionStatus.DISPUTE_RAISED) {
-      throw new BadRequestError('Commission is not in dispute');
+      throw new BadRequestError(COMMISSION_MESSAGES.COMMISSION_NOT_IN_DISPUTE);
     }
 
     let success = false;
@@ -28,6 +29,7 @@ export class ResolveCommissionDisputeUseCase {
       // Return funds to requester
       success = await this._walletService.refundCommissionFunds({
         userId: commission.requesterId,
+        artistId: commission.artistId,
         commissionId: commission._id,
         amount: commission.budget
       });
@@ -72,7 +74,7 @@ export class ResolveCommissionDisputeUseCase {
       }
     }
 
-    if (!success) throw new BadRequestError('Failed to process dispute resolution in wallet service');
+    if (!success) throw new BadRequestError(COMMISSION_MESSAGES.DISPUTE_RESOLUTION_FAILED);
 
     const updated = await this._commissionRepository.getById(id);
     return CommissionMapper.toDTO(updated!);

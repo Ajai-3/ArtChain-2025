@@ -25,27 +25,46 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     @inject(TYPES.IMessageBroadcastService)
     private readonly _broadcastService: IMessageBroadcastService,
     @inject(TYPES.IConversationCacheService)
-    private readonly _conversationCacheService: IConversationCacheService
+    private readonly _conversationCacheService: IConversationCacheService,
   ) {}
 
   async execute(dto: SendMessageDto): Promise<void> {
-    let { senderId, receiverId, content, conversationId, tempId, mediaType } = dto;
+    let { 
+      senderId, 
+      receiverId, 
+      content, 
+      conversationId, 
+      tempId, 
+      mediaType, 
+      mediaUrl 
+    } = dto;
 
-    if (!content?.trim()) {
+    const isTextMessage = !mediaType || mediaType === MediaType.TEXT;
+    const hasMedia = !!mediaUrl || (!!content && mediaType !== MediaType.TEXT);
+
+    if (!content?.trim() && isTextMessage) {
       throw new BadRequestError(ERROR_MESSAGES.MESSAGE_CONTENT_EMPTY);
+    }
+
+    // Ensure content is not null for DB 'required' constraint
+    const safeContent = content?.trim() || mediaUrl || '';
+
+    if (!safeContent && !hasMedia) {
+       throw new BadRequestError(ERROR_MESSAGES.MESSAGE_CONTENT_EMPTY);
     }
 
     conversationId = await this.resolveConversation(
       senderId,
       receiverId,
-      conversationId
+      conversationId,
     );
 
     const message = await this._messageRepo.create({
       conversationId,
       senderId,
-      content: content.trim(),
+      content: safeContent,
       mediaType: (mediaType as MediaType) || MediaType.TEXT,
+      mediaUrl,
       readBy: [senderId],
       deleteMode: DeleteMode.NONE,
       callId: dto.callId,
@@ -54,42 +73,47 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     });
 
     await this._cacheService.cacheMessage(message);
-    
-    // For broadcast, if it's an image, we need to attach the full CDN URL
-    // But we don't want to mutate the original message object that might be used elsewhere
+
     const broadcastMessage = { ...message };
-    if (message.mediaType === MediaType.IMAGE) {
-       // @ts-ignore
-       broadcastMessage.mediaUrl = mapCdnUrl(message.content);
+    if (message.mediaType === MediaType.IMAGE && !message.mediaUrl) {
+      // @ts-ignore
+      broadcastMessage.mediaUrl = mapCdnUrl(message.content);
     }
 
-    await this._broadcastService.publishMessage(broadcastMessage as Message, tempId);
+    await this._broadcastService.publishMessage(
+      broadcastMessage as Message,
+      tempId,
+    );
   }
 
   private async resolveConversation(
     senderId: string,
     receiverId?: string,
-    conversationId?: string
+    conversationId?: string,
   ): Promise<string> {
     if (conversationId) {
-      const conversation = await this._conversationRepo.findById(
-        conversationId
-      );
+      const conversation =
+        await this._conversationRepo.findById(conversationId);
 
-      if (!conversation) throw new BadRequestError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
+      if (!conversation)
+        throw new BadRequestError(ERROR_MESSAGES.CONVERSATION_NOT_FOUND);
 
       await this._conversationCacheService.updateConversationMembers(
         conversation.id,
-        conversation.memberIds
+        conversation.memberIds,
       );
 
       if (
         conversation.type === ConversationType.PRIVATE &&
         !conversation.memberIds.includes(senderId)
       ) {
-        throw new BadRequestError(
-          ERROR_MESSAGES.NOT_ALLOWED_TO_SEND_MESSAGE
-        );
+        throw new BadRequestError(ERROR_MESSAGES.NOT_ALLOWED_TO_SEND_MESSAGE);
+      }
+
+      if (conversation.type === ConversationType.GROUP) {
+        if (!conversation.memberIds.includes(senderId)) {
+          throw new BadRequestError(ERROR_MESSAGES.NOT_ALLOWED_TO_SEND_MESSAGE);
+        }
       }
 
       return conversationId;
@@ -100,7 +124,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
 
     let existing = await this._conversationRepo.findPrivateConversation(
       senderId,
-      receiverId
+      receiverId,
     );
     if (existing) return existing.id;
 
@@ -113,7 +137,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
 
     await this._conversationCacheService.cacheConversationMembers(
       conversation.id,
-      conversation.memberIds
+      conversation.memberIds,
     );
 
     return conversation.id;

@@ -4,6 +4,7 @@ import { useGetUserArt } from "../../hooks/profile/gallery/useGetUserArt";
 import ArtCard from "../art/ArtCard";
 import ArtCardSkeleton from "../skeletons/ArtCardSkeleton";
 import { useMasonryLayout } from "../../../../hooks/useMasonryLayout";
+import { GalleryHorizontal } from "lucide-react";
 
 interface GalleryTabProps {
   profileUser: { id: string; username: string };
@@ -42,8 +43,7 @@ const GalleryTab: React.FC = () => {
     );
   if (isError)
     return <div className="text-center py-4">Error: {error?.message}</div>;
-  if (!data || data.pages[0].data.length === 0)
-    return <div className="text-center py-4">No artwork found</div>;
+
 
   return (
     <div>
@@ -68,6 +68,16 @@ const GalleryTab: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {!isLoading && allItems.length === 0 && (
+        <div className="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
+          <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+            <GalleryHorizontal className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-lg font-medium text-white mb-1">No items yet</h3>
+          <p className="text-sm">This user hasn't listed any items for sale.</p>
+        </div>
+      )}
 
       {hasNextPage && (
         <div className="flex justify-center mt-4">

@@ -18,6 +18,7 @@ export const TYPES = {
   IPurchaseRepository: Symbol.for('IPurchaseRepository'),
 
   // Use Cases - Art
+  IBuyArtUseCase: Symbol.for('IBuyArtUseCase'),
   IGetAllArtUseCase: Symbol.for('IGetAllArtUseCase'),
   IGetArtByIdUseCase: Symbol.for('IGetArtByIdUseCase'),
   ICountArtWorkUseCase: Symbol.for('ICountArtWorkUseCase'),
@@ -25,9 +26,12 @@ export const TYPES = {
   ICreateArtPostUseCase: Symbol.for('ICreateArtPostUseCase'),
   IGetAllShopArtsUseCase: Symbol.for('IGetAllShopArtsUseCase'),
   IGetShopArtsByUserUseCase: Symbol.for('IGetShopArtsByUserUseCase'),
+  IGetSalesAnalyticsUseCase: Symbol.for('IGetSalesAnalyticsUseCase'),
+  ISaledArtworkOfuserUseCase: Symbol.for('ISaledArtworkOfuserUseCase'),
   IArtToElasticSearchUseCase: Symbol.for('IArtToElasticSearchUseCase'),
   IGetAllArtWithUserIdUseCase: Symbol.for('IGetAllArtWithUserIdUseCase'),
-  IBuyArtUseCase: Symbol.for('IBuyArtUseCase'),
+  IGetPurchasedArtWorksUseCase: Symbol.for('IGetPurchasedArtWorksUseCase'),
+  IGetPurchaseAnalyticsUseCase: Symbol.for('IGetPurchaseAnalyticsUseCase'),
 
   // Use Cases - Category
   IEditCategoryUseCase: Symbol.for('IEditCategoryUseCase'),
@@ -53,6 +57,7 @@ export const TYPES = {
   IUnlikePostUseCase: Symbol.for('IUnlikePostUseCase'),
   IGetLikeCountUseCase: Symbol.for('IGetLikeCountUseCase'),
   IGetLikedUsersUseCase: Symbol.for('IGetLikedUsersUseCase'),
+  IGetUserLikedArtsWithUseCase: Symbol.for('IGetUserLikedArtsWithUseCase'),
 
   // Use Cases - AI
   IGenerateAIImageUseCase: Symbol.for('IGenerateAIImageUseCase'),
@@ -83,11 +88,15 @@ export const TYPES = {
   IGetBidsUseCase: Symbol.for('IGetBidsUseCase'),
   IGetUserBidsUseCase: Symbol.for('IGetUserBidsUseCase'),
   ICancelAuctionUseCase: Symbol.for('ICancelAuctionUseCase'),
-  IArtController: Symbol.for('IArtController'),
+  IGetUserBiddingHistoryUseCase: Symbol.for('IGetUserBiddingHistoryUseCase'),
+
+
+
   IShopController: Symbol.for('IShopController'),
   ILikeController: Symbol.for('ILikeController'),
   ICommentController: Symbol.for('ICommentController'),
   IFavoriteController: Symbol.for('IFavoriteController'),
+  IArtController: Symbol.for('IArtController'),
   ICategoryController: Symbol.for('ICategoryController'),
   IAIController: Symbol.for('IAIController'),
   IAdminAIController: Symbol.for('IAdminAIController'),

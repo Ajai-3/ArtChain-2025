@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -6,13 +6,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../../components/ui/table";
-import { Button } from "../../../../components/ui/button";
-import { User, FileText } from "lucide-react";
-import WalletTableSkeleton from "../skeletons/WalletTableSkeleton";
-import WalletStatusActions from "./WalletStatusActions";
-import TransactionDetailsModal from "./TransactionDetailsModal";
-import { format } from "date-fns";
+} from '../../../../components/ui/table';
+import { Button } from '../../../../components/ui/button';
+import { User, FileText } from 'lucide-react';
+import WalletTableSkeleton from '../skeletons/WalletTableSkeleton';
+import WalletStatusActions from './WalletStatusActions';
+import TransactionDetailsModal from './TransactionDetailsModal';
+import { format } from 'date-fns';
 
 interface WalletTableProps {
   wallets: any[];
@@ -34,6 +34,8 @@ const WalletTable: React.FC<WalletTableProps> = ({
   const [selectedWallet, setSelectedWallet] = useState<any>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
+  console.log('Wallets data in WalletTable:', wallets);
+
   const openDetails = (wallet: any) => {
     setSelectedWallet(wallet);
     setIsDetailsOpen(true);
@@ -44,7 +46,7 @@ const WalletTable: React.FC<WalletTableProps> = ({
 
     const visiblePages = 3;
     let startPage = Math.max(page - 1, 1);
-    let endPage = Math.min(startPage + visiblePages - 1, totalPages);
+    const endPage = Math.min(startPage + visiblePages - 1, totalPages);
 
     if (endPage - startPage < visiblePages - 1) {
       startPage = Math.max(endPage - visiblePages + 1, 1);
@@ -77,7 +79,7 @@ const WalletTable: React.FC<WalletTableProps> = ({
           <Button
             key={p}
             size="sm"
-            variant={p === page ? "default" : "outline"}
+            variant={p === page ? 'default' : 'outline'}
             onClick={() => onPageChange(p)}
           >
             {p}
@@ -116,7 +118,9 @@ const WalletTable: React.FC<WalletTableProps> = ({
               <TableHead className="px-4 py-2 text-left">Balance</TableHead>
               <TableHead className="px-4 py-2 text-left">Locked</TableHead>
               <TableHead className="px-4 py-2 text-left">Status</TableHead>
-              <TableHead className="px-4 py-2 text-left">Last Transaction</TableHead>
+              <TableHead className="px-4 py-2 text-left">
+                Last Transaction
+              </TableHead>
               <TableHead className="px-4 py-2 text-left">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -144,24 +148,34 @@ const WalletTable: React.FC<WalletTableProps> = ({
                       </div>
                     )}
                     <div>
-                      <p className="font-medium">{wallet.user?.name || "Unknown"}</p>
-                      <p className="text-xs text-zinc-400">@{wallet.user?.username || "unknown"}</p>
+                      <p className="font-medium">
+                        {wallet.user?.name || 'Unknown'}
+                      </p>
+                      <p className="text-xs text-zinc-400">
+                        @{wallet.user?.username || 'unknown'}
+                      </p>
                     </div>
                   </TableCell>
                   <TableCell className="px-4 py-2 font-medium text-green-600">
-                    ₹ {wallet.balance.toFixed(2)} <span className="text-xs text-zinc-500">(AC {(wallet.balance / 10).toFixed(2)})</span>
+                    ₹ {wallet.balance.toFixed(2)}{' '}
+                    <span className="text-xs text-zinc-500">
+                      (AC {(wallet.balance / 10).toFixed(2)})
+                    </span>
                   </TableCell>
                   <TableCell className="px-4 py-2 text-zinc-500">
-                    ₹ {wallet.lockedAmount.toFixed(2)} <span className="text-xs text-zinc-400">(AC {(wallet.lockedAmount / 10).toFixed(2)})</span>
+                    ₹ {wallet.lockedAmount.toFixed(2)}{' '}
+                    <span className="text-xs text-zinc-400">
+                      (AC {(wallet.lockedAmount / 10).toFixed(2)})
+                    </span>
                   </TableCell>
                   <TableCell className="px-4 py-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold capitalize ${
-                        wallet.status === "active"
-                          ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          : wallet.status === "locked"
-                          ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
-                          : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                        wallet.status === 'active'
+                          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                          : wallet.status === 'locked'
+                            ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                            : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                       }`}
                     >
                       {wallet.status}
@@ -173,27 +187,34 @@ const WalletTable: React.FC<WalletTableProps> = ({
                         <div className="flex items-center gap-1">
                           <span
                             className={
-                              wallet.lastTransaction.type === "credited"
-                                ? "text-green-500"
-                                : "text-red-500"
+                              wallet.lastTransaction.type === 'credited'
+                                ? 'text-green-500'
+                                : 'text-red-500'
                             }
                           >
-                            {wallet.lastTransaction.type === "credited" ? "+" : "-"} ₹{" "}
-                            {wallet.lastTransaction.amount.toFixed(2)}
+                            {wallet.lastTransaction.type === 'credited'
+                              ? '+'
+                              : '-'}{' '}
+                            ₹ {wallet.lastTransaction.amount * 10}
                           </span>
                           <span className="text-zinc-500">
-                            (AC {(wallet.lastTransaction.amount / 10).toFixed(2)})
+                            (AC {wallet.lastTransaction.amount.toFixed(2)})
                           </span>
                           <span className="text-zinc-500">
                             ({wallet.lastTransaction.category})
                           </span>
                         </div>
                         <div className="text-zinc-500">
-                          {format(new Date(wallet.lastTransaction.createdAt), "MMM d, HH:mm")}
+                          {format(
+                            new Date(wallet.lastTransaction.createdAt),
+                            'MMM d, HH:mm',
+                          )}
                         </div>
                       </div>
                     ) : (
-                      <span className="text-xs text-zinc-500">No transactions</span>
+                      <span className="text-xs text-zinc-500">
+                        No transactions
+                      </span>
                     )}
                   </TableCell>
                   <TableCell className="px-4 py-2">
@@ -201,7 +222,7 @@ const WalletTable: React.FC<WalletTableProps> = ({
                       <WalletStatusActions
                         walletId={wallet.id}
                         currentStatus={wallet.status}
-                        userName={wallet.user?.name || "User"}
+                        userName={wallet.user?.name || 'User'}
                       />
                       <Button
                         variant="ghost"
@@ -218,7 +239,10 @@ const WalletTable: React.FC<WalletTableProps> = ({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell
+                  colSpan={8}
+                  className="text-center py-8 text-gray-500"
+                >
                   No wallets found
                 </TableCell>
               </TableRow>
@@ -234,7 +258,7 @@ const WalletTable: React.FC<WalletTableProps> = ({
           isOpen={isDetailsOpen}
           onClose={() => setIsDetailsOpen(false)}
           walletId={selectedWallet.id}
-          userName={selectedWallet.user?.name || "User"}
+          userName={selectedWallet.user?.name || 'User'}
         />
       )}
     </>

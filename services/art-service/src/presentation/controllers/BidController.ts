@@ -1,17 +1,16 @@
-import { Request, Response, NextFunction } from 'express';
-import { injectable, inject } from 'inversify';
-import { HttpStatus } from 'art-chain-shared';
 import { logger } from '../../utils/logger';
+import { HttpStatus } from 'art-chain-shared';
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { placeBidSchema } from '../validators/bid.schema';
 import { IBidController } from '../interface/IBidController';
 import { TYPES } from '../../infrastructure/Inversify/types';
-import { IPlaceBidUseCase } from '../../application/interface/usecase/bid/IPlaceBidUseCase';
-import { IGetBidsUseCase } from '../../application/interface/usecase/bid/IGetBidsUseCase';
-import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGetUserBidsUseCase';
-import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
-
-import { placeBidSchema } from '../validators/bid.schema';
-import { PlaceBidDTO } from '../../application/interface/dto/bid/PlaceBidDTO';
 import { validateWithZod } from '../../utils/validateWithZod';
+import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
+import { PlaceBidDTO } from '../../application/interface/dto/bid/PlaceBidDTO';
+import { IGetBidsUseCase } from '../../application/interface/usecase/bid/IGetBidsUseCase';
+import { IPlaceBidUseCase } from '../../application/interface/usecase/bid/IPlaceBidUseCase';
+import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGetUserBidsUseCase';
 
 @injectable()
 export class BidController implements IBidController {
@@ -21,7 +20,7 @@ export class BidController implements IBidController {
     @inject(TYPES.IGetBidsUseCase)
     private readonly _getBidsUseCase: IGetBidsUseCase,
     @inject(TYPES.IGetUserBidsUseCase)
-    private readonly _getUserBidsUseCase: IGetUserBidsUseCase
+    private readonly _getUserBidsUseCase: IGetUserBidsUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -35,27 +34,29 @@ export class BidController implements IBidController {
   placeBid = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const bidderId = req.headers['x-user-id'] as string;
-      
+
       const validatedBody = validateWithZod(placeBidSchema, req.body);
 
       logger.info(
-        `Placing bid on auction ${validatedBody.auctionId} by user ${bidderId} amount ${validatedBody.amount}`
+        `Placing bid on auction ${validatedBody.auctionId} by user ${bidderId} amount ${validatedBody.amount}`,
       );
 
       const dto: PlaceBidDTO = {
         auctionId: validatedBody.auctionId,
         amount: validatedBody.amount,
         bidderId,
-        bidderUserInfo: (req as any).user ? {
-            id: (req as any).user.id || (req as any).user._id || bidderId, // reliable fallback
-            username: (req as any).user.username,
-            profileImage: (req as any).user.profileImage, // If available in token
-            name: (req as any).user.name
-        } : undefined
+        bidderUserInfo: (req as any).user
+          ? {
+              id: (req as any).user.id || (req as any).user._id || bidderId,
+              username: (req as any).user.username,
+              profileImage: (req as any).user.profileImage,
+              name: (req as any).user.name,
+            }
+          : undefined,
       };
 
       const bid = await this._placeBidUseCase.execute(dto);
@@ -80,13 +81,15 @@ export class BidController implements IBidController {
   getBids = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const auctionId = req.params.auctionId;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
-      logger.info(`Fetching bids for auctionId=${auctionId} page=${page} limit=${limit}`);
+      logger.info(
+        `Fetching bids for auctionId=${auctionId} page=${page} limit=${limit}`,
+      );
 
       const result = await this._getBidsUseCase.execute(auctionId, page, limit);
 
@@ -110,7 +113,7 @@ export class BidController implements IBidController {
   getUserBids = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;

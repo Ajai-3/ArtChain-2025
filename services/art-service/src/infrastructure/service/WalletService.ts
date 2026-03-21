@@ -10,16 +10,19 @@ export class WalletService implements IWalletService {
     sellerId: string,
     totalAmount: number,
     commissionAmount: number,
-    artId: string
+    artId: string,
   ): Promise<boolean> {
     try {
-      const response = await axios.post(`${config.api_gateway_url}/api/v1/wallet/transaction/split-purchase`, {
-        buyerId,
-        sellerId,
-        totalAmount,
-        commissionAmount,
-        artId
-      });
+      const response = await axios.post(
+        `${config.api_gateway_url}/api/v1/wallet/transaction/split-purchase`,
+        {
+          buyerId,
+          sellerId,
+          totalAmount,
+          commissionAmount,
+          artId,
+        },
+      );
       return response.status === 200 || response.status === 201;
     } catch (error) {
       console.error('Process Split Purchase Error:', error);
@@ -27,11 +30,15 @@ export class WalletService implements IWalletService {
     }
   }
 
-  async lockFunds(userId: string, amount: number, auctionId: string): Promise<boolean> {
+  async lockFunds(
+    userId: string,
+    amount: number,
+    auctionId: string,
+  ): Promise<boolean> {
     try {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/wallet/transaction/lock`,
-        { userId, amount, auctionId }
+        { userId, amount, auctionId },
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
@@ -40,11 +47,15 @@ export class WalletService implements IWalletService {
     }
   }
 
-  async unlockFunds(userId: string, amount: number, auctionId: string): Promise<boolean> {
+  async unlockFunds(
+    userId: string,
+    amount: number,
+    auctionId: string,
+  ): Promise<boolean> {
     try {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/wallet/transaction/unlock`,
-        { userId, amount, auctionId }
+        { userId, amount, auctionId },
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
@@ -58,12 +69,18 @@ export class WalletService implements IWalletService {
     sellerId: string,
     totalAmount: number,
     commissionAmount: number,
-    auctionId: string
+    auctionId: string,
   ): Promise<boolean> {
     try {
       const response = await axios.post(
-        `${config.api_gateway_url}/api/v1/wallet/transaction/split-purchase`,
-        { buyerId: winnerId, sellerId, totalAmount, commissionAmount, artId: auctionId }
+        `${config.api_gateway_url}/api/v1/wallet/transaction/settle-auction`,
+        {
+          winnerId,
+          sellerId,
+          totalAmount,
+          commissionAmount,
+          auctionId,
+        },
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
@@ -78,12 +95,12 @@ export class WalletService implements IWalletService {
     amount: number,
     description: string,
     referenceId: string,
-    category: string
+    category: string,
   ): Promise<boolean> {
     try {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/wallet/transaction/payment`,
-        { payerId, payeeId, amount, description, referenceId, category }
+        { payerId, payeeId, amount, description, referenceId, category },
       );
       return response.status === 200 || response.status === 201;
     } catch (error) {
@@ -103,7 +120,7 @@ export class WalletService implements IWalletService {
     try {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/wallet/transaction/commission/distribute`,
-        params
+        params,
       );
       return response.data.message === 'Funds distributed successfully';
     } catch (error) {
@@ -114,17 +131,36 @@ export class WalletService implements IWalletService {
 
   async refundCommissionFunds(params: {
     userId: string;
+    artistId: string;
     commissionId: string;
     amount: number;
   }): Promise<boolean> {
     try {
       const response = await axios.post(
         `${config.api_gateway_url}/api/v1/wallet/transaction/commission/refund`,
-        params
+        params,
       );
       return response.data.message === 'Funds refunded successfully';
     } catch (error) {
       console.error('Error refunding commission funds:', error);
+      return false;
+    }
+  }
+
+  async transferLockedCommissionFunds(params: {
+    fromUserId: string;
+    toUserId: string;
+    commissionId: string;
+    amount: number;
+  }): Promise<boolean> {
+    try {
+      const response = await axios.post(
+        `${config.api_gateway_url}/api/v1/wallet/transaction/commission/transfer-locked`,
+        params,
+      );
+      return response.status === 200 || response.status === 201;
+    } catch (error) {
+      console.error('Error transferring locked commission funds:', error);
       return false;
     }
   }

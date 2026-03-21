@@ -37,7 +37,7 @@ export const createAuctionSchema = z
 
     if (isNaN(start.getTime()) || isNaN(end.getTime())) return;
 
-    const oneMinute = 60 * 1000;
+    const thirtyMinutes = 30 * 60 * 1000;
 
     // 1. End must be strictly after start
     if (end.getTime() <= start.getTime()) {
@@ -49,20 +49,20 @@ export const createAuctionSchema = z
       return;
     }
 
-    // 2. Start time must be at least 1 minute from now
-    if (start.getTime() < now.getTime() + oneMinute) {
+    // 2. Start time must be at least 30 minutes from now
+    if (start.getTime() < now.getTime() + thirtyMinutes) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Start time must be at least 1 minute from now',
+        message: 'Start time must be at least 30 minutes from now',
         path: ['startTime'],
       });
     }
 
     // 3. Duration check
-    if (end.getTime() < start.getTime() + oneMinute) {
+    if (end.getTime() < start.getTime() + thirtyMinutes) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'End time must be at least 1 minute after start time',
+        message: 'End time must be at least 30 minutes after start time',
         path: ['endTime'],
       });
     }

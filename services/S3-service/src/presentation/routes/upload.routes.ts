@@ -18,5 +18,6 @@ router.post(ROUTES.UPLOAD_DELETE, uploadController.deleteImage);
 router.post(ROUTES.UPLOAD_ROOT, upload.single('file'), uploadController.uploadImage);
 router.post(ROUTES.UPLOAD_ART, upload.single('file'), uploadController.uploadArt);
 router.get(ROUTES.SIGNED_URL, uploadController.getSignedUrl);
+router.post(ROUTES.UPLOAD_COMMISSION, upload.single('file'), uploadController.uploadCommissionImage);
 
 export default router;

@@ -1,40 +1,55 @@
-import amqp, { Channel } from 'amqplib';
+import amqp, { Connection, Channel } from 'amqplib';
 import { logger } from '../../utils/logger';
+import { config } from '../config/env';
 
-let connection: Awaited<ReturnType<typeof amqp.connect>> | null = null;
+let connection: Connection | null = null;
 let channel: Channel | null = null;
 
 export const getRabbitChannel = async (): Promise<Channel> => {
-  if (channel) return channel;
+  if (connection && channel) {
+    return channel;
+  }
 
   try {
-    const conn = await amqp.connect(process.env.RABBITMQ_URL!);
-    connection = conn;
+    const conn = await amqp.connect(
+      `${config.rabbitmq_URL}?heartbeat=60`,
+    );
 
-    conn.on('error', (err) => {
-      logger.error('RabbitMQ Connection Error', err);
+    connection = conn as unknown as Connection;
+
+    connection.on('error', (err) => {
+      logger.error(`[RabbitMQ] Connection Error: ${err.message}`);
       connection = null;
       channel = null;
     });
 
-    conn.on('close', () => {
-      logger.warn('RabbitMQ Connection Closed');
+    connection.on('close', () => {
+      logger.warn('[RabbitMQ] Connection Closed. Reconnecting...');
       connection = null;
       channel = null;
+      setTimeout(getRabbitChannel, 5000);
     });
 
     const ch = await conn.createChannel();
     channel = ch;
 
+    channel.on('error', (err) => {
+      logger.error(`[RabbitMQ] Channel Error: ${err.message}`);
+      channel = null;
+    });
+
     await ch.assertExchange('global_exchange', 'topic', { durable: true });
-    
+
     logger.info('✅ RabbitMQ Channel Established');
-    
+
     return ch;
   } catch (error) {
     logger.error('Failed to connect to RabbitMQ', error);
-    connection = null;
-    channel = null;
-    throw error;
+    return new Promise((resolve) => {
+      setTimeout(async () => {
+        const retryChan = await getRabbitChannel();
+        resolve(retryChan);
+      }, 5000);
+    });
   }
 };

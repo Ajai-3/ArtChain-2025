@@ -11,6 +11,7 @@ export class GetAuctionStatsUseCase implements IGetAuctionStatsUseCase {
 
   async execute(timeRange: string = '7d'): Promise<{
     active: number;
+    scheduled: number;
     ended: number;
     sold: number;
     unsold: number;

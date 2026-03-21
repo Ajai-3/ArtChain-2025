@@ -24,9 +24,18 @@ export const useWebRTC = () => {
     };
 
     pc.ontrack = (event) => {
-      console.log("Received remote track");
-      setRemoteStream(event.streams[0]);
-    };
+    console.log("Received remote track:", event.track.kind);
+    if (event.streams && event.streams[0]) {
+        setRemoteStream(event.streams[0]);
+    } else {
+        // Fallback: build stream manually when streams[0] is empty
+        setRemoteStream(prev => {
+            const stream = prev || new MediaStream();
+            stream.addTrack(event.track);
+            return new MediaStream(stream.getTracks());
+        });
+    }
+};
 
     peerConnection.current = pc;
     return pc;

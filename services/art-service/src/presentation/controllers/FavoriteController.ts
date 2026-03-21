@@ -158,8 +158,7 @@ export class FavoriteController implements IFavoriteController {
   //# GET USER FAVORITED ARTS
   //# ================================================================================================================
   //# GET /api/v1/art/favorites/user/:userId
-  //# This endpoint returns a list of arts wh
-  //# Pagination can be implemented if needed.
+  //# This endpoint returns a list of arts which the user has favorited, with pagination.
   //# ================================================================================================================
   getUserFavoritedArts = async (
     req: Request,
@@ -182,6 +181,8 @@ export class FavoriteController implements IFavoriteController {
       logger.info(
         `✅ [GetUserFavoritedArts] Fetched ${arts.length} favorited arts for userId=${userId}`
       );
+
+      console.log(arts);
 
       return res.status(HttpStatus.OK).json({
         data: arts,

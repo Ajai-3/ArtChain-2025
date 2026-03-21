@@ -10,6 +10,7 @@ interface TopArtsTableProps {
 }
 
 const TopArtsTable: React.FC<TopArtsTableProps> = ({ arts }) => {
+  console.log(arts)
   return (
     <Card className="col-span-4">
       <CardHeader>
@@ -35,7 +36,7 @@ const TopArtsTable: React.FC<TopArtsTableProps> = ({ arts }) => {
               <TableRow key={art.id}>
                 <TableCell className="font-medium text-muted-foreground text-xs">{index + 1}</TableCell>
                 <TableCell>
-                  <img src={art.image} alt={art.title} className="h-10 w-10 rounded-md object-cover" />
+                  <img src={(art as any).previewUrl} alt={art.title} className="h-10 w-10 rounded-md object-cover" />
                 </TableCell>
                 <TableCell className="font-medium">{art.title}</TableCell>
                 <TableCell>

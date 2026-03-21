@@ -72,13 +72,13 @@ const SubscriptionSettings = lazy(
   () => import("../../features/user/components/settings/SubscriptionSettings")
 );
 const PurchaseHistory = lazy(
-  () => import("../../features/user/components/settings/PurchaseHistory")
+  () => import("../../features/user/components/settings/purchase/PurchaseHistory")
 );
 const SalesHistory = lazy(
-  () => import("../../features/user/components/settings/SalesHistory")
+  () => import("../../features/user/components/settings/sales/SalesHistory")
 );
 const LikedItems = lazy(
-  () => import("../../features/user/components/settings/LikedItems")
+  () => import("../../features/user/components/settings/liked items/LikedItems")
 );
 const BlockedUsers = lazy(
   () => import("../../features/user/components/settings/BlockedUsers")

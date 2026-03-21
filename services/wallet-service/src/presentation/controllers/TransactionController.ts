@@ -20,6 +20,7 @@ import { ProcessPaymentDTO } from '../../application/interface/dto/transaction/P
 import { ILockCommissionFundsUseCase } from '../../application/interface/usecase/transaction/ILockCommissionFundsUseCase';
 import { IDistributeCommissionFundsUseCase } from '../../application/interface/usecase/transaction/IDistributeCommissionFundsUseCase';
 import { IRefundCommissionFundsUseCase } from '../../application/interface/usecase/transaction/IRefundCommissionFundsUseCase';
+import { TransferLockedCommissionFundsUseCase } from '../../application/usecases/transaction/TransferLockedCommissionFundsUseCase';
 
 @injectable()
 export class TransactionController implements ITransactionController {
@@ -36,7 +37,9 @@ export class TransactionController implements ITransactionController {
     @inject(TYPES.IDistributeCommissionFundsUseCase)
     private readonly _distributeCommissionFundsUseCase: IDistributeCommissionFundsUseCase,
     @inject(TYPES.IRefundCommissionFundsUseCase)
-    private readonly _refundCommissionFundsUseCase: IRefundCommissionFundsUseCase
+    private readonly _refundCommissionFundsUseCase: IRefundCommissionFundsUseCase,
+    @inject(TYPES.ITransferLockedCommissionFundsUseCase)
+    private readonly _transferLockedCommissionFundsUseCase: TransferLockedCommissionFundsUseCase
   ) {}
 
   //# ================================================================================================================
@@ -241,12 +244,33 @@ export class TransactionController implements ITransactionController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { userId, commissionId, amount } = req.body;
-      const success = await this._refundCommissionFundsUseCase.execute(userId, commissionId, amount);
+      const { userId, artistId, commissionId, amount } = req.body;
+      const success = await this._refundCommissionFundsUseCase.execute(userId, artistId, commissionId, amount);
       if (success) {
         return res.status(HttpStatus.OK).json({ message: 'Funds refunded successfully' });
       }
       return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to refund funds' });
+    } catch (error) {
+    }
+  };
+
+  //# ================================================================================================================
+  //# TRANSFER LOCKED COMMISSION FUNDS
+  //# ================================================================================================================
+  //# POST /api/v1/transaction/commission/transfer-locked
+  //# Request body: { fromUserId, toUserId, commissionId, amount }
+  //# ================================================================================================================
+  transferLockedCommissionFunds = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const success = await this._transferLockedCommissionFundsUseCase.execute(req.body);
+      if (success) {
+        return res.status(HttpStatus.OK).json({ message: 'Locked funds transferred successfully' });
+      }
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to transfer locked funds' });
     } catch (error) {
       next(error);
     }

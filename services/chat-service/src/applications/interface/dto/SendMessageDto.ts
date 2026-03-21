@@ -9,4 +9,5 @@ export interface SendMessageDto {
   callId?: string;
   callStatus?: string;
   callDuration?: number;
+  mediaUrl?: string;
 }

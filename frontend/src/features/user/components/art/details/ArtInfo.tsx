@@ -1,6 +1,6 @@
-import React from "react";
-import { User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface ArtInfoProps {
   art: {
@@ -22,33 +22,38 @@ interface ArtInfoProps {
   } | null;
 }
 
-const ArtInfo: React.FC<ArtInfoProps> = ({ art, artist, formattedDate, purchaser }) => {
+const ArtInfo: React.FC<ArtInfoProps> = ({
+  art,
+  artist,
+  formattedDate,
+  purchaser,
+}) => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full flex flex-col gap-4 mt-3 sm:px-20">
+    <div className='w-full flex flex-col gap-4 mt-3 sm:px-20'>
       {/* Artist & Title */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3">
-        <div className="flex gap-3 items-center">
+      <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center w-full gap-3'>
+        <div className='flex gap-3 items-center'>
           {artist?.profileImage ? (
             <img
               src={artist.profileImage}
               alt={artist.username}
-              className="w-10 h-10 rounded-full object-cover border border-zinc-700"
+              className='w-10 h-10 rounded-full object-cover border border-zinc-700'
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white">
+            <div className='w-10 h-10 rounded-full bg-zinc-600 dark:bg-zinc-800 flex items-center justify-center text-white'>
               {artist?.name?.charAt(0).toUpperCase() || (
-                <User className="w-4 h-4" />
+                <User className='w-4 h-4' />
               )}
             </div>
           )}
           <div>
-            <h1 className="text-lg font-bold text-zinc-100">{art.title}</h1>
-            <p className="text-sm font-medium text-zinc-400">
-              by{" "}
+            <h1 className='text-lg font-bold text-zinc-100'>{art.title}</h1>
+            <p className='text-sm font-medium text-zinc-400'>
+              by{' '}
               <span
-                className="text-zinc-300 font-semibold cursor-pointer hover:text-main-color transition-colors"
+                className='text-zinc-300 font-semibold cursor-pointer hover:text-main-color transition-colors'
                 onClick={() => navigate(`/${artist?.username}`)}
               >
                 {artist?.username}
@@ -57,45 +62,58 @@ const ArtInfo: React.FC<ArtInfoProps> = ({ art, artist, formattedDate, purchaser
           </div>
         </div>
 
-        <div className="text-zinc-500 font-medium text-xs">
-          {formattedDate}
-        </div>
+        <div className='text-zinc-500 font-medium text-xs'>{formattedDate}</div>
       </div>
 
       {/* Purchaser Info - Only if sold */}
       {purchaser && (
-        <div className="flex items-center gap-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/50 w-fit">
-          <span className="text-xs text-zinc-400 font-medium">Sold to</span>
-          <div 
-            className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+        <div className='group flex items-center gap-3 p-1.5 pr-4 bg-zinc-900/40 hover:bg-zinc-800/60 rounded-full border border-zinc-800 transition-all duration-300 w-fit'>
+          {/* Avatar Section */}
+          <div
+            className='relative cursor-pointer'
             onClick={() => navigate(`/${purchaser.username}`)}
           >
             {purchaser.profileImage ? (
               <img
                 src={purchaser.profileImage}
                 alt={purchaser.username}
-                className="w-6 h-6 rounded-full object-cover"
+                className='w-10 h-10 rounded-full object-cover border border-zinc-700 group-hover:border-purple-500/50 transition-colors'
               />
             ) : (
-              <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center text-xs text-zinc-300">
+              <div className='w-10 h-10 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-800 flex items-center justify-center text-[10px] text-zinc-300 border border-zinc-700'>
                 {purchaser.username.charAt(0).toUpperCase()}
               </div>
             )}
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold text-zinc-200">{purchaser.name}</span>
-            <span className="text-xs font-semibold text-zinc-200">@{purchaser.username}</span>
+          </div>
+
+          {/* Text Section */}
+          <div className='flex flex-col'>
+            <div className='flex items-center gap-1.5'>
+              <span className='text-[10px] uppercase tracking-wider text-zinc-500 font-bold'>
+                Sold to
+              </span>
+              <span className='w-1 h-1 rounded-full bg-zinc-700' />
+              <span
+                className='text-xs font-semibold text-zinc-200 cursor-pointer hover:text-white'
+                onClick={() => navigate(`/${purchaser.username}`)}
+              >
+                {purchaser.name}
+              </span>
             </div>
+            <span className='text-[10px] text-zinc-500 font-medium'>
+              @{purchaser.username}
+            </span>
           </div>
         </div>
       )}
 
       {/* Tags */}
       {art.hashtags?.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
+        <div className='flex flex-wrap gap-1.5'>
           {art.hashtags.map((tag) => (
             <span
               key={tag}
-              className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1 rounded-full cursor-pointer text-xs transition-colors border border-zinc-700"
+              className='bg-zinc-800 hover:bg-zinc-700 text-zinc-300 px-2.5 py-1 rounded-full cursor-pointer text-xs transition-colors border border-zinc-700'
             >
               #{tag}
             </span>
@@ -104,9 +122,13 @@ const ArtInfo: React.FC<ArtInfoProps> = ({ art, artist, formattedDate, purchaser
       )}
 
       {/* Description */}
-      <div className="text-zinc-400 leading-relaxed">
-        <h2 className="text-base font-semibold mb-1.5 text-zinc-200">Description</h2>
-        <p className="whitespace-pre-wrap text-sm">{art.description || "No description available."}</p>
+      <div className='text-zinc-400 leading-relaxed'>
+        <h2 className='text-base font-semibold mb-1.5 text-zinc-200'>
+          Description
+        </h2>
+        <p className='whitespace-pre-wrap text-sm'>
+          {art.description || 'No description available.'}
+        </p>
       </div>
     </div>
   );

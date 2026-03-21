@@ -12,7 +12,7 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
     @inject(TYPES.IArtService) private readonly _artService: IArtService,
     @inject(TYPES.IWalletService) private readonly _walletService: IWalletService,
     @inject(TYPES.IUserRepository) private readonly _userRepository: IUserRepository
-  ) {}
+  ) { }
 
   async execute(token: string): Promise<any> {
     const [
@@ -34,9 +34,9 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
       this._artService.getRecentAuctions(token, 5),
       this._artService.getRecentCommissions(token, 5),
       this._walletService.getRecentTransactions(token, 5),
-      this._userRepository.findAllUsers({ page: 1, limit: 1 }), 
-      this._userRepository.findAllUsers({ page: 1, limit: 1, role: 'artist' }), 
-      this._userRepository.findAllUsers({ page: 1, limit: 1, status: 'banned' }), 
+      this._userRepository.findAllUsers({ page: 1, limit: 1 }),
+      this._userRepository.findAllUsers({ page: 1, limit: 1, role: 'artist' }),
+      this._userRepository.findAllUsers({ page: 1, limit: 1, status: 'banned' }),
       this._artService.getArtworkCounts(token),
       this._artService.getAuctionCounts(token, 'all'),
       this._artService.getCommissionCounts(token, 'all'),
@@ -49,62 +49,81 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
     const topArtUsers = await this._userRepository.findManyByIdsBatch(artistIds);
     const userMap = new Map(topArtUsers.map((u: any) => [u.id, u]));
 
-    const topArts = rawTopArts.map((art: any) => ({
-      ...art,
-      artist: userMap.get(art.userId) || { name: 'Unknown', username: 'unknown' }
-    }));
+    const topArts = rawTopArts.map((art: any) => {
+      const user = userMap.get(art.userId);
+      return {
+        ...art,
+        previewUrl: mapCdnUrl(art.previewUrl),
+        artist: {
+          name: user?.name || 'Unknown',
+          username: user?.username || 'unknown',
+          profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : ''
+        }
+      };
+    });
 
     const hostIds = [...new Set(rawRecentAuctions.map((auc: any) => auc.hostId))];
     const hostUsers = await this._userRepository.findManyByIdsBatch(hostIds);
     const hostMap = new Map(hostUsers.map((u: any) => [u.id, u]));
 
-    const recentAuctions = rawRecentAuctions.map((auc: any) => ({
-      ...auc,
-      host: hostMap.get(auc.hostId),
-      startPrice: auc.startPrice 
-    }));
+    const recentAuctions = rawRecentAuctions.map((auc: any) => {
+      const host = hostMap.get(auc.hostId);
+
+      return {
+        ...auc,
+        imageKey: mapCdnUrl(auc.imageKey),
+        host: host ? {
+          name: host.name,
+          username: host.username,
+          profileImage: host.profileImage ? mapCdnUrl(host.profileImage) : ''
+        } : { name: 'Unknown Host', username: 'unknown', profileImage: '' },
+        startPrice: auc.startPrice
+      };
+    });
 
     const commArtistIds = recentCommissions.map((c: any) => c.artistId);
     const commClientIds = recentCommissions.map((c: any) => c.requesterId);
     const allCommUserIds = [...new Set([...commArtistIds, ...commClientIds])];
-    
+
     let commUserMap = new Map();
     if (allCommUserIds.length > 0) {
-        const commUsers = await this._userRepository.findManyByIdsBatch(allCommUserIds);
-        commUserMap = new Map(commUsers.map((u: any) => [u.id, u]));
+      const commUsers = await this._userRepository.findManyByIdsBatch(allCommUserIds);
+      commUserMap = new Map(commUsers.map((u: any) => [u.id, u]));
     }
 
     const populatedCommissions = recentCommissions.map((c: any) => ({
-        id: c._id || c.id,
-        amount: c.budget || c.price || 0,
-        status: c.status,
-        artistName: commUserMap.get(c.artistId)?.name || 'Unknown Artist',
-        artistProfileImage: commUserMap.get(c.artistId)?.profileImage,
-        clientName: commUserMap.get(c.requesterId)?.name || 'Unknown Client',
-        clientProfileImage: commUserMap.get(c.requesterId)?.profileImage,
-        requestMessage: c.requestMessage,
-        createdAt: c.createdAt
+      id: c._id || c.id,
+      amount: c.budget || c.price || 0,
+      status: c.status,
+      artistName: commUserMap.get(c.artistId)?.name || 'Unknown Artist',
+      artistUsername: commUserMap.get(c.artistId)?.username,
+      artistProfileImage: mapCdnUrl(commUserMap.get(c.artistId)?.profileImage),
+      clientName: commUserMap.get(c.requesterId)?.name || 'Unknown Client',
+      clientUsername: commUserMap.get(c.requesterId)?.username,
+      clientProfileImage: mapCdnUrl(commUserMap.get(c.requesterId)?.profileImage),
+      requestMessage: c.requestMessage,
+      createdAt: c.createdAt
     }));
-    
+
     const txUserIds = [...new Set(recentTransactions.map((tx: any) => tx.userId))];
     let txUserMap = new Map();
     if (txUserIds.length > 0) {
-        const txUsers = await this._userRepository.findManyByIdsBatch(txUserIds);
-        txUserMap = new Map(txUsers.map((u: any) => [u.id, u]));
+      const txUsers = await this._userRepository.findManyByIdsBatch(txUserIds);
+      txUserMap = new Map(txUsers.map((u: any) => [u.id, u]));
     }
-    
+
     const populatedTransactions = recentTransactions.map((tx: any) => {
-        const user = txUserMap.get(tx.userId);
-        return {
-            ...tx,
-            user: user ? {
-                username: user.username,
-                name: user.name,
-                profileImage: mapCdnUrl(user.profileImage)
-            } : null
-        };
+      const user = txUserMap.get(tx.userId);
+      return {
+        ...tx,
+        user: user ? {
+          username: user.username,
+          name: user.name,
+          profileImage: user.profileImage ? mapCdnUrl(user.profileImage) : ''
+        } : null
+      };
     });
-    
+
     const totalUsers = totalUsersData.meta.total;
     const totalArtists = artistsData.meta.total;
     const totalBanned = bannedData.meta.total;
@@ -117,13 +136,13 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
       recentTransactions: populatedTransactions,
       userCounts: {
         total: totalUsers,
-        users: totalUsers - totalArtists, 
+        users: totalUsers - totalArtists,
         artists: totalArtists,
         banned: totalBanned
       },
       artworkCounts,
       auctionCounts: auctionCounts?.overall || auctionCounts || { active: 0, ended: 0, sold: 0, unsold: 0 },
-      commissionCounts: commissionCounts?.overall || commissionCounts || { REQUESTED: 0, AGREED: 0, IN_PROGRESS: 0, COMPLETED: 0 },
+      commissionCounts: commissionCounts?.overall || commissionCounts || { REQUESTED: 0, AGREED: 0, IN_PROGRESS: 0, COMPLETED: 0, CANCELLED: 0 },
       transactionStats: transactionStats || []
     };
   }

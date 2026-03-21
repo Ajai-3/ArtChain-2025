@@ -11,13 +11,17 @@ const auctionController = container.get<IAuctionController>(TYPES.IAuctionContro
 const bidController = container.get<IBidController>(TYPES.IBidController);
 
 // Auction Routes
-router.post(ROUTES.AUCTION.BASE, (req, res, next) => auctionController.createAuction(req, res, next));
-router.get(ROUTES.AUCTION.BASE, (req, res, next) => auctionController.getAuctions(req, res, next));
-router.get(ROUTES.AUCTION.BY_ID, (req, res, next) => auctionController.getAuction(req, res, next));
+router.post(ROUTES.AUCTION.BASE, auctionController.createAuction);
+router.get(ROUTES.AUCTION.COUNTS, auctionController.getAuctionAlertCounts);
+router.get(ROUTES.AUCTION.BASE, auctionController.getAuctions);
+router.get(ROUTES.AUCTION.BY_ID, auctionController.getAuction);
 
 // Bid Routes
-router.post(ROUTES.AUCTION.PLACE_BID, (req, res, next) => bidController.placeBid(req, res, next));
-router.get(ROUTES.AUCTION.BIDS, (req, res, next) => bidController.getBids(req, res, next));
-router.get(ROUTES.AUCTION.USER_BIDS, (req, res, next) => bidController.getUserBids(req, res, next));
+router.post(ROUTES.AUCTION.PLACE_BID, bidController.placeBid);
+router.get(ROUTES.AUCTION.BIDS, bidController.getBids);
+router.get(ROUTES.AUCTION.USER_BIDS, bidController.getUserBids);
+router.get(ROUTES.AUCTION.USER_BIDDING_HISTORY, auctionController.getUserBiddingHistory);
+
+
 
 export default router;

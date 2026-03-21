@@ -4,6 +4,7 @@ import { useOutletContext } from "react-router-dom";
 
 import { useGetUserFavorites } from "../../hooks/profile/favorites/useGetUserFavorites";
 import { useMasonryLayout } from "../../../../hooks/useMasonryLayout";
+import { Star } from "lucide-react";
 
 interface Props {
   profileUser: { id: string; username: string };
@@ -50,12 +51,7 @@ const FavoritesTab: React.FC = () => {
     (item) => item.art?.imageUrl || item.imageUrl
   );
 
-  if (isLoading) return <div className="text-center mt-10">Loading...</div>;
-  if (isError)
-    return <div className="text-center mt-10">Error: {error?.message}</div>;
 
-  if (arts.length === 0)
-    return <div className="text-center mt-10">No favorites yet.</div>;
 
   return (
     <div ref={containerRef} className="w-full">
@@ -84,6 +80,17 @@ const FavoritesTab: React.FC = () => {
           })}
         </div>
       ))}
+
+      {!isLoading && arts.length === 0 && (
+        <div className="col-span-full flex flex-col items-center justify-center py-20 text-zinc-400">
+          <div className="w-16 h-16 bg-zinc-800/50 rounded-full flex items-center justify-center mb-4">
+            <Star className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-lg font-medium text-white mb-1">No favorites yet</h3>
+          <p className="text-sm">This user hasn't favorited any items yet.</p>
+        </div>
+      )}
+
       {isFetchingNextPage && (
         <div className="text-center col-span-full">Loading more...</div>
       )}

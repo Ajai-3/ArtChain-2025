@@ -1,12 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
-import { injectable, inject } from 'inversify';
-import { TYPES } from '../../../infrastructure/inversify/types';
-import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
-import { IGetPlatformRevenueStatsUseCase } from '../../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
-import { IGetDashboardStatsUseCase } from '../../../application/interface/usecases/admin/IGetDashboardStatsUseCase';
-import { GetPlatformRevenueStatsDTO } from '../../../application/interface/dtos/admin/GetPlatformRevenueStatsDTO';
 import { HttpStatus } from 'art-chain-shared';
 import { logger } from '../../../utils/logger';
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
+import { TYPES } from '../../../infrastructure/inversify/types';
+import { ADMIN_MESSAGES } from '../../../constants/adminMessages';
+import { IAdminDashboardController } from '../../interfaces/admin/IAdminDashboardController';
+import { IGetDashboardStatsUseCase } from '../../../application/interface/usecases/admin/IGetDashboardStatsUseCase';
+import { GetPlatformRevenueStatsDTO } from '../../../application/interface/dtos/admin/GetPlatformRevenueStatsDTO';
+import { IGetPlatformRevenueStatsUseCase } from '../../../application/interface/usecases/admin/IGetPlatformRevenueStatsUseCase';
 
 @injectable()
 export class AdminDashboardController implements IAdminDashboardController {
@@ -17,6 +18,13 @@ export class AdminDashboardController implements IAdminDashboardController {
     private readonly _getDashboardStatsUseCase: IGetDashboardStatsUseCase
   ) {}
 
+  //# ================================================================================================================
+  //# ADMIN PLATFORM REVENUE STATS
+  //# ================================================================================================================
+  //# POST /api/v1/admin/revenue-stats
+  //# Request body: { token: string }
+  //# This controller allows admin to get platform revenue stats using their token.
+  //# ================================================================================================================
   getPlatformRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const adminId = req.headers['x-admin-id'] as string;
@@ -43,6 +51,7 @@ export class AdminDashboardController implements IAdminDashboardController {
       const stats = await this._getPlatformRevenueStatsUseCase.execute(dto);
 
       res.status(HttpStatus.OK).json({
+        message: ADMIN_MESSAGES.REVENUE_STATS_SUCCESS,
         data: stats,
       });
     } catch (error) {
@@ -51,6 +60,13 @@ export class AdminDashboardController implements IAdminDashboardController {
     }
   };
 
+  //# ================================================================================================================
+  //# ADMIN DASHBOARD STATS
+  //# ================================================================================================================
+  //# POST /api/v1/admin/dashboard-stats
+  //# Request body: { token: string }
+  //# This controller allows admin to get dashboard stats using their token.
+  //# ================================================================================================================
   getDashboardStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const token = req.headers.authorization?.split(' ')[1] || '';
@@ -58,6 +74,7 @@ export class AdminDashboardController implements IAdminDashboardController {
       const stats = await this._getDashboardStatsUseCase.execute(token);
 
       return res.status(HttpStatus.OK).json({
+        message: ADMIN_MESSAGES.DASHBOARD_STATS_SUCCESS,
         data: stats,
       });
     } catch (error) {

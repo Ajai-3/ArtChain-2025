@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { DeleteMode, type Message } from "../../../../../types/chat/chat";
+import { DeleteMode, type Message, MediaType } from "../../../../../types/chat/chat";
 import {
   addMessage,
   updateConversation,
@@ -14,7 +14,7 @@ import {
 interface SendMessageParams {
   conversationId: string;
   content: string;
-  mediaType?: "TEXT" | "IMAGE";
+  mediaType?: MediaType;
   tempId?: string;
   mediaUrl?: string;
 }
@@ -25,14 +25,16 @@ export const useSendMessage = () => {
   const conversations = useSelector(selectConversations);
 
   const sendMessage = useCallback(
-    async ({ conversationId, content, mediaType = "TEXT", tempId, mediaUrl }: SendMessageParams) => {
+    async ({ conversationId, content, mediaType = MediaType.TEXT, tempId, mediaUrl }: SendMessageParams) => {
       if (!currentUserId) {
         console.error("No current user ID");
         return;
       }
 
       const socket = getChatSocket();
-      if (!conversationId || !content.trim() || !socket) {
+      const safeContent = (content || "").trim();
+
+      if (!conversationId || (!safeContent && mediaType === MediaType.TEXT) || !socket) {
         console.error(
           "Cannot send message: missing required parameters or socket"
         );
@@ -45,7 +47,7 @@ export const useSendMessage = () => {
         conversationId,
         senderId: currentUserId,
         deleteMode: DeleteMode.NONE,
-        content: content.trim(),
+        content: safeContent,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         readBy: [],
@@ -56,9 +58,10 @@ export const useSendMessage = () => {
 
       console.log("📤 Sending message via socket:", {
         conversationId,
-        content: content.trim(),
+        content: safeContent,
         id,
-        mediaType
+        mediaType,
+        mediaUrl
       });
 
       dispatch(addMessage(tempMessage));
@@ -78,9 +81,10 @@ export const useSendMessage = () => {
       try {
         socket.emit("sendMessage", {
           conversationId,
-          content: content.trim(),
+          content: safeContent,
           tempId: id,
           mediaType,
+          mediaUrl,
         });
       } catch (error) {
         console.error("❌ Failed to send message via socket:", error);

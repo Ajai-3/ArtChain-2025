@@ -29,6 +29,11 @@ const CommissionSchema = new Schema<ICommissionDocument>(
     autoReleaseDate: { type: Date },
     platformFeePercentage: { type: Number },
     disputeReason: { type: String },
+    completedAt: { type: Date },
+    completedArtImage: { type: String },
+    requesterAgreed: { type: Boolean, default: false },
+    artistAgreed: { type: Boolean, default: false },
+    finalImageUrl: { type: String },
     history: [
       {
         action: { type: String, required: true },

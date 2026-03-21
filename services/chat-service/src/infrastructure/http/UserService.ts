@@ -8,14 +8,14 @@ import { ROUTES, buildUserServiceRoute } from '../../constants/routes';
 
 @injectable()
 export class UserService implements IUserService {
-  private readonly baseUrl = env.user_service_url;
+  private readonly baseUrl = env.api_gateway_url;
 
   async getUserById(userId: string): Promise<UserDto> {
     try {
-      const route = buildUserServiceRoute(ROUTES.EXTERNAL.USER.PROFILE_BY_ID, { userId });
-      const res = await axios.get<{ data: UserDto }>(
-        `${this.baseUrl}${route}`
-      );
+      const route = buildUserServiceRoute(ROUTES.EXTERNAL.USER.PROFILE_BY_ID, {
+        userId,
+      });
+      const res = await axios.get<{ data: UserDto }>(`${this.baseUrl}${route}`);
       return mapToUserDto(res.data.data);
     } catch (err) {
       return {} as UserDto;
@@ -29,7 +29,7 @@ export class UserService implements IUserService {
         `${this.baseUrl}${ROUTES.EXTERNAL.USER.BATCH}`,
         {
           ids: userIds,
-        }
+        },
       );
       console.log(res.data, 'getUsersByIds');
       return res.data.data;

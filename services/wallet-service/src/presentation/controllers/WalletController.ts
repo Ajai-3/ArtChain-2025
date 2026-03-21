@@ -39,7 +39,7 @@ export class WalletController implements IWalletController {
     @inject(TYPES.IGiftArtCoinsUseCase)
     private readonly _giftArtCoinsUseCase: IGiftArtCoinsUseCase,
     @inject(TYPES.IProcessSplitPurchaseUseCase)
-    private readonly _processSplitPurchaseUseCase: IProcessSplitPurchaseUseCase
+    private readonly _processSplitPurchaseUseCase: IProcessSplitPurchaseUseCase,
   ) {}
 
   // ... (existing methods)
@@ -54,26 +54,30 @@ export class WalletController implements IWalletController {
   getChartData = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       const timeRange = (req.query.timeRange as '7d' | '1m' | 'all') || '7d';
-      
-      logger.info(`[WalletController] Fetching chart data for userId: ${userId}, range: ${timeRange}`);
 
-      const chartData = await this._getWalletChartDataUseCase.execute(userId, timeRange);
+      logger.info(
+        `[WalletController] Fetching chart data for userId: ${userId}, range: ${timeRange}`,
+      );
+
+      const chartData = await this._getWalletChartDataUseCase.execute(
+        userId,
+        timeRange,
+      );
 
       return res.status(HttpStatus.OK).json({
         message: WALLET_MESSAGES.CHART_DATA_FETCH_SUCCESS,
-        data: chartData
+        data: chartData,
       });
     } catch (error) {
       logger.error(`[WalletController] Error fetching chart data: ${error}`);
       next(error);
     }
   };
-
 
   //# ================================================================================================================
   //# GET WALLET
@@ -85,7 +89,7 @@ export class WalletController implements IWalletController {
   getWallet = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
@@ -94,7 +98,7 @@ export class WalletController implements IWalletController {
       const walletData = await this._getWalletUseCase.execute(userId);
 
       logger.info(
-        `[WalletController] Successfully fetched wallet for userId: ${userId}`
+        `[WalletController] Successfully fetched wallet for userId: ${userId}`,
       );
       return res
         .status(HttpStatus.OK)
@@ -115,14 +119,14 @@ export class WalletController implements IWalletController {
   createWallet = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       logger.info(`[WalletController] Creating wallet for userId: ${userId}`);
 
       logger.info(
-        `[WalletController] Wallet created successfully for userId: ${userId}`
+        `[WalletController] Wallet created successfully for userId: ${userId}`,
       );
       return res
         .status(HttpStatus.CREATED)
@@ -143,20 +147,19 @@ export class WalletController implements IWalletController {
   updateWallet = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       const updateData = req.body;
       logger.info(
         `[WalletController] Updating wallet for userId: ${userId} with data: ${JSON.stringify(
-          updateData
-        )}`
+          updateData,
+        )}`,
       );
 
-
       logger.info(
-        `[WalletController] Wallet updated successfully for userId: ${userId}`
+        `[WalletController] Wallet updated successfully for userId: ${userId}`,
       );
       return res
         .status(HttpStatus.OK)
@@ -177,16 +180,19 @@ export class WalletController implements IWalletController {
   lockAmount = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const dto: LockFundsDTO = validateWithZod(lockUnlockFundsSchema, req.body);
+      const dto: LockFundsDTO = validateWithZod(
+        lockUnlockFundsSchema,
+        req.body,
+      );
 
       const result = await this._lockFundsUseCase.execute(dto);
-      
-      return res.status(HttpStatus.OK).json({ 
+
+      return res.status(HttpStatus.OK).json({
         success: result,
-        message: WALLET_MESSAGES.FUNDS_LOCKED_SUCCESS
+        message: WALLET_MESSAGES.FUNDS_LOCKED_SUCCESS,
       });
     } catch (error) {
       logger.error(`[WalletController] Error locking funds: ${error}`);
@@ -204,18 +210,24 @@ export class WalletController implements IWalletController {
   unlockAmount = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const dto: UnlockFundsDTO = validateWithZod(lockUnlockFundsSchema, req.body);
-      
-      logger.info(`[WalletController] Unlocking ${dto.amount} for user ${dto.userId}`);
+      console.log(req.body, 'req.body');
+      const dto: UnlockFundsDTO = validateWithZod(
+        lockUnlockFundsSchema,
+        req.body,
+      );
+
+      logger.info(
+        `[WalletController] Unlocking ${dto.amount} for user ${dto.userId}`,
+      );
 
       const result = await this._unlockFundsUseCase.execute(dto);
-      
-      return res.status(HttpStatus.OK).json({ 
+
+      return res.status(HttpStatus.OK).json({
         success: result,
-        message: WALLET_MESSAGES.FUNDS_UNLOCKED_SUCCESS
+        message: WALLET_MESSAGES.FUNDS_UNLOCKED_SUCCESS,
       });
     } catch (error) {
       logger.error(`[WalletController] Error unlocking funds: ${error}`);
@@ -233,47 +245,56 @@ export class WalletController implements IWalletController {
   settleAuction = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const dto: SettleAuctionDTO = validateWithZod(settleAuctionSchema, req.body);
+      const dto: SettleAuctionDTO = validateWithZod(
+        settleAuctionSchema,
+        req.body,
+      );
 
-      await this._settleAuctionUseCase.execute(dto);
+      const result = await this._settleAuctionUseCase.execute(dto);
 
-      return res.status(HttpStatus.OK).json({ message: WALLET_MESSAGES.AUCTION_SETTLED_SUCCESS });
+      logger.info(`[WalletController] Auction settled successfully for user ${dto.winnerId}`);
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: WALLET_MESSAGES.AUCTION_SETTLED_SUCCESS });
     } catch (error) {
-       logger.error(`[WalletController] Error settling auction: ${error}`);
-       next(error);
+      logger.error(`[WalletController] Error settling auction: ${error}`);
+      next(error);
     }
   };
 
   //# ================================================================================================================
-    //# PROCESS SPLIT PURCHASE
-    //# ================================================================================================================
-    //# POST /api/v1/wallet/transaction/split-purchase
-    //# Request body: { buyerId, sellerId, totalAmount, commissionAmount, artId }
-    //# This controller handles art purchase transactions with commission split
-    //# ================================================================================================================
-    processSplitPurchase = async (
-      req: Request,
-      res: Response,
-      next: NextFunction
-    ): Promise<Response | void> => {
-      try {
-        const dto: ProcessSplitPurchaseDTO = validateWithZod(processSplitPurchaseSchema, req.body);
-  
-        await this._processSplitPurchaseUseCase.execute(dto);
-  
-        return res
-          .status(HttpStatus.OK)
-          .json({ message: WALLET_MESSAGES.PURCHASE_SUCCESS });
-      } catch (error) {
-        logger.error(
-          `[WalletController] Error processing split purchase: ${error}`
-        );
-        next(error);
-      }
-    };
+  //# PROCESS SPLIT PURCHASE
+  //# ================================================================================================================
+  //# POST /api/v1/wallet/transaction/split-purchase
+  //# Request body: { buyerId, sellerId, totalAmount, commissionAmount, artId }
+  //# This controller handles art purchase transactions with commission split
+  //# ================================================================================================================
+  processSplitPurchase = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const dto: ProcessSplitPurchaseDTO = validateWithZod(
+        processSplitPurchaseSchema,
+        req.body,
+      );
+
+      await this._processSplitPurchaseUseCase.execute(dto);
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: WALLET_MESSAGES.PURCHASE_SUCCESS });
+    } catch (error) {
+      logger.error(
+        `[WalletController] Error processing split purchase: ${error}`,
+      );
+      next(error);
+    }
+  };
 
   //# ================================================================================================================
   //# GIFT ART COINS
@@ -285,22 +306,24 @@ export class WalletController implements IWalletController {
   giftArtCoins = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const senderId = req.headers['x-user-id'] as string;
 
-      console.log(req.body, "req.body")
+      console.log(req.body, 'req.body');
 
-      const dto: GiftArtCoinsDTO = validateWithZod(giftArtCoinsSchema, { ...req.body, senderId });
-
+      const dto: GiftArtCoinsDTO = validateWithZod(giftArtCoinsSchema, {
+        ...req.body,
+        senderId,
+      });
 
       const result = await this._giftArtCoinsUseCase.execute(dto);
 
-      return res.status(HttpStatus.OK).json({ 
-        message: WALLET_MESSAGES.GIFT_SUCCESS, 
+      return res.status(HttpStatus.OK).json({
+        message: WALLET_MESSAGES.GIFT_SUCCESS,
         newBalance: result.newBalance,
-        lockedAmount: result.lockedAmount
+        lockedAmount: result.lockedAmount,
       });
     } catch (error) {
       logger.error(`[WalletController] Error gifting art coins: ${error}`);

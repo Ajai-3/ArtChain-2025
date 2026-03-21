@@ -41,6 +41,7 @@ import { IDistributeCommissionFundsUseCase } from '../../application/interface/u
 import { DistributeCommissionFundsUseCase } from '../../application/usecases/transaction/DistributeCommissionFundsUseCase';
 import { IRefundCommissionFundsUseCase } from '../../application/interface/usecase/transaction/IRefundCommissionFundsUseCase';
 import { RefundCommissionFundsUseCase } from '../../application/usecases/transaction/RefundCommissionFundsUseCase';
+import { TransferLockedCommissionFundsUseCase } from '../../application/usecases/transaction/TransferLockedCommissionFundsUseCase';
 
 // Controllers
 import { IWalletController } from '../../presentation/interface/IWalletController';
@@ -111,6 +112,9 @@ container
 container
   .bind<IRefundCommissionFundsUseCase>(TYPES.IRefundCommissionFundsUseCase)
   .to(RefundCommissionFundsUseCase);
+container
+  .bind<TransferLockedCommissionFundsUseCase>(TYPES.ITransferLockedCommissionFundsUseCase)
+  .to(TransferLockedCommissionFundsUseCase);
 
 import { IGiftArtCoinsUseCase } from '../../application/interface/usecase/wallet/IGiftArtCoinsUseCase';
 import { GiftArtCoinsUseCase } from '../../application/usecases/wallet/GiftArtCoinsUseCase';

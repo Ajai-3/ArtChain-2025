@@ -1,26 +1,29 @@
-import { Request, Response, NextFunction } from 'express';
-import { injectable, inject } from 'inversify';
-import { HttpStatus } from 'art-chain-shared';
 import { logger } from '../../utils/logger';
-import { IAuctionController } from '../interface/IAuctionController';
+import { HttpStatus } from 'art-chain-shared';
+import { injectable, inject } from 'inversify';
+import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../infrastructure/Inversify/types';
-import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
-import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction/IGetAuctionsUseCase';
-import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
-import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
-import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
-import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
-import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
-
-import { createAuctionSchema } from '../validators/auction.schema';
-import { CreateAuctionDTO } from '../../application/interface/dto/auction/CreateAuctionDTO';
-import { GetAuctionsDTO } from '../../application/interface/dto/auction/GetAuctionsDTO';
-import { GetAuctionByIdDTO } from '../../application/interface/dto/auction/GetAuctionByIdDTO';
 import { validateWithZod } from '../../utils/validateWithZod';
+import { createAuctionSchema } from '../validators/auction.schema';
+import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
+import { IAuctionController } from '../interface/IAuctionController';
+import { GetAuctionsDTO } from '../../application/interface/dto/auction/GetAuctionsDTO';
+import { CreateAuctionDTO } from '../../application/interface/dto/auction/CreateAuctionDTO';
+import { GetAuctionByIdDTO } from '../../application/interface/dto/auction/GetAuctionByIdDTO';
+import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction/IGetAuctionsUseCase';
+import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
+import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
+import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
+import { IGetUserBiddingHistoryUseCase } from '../../application/interface/usecase/auction/IGetUserBiddingHistoryUseCase';
+import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
+import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
+
 
 @injectable()
 export class AuctionController implements IAuctionController {
   constructor(
+    @inject(TYPES.IGetUserBiddingHistoryUseCase)
+    private readonly _getUserBiddingHistoryUseCase: IGetUserBiddingHistoryUseCase,
     @inject(TYPES.ICreateAuctionUseCase)
     private readonly _createAuctionUseCase: ICreateAuctionUseCase,
     @inject(TYPES.IGetAuctionsUseCase)
@@ -33,7 +36,7 @@ export class AuctionController implements IAuctionController {
     private readonly _cancelAuctionUseCase: ICancelAuctionUseCase,
     @inject(TYPES.IGetRecentAuctionsUseCase)
     private readonly _getRecentAuctionsUseCase: IGetRecentAuctionsUseCase
-  ) {}
+  ) { }
 
   //# ================================================================================================================
   //# CREATE AUCTION
@@ -53,7 +56,7 @@ export class AuctionController implements IAuctionController {
       logger.info(`Creating auction for host: ${hostId}`);
 
       const validatedBody = validateWithZod(createAuctionSchema, req.body);
-      
+
       const dto: CreateAuctionDTO = {
         hostId,
         title: validatedBody.title,
@@ -167,7 +170,6 @@ export class AuctionController implements IAuctionController {
         hostId: req.query.hostId as string
       };
 
-      // Fetch both auctions and stats in parallel
       const [auctionsResult, stats] = await Promise.all([
         this._getAuctionsUseCase.execute(dto),
         this._getAuctionStatsUseCase.execute('all')
@@ -254,12 +256,14 @@ export class AuctionController implements IAuctionController {
   ): Promise<Response | void> => {
     try {
       const id = req.params.id;
+      const userId = req.headers['x-user-id'] as string;
+
       logger.info(`Cancelling auction id=${id}`);
 
-      await this._cancelAuctionUseCase.execute(id);
+      await this._cancelAuctionUseCase.execute(id, userId);
 
       return res.status(HttpStatus.OK).json({
-        message: 'Auction cancelled successfully',
+        message: AUCTION_MESSAGES.AUCTION_CANCELLED,
       });
     } catch (error) {
       logger.error('Error in cancelAuction', error);
@@ -267,6 +271,13 @@ export class AuctionController implements IAuctionController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET RECENT AUCTIONS
+  //# ================================================================================================================
+  //# GET /api/v1/art/admin/auctions/recent
+  //# Query: limit
+  //# This controller fetches a list of recent auctions, limited by the specified number.
+  //# ================================================================================================================
   getRecentAuctions = async (
     req: Request,
     res: Response,
@@ -276,11 +287,72 @@ export class AuctionController implements IAuctionController {
       const limit = parseInt(req.query.limit as string) || 5;
       const auctions = await this._getRecentAuctionsUseCase.execute(limit);
       return res.status(HttpStatus.OK).json({
-        message: 'Recent auctions fetched successfully',
+        message: AUCTION_MESSAGES.RECENT_AUCTIONS_FETCHED,
         data: auctions,
       });
     } catch (error) {
       logger.error('Error in getRecentAuctions', error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET USER BIDDING HISTORY
+  //# ================================================================================================================
+  //# GET /api/v1/art/auctions/bidding-history
+  //# This controller fetches a list of auctions won by the user.
+  //# ================================================================================================================
+  getUserBiddingHistory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const userId = req.headers['x-user-id'] as string;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const status = req.query.status as string;
+
+      console.log(`Fetching bidding history for user id=${userId} with page=${page}, limit=${limit}, status=${status}`);
+
+      const auctions = await this._getUserBiddingHistoryUseCase.execute(userId, page, limit, status);
+
+      logger.info(`Fetched ${auctions.length} won auctions for user id=${userId}`);
+
+      return res.status(HttpStatus.OK).json({
+        message: AUCTION_MESSAGES.BIDDING_HISTORY_FETCHED,
+        data: auctions,
+      });
+    } catch (error) {
+      logger.error('Error in getUserBiddingHistory', error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# GET AUCTION ALERT COUNTS
+  //# ================================================================================================================
+  //# GET /api/v1/art/auctions/counts
+  //# This controller fetches the counts of active and scheduled auctions.
+  //# ================================================================================================================
+  getAuctionAlertCounts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      logger.info('Fetching auction alert counts (active & scheduled)');
+      const stats = await this._getAuctionStatsUseCase.execute('all');
+      
+      return res.status(HttpStatus.OK).json({
+        message: AUCTION_MESSAGES.AUCTION_COUNTS_FETCHED,
+        data: {
+          active: stats.active,
+          scheduled: stats.scheduled
+        },
+      });
+    } catch (error) {
+      logger.error('Error in getAuctionAlertCounts', error);
       next(error);
     }
   };

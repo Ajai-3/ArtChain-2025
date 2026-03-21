@@ -1,3 +1,3 @@
 export interface IDownloadArtUseCase {
-  execute(artId: string, userId: string): Promise<string>;
+  execute(id: string, userId: string, category: string): Promise<string>;
 }

@@ -18,10 +18,10 @@ import CommissionStatsChart from '../components/dashboard/CommissionStatsChart';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../../../components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs';
-import CustomLoader from '../../../components/CustomLoader';
 import { Coins, Users, Gavel, Palette } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../redux/store';
+import { DashboardSkeleton } from '../components/skeletons/DashboardSkeleton';
 
 const Dashboard: React.FC = () => {
     // Independent Filters
@@ -34,7 +34,7 @@ const Dashboard: React.FC = () => {
     const artCoinRate = useSelector((state: RootState) => state.platform.artCoinRate);
 
     // Data Fetching
-    const { stats: dashboardStats, loading: dashboardLoading, error: dashboardError } = useDashboardStats(); // General stats (tables)
+    const { stats: dashboardStats, loading: dashboardLoading, error: dashboardError } = useDashboardStats(); 
     const { stats: revenueStats } = useRevenueStats(revenueFilter);
     const { data: transactionStats } = useTransactionStats(transactionFilter);
     const { data: commissionStats } = useCommissionStats(commissionFilter);
@@ -45,7 +45,11 @@ const Dashboard: React.FC = () => {
 
     const COLORS = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B'];
 
-    if (loading) return <div className='flex h-full w-full items-center justify-center min-h-[500px]'><CustomLoader/></div>;
+    if (loading) return (
+        <AdminPageLayout title="Dashboard" description="Loading platform performance metrics...">
+            <DashboardSkeleton />
+        </AdminPageLayout>
+    );
     if (error) return <div className="p-6 text-red-500 bg-red-500/10 rounded-lg m-4 border border-red-500/20">Error loading dashboard: {error}</div>;
     if (!dashboardStats) return <div className="p-8 text-center text-muted-foreground">No dashboard data available.</div>;
 

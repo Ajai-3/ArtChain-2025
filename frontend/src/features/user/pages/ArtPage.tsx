@@ -1,25 +1,25 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../../../redux/store";
-import { useGetArtByName } from "../hooks/art/useGetArtByName";
-import { useLikePost } from "../hooks/art/useLikePost";
-import { useUnlikePost } from "../hooks/art/useUnlikePost";
-import { useFavoritePost } from "../hooks/art/useFavoritePost";
-import { useUnfavoritePost } from "../hooks/art/useUnfavoritePost";
-import { useRelatedArtworks } from "../hooks/art/useRelatedArtworks";
-import { useBuyArtMutation } from "../hooks/art/useBuyArtMutation";
-import { useDownloadArtMutation } from "../hooks/art/useDownloadArtMutation";
-import ArtPageSkeleton from "../components/skeletons/ArtPageSkeleton";
-import ArtImageSection from "../components/art/details/ArtImageSection";
-import ArtActions from "../components/art/details/ArtActions";
-import ArtInfo from "../components/art/details/ArtInfo";
-import Comments from "../components/art/details/Comments";
-import ArtSidebar from "../components/art/details/ArtSidebar";
-import ZoomOverlay from "../components/art/details/ZoomOverlay";
-import BuyArtModal from "../components/art/details/BuyArtModal";
-import { ROUTES } from "../../../constants/routes";
-import type { ArtWithUserResponse } from "../../../types/art";
+import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../../redux/store';
+import { useGetArtByName } from '../hooks/art/useGetArtByName';
+import { useLikePost } from '../hooks/art/useLikePost';
+import { useUnlikePost } from '../hooks/art/useUnlikePost';
+import { useFavoritePost } from '../hooks/art/useFavoritePost';
+import { useUnfavoritePost } from '../hooks/art/useUnfavoritePost';
+import { useRelatedArtworks } from '../hooks/art/useRelatedArtworks';
+import { useBuyArtMutation } from '../hooks/art/useBuyArtMutation';
+import { useDownloadFileMutation } from '../hooks/art/useDownloadFileMutation';
+import ArtPageSkeleton from '../components/skeletons/ArtPageSkeleton';
+import ArtImageSection from '../components/art/details/ArtImageSection';
+import ArtActions from '../components/art/details/ArtActions';
+import ArtInfo from '../components/art/details/ArtInfo';
+import Comments from '../components/art/details/Comments';
+import ArtSidebar from '../components/art/details/ArtSidebar';
+import ZoomOverlay from '../components/art/details/ZoomOverlay';
+import BuyArtModal from '../components/art/details/BuyArtModal';
+import { ROUTES } from '../../../constants/routes';
+import type { ArtWithUserResponse } from '../../../types/art';
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
@@ -32,10 +32,15 @@ const ArtPage: React.FC = () => {
   const favoritePost = useFavoritePost();
   const unfavoritePost = useUnfavoritePost();
   const buyArtMutation = useBuyArtMutation();
-  const downloadArtMutation = useDownloadArtMutation();
+  const downloadArtMutation = useDownloadFileMutation();
 
-  const { data: apiResponse, isLoading, isError, error } = useGetArtByName(artname!);
-  const data = apiResponse as unknown as { data: ArtWithUserResponse }; 
+  const {
+    data: apiResponse,
+    isLoading,
+    isError,
+    error,
+  } = useGetArtByName(artname!);
+  const data = apiResponse as unknown as { data: ArtWithUserResponse };
 
   const [zoomed, setZoomed] = useState(false);
   const [fullscreenZoom, setFullscreenZoom] = useState(false);
@@ -50,7 +55,7 @@ const ArtPage: React.FC = () => {
     fetchNextPage,
     hasNextPage,
     isLoading: isRecLoading,
-  } = useRelatedArtworks(data?.data?.art?.artType, data?.data?.art?.id || "");
+  } = useRelatedArtworks(data?.data?.art?.artType, data?.data?.art?.id || '');
 
   const observerTarget = useRef<HTMLDivElement>(null);
 
@@ -61,7 +66,7 @@ const ArtPage: React.FC = () => {
           fetchNextPage();
         }
       },
-      { threshold: 1.0 }
+      { threshold: 1.0 },
     );
 
     if (observerTarget.current) {
@@ -75,9 +80,16 @@ const ArtPage: React.FC = () => {
     };
   }, [observerTarget, hasNextPage, fetchNextPage]);
 
-  if (isLoading) return <div className="text-center mt-10"><ArtPageSkeleton /></div>;
-  if (isError) return <div className="text-center mt-10">Error: {error?.message}</div>;
-  if (!data?.data?.art) return <div className="text-center mt-10">Art not found</div>;
+  if (isLoading)
+    return (
+      <div className='text-center mt-10'>
+        <ArtPageSkeleton />
+      </div>
+    );
+  if (isError)
+    return <div className='text-center mt-10'>Error: {error?.message}</div>;
+  if (!data?.data?.art)
+    return <div className='text-center mt-10'>Art not found</div>;
 
   const art = data.data.art;
   const actualUser = data.data.user;
@@ -86,16 +98,22 @@ const ArtPage: React.FC = () => {
 
   const handleFavorite = () => {
     if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
-    data.data.isFavorited
-      ? unfavoritePost.mutate({ postId: art.id, artname: art.artName })
-      : favoritePost.mutate({ postId: art.id, artname: art.artName });
+
+    if (data.data.isFavorited) {
+      unfavoritePost.mutate({ postId: art.id, artname: art.artName });
+    } else {
+      favoritePost.mutate({ postId: art.id, artname: art.artName });
+    }
   };
 
   const handleLike = () => {
     if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
-    data.data.isLiked
-      ? unlikePost.mutate({ postId: art.id, artname: art.artName })
-      : likePost.mutate({ postId: art.id, artname: art.artName });
+
+    if (data.data.isLiked) {
+      unlikePost.mutate({ postId: art.id, artname: art.artName });
+    } else {
+      likePost.mutate({ postId: art.id, artname: art.artName });
+    }
   };
 
   const handleShowFavorites = () => {
@@ -112,16 +130,27 @@ const ArtPage: React.FC = () => {
     if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
     setShowBuyModal(true);
   };
-  
+
   const confirmBuy = () => {
-      buyArtMutation.mutate(art.id, {
-          onSuccess: () => setShowBuyModal(false)
-      });
+    buyArtMutation.mutate(art.id, {
+      onSuccess: () => setShowBuyModal(false),
+    });
   };
 
   const handleDownload = () => {
     if (!user.isAuthenticated) return navigate(ROUTES.LOGIN);
-    downloadArtMutation.mutate(art.id);
+
+    const artId = art.id;
+
+    if (!artId) {
+      console.error('Critical: Art ID is missing from the object', art);
+      return;
+    }
+    console.log(art.id, art);
+    downloadArtMutation.mutate({
+      id: artId,
+      category: 'art',
+    });
   };
 
   const handleImageClick = () => {
@@ -142,68 +171,96 @@ const ArtPage: React.FC = () => {
     document.fullscreenElement && document.exitFullscreen();
   };
 
-  const currentZoomedArt = currentImageIndex === 0 
-    ? { art, user: actualUser }
-    : recommendedArts[currentImageIndex - 1];
+  const currentZoomedArt =
+    currentImageIndex === 0
+      ? { art, user: actualUser }
+      : recommendedArts[currentImageIndex - 1];
 
-  const formattedDate = new Date(art.createdAt).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
+  const formattedDate = new Date(art.createdAt).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
   });
 
   const isOwner = user.user?.id === (art.userId || actualUser.id);
   const isPurchaser = purchaser?.id === user.user?.id;
-  
+
   const canBuy = art.isForSale && !isOwner;
-  
-  const isFree = !art.isForSale && !purchaser && !art.downloadingDisabled && (!price?.artcoins || price?.artcoins === 0);
+
+  const isFree =
+    !art.isForSale &&
+    !purchaser &&
+    !art.downloadingDisabled &&
+    (!price?.artcoins || price?.artcoins === 0);
   const canDownload = isOwner || isPurchaser || isFree;
 
   return (
-    <div className="flex flex-col lg:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen max-w-[1600px] mx-auto">
-      <div className="w-full lg:w-3/4 flex flex-col items-center relative">
-        <ArtImageSection imageUrl={art.imageUrl} title={art.title} onImageClick={handleImageClick} />
+    <div className='flex flex-col lg:flex-row justify-center gap-6 p-3 sm:p-4 min-h-screen max-w-[1600px] mx-auto'>
+      <div className='w-full lg:w-3/4 flex flex-col items-center relative'>
+        <ArtImageSection
+          imageUrl={art.imageUrl}
+          title={art.title}
+          onImageClick={handleImageClick}
+        />
 
         <ArtActions
-          art={{ 
-            id: art.id, 
-            artName: art.artName, 
+          art={{
+            id: art.id,
+            artName: art.artName,
             artType: art.artType,
-            isForSale: canBuy, 
+            isForSale: canBuy,
             isSold: art.isSold ?? false,
-            downloadingDisabled: !canDownload, 
+            downloadingDisabled: !canDownload,
             price,
             userId: art.userId,
-            purchaser
+            purchaser,
           }}
-          stats={{ isLiked: data.data.isLiked, likeCount: data.data.likeCount || 0, isFavorited: data.data.isFavorited, favoriteCount: data.data.favoriteCount || 0, commentCount: data.data.commentCount || 0 }}
+          stats={{
+            isLiked: data.data.isLiked,
+            likeCount: data.data.likeCount || 0,
+            isFavorited: data.data.isFavorited,
+            favoriteCount: data.data.favoriteCount || 0,
+            commentCount: data.data.commentCount || 0,
+          }}
           user={{ isAuthenticated: user.isAuthenticated }}
-          handlers={{ 
-            onLike: handleLike, 
-            onFavorite: handleFavorite, 
-            onShowLikes: handleShowLikes, 
-            onShowFavorites: handleShowFavorites, 
-            onZoom: handleZoomIconClick, 
-            onCloseLikes: () => setShowLikes(false), 
+          handlers={{
+            onLike: handleLike,
+            onFavorite: handleFavorite,
+            onShowLikes: handleShowLikes,
+            onShowFavorites: handleShowFavorites,
+            onZoom: handleZoomIconClick,
+            onCloseLikes: () => setShowLikes(false),
             onCloseFavorites: () => setShowFavorites(false),
             onReport: () => setShowReport(true),
             onCloseReport: () => setShowReport(false),
             onDownload: handleDownload,
-            onBuy: handleBuy
+            onBuy: handleBuy,
           }}
           modals={{ showLikes, showFavorites, showReport }}
           isDownloading={downloadArtMutation.isPending}
         />
 
         <ArtInfo
-          art={{ title: art.title, createdAt: art.createdAt, hashtags: art.hashtags, description: art.description }}
-          artist={{ username: actualUser?.username || "", name: actualUser?.name || "", profileImage: actualUser?.profileImage }}
+          art={{
+            title: art.title,
+            createdAt: art.createdAt,
+            hashtags: art.hashtags,
+            description: art.description,
+          }}
+          artist={{
+            username: actualUser?.username || '',
+            name: actualUser?.name || '',
+            profileImage: actualUser?.profileImage,
+          }}
           formattedDate={formattedDate}
           purchaser={purchaser}
         />
 
-        <Comments artId={art.id} artName={art.artName} commentingDisabled={art.commentingDisabled} />
+        <Comments
+          artId={art.id}
+          artName={art.artName}
+          commentingDisabled={art.commentingDisabled}
+        />
       </div>
 
       <ArtSidebar
@@ -223,12 +280,20 @@ const ArtPage: React.FC = () => {
         currentArt={currentZoomedArt}
         isFullscreen={fullscreenZoom}
         onClose={handleCloseZoom}
-        onPrev={() => currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1)}
-        onNext={() => currentImageIndex < recommendedArts.length && setCurrentImageIndex(currentImageIndex + 1)}
-        onGoHome={() => { handleCloseZoom(); navigate(ROUTES.HOME); }}
+        onPrev={() =>
+          currentImageIndex > 0 && setCurrentImageIndex(currentImageIndex - 1)
+        }
+        onNext={() =>
+          currentImageIndex < recommendedArts.length &&
+          setCurrentImageIndex(currentImageIndex + 1)
+        }
+        onGoHome={() => {
+          handleCloseZoom();
+          navigate(ROUTES.HOME);
+        }}
       />
 
-      <BuyArtModal 
+      <BuyArtModal
         isOpen={showBuyModal}
         onClose={() => setShowBuyModal(false)}
         onConfirm={confirmBuy}

@@ -11,11 +11,11 @@ const server = http.createServer(app);
 
 // setTimeout(async () => {
 //   try {
-//     console.log("Starting dummy users creation...");
+//     console.log('Starting dummy users creation...');
 //     await createDummyUsers();
-//     console.log("Dummy users created!");
+//     console.log('Dummy users created!');
 //   } catch (err) {
-//     console.error("Error creating dummy users:", err);
+//     console.error('Error creating dummy users:', err);
 //   }
 // }, DELAY_MS);
 

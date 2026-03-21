@@ -9,6 +9,7 @@ import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepos
 import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
 import { config } from '../../../infrastructure/config/env';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
+import { ART_MESSAGES } from '../../../constants/ArtMessages';
 
 @injectable()
 export class BuyArtUseCase implements IBuyArtUseCase {
@@ -27,20 +28,20 @@ export class BuyArtUseCase implements IBuyArtUseCase {
     const art = await this._artRepository.findById(artId);
 
     if (!art) {
-      throw new NotFoundError('Art not found');
+      throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
     }
 
     if (!art.isForSale) {
-      throw new BadRequestError('Art is not for sale');
+      throw new BadRequestError(ART_MESSAGES.ART_NOT_FOR_SALE);
     }
 
     if (art.userId === buyerId) {
-      throw new BadRequestError('You already own this art');
+      throw new BadRequestError(ART_MESSAGES.ART_ALREADY_OWNED);
     }
 
-    const price = art.artcoins || 0; // Assuming artcoins is the price
+    const price = art.artcoins || 0;
     if (price <= 0) {
-        throw new BadRequestError('Invalid price');
+        throw new BadRequestError(ART_MESSAGES.INVALID_PRICE);
     }
 
     // Calculate Platform Fee
@@ -58,21 +59,19 @@ export class BuyArtUseCase implements IBuyArtUseCase {
     );
 
     if (!transactionSuccess) {
-      throw new Error('Transaction failed');
+      throw new BadRequestError(ART_MESSAGES.PURCHASE_FAILED);
     }
 
-    // Create Purchase Record
     const purchase = new Purchase(
       buyerId,
       artId,
       art.userId,
       price,
-      `tx_${Date.now()}_${buyerId}` // Placeholder transaction ID
+      `tx_${Date.now()}_${buyerId}` 
     );
 
     await this._purchaseRepo.create(purchase);
 
-    // Update art status
     await this._artRepository.update(artId, {
       isForSale: false,
       isSold: true,

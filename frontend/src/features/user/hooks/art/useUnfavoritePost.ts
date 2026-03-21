@@ -50,10 +50,10 @@ export const useUnfavoritePost = () => {
               data: page.data.map((art: ArtWithUser) =>
                 art.art.id === postId
                   ? {
-                      ...art,
-                      isFavorited: false,
-                      favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
-                    }
+                    ...art,
+                    isFavorited: false,
+                    favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
+                  }
                   : art
               ),
             })),
@@ -73,10 +73,10 @@ export const useUnfavoritePost = () => {
               data: page.data.map((art: ArtWithUser) =>
                 art.art.id === postId
                   ? {
-                      ...art,
-                      isFavorited: false,
-                      favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
-                    }
+                    ...art,
+                    isFavorited: false,
+                    favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
+                  }
                   : art
               ),
             })),
@@ -96,16 +96,39 @@ export const useUnfavoritePost = () => {
               data: page.data.map((art: ArtWithUser) =>
                 art.art.id === postId
                   ? {
-                      ...art,
-                      isFavorited: false,
-                      favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
-                    }
+                    ...art,
+                    isFavorited: false,
+                    favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1),
+                  }
                   : art
               ),
             })),
           };
 
           queryClient.setQueryData(key, newData);
+        });
+
+      // Inside useUnfavoritePost -> onMutate
+      queryClient
+        .getQueriesData<any>({ queryKey: ["userLikedArts"] })
+        .forEach(([key, prevLikedArts]) => {
+          if (!prevLikedArts) return;
+          const newLikedArts = {
+            ...prevLikedArts,
+            pages: prevLikedArts.pages.map((page: any) => ({
+              ...page,
+              data: page.data.map((art: ArtWithUser) =>
+                art.art.id === postId
+                  ? {
+                    ...art,
+                    isFavorited: false,
+                    favoriteCount: Math.max(0, (art.favoriteCount || 1) - 1)
+                  }
+                  : art
+              ),
+            })),
+          };
+          queryClient.setQueryData(key, newLikedArts);
         });
 
       return { prevArt } as OnMutateContext;

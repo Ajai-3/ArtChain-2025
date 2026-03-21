@@ -14,15 +14,17 @@ import { NavLink } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { ROUTES } from "../../../../constants/routes";
+import { useBiddingAlerts } from "../../hooks/bidding/useBiddingAlerts";
 
 const UserSideBar: React.FC<{ createPostClick: () => void; onShowNotifications: () => void }> = ({
   createPostClick,
   onShowNotifications,
 }) => {
   const unreadCount = useSelector(
-    (state: any) => state.notification.unreadCount
+    (state: RootState) => state.notification.unreadCount
   );
   const user = useSelector((state: RootState) => state.user.user);
+  const { data: biddingAlerts } = useBiddingAlerts();
 
   const links = [
     { to: ROUTES.HOME, icon: House, label: "Home", authRequired: false, showOn: "all" },
@@ -61,23 +63,31 @@ const UserSideBar: React.FC<{ createPostClick: () => void; onShowNotifications: 
                 }
               }}
               className={({ isActive }) =>
-                `relative p-3 rounded-md transition-colors ${
-                  isActive && label !== "Notifications"
-                    ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
-                    : "text-zinc-800 hover:text-white dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
+                `relative p-3 rounded-md transition-colors ${isActive && label !== "Notifications"
+                  ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
+                  : "text-zinc-800 hover:text-white dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
                 } ${responsiveClass}`
               }
             >
               {({ isActive }) => (
                 <>
                   <Icon
-                    className={`w-6 h-6 transition-colors ${
-                      isActive && label !== "Notifications" ? "text-white" : "text-zinc-800 dark:text-gray-500"
-                    }`}
+                    className={`w-6 h-6 transition-colors ${isActive && label !== "Notifications" ? "text-white" : "text-zinc-800 dark:text-gray-500"
+                      }`}
                   />
                   {label === "Notifications" && unreadCount > 0 && (
                     <span className="absolute top-1 right-1 inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-white bg-main-color rounded-full">
                       {unreadCount}
+                    </span>
+                  )}
+                  {label === "Bidding" && biddingAlerts && (biddingAlerts.activeCount > 0 || biddingAlerts.scheduledCount > 0) && (
+                    <span
+                      className={`absolute inline-flex items-center justify-center font-bold leading-none text-white rounded-full transition-all duration-300 ${biddingAlerts.activeCount > 0
+                        ? "top-0 left-4 bg-red-500/70 px-1.5 h-4 min-w-[30px] text-xs"
+                        : "top-1 right-1 bg-indigo-500 h-5 w-5 text-xs"
+                        }`}
+                    >
+                      {biddingAlerts.activeCount > 0 ? "LIVE" : biddingAlerts.scheduledCount}
                     </span>
                   )}
                 </>
@@ -94,18 +104,16 @@ const UserSideBar: React.FC<{ createPostClick: () => void; onShowNotifications: 
             to={ROUTES.SETTINGS}
             title="Settings"
             className={({ isActive }) =>
-              `p-3 rounded-md flex items-center justify-center transition-colors ${
-                isActive
-                  ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
-                  : "text-zinc-800 dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
+              `p-3 rounded-md flex items-center justify-center transition-colors ${isActive
+                ? "bg-zinc-700/50 dark:bg-zinc-700/30 text-white"
+                : "text-zinc-800 dark:text-gray-500 hover:bg-zinc-700/50 dark:hover:bg-zinc-600/30"
               }`
             }
           >
             {({ isActive }) => (
               <Settings
-                className={`w-6 h-6 transition-colors ${
-                  isActive ? "text-white" : "text-zinc-800 dark:text-gray-500"
-                }`}
+                className={`w-6 h-6 transition-colors ${isActive ? "text-white" : "text-zinc-800 dark:text-gray-500"
+                  }`}
               />
             )}
           </NavLink>

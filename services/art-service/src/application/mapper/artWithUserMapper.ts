@@ -1,4 +1,10 @@
-export const toArtWithUserResponse = (art: any, userData?: any, purchaser?: any) => {
+import { mapCdnUrl } from '../../utils/mapCdnUrl';
+
+export const toArtWithUserResponse = (
+  art: any,
+  userData?: any,
+  purchaser?: any,
+) => {
   return {
     user: {
       id: userData?.id,
@@ -33,7 +39,10 @@ export const toArtWithUserResponse = (art: any, userData?: any, purchaser?: any)
       status: art.status,
       createdAt: art.createdAt,
       updatedAt: art.updatedAt,
-      imageUrl: art.isForSale || art.downloadingDisabled ? art.watermarkedUrl : art.previewUrl,
+      imageUrl:
+        art.isForSale || art.downloadingDisabled
+          ? mapCdnUrl(art.watermarkedUrl)
+          : mapCdnUrl(art.previewUrl),
     },
     ...(art.isForSale && {
       price: {
@@ -62,7 +71,7 @@ export const toShopItemResponse = (art: any, user: any) => {
       fiat: art.fiatPrice,
       type: art.priceType,
     },
-    imageUrl: art.previewUrl,
+    imageUrl: mapCdnUrl(art.previewUrl),
     artist: {
       id: user?.id,
       username: user?.username,
@@ -72,12 +81,16 @@ export const toShopItemResponse = (art: any, user: any) => {
   };
 };
 
-export const toShopArtListResponse = (art: any, user: any, favoriteCount: number) => {
+export const toShopArtListResponse = (
+  art: any,
+  user: any,
+  favoriteCount: number,
+) => {
   return {
     id: art._id ?? art.id,
     title: art.title,
     artName: art.artName,
-    previewUrl: art.previewUrl,
+    previewUrl: mapCdnUrl(art.previewUrl),
     artType: art.artType,
     priceType: art.priceType,
     artcoins: art.artcoins,
@@ -92,5 +105,88 @@ export const toShopArtListResponse = (art: any, user: any, favoriteCount: number
           profileImage: user.profileImage,
         }
       : null,
+  };
+};
+
+export const toArtWithUserForFavoriteResponse = (art: any, user: any) => {
+  return {
+    art: {
+      id: art?._id?.toString() || art?.id,
+      title: art.title,
+      artName: art.artName,
+      description: art.description,
+      imageUrl: mapCdnUrl(art.previewUrl), 
+      isForSale: art.isForSale || false,
+      createdAt: art.createdAt,
+    },
+    user: {
+      id: user?.id || user?._id?.toString(),
+      name: user?.name || 'Unknown Artist',
+      username: user?.username || 'unknown',
+      profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : '',
+    }
+  };
+};
+
+export const toArtWithUserForLikeResponse = (art: any, user: any) => {
+  return {
+    art: {
+      id: art?._id?.toString() || art?.id,
+      title: art.title,
+      artName: art.artName,
+      description: art.description,
+      imageUrl: mapCdnUrl(art.previewUrl), 
+      isForSale: art.isForSale || false,
+      createdAt: art.createdAt,
+    },
+    user: {
+      id: user?.id || user?._id?.toString(),
+      name: user?.name || 'Unknown Artist',
+      username: user?.username || 'unknown',
+      profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : '',
+    }
+  };
+};  
+
+export const toSaleHistoryResponse = (purchase: any, art: any, buyer: any) => {
+  return {
+    transactionId: purchase.transactionId,
+    purchaseDate: purchase.purchaseDate,
+    amount: purchase.amount,
+    art: art ? {
+      id: art._id?.toString() || art.id,
+      title: art.title,
+      artName: art.artName,
+      imageUrl: mapCdnUrl(art.previewUrl),
+      category: art.category,
+    } : null,
+    buyer: buyer ? {
+      id: buyer.id || buyer._id?.toString(),
+      name: buyer.name,
+      username: buyer.username,
+      profileImage: buyer.profileImage ? mapCdnUrl(buyer.profileImage) : '',
+    } : null,
+  };
+};
+
+export const toPurchaseHistoryResponse = (purchase: any, art: any, seller: any) => {
+  return {
+    transactionId: purchase.transactionId,
+    purchaseDate: purchase.purchaseDate,
+    amount: purchase.amount,
+    art: art ? {
+      id: art._id?.toString() || art.id,
+      title: art.title,
+      artName: art.artName,
+      imageUrl: mapCdnUrl(art.previewUrl),
+      category: art.category,
+      createdAt: art.createdAt,
+    } : null,
+    seller: seller ? {
+      id: seller.id || seller._id?.toString(),
+      name: seller.name,
+      username: seller.username,
+      profileImage: seller.profileImage ? mapCdnUrl(seller.profileImage) : '',
+    } : null,
   };
 };

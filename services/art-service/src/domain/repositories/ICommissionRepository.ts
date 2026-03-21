@@ -8,6 +8,7 @@ export interface ICommissionRepository extends IBaseRepository<Commission> {
   findByArtistId(artistId: string): Promise<Commission[]>;
   findByStatus(status: string): Promise<Commission[]>;
   findRecent(limit: number): Promise<Commission[]>;
+  findByRequesterIdAndArtistId(requesterId: string, artistId: string): Promise<Commission[]>;
   findAllFiltered(filter: any, page: number, limit: number): Promise<{ commissions: Commission[], total: number }>;
   getStats(startDate?: Date, endDate?: Date): Promise<{
     REQUESTED: number;

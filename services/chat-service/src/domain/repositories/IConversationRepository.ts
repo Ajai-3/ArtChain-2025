@@ -6,9 +6,14 @@ export interface IConversationRepository extends IBaseRepository<Conversation> {
     userA: string,
     userB: string
   ): Promise<Conversation | null>;
+  findRequestConversation(
+    userA: string,
+    userB: string
+  ): Promise<Conversation | null>;
   listResentByUser(
     userId: string,
     page: number,
     limit: number
   ): Promise<{ conversations: Conversation[]; total: number }>;
+  touch(conversationId: string): Promise<void>;
 }

@@ -41,7 +41,6 @@ export class GetAllWalletsUseCase implements IGetAllWalletsUseCase {
        const userIds = await this._elasticsearchClient.searchUsers(query);
        
        if (userIds.length === 0) {
-           // Fetch global stats even when no search results
            const statsResult = await this._walletRepository.findAllWallets(1, 0, filters);
            
            return {

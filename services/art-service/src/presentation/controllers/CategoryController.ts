@@ -8,8 +8,8 @@ import { CATEGORY_MESSAGES } from '../../constants/categoryMessages';
 import { editCategorySchema } from '../validators/editCategorySchema';
 import { ICategoryController } from '../interface/ICategoryController';
 import { EditCategoryDTO } from '../../application/interface/dto/category/EditCategoryDTO';
-import { IGetAllCategoryUseCase } from '../../application/interface/usecase/category/IGetAllCategoryUseCase';
 import { IEditCategoryUseCase } from '../../application/interface/usecase/category/IEditCategoryUseCase';
+import { IGetAllCategoryUseCase } from '../../application/interface/usecase/category/IGetAllCategoryUseCase';
 import { ICreateCategoryUseCase } from '../../application/interface/usecase/category/ICreateCategoryUseCase';
 
 @injectable()
@@ -20,7 +20,7 @@ export class CategoryController implements ICategoryController {
     @inject(TYPES.ICreateCategoryUseCase)
     private readonly _createCategoryUseCase: ICreateCategoryUseCase,
     @inject(TYPES.IEditCategoryUseCase)
-    private readonly _editCategoryUseCase: IEditCategoryUseCase
+    private readonly _editCategoryUseCase: IEditCategoryUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -33,7 +33,7 @@ export class CategoryController implements ICategoryController {
   getCategory = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -49,7 +49,7 @@ export class CategoryController implements ICategoryController {
         limit,
         search,
         status,
-        countFilter
+        countFilter,
       );
 
       return res
@@ -71,7 +71,7 @@ export class CategoryController implements ICategoryController {
   createCategory = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { name } = req.body;
@@ -98,7 +98,7 @@ export class CategoryController implements ICategoryController {
   editCategory = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const id = req.params.id;

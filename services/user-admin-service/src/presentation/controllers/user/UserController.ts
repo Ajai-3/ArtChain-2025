@@ -12,6 +12,7 @@ import { getUsersBatchSchema } from '../../../application/validations/user/getUs
 import { UpdateUserProfileDto } from '../../../application/interface/dtos/user/profile/UpdateUserProfileDto';
 import { IGetUserProfileUseCase } from '../../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
 import { GetUserProfileRequestDto } from '../../../application/interface/dtos/user/profile/GetUserProfileRequestDto';
+import { ISupportUserUseCase } from '../../../application/interface/usecases/user/user-intraction/ISupportUserUseCase';
 import { IUnSupportUserUseCase } from '../../../application/interface/usecases/user/user-intraction/IUnSupportUserUseCase';
 import { IUpdateProfileUserUseCase } from '../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase';
 import { GetSupportersRequestDto } from '../../../application/interface/dtos/user/user-intraction/GetSupportersRequestDto';
@@ -26,8 +27,8 @@ import { IGetUserSupportingUseCase } from '../../../application/interface/usecas
 export class UserController implements IUserController {
   constructor(
     @inject(TYPES.ILogger) private readonly _logger: typeof logger,
-    @inject(TYPES.IUnSupportUserUseCase)
-    private readonly _supportUserUseCase: IUnSupportUserUseCase,
+    @inject(TYPES.ISupportUserUseCase)
+    private readonly _supportUserUseCase: ISupportUserUseCase,
     @inject(TYPES.IUnSupportUserUseCase)
     private readonly _unSupportUserUseCase: IUnSupportUserUseCase,
     @inject(TYPES.IGetUserProfileUseCase)
@@ -336,10 +337,9 @@ export class UserController implements IUserController {
       );
 
       logger.info('user with id fetched correctly');
-
       return res
         .status(HttpStatus.OK)
-        .json({ message: 'User fetch correcly', data: users });
+        .json({ message: USER_MESSAGES.USERS_FETCH_SUCCESS, data: users });
     } catch (error) {
       next(error);
     }

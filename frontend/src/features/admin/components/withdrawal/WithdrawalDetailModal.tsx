@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "../../../../components/ui/dialog";
-import { Button } from "../../../../components/ui/button";
-import { Badge } from "../../../../components/ui/badge";
-import { Textarea } from "../../../../components/ui/textarea";
-import { Label } from "../../../../components/ui/label";
+} from '../../../../components/ui/dialog';
+import { Button } from '../../../../components/ui/button';
+import { Badge } from '../../../../components/ui/badge';
+import { Textarea } from '../../../../components/ui/textarea';
+import { Label } from '../../../../components/ui/label';
 import {
   CheckCircle,
   XCircle,
@@ -19,9 +19,9 @@ import {
   User,
   Calendar,
   IndianRupee,
-} from "lucide-react";
-import { useUpdateWithdrawalStatus } from "../../hooks/withdrawal/useUpdateWithdrawalStatus";
-import { formatNumber } from "../../../../libs/formatNumber";
+} from 'lucide-react';
+import { useUpdateWithdrawalStatus } from '../../hooks/withdrawal/useUpdateWithdrawalStatus';
+import { formatNumber } from '../../../../libs/formatNumber';
 
 interface WithdrawalDetailModalProps {
   withdrawal: any;
@@ -34,7 +34,7 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const [rejectionReason, setRejectionReason] = useState("");
+  const [rejectionReason, setRejectionReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
   const { mutate: updateStatus, isPending } = useUpdateWithdrawalStatus();
 
@@ -42,35 +42,35 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
     updateStatus(
       {
         withdrawalId: withdrawal.id,
-        status: "APPROVED",
+        status: 'APPROVED',
       },
       {
         onSuccess: () => {
           onClose();
         },
-      }
+      },
     );
   };
 
   const handleReject = () => {
     if (!rejectionReason.trim()) {
-      alert("Please provide a rejection reason");
+      alert('Please provide a rejection reason');
       return;
     }
 
     updateStatus(
       {
         withdrawalId: withdrawal.id,
-        status: "REJECTED",
+        status: 'REJECTED',
         rejectionReason,
       },
       {
         onSuccess: () => {
           onClose();
-          setRejectionReason("");
+          setRejectionReason('');
           setShowRejectInput(false);
         },
-      }
+      },
     );
   };
 
@@ -78,27 +78,26 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
     updateStatus(
       {
         withdrawalId: withdrawal.id,
-        status: "COMPLETED",
+        status: 'COMPLETED',
       },
       {
         onSuccess: () => {
           onClose();
         },
-      }
+      },
     );
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "PENDING":
+      case 'PENDING':
         return <Clock className="w-5 h-5 text-yellow-500" />;
-      case "APPROVED":
-      case "PROCESSING":
+      case 'APPROVED':
+      case 'PROCESSING':
         return <AlertCircle className="w-5 h-5 text-blue-500" />;
-      case "COMPLETED":
+      case 'COMPLETED':
         return <CheckCircle className="w-5 h-5 text-green-500" />;
-      case "REJECTED":
-      case "FAILED":
+      case 'REJECTED':
         return <XCircle className="w-5 h-5 text-red-500" />;
       default:
         return null;
@@ -107,29 +106,29 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "PENDING":
-        return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
-      case "APPROVED":
-      case "PROCESSING":
-        return "bg-blue-500/10 text-blue-500 border-blue-500/20";
-      case "COMPLETED":
-        return "bg-green-500/10 text-green-500 border-green-500/20";
-      case "REJECTED":
-      case "FAILED":
-        return "bg-red-500/10 text-red-500 border-red-500/20";
+      case 'PENDING':
+        return 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20';
+      case 'APPROVED':
+      case 'PROCESSING':
+        return 'bg-blue-500/10 text-blue-500 border-blue-500/20';
+      case 'COMPLETED':
+        return 'bg-green-500/10 text-green-500 border-green-500/20';
+      case 'REJECTED':
+        return 'bg-red-500/10 text-red-500 border-red-500/20';
       default:
-        return "bg-gray-500/10 text-gray-500 border-gray-500/20";
+        return 'bg-gray-500/10 text-gray-500 border-gray-500/20';
     }
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto scrollbar">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-3">
             Withdrawal Request Details
             <Badge
-              className={`${getStatusColor(withdrawal.status)} flex items-center gap-1.5 px-3 py-1`}
+              variant="outline"
+              className={`${getStatusColor(withdrawal.status)} flex items-center gap-1.5 px-3 py-1 border`}
             >
               {getStatusIcon(withdrawal.status)}
               {withdrawal.status}
@@ -171,28 +170,46 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
                 {withdrawal.user?.profileImage ? (
                   <img
                     src={withdrawal.user.profileImage}
-                    alt={withdrawal.user.name || "User"}
+                    alt={withdrawal.user.name || 'User'}
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span>{(withdrawal.user?.name || withdrawal.userId || "U").charAt(0).toUpperCase()}</span>
+                  <span>
+                    {(withdrawal.user?.name || withdrawal.userId || 'U')
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <h3 className="text-lg font-bold dark:text-white truncate">
-                  {withdrawal.user?.name || "Unknown User"}
+                  {withdrawal.user?.name || 'Unknown User'}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                  {withdrawal.user?.email || "No email available"}
+                  {withdrawal.user?.email || 'No email available'}
                 </p>
                 <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-gray-500 dark:text-gray-400">User ID:</span>
-                    <p className="font-mono text-xs text-gray-700 dark:text-gray-300 truncate" title={withdrawal.userId}>{withdrawal.userId}</p>
+                    <span className="text-gray-500 dark:text-gray-400">
+                      User ID:
+                    </span>
+                    <p
+                      className="font-mono text-xs text-gray-700 dark:text-gray-300 truncate"
+                      title={withdrawal.userId}
+                    >
+                      {withdrawal.userId}
+                    </p>
                   </div>
                   <div>
-                    <span className="text-gray-500 dark:text-gray-400">Wallet ID:</span>
-                    <p className="font-mono text-xs text-gray-700 dark:text-gray-300 truncate" title={withdrawal.walletId}>{withdrawal.walletId}</p>
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Wallet ID:
+                    </span>
+                    <p
+                      className="font-mono text-xs text-gray-700 dark:text-gray-300 truncate"
+                      title={withdrawal.walletId}
+                    >
+                      {withdrawal.walletId}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -202,32 +219,43 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
           {/* Payment Method Details */}
           <div className="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg space-y-3">
             <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {withdrawal.method === "BANK_TRANSFER" ? (
+              {withdrawal.method === 'BANK_TRANSFER' ? (
                 <Banknote className="w-4 h-4" />
               ) : (
                 <Smartphone className="w-4 h-4" />
               )}
-              Payment Method: {withdrawal.method === "BANK_TRANSFER" ? "Bank Transfer" : "UPI"}
+              Payment Method:{' '}
+              {withdrawal.method === 'BANK_TRANSFER' ? 'Bank Transfer' : 'UPI'}
             </div>
 
-            {withdrawal.method === "BANK_TRANSFER" ? (
+            {withdrawal.method === 'BANK_TRANSFER' ? (
               <div className="space-y-2 text-sm">
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Account Holder:</span>
-                  <p className="font-semibold">{withdrawal.accountHolderName}</p>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Account Holder:
+                  </span>
+                  <p className="font-semibold">
+                    {withdrawal.accountHolderName}
+                  </p>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">Account Number:</span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Account Number:
+                  </span>
                   <p className="font-mono">{withdrawal.accountNumber}</p>
                 </div>
                 <div>
-                  <span className="text-gray-500 dark:text-gray-400">IFSC Code:</span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    IFSC Code:
+                  </span>
                   <p className="font-mono">{withdrawal.ifscCode}</p>
                 </div>
               </div>
             ) : (
               <div className="text-sm">
-                <span className="text-gray-500 dark:text-gray-400">UPI ID:</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  UPI ID:
+                </span>
                 <p className="font-mono">{withdrawal.upiId}</p>
               </div>
             )}
@@ -262,7 +290,7 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-            {withdrawal.status === "PENDING" && (
+            {withdrawal.status === 'PENDING' && (
               <>
                 {!showRejectInput ? (
                   <>
@@ -289,7 +317,7 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
                     <Button
                       onClick={() => {
                         setShowRejectInput(false);
-                        setRejectionReason("");
+                        setRejectionReason('');
                       }}
                       variant="outline"
                       className="flex-1"
@@ -310,7 +338,7 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
               </>
             )}
 
-            {withdrawal.status === "APPROVED" && (
+            {withdrawal.status === 'APPROVED' && (
               <Button
                 onClick={handleComplete}
                 disabled={isPending}
@@ -321,9 +349,9 @@ const WithdrawalDetailModal: React.FC<WithdrawalDetailModalProps> = ({
               </Button>
             )}
 
-            {(withdrawal.status === "COMPLETED" ||
-              withdrawal.status === "REJECTED" ||
-              withdrawal.status === "FAILED") && (
+            {(withdrawal.status === 'COMPLETED' ||
+              withdrawal.status === 'REJECTED' ||
+              withdrawal.status === 'FAILED') && (
               <Button onClick={onClose} variant="outline" className="flex-1">
                 Close
               </Button>

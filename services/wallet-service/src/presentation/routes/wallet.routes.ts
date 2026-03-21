@@ -31,7 +31,6 @@ router.post(ROUTES.WALLET.CREATE, walletController.createWallet);
 router.patch(ROUTES.WALLET.UPDATE, walletController.updateWallet);
 router.post(ROUTES.WALLET.LOCK, walletController.lockAmount);
 router.post(ROUTES.WALLET.UNLOCK, walletController.unlockAmount);
-router.post(ROUTES.WALLET.SETTLE_AUCTION, walletController.settleAuction);
 router.post(ROUTES.WALLET.GIFT, walletController.giftArtCoins);
 
 // Trascation Controller Routes
@@ -44,10 +43,6 @@ router.post(
   transactionController.createTransaction,
 );
 
-router.post(
-  ROUTES.TRANSACTION.SPLIT_PURCHASE,
-  walletController.processSplitPurchase,
-);
 router.post(ROUTES.TRANSACTION.PAYMENT, transactionController.processPayment);
 router.post(
   ROUTES.TRANSACTION.COMMISSION_LOCK,
@@ -61,7 +56,21 @@ router.post(
   ROUTES.TRANSACTION.COMMISSION_REFUND,
   transactionController.refundCommissionFunds,
 );
+router.post(
+  ROUTES.TRANSACTION.COMMISSION_TRANSFER_LOCKED,
+  transactionController.transferLockedCommissionFunds,
+);
 router.post(ROUTES.TRANSACTION.TRANSACTION_LOCK, walletController.lockAmount);
+router.post(
+  ROUTES.TRANSACTION.TRANSACTION_UNLOCK,
+  walletController.unlockAmount,
+);
+
+router.post(ROUTES.TRANSACTION.SETTLE_AUCTION, walletController.settleAuction);
+router.post(
+  ROUTES.TRANSACTION.SPLIT_PURCHASE,
+  walletController.processSplitPurchase,
+);
 
 // Stripe Controller Routes
 router.post(
@@ -69,10 +78,7 @@ router.post(
   stripeController.createCheckoutSession,
 );
 router.get(ROUTES.STRIPE.SESSION_BY_ID, stripeController.getSession);
-router.post(
-  ROUTES.STRIPE.WEBHOOK,
-  stripeController.handleWebhook,
-);
+router.post(ROUTES.STRIPE.WEBHOOK, stripeController.handleWebhook);
 
 router.post(
   ROUTES.WITHDRAWAL.CREATE_REQUEST,

@@ -1,4 +1,5 @@
 export interface UpdateArtPostDTO {
+  id: string;
   title?: string;
   description?: string;
   artType?: string;

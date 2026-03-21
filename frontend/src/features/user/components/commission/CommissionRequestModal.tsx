@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 
 import { useRequestCommissionMutation } from "../../hooks/commission/useRequestCommissionMutation";
-import { useUploadArtImageMutation } from "../../hooks/art/useUploadArtImageMutation";
+import { useUploadCommissionImageMutation } from "../../hooks/commission/useUploadCommitionImageMutation";
 import { commissionRequestSchema } from "../../schemas/CommissionRequestSchema";
 import type { CommissionRequestFormValues } from "../../schemas/CommissionRequestSchema";
 
@@ -62,7 +62,7 @@ export const CommissionRequestModal: React.FC<CommissionRequestModalProps> = ({
   const { artCoinRate } = useSelector((state: RootState) => state.platform);
 
   const requestCommissionMutation = useRequestCommissionMutation();
-  const uploadImageMutation = useUploadArtImageMutation();
+  const uploadImageMutation = useUploadCommissionImageMutation();
 
   const form = useForm<CommissionRequestFormValues>({
     resolver: zodResolver(commissionRequestSchema),
@@ -112,10 +112,8 @@ export const CommissionRequestModal: React.FC<CommissionRequestModalProps> = ({
     try {
       for (const file of selectedFiles) {
         const response = await uploadImageMutation.mutateAsync(file);
-        // Ensure we handle response correctly
-        // Assuming response.data.data is correct based on previous inspection usage in other files
-        // If not, we might need to adjust.
-        const url = response?.data?.data || response?.data?.url; 
+
+        const url = response?.data?.data.url
         if (url) {
              urls.push(url);
         }

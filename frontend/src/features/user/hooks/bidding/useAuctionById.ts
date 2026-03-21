@@ -7,9 +7,9 @@ export const useAuctionById = (id: string | undefined) => {
     queryFn: async () => {
       if (!id) throw new Error("Auction ID is required");
       const { data } = await apiClient.get(`/api/v1/art/auctions/${id}`);
-      return data?.data || data; 
+      return data?.data || data;
     },
     enabled: !!id,
-    staleTime: 0, 
+    staleTime: 0,
   });
 };

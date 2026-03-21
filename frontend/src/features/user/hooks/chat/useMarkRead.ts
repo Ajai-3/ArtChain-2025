@@ -11,7 +11,17 @@ export const useMarkRead = (conversationId: string | undefined, currentUserId: s
   );
 
   useEffect(() => {
-    if (!conversationId || !messages || messages.length === 0) return;
+    if (!conversationId) return;
+
+    // Reset unread count immediately in the UI when conversation is opened
+    dispatch(
+      setConversationUnreadCount({
+        conversationId,
+        count: 0,
+      })
+    );
+
+    if (!messages || messages.length === 0) return;
 
     const unreadMessages = messages.filter(
       (m) => m.senderId !== currentUserId && (!m.readBy || !m.readBy.includes(currentUserId))
@@ -38,13 +48,6 @@ export const useMarkRead = (conversationId: string | undefined, currentUserId: s
           conversationId,
           messageIds,
           readBy: currentUserId,
-        })
-      );
-      
-      dispatch(
-        setConversationUnreadCount({
-          conversationId,
-          count: 0,
         })
       );
     }

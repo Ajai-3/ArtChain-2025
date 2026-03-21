@@ -1,11 +1,12 @@
-import { tokenService } from "../service/tokenService";
-import { Request, Response, NextFunction } from "express";
+import { checkUserStatus } from '../utils/checkUserStatus';
+import { tokenService } from '../service/tokenService';
+import { Request, Response, NextFunction } from 'express';
 import {
   ERROR_MESSAGES,
   ForbiddenError,
   HttpStatus,
   UnauthorizedError,
-} from "art-chain-shared";
+} from 'art-chain-shared';
 
 export const optionalAuthUser = async (
   req: Request,
@@ -14,29 +15,31 @@ export const optionalAuthUser = async (
 ): Promise<any> => {
   try {
     const authHeader = req.headers.authorization;
-    const accessToken = authHeader?.split(" ")[1];
+    const accessToken = authHeader?.split(' ')[1];
 
     if (!accessToken) {
       return next();
     }
 
-    console.log(accessToken)
+    console.log(accessToken);
 
     const decoded = tokenService.verifyAccessToken(accessToken);
-    if (!decoded || typeof decoded !== "object" || !decoded.id) {
+    if (!decoded || typeof decoded !== 'object' || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
     
-    console.log(decoded.id)
+    console.log(decoded.id);
     if (
-      decoded.role !== "user" &&
-      decoded.role !== "artist" &&
-      decoded.role !== "admin"
+      decoded.role !== 'user' &&
+      decoded.role !== 'artist' &&
+      decoded.role !== 'admin'
     ) {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
 
-    req.headers["x-user-id"] = decoded.id;
+    await checkUserStatus(decoded.id, req.method, 'optional auth');
+
+    req.headers['x-user-id'] = decoded.id;
     (req as any).user = decoded;
 
     next();
@@ -53,7 +56,7 @@ export const optionalAuthUser = async (
         error: error.message,
       });
     }
-    console.error("Authentication error:", error);
+    console.error('Authentication error:', error);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: ERROR_MESSAGES.SERVER_ERROR,
