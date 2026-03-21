@@ -1,0 +1,73 @@
+import bcrypt from 'bcrypt';
+import { inject, injectable } from 'inversify';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
+import { AUTH_MESSAGES } from '../../../../constants/authMessages';
+import { TYPES } from '../../../../infrastructure/inversify/types';
+import { ITokenGenerator } from '../../../../application/interface/auth/ITokenGenerator';
+import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
+import { LoginRequestDto } from '../../../interface/dtos/user/auth/LoginRequestDto';
+import {
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from 'art-chain-shared';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ILoginUserUseCase } from '../../../interface/usecases/user/auth/ILoginUserUseCase';
+
+@injectable()
+export class LoginUserUseCase implements ILoginUserUseCase {
+  constructor(
+    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository
+  ) {}
+
+  async execute(data: LoginRequestDto): Promise<AuthResultDto> {
+    const { identifier, password } = data;
+
+    const rawUser =
+      (await this._userRepo.findByUsernameRaw(identifier)) ||
+      (await this._userRepo.findByEmailRaw(identifier));
+
+    if (!rawUser) {
+      throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
+    }
+
+    if (rawUser.role !== 'user' && rawUser.role !== 'artist') {
+      throw new ForbiddenError(AUTH_MESSAGES.INVALID_USER_ROLE);
+    }
+
+    if (rawUser.status !== 'active' && rawUser.status !== 'suspended') {
+      throw new ForbiddenError(AUTH_MESSAGES.YOUR_ACCOUNT_BANNED);
+    }
+
+    const isValid = bcrypt.compareSync(password, rawUser.password);
+    if (!isValid) {
+      throw new UnauthorizedError(AUTH_MESSAGES.INVALID_CREDENTIALS);
+    }
+
+    const user =
+      (await this._userRepo.findByUsername(identifier)) ||
+      (await this._userRepo.findByEmail(identifier));
+
+    if (!user) {
+      throw new NotFoundError(AUTH_MESSAGES.USER_NOT_FOUND);
+    }
+
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    const formattedUser = {
+      ...user,
+      profileImage: mapCdnUrl(user.profileImage) || '',
+      bannerImage: mapCdnUrl(user.bannerImage) || '',
+      backgroundImage: mapCdnUrl(user.backgroundImage) || '',
+    };
+    const accessToken = this._tokenGenerator.generateAccess(payload);
+    const refreshToken = this._tokenGenerator.generateRefresh(payload);
+
+    return { user: formattedUser, accessToken, refreshToken };
+  }
+}

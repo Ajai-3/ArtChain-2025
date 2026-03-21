@@ -1,0 +1,207 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: my-redis-cache
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data:/data
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    networks:
+      - backend
+
+  postgres:
+    image: postgres:15-alpine
+    hostname: postgres-db
+    container_name: postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - '5432:5432'
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh
+    networks:
+      - backend
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:7
+    container_name: pgadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - '9200:9200'
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - backend
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost:9200/ || exit 1']
+      interval: 10s
+      retries: 5
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    ports:
+      - '3100:3100'
+    volumes:
+      - loki_data:/loki
+    networks:
+      - backend
+
+  grafana:
+    image: grafana/grafana:10.0.0
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - loki
+    networks:
+      - backend
+
+  api-gateway:
+    container_name: api-gateway
+    build: ./api-gateway
+    env_file:
+      - .env
+      - ./api-gateway/.env.docker
+    ports:
+      - '4000:4000'
+    depends_on:
+      - user-admin-service
+    networks:
+      - backend
+
+  user-admin-service:
+    container_name: user-admin-service
+    build: ./services/user-admin-service
+    env_file:
+      - .env
+      - ./services/user-admin-service/.env.docker
+    ports:
+      - '4001:4001'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    command: sh -c "npx prisma db push --accept-data-loss && npx prisma generate && npm run dev"
+
+  art-service:
+    container_name: art-service
+    build: ./services/art-service
+    env_file:
+      - .env
+      - ./services/art-service/.env.docker
+    ports:
+      - '4002:4002'
+    depends_on:
+      - user-admin-service
+    networks:
+      - backend
+
+  wallet-service:
+    container_name: wallet-service
+    build: ./services/wallet-service
+    env_file:
+      - .env
+      - ./services/wallet-service/.env.docker
+    ports:
+      - '4003:4003'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    command: sh -c "npx prisma migrate deploy && npm run dev"
+
+  elastic-search-service:
+    container_name: elastic-search-service
+    build: ./services/elastic-search-service
+    env_file:
+      - .env
+      - ./services/elastic-search-service/.env
+    ports:
+      - '4004:4004'
+    depends_on:
+      - elasticsearch
+    networks:
+      - backend
+
+  notification-service:
+    container_name: notification-service
+    build: ./services/notification-service
+    env_file:
+      - .env
+      - ./services/notification-service/.env.docker
+    ports:
+      - '4005:4005'
+    networks:
+      - backend
+
+  s3-service:
+    container_name: s3-service
+    build: ./services/s3-service
+    env_file:
+      - .env
+      - ./services/s3-service/.env
+    ports:
+      - '4006:4006'
+    networks:
+      - backend
+
+  chat-service:
+    container_name: chat-service
+    build: ./services/chat-service
+    env_file:
+      - .env
+      - ./services/chat-service/.env.docker
+    ports:
+      - '4007:4007'
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  pg_data:
+  pgadmin_data:
+  redis_data:
+  es_data:
+  loki_data:
+  grafana_data:

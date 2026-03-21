@@ -1,0 +1,79 @@
+import { Request, Response, NextFunction } from 'express';
+
+export interface IArtController {
+  getArtByArtName(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  getAllArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  getRecommendedArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  getArtWithUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  getArtById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  createArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  updateArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  countArtwork(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  deleteArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  buyArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  downloadArt(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  saledArtWorks(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  salesAnalytics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  purchasedArtWorks(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+  purchaseAnalytics(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void>;
+}
