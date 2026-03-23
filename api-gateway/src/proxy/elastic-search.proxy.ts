@@ -1,12 +1,14 @@
 import { config } from '../config/env';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { ROUTES } from '../constants/routes';
+import { logger } from '../utils/logger';
 
-console.log('Elastic search service target:', config.services.elastic);
+logger.info(`Elastic search service target: ${config.services.elastic}`);
 
 export const elasticSearchProxy = createProxyMiddleware({
-  target: `${config.services.elastic}/api/v1/elastic`,
+  target: `${config.services.elastic}${ROUTES.ELASTIC.BASE}`,
   changeOrigin: true,
   pathRewrite: { 
-    '^/api/v1/elastic': ''
+    [`^${ROUTES.ELASTIC.BASE}`]: ''
   },
 }); 

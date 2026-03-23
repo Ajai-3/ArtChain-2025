@@ -1,12 +1,14 @@
 import { config } from '../config/env';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { ROUTES } from '../constants/routes';
+import { logger } from '../utils/logger';
 
-console.log('User service target:', config.services.main);
+logger.info(`User service target: ${config.services.main}`);
 
 export const userProxy = createProxyMiddleware({
-  target: `${config.services.main}/api/v1/user`,
+  target: `${config.services.main}${ROUTES.USER.BASE}`,
   changeOrigin: true,
   pathRewrite: {
-    '^/api/v1/user': '',
+    [`^${ROUTES.USER.BASE}`]: '',
   },
-});
+});

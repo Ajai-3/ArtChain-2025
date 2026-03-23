@@ -34,5 +34,3 @@ export const config = {
   },
   redis_url: process.env.REDIS_URL,
 };
-
-console.log(config);

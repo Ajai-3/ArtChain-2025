@@ -16,7 +16,6 @@ export const adminAuth = async (
     if (!accessToken) {
       throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
-    console.log(accessToken);
 
     const decoded = tokenService.verifyAccessToken(accessToken);
 
@@ -43,7 +42,7 @@ export const adminAuth = async (
         error: error.message 
       });
     }
-    console.error('Authentication error:', error);
+    logger.error('Authentication error:', { error });
     return res
       .status(HttpStatus.INTERNAL_SERVER_ERROR)
       .json(ERROR_MESSAGES.SERVER_ERROR);

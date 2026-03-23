@@ -1,12 +1,14 @@
 import { config } from '../config/env';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { ROUTES } from '../constants/routes';
+import { logger } from '../utils/logger';
 
-console.log('Wallet service target:', config.services.wallet);
+logger.info(`Wallet service target: ${config.services.wallet}`);
 
 export const walletProxy = createProxyMiddleware({
-  target: `${config.services.wallet}/api/v1/wallet`,
+  target: `${config.services.wallet}${ROUTES.WALLET.BASE}`,
   changeOrigin: true,
   pathRewrite: { 
-    '^/api/v1/wallet': ''
+    [`^${ROUTES.WALLET.BASE}`]: ''
   },
 }); 

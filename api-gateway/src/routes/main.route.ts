@@ -9,30 +9,32 @@ import { adminProxy } from '../proxy/admin.proxy';
 import { walletProxy } from '../proxy/wallet.proxy';
 import { notificationsProxy } from '../proxy/notifications.proxy';
 import { elasticSearchProxy } from '../proxy/elastic-search.proxy';
+import { ROUTES } from '../constants/routes';
 
 const router = Router();
 
 // user-admin-service
-router.use('/api/v1/user', userProxy);
-router.use('/api/v1/auth', authProxy);
-router.use('/api/v1/admin', adminProxy);
+router.use(ROUTES.USER.BASE, userProxy);
+router.use(ROUTES.AUTH.BASE, authProxy);
+router.use(ROUTES.ADMIN.BASE, adminProxy);
 
 // wallet-service
-router.use('/api/v1/wallet', walletProxy);
+router.use(ROUTES.WALLET.BASE, walletProxy);
 
 // art-service
-router.use('/api/v1/art', artProxy);
+router.use(ROUTES.ART.BASE, artProxy);
 
 // notification-service
-router.use('/api/v1/notifications', notificationsProxy);
+router.use(ROUTES.NOTIFICATIONS.BASE, notificationsProxy);
 
 // upload-service
-router.use('/api/v1/upload', s3Proxy);
+router.use(ROUTES.UPLOAD.BASE, s3Proxy);
 
 // elastic-search-service
-router.use('/api/v1/elastic', elasticSearchProxy);
+router.use(ROUTES.ELASTIC.BASE, elasticSearchProxy);
 
 // chat-service
-router.use('/api/v1/chat', chatProxy);
+router.use(ROUTES.CHAT.BASE, chatProxy);
 
 export default router;
+

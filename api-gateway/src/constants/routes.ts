@@ -1,8 +1,10 @@
 export const ROUTES = {
   AUTH: {
+    BASE: '/api/v1/auth',
     LOGOUT: '/api/v1/auth/logout',
   },
   USER: {
+    BASE: '/api/v1/user',
     SUPPORT: '/api/v1/user/support/:userId',
     UN_SUPPORT: '/api/v1/user/un-support/:userId',
     REMOVE_SUPPORTER: '/api/v1/user/remove/:supporterId',
@@ -91,6 +93,7 @@ export const ROUTES = {
     COMMISSION_TRANSFER_LOCKED: '/api/v1/wallet/transaction/commission/transfer-locked',
   },
   CHAT: {
+    BASE: '/api/v1/chat',
     PRIVATE: '/api/v1/chat/conversation/private',
     RECENT: '/api/v1/chat/conversation/recent',
     MESSAGE: '/api/v1/chat/message/:conversationId',
@@ -102,6 +105,7 @@ export const ROUTES = {
     DELETE_MESSAGE: '/api/v1/chat/message/:messageId',
   },
   AI: {
+    BASE: '/api/v1/art/ai',
     GENERATE: '/api/v1/art/ai/generate',
     QUOTA: '/api/v1/art/ai/quota',
     GENERATIONS: '/api/v1/art/ai/generations',
@@ -111,6 +115,7 @@ export const ROUTES = {
     DELETE_GENERATION: '/api/v1/art/ai/generations/:id',
   },
   ADMIN: {
+    BASE: '/api/v1/admin',
     DASHBOARD: '/api/v1/admin/dashboard',
     USERS: '/api/v1/admin/users',
     REVENUE: '/api/v1/admin/revenue-stats',
@@ -123,5 +128,8 @@ export const ROUTES = {
     ADMIN_COMMISSIONS: '/api/v1/art/admin/commissions/all',
     ADMIN_COMMISSION_STATS: '/api/v1/art/admin/commissions/stats',
     ADMIN_RESOLVE_COMMISSION: '/api/v1/art/admin/commissions/resolve/:id',
+  },
+  ELASTIC: {
+    BASE: '/api/v1/elastic',
   },
 };

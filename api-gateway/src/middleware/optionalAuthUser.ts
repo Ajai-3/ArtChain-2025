@@ -1,3 +1,4 @@
+import { logger } from '../utils/logger';
 import { checkUserStatus } from '../utils/checkUserStatus';
 import { tokenService } from '../service/tokenService';
 import { Request, Response, NextFunction } from 'express';
@@ -21,14 +22,12 @@ export const optionalAuthUser = async (
       return next();
     }
 
-    console.log(accessToken);
 
     const decoded = tokenService.verifyAccessToken(accessToken);
     if (!decoded || typeof decoded !== 'object' || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
     
-    console.log(decoded.id);
     if (
       decoded.role !== 'user' &&
       decoded.role !== 'artist' &&
@@ -56,10 +55,11 @@ export const optionalAuthUser = async (
         error: error.message,
       });
     }
-    console.error('Authentication error:', error);
+    logger.error('Authentication error:', { error });
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: ERROR_MESSAGES.SERVER_ERROR,
     });
   }
 };
+

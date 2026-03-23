@@ -21,18 +21,14 @@ export function conditionalAuth(
     });
 
   if (matchRoute(authRoutesConfig.user_optional)) {
-    console.log('user_optional');
-
     return optionalAuthUser(req, res, next);
   }
 
   if (matchRoute(authRoutesConfig.user)) {
-    console.log('uaer_auth_middleware');
     return authUser(req, res, next);
   }
 
   if (matchRoute(authRoutesConfig.admin)) {
-    console.log('admi_auth_middleware');
     return adminAuth(req, res, next);
   }
 

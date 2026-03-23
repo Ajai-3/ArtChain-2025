@@ -1,12 +1,14 @@
 import { config } from '../config/env';
 import { createProxyMiddleware } from 'http-proxy-middleware';
+import { ROUTES } from '../constants/routes';
+import { logger } from '../utils/logger';
 
-console.log('Notification service target:', config.services.notifications);
+logger.info(`Notification service target: ${config.services.notifications}`);
 
 export const notificationsProxy = createProxyMiddleware({
-  target: `${config.services.notifications}/api/v1/notifications`,
+  target: `${config.services.notifications}${ROUTES.NOTIFICATIONS.BASE}`,
   changeOrigin: true,
   pathRewrite: { 
-    '^/api/v1/notifications': ''
+    [`^${ROUTES.NOTIFICATIONS.BASE}`]: ''
   },
 }); 

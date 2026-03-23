@@ -22,15 +22,12 @@ export const authUser = async (
       throw new UnauthorizedError(ERROR_MESSAGES.MISSING_ACCESS_TOKEN);
     }
 
-    console.log(accessToken);
-
     const decoded = tokenService.verifyAccessToken(accessToken);
 
     if (!decoded || typeof decoded !== 'object' || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
     
-    console.log(decoded.id);
     if (decoded.role !== 'user' && decoded.role !== 'artist' && decoded.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.INVALID_USER_ROLE);
     }
@@ -56,7 +53,7 @@ export const authUser = async (
         error: error.message,
       });
     }
-    console.error('Authentication error:', error);
+    logger.error('Authentication error:', { error });
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: ERROR_MESSAGES.SERVER_ERROR,
