@@ -25,6 +25,7 @@ export const ROUTES = {
   },
   ART: {
     BASE: '/api/v1/art',
+    BY_ID: '/api/v1/art/:id',
     BY_NAME: '/api/v1/art/by-name/:artname',
     BY_USER: '/api/v1/art/user/:userId',
     BUY: '/api/v1/art/buy/:id',

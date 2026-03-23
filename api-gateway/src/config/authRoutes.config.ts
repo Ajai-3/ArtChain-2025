@@ -24,6 +24,7 @@ export const authRoutesConfig = {
     { path: ROUTES.NOTIFICATIONS.MARK_ALL_READ, methods: ['PATCH'] },
 
     { path: ROUTES.ART.BASE, methods: ['POST', 'PATCH', 'DELETE'] },
+    { path: ROUTES.ART.BY_ID, methods: ['PATCH', 'DELETE'] },
     { path: ROUTES.ART.COMMENT, methods: ['POST'] },
     { path: ROUTES.ART.COMMENTS_BY_ID, methods: ['PUT', 'DELETE'] },
 
@@ -106,6 +107,7 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.FAVORITES_BY_USER, methods: ['GET'] },
 
     { path: ROUTES.ART.BASE, methods: ['GET'] },
+    { path: ROUTES.ART.BY_ID, methods: ['GET'] },
     { path: ROUTES.ART.BY_NAME, methods: ['GET'] },
     { path: ROUTES.ART.BY_USER, methods: ['GET'] },
     { path: ROUTES.ART.COMMENTS, methods: ['GET'] },
