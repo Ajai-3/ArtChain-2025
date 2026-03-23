@@ -17,10 +17,12 @@ export class DeleteUserArtPostUseCase implements IDeleteUserArtPostUseCase {
         const art = await this._artPostRepo.findById(id);
         if (!art) throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
 
-        if (art.art.userId !== userId) {
+        if (art.userId !== userId) {
             throw new BadRequestError(ART_MESSAGES.YOU_ARE_NOT_AUTHORIZED_TO_UPDATE_THIS_ART);
         }
 
-        await this._artPostRepo.delete(id);
+        await this._artPostRepo.delete(id)
+
+        return
     }
 }

@@ -294,7 +294,7 @@ export class ArtController implements IArtController {
         `Updating art id=${id} with data=${JSON.stringify(updateData)}`,
       );
 
-      await this._updateArtUseCase.execute({ id, ...updateData, userId });
+      await this._updateArtUseCase.execute({ id, userId, ...updateData });
 
       return res.status(HttpStatus.OK).json({
         message: ART_MESSAGES.UPDATE_SUCCESS,

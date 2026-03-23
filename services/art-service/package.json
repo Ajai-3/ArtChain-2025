@@ -20,7 +20,7 @@
     "@google/genai": "^1.30.0",
     "amqplib": "^0.10.9",
     "art-chain-shared": "^1.0.26",
-    "aws-sdk": "^2.1693.0",
+    "aws-sdk": "^1.18.0",
     "axios": "^1.12.2",
     "dotenv": "^17.2.2",
     "dotenv-flow": "^4.1.0",
