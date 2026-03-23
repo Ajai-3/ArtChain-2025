@@ -22,6 +22,10 @@ export interface ArtPostResponseDTO {
   artName: string;
   imageUrl: string;
   aspectRatio: string;
+  commentingDisabled: boolean;
+  downloadingDisabled: boolean;
+  isPrivate: boolean;
+  isSensitive: boolean;
   isForSale: boolean;
   priceType?: "artcoin" | "fiat";
   artcoins?: number;

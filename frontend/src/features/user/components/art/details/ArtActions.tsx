@@ -49,7 +49,10 @@ interface ArtActionsProps {
     onCloseReport: () => void;
     onDownload?: () => void;
     onBuy?: () => void;
+    onEdit?: () => void;
+    onDelete?: () => void;
   };
+  isOwner?: boolean;
   modals: {
     showLikes: boolean;
     showFavorites: boolean;
@@ -65,6 +68,7 @@ const ArtActions: React.FC<ArtActionsProps> = ({
   handlers,
   modals,
   isDownloading,
+  isOwner,
 }) => {
   return (
     <div className="flex flex-wrap justify-between sm:justify-between items-center w-full mt-3 gap-2 sm:gap-4 sm:px-20">
@@ -184,6 +188,9 @@ const ArtActions: React.FC<ArtActionsProps> = ({
         onClose={handlers.onCloseReport}
         targetId={art.id}
         targetType="art"
+        canEdit={isOwner}
+        onEdit={handlers.onEdit}
+        onDelete={handlers.onDelete}
       />
     </div>
   );

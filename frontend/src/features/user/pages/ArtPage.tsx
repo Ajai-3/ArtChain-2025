@@ -18,8 +18,12 @@ import Comments from '../components/art/details/Comments';
 import ArtSidebar from '../components/art/details/ArtSidebar';
 import ZoomOverlay from '../components/art/details/ZoomOverlay';
 import BuyArtModal from '../components/art/details/BuyArtModal';
+import { EditArtModal } from '../components/art/EditArtModal';
+import { useDeleteArtPost } from '../hooks/art/useDeleteArtPost';
+import ConfirmModal from '../../../components/modals/ConfirmModal';
 import { ROUTES } from '../../../constants/routes';
 import type { ArtWithUserResponse } from '../../../types/art';
+import ContentUnavailable from '../../../components/ContentUnavailable';
 
 const ArtPage: React.FC = () => {
   const { artname } = useParams<{ artname: string }>();
@@ -48,7 +52,11 @@ const ArtPage: React.FC = () => {
   const [showLikes, setShowLikes] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const { mutate: deleteArt, isPending: isDeleting } = useDeleteArtPost();
 
   const {
     data: recommendedArts,
@@ -87,9 +95,9 @@ const ArtPage: React.FC = () => {
       </div>
     );
   if (isError)
-    return <div className='text-center mt-10'>Error: {error?.message}</div>;
+    return <ContentUnavailable />;
   if (!data?.data?.art)
-    return <div className='text-center mt-10'>Art not found</div>;
+    return <ContentUnavailable />;
 
   const art = data.data.art;
   const actualUser = data.data.user;
@@ -223,6 +231,7 @@ const ArtPage: React.FC = () => {
             commentCount: data.data.commentCount || 0,
           }}
           user={{ isAuthenticated: user.isAuthenticated }}
+          isOwner={isOwner}
           handlers={{
             onLike: handleLike,
             onFavorite: handleFavorite,
@@ -235,6 +244,8 @@ const ArtPage: React.FC = () => {
             onCloseReport: () => setShowReport(false),
             onDownload: handleDownload,
             onBuy: handleBuy,
+            onEdit: () => setIsEditModalOpen(true),
+            onDelete: () => setIsDeleteConfirmOpen(true),
           }}
           modals={{ showLikes, showFavorites, showReport }}
           isDownloading={downloadArtMutation.isPending}
@@ -302,6 +313,55 @@ const ArtPage: React.FC = () => {
         balance={wallet.balance || 0}
         isLoading={buyArtMutation.isPending}
       />
+
+      {isOwner && isEditModalOpen && (
+        <EditArtModal
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          art={{
+            id: art.id,
+            userId: art.userId,
+            title: art.title,
+            description: art.description,
+            artType: art.artType,
+            hashtags: art.hashtags || [],
+            artName: art.artName,
+            imageUrl: art.imageUrl,
+            aspectRatio: art.aspectRatio || '1:1',
+            commentingDisabled: art.commentingDisabled || false,
+            downloadingDisabled: art.downloadingDisabled || false,
+            isPrivate: false,
+            isSensitive: false,
+            isForSale: art.isForSale || false,
+            priceType: (price?.type as 'artcoin' | 'fiat') || 'artcoin',
+            artcoins: price?.artcoins,
+            fiatPrice: price?.fiat,
+            postType: (art.postType || 'original') as 'original' | 'repost' | 'purchased',
+            createdAt: art.createdAt,
+            updatedAt: art.updatedAt,
+          }}
+        />
+      )}
+
+      {isOwner && isDeleteConfirmOpen && (
+        <ConfirmModal
+          isOpen={isDeleteConfirmOpen}
+          onClose={() => setIsDeleteConfirmOpen(false)}
+          onConfirm={() => {
+            deleteArt(art.id, {
+              onSuccess: () => {
+                setIsDeleteConfirmOpen(false);
+                navigate(ROUTES.HOME); // Or wherever you want to redirect after delete
+              },
+            });
+          }}
+          title="Delete Artwork"
+          description="Are you sure you want to delete this artwork? This action cannot be undone."
+          confirmText="Delete"
+          confirmVariant="destructive"
+          isLoading={isDeleting}
+        />
+      )}
     </div>
   );
 };

@@ -14,6 +14,7 @@ import { ArtCardFavoriteButton } from "./ArtCardFavoriteButton";
 import { ROUTES } from "../../../../constants/routes";
 import { useDeleteArtPost } from "../../hooks/art/useDeleteArtPost";
 import { EditArtModal } from "./EditArtModal";
+import ConfirmModal from "../../../../components/modals/ConfirmModal";
 
 interface ArtCardProps {
   item: ArtWithUser;
@@ -25,9 +26,10 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { mutate: deleteArt } = useDeleteArtPost();
+  const { mutate: deleteArt, isPending: isDeleting } = useDeleteArtPost();
 
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
@@ -204,15 +206,24 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
         canEdit={user.user?.id === item.art.userId}
         onEdit={() => setIsEditModalOpen(true)}
         onDelete={() => {
-          if (window.confirm("Are you sure you want to delete this art post?")) {
-            deleteArt(item.art.id);
-          }
+          setIsOptionsOpen(false);
+          setIsDeleteConfirmOpen(true);
         }}
       />
       <EditArtModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
         art={item.art}
+      />
+      <ConfirmModal
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={() => deleteArt(item.art.id, { onSuccess: () => setIsDeleteConfirmOpen(false) })}
+        title="Delete Art Post"
+        description="Are you sure you want to delete this artwork? This action cannot be undone."
+        confirmText="Delete"
+        confirmVariant="destructive"
+        isLoading={isDeleting}
       />
     </>
   );

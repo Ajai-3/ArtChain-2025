@@ -1,12 +1,20 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import apiClient from "../../../../api/axios";
-import toast from "react-hot-toast";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import apiClient from '../../../../api/axios';
+import toast from 'react-hot-toast';
 
 interface UpdateArtPostPayload {
   id: string;
   artName?: string;
   title?: string;
   description?: string;
+  commentingDisabled?: boolean;
+  downloadingDisabled?: boolean;
+  isPrivate?: boolean;
+  isSensitive?: boolean;
+  isForSale?: boolean;
+  priceType?: 'artcoin' | 'fiat';
+  artcoins?: number;
+  fiatPrice?: number;
 }
 
 export const useUpdateArtPost = () => {
@@ -19,12 +27,17 @@ export const useUpdateArtPost = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["allArt"] });
-      queryClient.invalidateQueries({ queryKey: ["artByName"] });
-      toast.success("Art post updated successfully");
+      queryClient.invalidateQueries({ queryKey: ['allArt'] });
+      queryClient.invalidateQueries({ queryKey: ['artByName'] });
+      queryClient.invalidateQueries({ queryKey: ['artById'] });
+      queryClient.invalidateQueries({ queryKey: ['userArt'] });
+      queryClient.invalidateQueries({ queryKey: ['userArtById'] });
+      queryClient.invalidateQueries({ queryKey: ['userArtByName'] });
+      queryClient.invalidateQueries({ queryKey: ['userFavorites'] });
+      toast.success('Art post updated successfully');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to update art post");
+      toast.error(error.response?.data?.message || 'Failed to update art post');
     },
   });
 };
