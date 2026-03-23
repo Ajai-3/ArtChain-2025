@@ -6,4 +6,5 @@ export interface IAdminArtController {
   getTopArts: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
   getCategoryStats: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
   updateArtStatus: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
+  deleteComment: (req: Request, res: Response, next: NextFunction) => Promise<Response | void>;
 }

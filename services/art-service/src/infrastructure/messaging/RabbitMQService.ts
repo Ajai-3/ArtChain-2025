@@ -7,6 +7,7 @@ import { logger } from '../../utils/logger';
 export class RabbitMQService {
   private connection: any = null;
   private channel: any = null;
+  private consumers: Array<{ queue: string; handler: (msg: any) => Promise<boolean> }> = [];
 
   private readonly DELAYED_EXCHANGE = 'delayed_exchange';
   private readonly GLOBAL_EXCHANGE = 'global_exchange';
@@ -22,12 +23,66 @@ export class RabbitMQService {
     if (this.connection) return;
     try {
       this.connection = await amqp.connect(config.rabbitmq_url);
+      
+      this.connection.on('error', (err: any) => {
+        logger.error('RabbitMQ Connection Error', err);
+        this.handleConnectionFailure();
+      });
+
+      this.connection.on('close', () => {
+        logger.warn('RabbitMQ Connection Closed');
+        this.handleConnectionFailure();
+      });
+
       this.channel = await this.connection.createChannel();
+      
+      this.channel.on('error', (err: any) => {
+        logger.error('RabbitMQ Channel Error', err);
+        this.handleChannelFailure();
+      });
+
+      this.channel.on('close', () => {
+        logger.warn('RabbitMQ Channel Closed');
+        this.handleChannelFailure();
+      });
+
       await this.setupQueues();
       logger.info('RabbitMQ Connected and Queues Configured');
     } catch (error) {
       logger.error('RabbitMQ Connection Failed', error);
-      throw error;
+      // Don't throw the error, just handle the failure so the process doesn't exit if it occurs during runtime
+      this.handleConnectionFailure();
+    }
+  }
+
+  private handleConnectionFailure() {
+    this.connection = null;
+    this.channel = null;
+    // Optional: add a timeout to try reconnecting automatically
+    setTimeout(() => {
+        this.connect().catch(err => logger.error('RabbitMQ Reconnection Retry Failed', err));
+    }, 5000);
+  }
+
+  private handleChannelFailure() {
+    this.channel = null;
+    // Try to recreate channel if connection is still alive
+    if (this.connection) {
+       this.connection.createChannel()
+        .then(async (ch: any) => {
+            this.channel = ch;
+            await this.setupQueues();
+            await this.reRegisterConsumers();
+        })
+        .catch((err: any) => logger.error('Failed to recreate RabbitMQ channel', err));
+    }
+  }
+
+  private async reRegisterConsumers() {
+    if (!this.channel) return;
+    logger.info(`Re-registering ${this.consumers.length} consumers`);
+    for (const { queue, handler } of this.consumers) {
+        await this.setupConsumer(queue, handler);
     }
   }
 
@@ -92,8 +147,12 @@ export class RabbitMQService {
 
   async publishDelayedAuctionEnd(auctionId: string, durationMs: number) {
     if (!this.channel) await this.connect();
+    if (!this.channel) {
+        logger.error('Cannot publish message: RabbitMQ channel not available');
+        return;
+    }
     const message = { auctionId };
-    this.channel!.publish(
+    this.channel.publish(
       this.DELAYED_EXCHANGE,
       'auction.delayed',
       Buffer.from(JSON.stringify(message)),
@@ -105,32 +164,52 @@ export class RabbitMQService {
   }
 
   async consume(queue: string, handler: (msg: any) => Promise<boolean>) {
+    // 1. Store consumer info for potential reconnection
+    if (!this.consumers.find(c => c.queue === queue && c.handler === handler)) {
+        this.consumers.push({ queue, handler });
+    }
+
+    // 2. Initial registration
+    await this.setupConsumer(queue, handler);
+  }
+
+  private async setupConsumer(queue: string, handler: (msg: any) => Promise<boolean>) {
     if (!this.channel) await this.connect();
+    if (!this.channel) {
+        logger.error(`Cannot start consumer for queue ${queue}: RabbitMQ channel not available`);
+        return;
+    }
 
-    // Process only one message at a time to prevent overloading
-    this.channel!.prefetch(1);
+    try {
+        // Process only one message at a time to prevent overloading
+        this.channel.prefetch(1);
 
-    this.channel!.consume(
-      queue,
-      async (msg: any) => {
-        if (!msg) return;
-        try {
-          const content = JSON.parse(msg.content.toString());
-          const success = await handler(content);
-
-          if (success) {
-            this.channel!.ack(msg);
-          } else {
-            // nack(message, requeue: false) -> sends to Dead Letter Exchange (Retry Queue)
-            this.channel!.nack(msg, false, false);
-          }
-        } catch (error) {
-          logger.error('Consumer Processing Error', error);
-          this.channel!.nack(msg, false, false);
-        }
-      },
-      { noAck: false },
-    );
+        await this.channel.consume(
+            queue,
+            async (msg: any) => {
+              if (!msg) return;
+              try {
+                const content = JSON.parse(msg.content.toString());
+                const success = await handler(content);
+      
+                if (success) {
+                  this.channel.ack(msg);
+                } else {
+                  this.channel.nack(msg, false, false);
+                }
+              } catch (error) {
+                logger.error('Consumer Processing Error', error);
+                if (this.channel) {
+                    this.channel.nack(msg, false, false);
+                }
+              }
+            },
+            { noAck: false },
+          );
+          logger.info(`Consumer registered for queue: ${queue}`);
+    } catch (err) {
+        logger.error(`Failed to setup consumer for queue: ${queue}`, err);
+    }
   }
 
   getEndedQueueName() {

@@ -115,6 +115,7 @@ export const TYPES = {
   IGetRecentAuctionsUseCase: Symbol.for('IGetRecentAuctionsUseCase'),
   IGetRecentCommissionsUseCase: Symbol.for('IGetRecentCommissionsUseCase'),
   IUpdateArtStatusUseCase: Symbol.for('IUpdateArtStatusUseCase'),
+  IAdminDeleteCommentUseCase: Symbol.for('IAdminDeleteCommentUseCase'),
   IAdminArtController: Symbol.for('IAdminArtController'),
   UserServiceClient: Symbol.for('UserServiceClient'),
   IWalletService: Symbol.for('IWalletService'),

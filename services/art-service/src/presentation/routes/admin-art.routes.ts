@@ -13,5 +13,6 @@ adminArtRouter.get(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATS, adminArtContr
 adminArtRouter.get(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATS_TOP, adminArtController.getTopArts);
 adminArtRouter.get(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATS_CATEGORIES, adminArtController.getCategoryStats);
 adminArtRouter.patch(ROUTES.ADMIN_ART.BASE + ROUTES.ADMIN_ART.STATUS, adminArtController.updateArtStatus);
+adminArtRouter.delete(ROUTES.ADMIN_ART.BASE + '/comment/:id', adminArtController.deleteComment);
 
 export default adminArtRouter;

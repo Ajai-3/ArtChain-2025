@@ -12,6 +12,7 @@ import { IGetAllArtsUseCase } from '../../application/interface/usecase/admin/IG
 import { IGetTopArtsUseCase } from '../../application/interface/usecase/admin/IGetTopArtsUseCase';
 import { IGetArtStatsUseCase } from '../../application/interface/usecase/admin/IGetArtStatsUseCase';
 import { IUpdateArtStatusUseCase } from '../../application/interface/usecase/admin/IUpdateArtStatusUseCase';
+import { IAdminDeleteCommentUseCase } from '../../application/interface/usecase/admin/IAdminDeleteCommentUseCase';
 import { IGetCategoryStatsUseCase } from '../../application/interface/usecase/admin/IGetCategoryStatsUseCase';
 
 @injectable()
@@ -27,6 +28,8 @@ export class AdminArtController implements IAdminArtController {
     private _getTopArtsUseCase: IGetTopArtsUseCase,
     @inject(TYPES.IGetCategoryStatsUseCase)
     private _getCategoryStatsUseCase: IGetCategoryStatsUseCase,
+    @inject(TYPES.IAdminDeleteCommentUseCase)
+    private _adminDeleteCommentUseCase: IAdminDeleteCommentUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -165,6 +168,30 @@ export class AdminArtController implements IAdminArtController {
         success: true,
         data: updated,
         message: `Art status updated to ${validatedData.status}`,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# DELETE COMMENT (ADMIN)
+  //# ================================================================================================================
+  //# DELETE /api/v1/art/admin/comment/:id
+  //# This endpoint allows admin to permanently delete a comment.
+  //# ================================================================================================================
+  deleteComment = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const { id } = req.params;
+      await this._adminDeleteCommentUseCase.execute(id);
+
+      return res.status(HttpStatus.OK).json({
+        success: true,
+        message: 'Comment deleted successfully by admin',
       });
     } catch (error) {
       next(error);

@@ -106,6 +106,8 @@ import { IEditCommentUseCase } from '../../application/interface/usecase/comment
 import { EditCommentUseCase } from '../../application/usecase/comment/EditCommentUseCase';
 import { IDeleteCommentUseCase } from '../../application/interface/usecase/comment/IDeleteCommentUseCase';
 import { DeleteCommentUseCase } from '../../application/usecase/comment/DeleteCommentUseCase';
+import { IAdminDeleteCommentUseCase } from '../../application/interface/usecase/admin/IAdminDeleteCommentUseCase';
+import { AdminDeleteCommentUseCase } from '../../application/usecase/admin/AdminDeleteCommentUseCase';
 
 // Use Cases - Favorite
 import { IAddFavoriteUseCase } from '../../application/interface/usecase/favorite/IAddFavoriteUseCase';
@@ -392,6 +394,9 @@ container
 container
   .bind<IDeleteCommentUseCase>(TYPES.IDeleteCommentUseCase)
   .to(DeleteCommentUseCase);
+container
+  .bind<IAdminDeleteCommentUseCase>(TYPES.IAdminDeleteCommentUseCase)
+  .to(AdminDeleteCommentUseCase);
 
 // Use Cases - Favorite
 container
