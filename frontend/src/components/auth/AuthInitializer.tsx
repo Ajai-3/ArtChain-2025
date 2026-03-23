@@ -29,10 +29,15 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({ children }) =>
         if (accessToken && user) {
           // Check if user is an admin
           if (user.role === "admin") {
-            console.log("✅ Admin user detected, dispatching to adminSlice");
+            console.log("✅ Admin user detected, dispatching to both slices");
             dispatch(setAdmin({ 
               accessToken, 
               admin: user 
+            }));
+            // Also set user state so user-side UI links (Sidebar/Navbar) work correctly
+            dispatch(setUser({ 
+              accessToken, 
+              user 
             }));
           } else {
             console.log("✅ Regular user detected, dispatching to userSlice");

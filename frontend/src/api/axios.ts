@@ -6,8 +6,19 @@ import type { RefreshTokenResponse } from "../types/refreshTokenResponse";
 import { adminLogout, setAdminAccessToken } from "../redux/slices/adminSlice";
 import toast from "react-hot-toast";
 
-const MAX_REFRESH_RETRIES = 3;
-let refreshRetryCount = 0;
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -25,24 +36,19 @@ declare module "axios" {
 
 apiClient.interceptors.request.use((config) => {
   const state = store.getState();
-
   let token: string | null = null;
 
-  
   if (state?.admin?.accessToken) {
     token = state.admin.accessToken;
   } else {
     token = state?.user?.accessToken ?? null;
   }
 
-  console.log("Token for request:", token);
-
-
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   } else {
     delete config.headers.Authorization;
-  };
+  }
 
   return config;
 });
@@ -50,58 +56,65 @@ apiClient.interceptors.request.use((config) => {
 const AUTH_ENDPOINTS = [
   "/api/v1/auth/login",
   "/api/v1/auth/register",
+  "/api/v1/auth/initialize",
+  "/api/v1/auth/refresh-token",
   "/api/v1/admin/login",
 ];
 
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(
-      "%c✅ API Success Response:",
-      "color: green; font-weight: bold;",
-      response
-    );
     return response;
   },
   async (error) => {
-    console.error(
-      "%c❌ API Error Response:",
-      "color: red; font-weight: bold;",
-      error.response ?? error
-    );
-
     if (!error.response) {
-      const networkError: ApiError = {
+      return Promise.reject({
         status: 503,
-        message:
-          error.code === "ECONNABORTED" ? "Request timed out" : "Network Error",
+        message: error.code === "ECONNABORTED" ? "Request timed out" : "Network Error",
         isNetworkError: true,
         fullError: error,
-      };
-      if (error.message && error.message.includes("Failed to fetch")) {
-        networkError.message =
-          "CORS error: Backend might be unavailable or misconfigured";
-      }
-      return Promise.reject(networkError);
+      });
     }
-    
+
     const originalRequest = error.config;
+    const status = error.response.status;
+
+    // MANDATORY: Handle 404s IMMEDIATELY to prevent downstream auth logic
+    if (status === 404) {
+      console.log(`[Axios Interceptor] 404 detected for ${originalRequest.url}. Blocking logout logic.`);
+      return Promise.reject({
+        status: 404,
+        message: error.response.data?.message || "Resource not found",
+        fullError: error.response,
+      });
+    }
+
     const isAuthEndpoint = AUTH_ENDPOINTS.some((url) =>
       originalRequest.url?.startsWith(url)
     );
 
-    if (
-      error.response.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest._noRetry &&
-      refreshRetryCount < MAX_REFRESH_RETRIES &&
-      !isAuthEndpoint
-    ) {
+    // Only attempt refresh for 401s that aren't on auth endpoints and haven't been tried
+    if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+      console.log(`[Axios Interceptor] 401 detected for ${originalRequest.url}. Attempting token refresh.`);
+      
+      if (isRefreshing) {
+        console.log(`[Axios Interceptor] Refresh already in progress. Queuing request.`);
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return apiClient(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
       originalRequest._retry = true;
-      refreshRetryCount++;
+      isRefreshing = true;
 
       try {
-        const state = store.getState();
-        const isAdminRequest = state.admin.isAuthenticated ? state.admin.isAuthenticated : state.user.isAuthenticated
+        const isAdminRequest = originalRequest.url?.includes("/api/v1/admin");
         const refreshEndpoint = "/api/v1/auth/refresh-token";
 
         const response = await apiClient.get<RefreshTokenResponse>(
@@ -110,48 +123,51 @@ apiClient.interceptors.response.use(
         );
 
         const newToken = response?.data?.accessToken;
-        console.log("New access token", newToken)
         if (!newToken) throw new Error("No accessToken returned");
 
+        console.log(`[Axios Interceptor] Token refresh successful. Resuming requests.`);
         if (isAdminRequest) {
           store.dispatch(setAdminAccessToken(newToken));
         } else {
           store.dispatch(setAccessToken(newToken));
         }
 
+        processQueue(null, newToken);
+        isRefreshing = false;
+
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        refreshRetryCount = 0;
-
         return apiClient(originalRequest);
-      } catch (refreshError) {
-        console.error(
-          "%c⚠️ Refresh Token Failed:",
-          "color: darkred; font-weight: bold;",
-          refreshError
-        );
+      } catch (refreshError: any) {
+        const refreshStatus = refreshError.response?.status;
+        console.error(`[Axios Interceptor] Token refresh failed with status ${refreshStatus}:`, refreshError);
+        
+        processQueue(refreshError, null);
+        isRefreshing = false;
 
-        if (refreshRetryCount >= MAX_REFRESH_RETRIES) {
-          const isAdmin = originalRequest.url?.includes("/api/v1/admin");
+        const isAdmin = originalRequest.url?.includes("/api/v1/admin");
+        
+        // Only log out if the refresh token itself is actually invalid (401 or 403)
+        if (refreshStatus === 401 || refreshStatus === 403) {
+          console.warn(`[Axios Interceptor] Refresh token invalid. Dispatching logout.`);
           store.dispatch(isAdmin ? adminLogout() : logout());
         }
+
         return Promise.reject({
           status: 401,
-          message:
-            refreshRetryCount >= MAX_REFRESH_RETRIES
-              ? "Session expired. Please log in again."
-              : "Refreshing session failed.",
+          message: "Session expired. Please log in again.",
           fullError: refreshError,
         });
       }
     }
-    if (error.response.status === 429) {
-      toast.error(error.response.data?.message || "Too many requests. Please try again after 15 minutes", {
+
+    if (status === 429) {
+      toast.error(error.response.data?.message || "Too many requests. Please try again later", {
         id: "rate-limit-toast",
       });
     }
 
     return Promise.reject({
-      status: error.response.status,
+      status: status,
       message: error.response.data?.message || error.response.data?.body?.error?.message || "Request failed",
       fullError: error.response,
     });

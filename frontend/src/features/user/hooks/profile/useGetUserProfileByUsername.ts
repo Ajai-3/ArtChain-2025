@@ -10,7 +10,10 @@ export const useGetUserProfileByUsername = (username?: string) => {
       return res.data;
     },
     enabled: true,
-    retry: 2,
+    retry: (failureCount, error: any) => {
+      if (error?.status === 404) return false;
+      return failureCount < 2;
+    },
     refetchInterval: false,
   });
 };
