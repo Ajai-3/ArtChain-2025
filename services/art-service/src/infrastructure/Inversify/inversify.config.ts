@@ -217,6 +217,31 @@ import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGe
 import { GetUserBidsUseCase } from '../../application/usecase/bid/GetUserBidsUseCase';
 import { IGetUserBiddingHistoryUseCase } from '../../application/interface/usecase/auction/IGetUserBiddingHistoryUseCase';
 import { GetUserBiddingHistoryUseCase } from '../../application/usecase/auction/GetUserBiddingHistoryUseCase';
+// Commission
+import { ICommissionRepository } from '../../domain/repositories/ICommissionRepository';
+import { CommissionRepositoryImpl } from '../repositories/CommissionRepositoryImpl';
+import { ICreateCommissionUseCase } from '../../application/interface/usecase/commission/ICreateCommissionUseCase';
+import { CreateCommissionUseCase } from '../../application/usecase/commission/CreateCommissionUseCase';
+import { IGetCommissionByConversationUseCase } from '../../application/interface/usecase/commission/IGetCommissionByConversationUseCase';
+import { GetCommissionByConversationUseCase } from '../../application/usecase/commission/GetCommissionByConversationUseCase';
+import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
+import { UpdateCommissionUseCase } from '../../application/usecase/commission/UpdateCommissionUseCase';
+
+import { ICommissionController } from '../../presentation/interface/ICommissionController';
+import { CommissionController } from '../../presentation/controllers/CommissionController';
+import { GetAllCommissionsUseCase } from '../../application/usecase/commission/GetAllCommissionsUseCase';
+import { ResolveCommissionDisputeUseCase } from '../../application/usecase/commission/ResolveCommissionDisputeUseCase';
+import { AdminCommissionController } from '../../presentation/controllers/AdminCommissionController';
+// RabbitMQ & Auction Ending
+import { RabbitMQService } from '../messaging/RabbitMQService';
+import { IEndAuctionUseCase } from '../../application/interface/usecase/auction/IEndAuctionUseCase';
+import { EndAuctionUseCase } from '../../application/usecase/auction/EndAuctionUseCase';
+import { AuctionEndedConsumer } from '../messaging/consumers/AuctionEndedConsumer';
+import { IGetCommissionStatsUseCase } from '../../application/interface/usecase/commission/IGetCommissionStatsUseCase';
+// Elasticsearch Client
+import { ElasticSearchClient } from '../clients/ElasticSearchClient';
+import { DeleteUserArtPostUseCase } from '../../application/usecase/art/DeleteUserArtPostUseCase';
+import { IDeleteUserArtPostUseCase } from '../../application/interface/usecase/art/IDeleteUserArtPostUseCase';
 
 
 
@@ -302,6 +327,7 @@ container
 container
   .bind<IUpdateArtPostUseCase>(TYPES.IUpdateArtPostUseCase)
   .to(UpdateArtPostUseCase);
+container.bind<IDeleteUserArtPostUseCase>(TYPES.IDeleteUserArtPostUseCase).to(DeleteUserArtPostUseCase);
 container
   .bind<IGetAllShopArtsUseCase>(TYPES.IGetAllShopArtsUseCase)
   .to(GetAllShopArtsUseCase);
@@ -490,21 +516,6 @@ container
   .bind<IAdminPlatformConfigController>(TYPES.IAdminPlatformConfigController)
   .to(AdminPlatformConfigController);
 
-// Commission
-import { ICommissionRepository } from '../../domain/repositories/ICommissionRepository';
-import { CommissionRepositoryImpl } from '../repositories/CommissionRepositoryImpl';
-import { ICreateCommissionUseCase } from '../../application/interface/usecase/commission/ICreateCommissionUseCase';
-import { CreateCommissionUseCase } from '../../application/usecase/commission/CreateCommissionUseCase';
-import { IGetCommissionByConversationUseCase } from '../../application/interface/usecase/commission/IGetCommissionByConversationUseCase';
-import { GetCommissionByConversationUseCase } from '../../application/usecase/commission/GetCommissionByConversationUseCase';
-import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
-import { UpdateCommissionUseCase } from '../../application/usecase/commission/UpdateCommissionUseCase';
-
-import { ICommissionController } from '../../presentation/interface/ICommissionController';
-import { CommissionController } from '../../presentation/controllers/CommissionController';
-import { GetAllCommissionsUseCase } from '../../application/usecase/commission/GetAllCommissionsUseCase';
-import { ResolveCommissionDisputeUseCase } from '../../application/usecase/commission/ResolveCommissionDisputeUseCase';
-import { AdminCommissionController } from '../../presentation/controllers/AdminCommissionController';
 
 container
   .bind<ICommissionRepository>(TYPES.ICommissionRepository)
@@ -533,11 +544,6 @@ container
   .bind<AdminCommissionController>(AdminCommissionController)
   .to(AdminCommissionController);
 
-// RabbitMQ & Auction Ending
-import { RabbitMQService } from '../messaging/RabbitMQService';
-import { IEndAuctionUseCase } from '../../application/interface/usecase/auction/IEndAuctionUseCase';
-import { EndAuctionUseCase } from '../../application/usecase/auction/EndAuctionUseCase';
-import { AuctionEndedConsumer } from '../messaging/consumers/AuctionEndedConsumer';
 
 container
   .bind<RabbitMQService>(TYPES.RabbitMQService)
@@ -550,14 +556,11 @@ container
   .bind<AuctionEndedConsumer>(TYPES.AuctionEndedConsumer)
   .to(AuctionEndedConsumer)
   .inSingletonScope();
-import { IGetCommissionStatsUseCase } from '../../application/interface/usecase/commission/IGetCommissionStatsUseCase';
 
 container
   .bind<IGetCommissionStatsUseCase>(TYPES.IGetCommissionStatsUseCase)
   .to(GetCommissionStatsUseCase);
 
-// Elasticsearch Client
-import { ElasticSearchClient } from '../clients/ElasticSearchClient';
 container
   .bind<ElasticSearchClient>(TYPES.IElasticSearchClient)
   .to(ElasticSearchClient);
