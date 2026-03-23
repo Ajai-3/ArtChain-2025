@@ -1,11 +1,6 @@
 import 'dotenv-flow/config';
 import jwt from 'jsonwebtoken';
-// import { getArtChainSecrets } from "art-chain-shared";
 
-// COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
-// const secrets = await getArtChainSecrets("ArtChainCommonSecret");
-
-// Using hardcoded values from .env file instead
 const secrets = {
   jwtAccessSecret: process.env.JWT_ACCESS_SECRET || 'your-access-secret-key-here',
   jwtRefreshSecret: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key-here',
@@ -37,6 +32,7 @@ export const config = {
     emailVerificationExpire: (process.env.JWT_EMAIL_VERIFICATION_EXPIRES_IN ||
       '5m') as jwt.SignOptions['expiresIn'],
   },
+  redis_url: process.env.REDIS_URL,
 };
 
 console.log(config);

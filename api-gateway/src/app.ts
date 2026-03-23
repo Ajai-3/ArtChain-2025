@@ -5,17 +5,9 @@ import cookieParser from 'cookie-parser';
 import mainRoutes from './routes/main.route';
 import { conditionalAuth } from './middleware/conditionalAuth';
 import { logger } from './utils/logger';
+import { globalRateLimiter } from './middleware/rateLimiter';
 
 const app = express();
-
-app.use(cookieParser());
-
-
-app.use((req, res, next) => {
-  console.log(req.headers['x-user-id']);
-  logger.info(`Incoming request: ${req.method} ${req.path}`);
-  next();
-});
 
 app.use(
   cors({
@@ -31,6 +23,14 @@ app.use(
     credentials: true,
   })
 );
+
+app.use((req, res, next) => {
+  logger.info(`Incoming request: ${req.method} ${req.path}`);
+  next();
+});
+
+app.use(globalRateLimiter);
+app.use(cookieParser());
 
 app.use(conditionalAuth);
 

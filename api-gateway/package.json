@@ -22,8 +22,11 @@
     "dotenv": "^17.2.1",
     "dotenv-flow": "^4.1.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.3.1",
     "jsonwebtoken": "^9.0.2",
     "path-to-regexp": "^8.3.0",
+    "rate-limit-redis": "^4.3.1",
+    "redis": "^5.11.0",
     "winston": "^3.17.0",
     "winston-loki": "^6.1.3"
   },
