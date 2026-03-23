@@ -114,4 +114,53 @@ export class ArtService implements IArtService {
         return { REQUESTED: 0, AGREED: 0, IN_PROGRESS: 0, COMPLETED: 0 };
     }
   }
+
+  async updateArtStatus(token: string, artId: string, status: string): Promise<any> {
+    try {
+      const res = await axios.patch(`${this.baseUrl}/api/v1/art/admin/art/${artId}/status`, 
+        { status }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (err) {
+        console.error('Error updating art status:', err);
+        throw err;
+    }
+  }
+
+  async deleteComment(token: string, commentId: string): Promise<any> {
+    try {
+      const res = await axios.delete(`${this.baseUrl}/api/v1/art/admin/art/comment/${commentId}`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (err) {
+        console.error('Error deleting comment:', err);
+        throw err;
+    }
+  }
+
+  async getArt(token: string, artId: string): Promise<any> {
+    try {
+      const res = await axios.get(`${this.baseUrl}/api/v1/art/${artId}`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (err) {
+        console.error('Error fetching art:', err);
+        throw err;
+    }
+  }
+
+  async getComment(token: string, commentId: string): Promise<any> {
+    try {
+      const res = await axios.get(`${this.baseUrl}/api/v1/art/comment/${commentId}`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      return res.data;
+    } catch (err) {
+        console.error('Error fetching comment:', err);
+        throw err;
+    }
+  }
 }

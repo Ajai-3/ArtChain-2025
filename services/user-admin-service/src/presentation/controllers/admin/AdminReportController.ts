@@ -93,10 +93,12 @@ export class AdminReportController implements IAdminReportController {
         });
       }
 
+      const token = req.headers.authorization?.split(' ')[1];
       const result = await this._updateReportStatusBulkUseCase.execute(
         targetId,
         targetType,
-        status
+        status,
+        token
       );
 
       console.log('[AdminReportController] Bulk update result:', result);

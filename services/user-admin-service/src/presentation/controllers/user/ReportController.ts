@@ -39,7 +39,8 @@ export class ReportController implements IReportController {
         description: validatedData.description,
       };
 
-      const report = await this._createReportUseCase.execute(dto);
+      const token = req.headers['authorization']?.split(' ')[1];
+      const report = await this._createReportUseCase.execute(dto, token);
       return res.status(HttpStatus.CREATED).json({
         success: true,
         message: 'Report created successfully',
