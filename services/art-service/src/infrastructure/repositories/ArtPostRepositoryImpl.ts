@@ -105,7 +105,7 @@ export class ArtPostRepositoryImpl
   }
 
   async delete(id: string): Promise<void> {
-    await ArtPostModel.deleteOne({ id });
+    await ArtPostModel.findByIdAndUpdate(id, { status: 'deleted' });
   }
 
   // ==================================================================================

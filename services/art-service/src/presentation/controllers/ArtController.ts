@@ -15,13 +15,17 @@ import { IGetArtByIdUseCase } from '../../application/interface/usecase/art/IGet
 import { IDownloadArtUseCase } from '../../application/interface/usecase/art/IDownloadArtUseCase';
 import { IGetArtByNameUseCase } from '../../application/interface/usecase/art/IGetArtByNameUseCase';
 import { ICountArtWorkUseCase } from '../../application/interface/usecase/art/ICountArtWorkUseCase';
+import { IDeleteArtPostUseCase } from '../../application/interface/usecase/art/IDeleteArtPostUseCase';
+import { IUpdateArtPostUseCase } from '../../application/interface/usecase/art/IUpdateArtPostUseCase';
 import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/ICreateArtPostUseCase';
+import { IGetSalesAnalyticsUseCase } from '../../application/interface/usecase/art/IGetSalesAnalyticsUseCase';
+import { ISaledArtworkOfuserUseCase } from '../../application/interface/usecase/art/ISaledArtworkOfuserUseCase';
 import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
 import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
 import { IGetPurchasedArtWorksUseCase } from '../../application/interface/usecase/art/IGetPurchasedArtWorksUseCase';
-import { ISaledArtworkOfuserUseCase } from '../../application/interface/usecase/art/ISaledArtworkOfuserUseCase';
-import { IGetSalesAnalyticsUseCase } from '../../application/interface/usecase/art/IGetSalesAnalyticsUseCase';
 import { IGetPurchaseAnalyticsUseCase } from '../../application/interface/usecase/art/IGetPurchaseAnalyticsUseCase';
+import { IDeleteUserArtPostUseCase } from '../../application/interface/usecase/art/IDeleteUserArtPostUseCase';
+
 
 @injectable()
 export class ArtController implements IArtController {
@@ -52,6 +56,10 @@ export class ArtController implements IArtController {
     private readonly _getSalesAnalyticsUseCase: IGetSalesAnalyticsUseCase,
     @inject(TYPES.IGetPurchaseAnalyticsUseCase)
     private readonly _getPurchaseAnalyticsUseCase: IGetPurchaseAnalyticsUseCase,
+    @inject(TYPES.IDeleteUserArtPostUseCase)
+    private readonly _deleteUserArtUseCase: IDeleteUserArtPostUseCase,
+    @inject(TYPES.IUpdateArtPostUseCase)
+    private readonly _updateArtUseCase: IUpdateArtPostUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -280,12 +288,14 @@ export class ArtController implements IArtController {
     try {
       const { id } = req.params;
       const updateData = req.body;
+      const userId = req.headers['x-user-id'] as string;
 
       logger.info(
         `Updating art id=${id} with data=${JSON.stringify(updateData)}`,
       );
 
-      // TODO: Replace with actual DB/service call
+      await this._updateArtUseCase.execute({ id, ...updateData, userId });
+
       return res.status(HttpStatus.OK).json({
         message: ART_MESSAGES.UPDATE_SUCCESS,
         data: updateData,
@@ -340,10 +350,12 @@ export class ArtController implements IArtController {
   ): Promise<Response | void> => {
     try {
       const { id } = req.params;
+      const userId = req.headers['x-user-id'] as string;
 
       logger.info(`Deleting art id=${id}`);
 
-      // TODO: Replace with actual DB/service call
+      await this._deleteUserArtUseCase.execute(id, userId);
+
       return res
         .status(HttpStatus.OK)
         .json({ message: ART_MESSAGES.DELETE_SUCCESS });

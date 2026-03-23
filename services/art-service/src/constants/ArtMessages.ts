@@ -28,4 +28,5 @@ export enum ART_MESSAGES {
   PURCHASE_ANALYTICS_FETCH_SUCCESS = 'Fetched purchase analytics successfully',
   INVALID_IMAGE_URL_FORMAT = 'Invalid image URL format',
   YOU_ARE_NOT_PURCHASER = 'You are not the purchaser of this art',
+  YOU_ARE_NOT_AUTHORIZED_TO_UPDATE_THIS_ART = 'You are not authorized to update this art',
 }

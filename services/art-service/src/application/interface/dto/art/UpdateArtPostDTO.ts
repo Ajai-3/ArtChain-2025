@@ -13,4 +13,5 @@ export interface UpdateArtPostDTO {
   priceType?: 'artcoin' | 'fiat';
   artcoins?: number;
   fiatPrice?: number;
+  userId: string;
 }

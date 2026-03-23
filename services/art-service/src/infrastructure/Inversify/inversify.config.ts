@@ -74,7 +74,10 @@ import { SaledArtworkOfuserUseCase } from '../../application/usecase/art/SaledAr
 import { GetAllArtWithUserIdUseCase } from '../../application/usecase/art/GetAllArtWithUserIdUseCase';
 import { GetPurchasedArtWorksUseCase } from '../../application/usecase/art/GetPurchasedArtWorksUseCase';
 import { GetPurchaseAnalyticsUseCase } from '../../application/usecase/art/GetPurchaseAnalyticsUseCase';
-
+import { IDeleteArtPostUseCase } from '../../application/interface/usecase/art/IDeleteArtPostUseCase';
+import { DeleteArtPostUseCase } from '../../application/usecase/art/DeleteArtPostUseCase';
+import { IUpdateArtPostUseCase } from '../../application/interface/usecase/art/IUpdateArtPostUseCase';
+import { UpdateArtPostUseCase } from '../../application/usecase/art/UpdateArtPostUseCase';
 import { IBuyArtUseCase } from '../../application/interface/usecase/art/IBuyArtUseCase';
 import { BuyArtUseCase } from '../../application/usecase/art/BuyArtUseCase';
 import { IDownloadArtUseCase } from '../../application/interface/usecase/art/IDownloadArtUseCase';
@@ -293,6 +296,12 @@ container
 container
   .bind<ICreateArtPostUseCase>(TYPES.ICreateArtPostUseCase)
   .to(CreateArtPostUseCase);
+container
+  .bind<IDeleteArtPostUseCase>(TYPES.IDeleteArtPostUseCase)
+  .to(DeleteArtPostUseCase);
+container
+  .bind<IUpdateArtPostUseCase>(TYPES.IUpdateArtPostUseCase)
+  .to(UpdateArtPostUseCase);
 container
   .bind<IGetAllShopArtsUseCase>(TYPES.IGetAllShopArtsUseCase)
   .to(GetAllShopArtsUseCase);

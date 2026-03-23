@@ -12,6 +12,8 @@ import { useFavoritePost } from "../../hooks/art/useFavoritePost";
 import { useUnfavoritePost } from "../../hooks/art/useUnfavoritePost";
 import { ArtCardFavoriteButton } from "./ArtCardFavoriteButton";
 import { ROUTES } from "../../../../constants/routes";
+import { useDeleteArtPost } from "../../hooks/art/useDeleteArtPost";
+import { EditArtModal } from "./EditArtModal";
 
 interface ArtCardProps {
   item: ArtWithUser;
@@ -22,7 +24,10 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
   const user = useSelector((state: RootState) => state.user);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const { mutate: deleteArt } = useDeleteArtPost();
 
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
@@ -196,6 +201,18 @@ const ArtCard: React.FC<ArtCardProps> = ({ item, lastArtRef }) => {
         onClose={() => setIsOptionsOpen(false)}
         targetId={item.art.id}
         targetType="art"
+        canEdit={user.user?.id === item.art.userId}
+        onEdit={() => setIsEditModalOpen(true)}
+        onDelete={() => {
+          if (window.confirm("Are you sure you want to delete this art post?")) {
+            deleteArt(item.art.id);
+          }
+        }}
+      />
+      <EditArtModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        art={item.art}
       />
     </>
   );
