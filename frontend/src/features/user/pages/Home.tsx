@@ -12,6 +12,7 @@ import ArtCard from "../components/art/ArtCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import ArtCardSkeleton from "../components/skeletons/ArtCardSkeleton";
 import { useMasonryLayout } from "../../../hooks/useMasonryLayout";
+import ContentUnavailable from "../../../components/ContentUnavailable";
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -133,7 +134,7 @@ const Home: React.FC = () => {
     );
   if (status === "error")
     return (
-      <div>Error: {(error as Error)?.message || "Something went wrong"}</div>
+        <ContentUnavailable />
     );
 
   // Final render: same layout and styles as you provided

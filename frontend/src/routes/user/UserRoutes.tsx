@@ -3,6 +3,7 @@ import { lazy } from "react";
 import UserLayout from "../../layouts/UserLayout";
 import SettingsLayout from "../../layouts/SettingsLayout";
 import { AuthRouteGuard } from "./AuthRouteGuard";
+import { UserRouteGuard } from "./UserRouteGuard";
 import Test from "../../components/Test";
 import SuccessPage from "../../features/user/components/wallet/SuccessPage";
 import { ROUTES, ROUTE_PATTERNS } from "../../constants/routes";
@@ -94,47 +95,51 @@ const UserRoutes = (
   <>
     <Route element={<AuthRouteGuard />}>
       <Route path={ROUTES.LOGIN} element={<Auth />} />
+      <Route path={ROUTES.SIGNUP} element={<Auth />} />
       <Route path={ROUTES.RESET_PASSWORD} element={<ResetPassword />} />
       <Route path={ROUTES.VERIFY} element={<SignupPassword />} />
     </Route>
 
     <Route path={ROUTES.HOME} element={<UserLayout />}>
       <Route index element={<Home />} />
-      <Route path="liora.ai" element={<Liora />} />
+      
+      {/* Protected User Routes */}
+      <Route element={<UserRouteGuard />}>
+        <Route path="liora.ai" element={<Liora />} />
+        <Route path="wallet" element={<Wallet />} />
+        <Route path="success" element={<SuccessPage />} />
+        
+        <Route path="bidding" element={<BiddingPage />}>
+          <Route index element={<BiddingListPage />} />
+          <Route path="my-bids" element={<MyBidsPage />} />
+          <Route path="my-auctions" element={<MyAuctionsPage />} />
+          <Route path=":id" element={<BiddingDetailPage />} />
+        </Route>
 
+        <Route path="chat" element={<Chat />} />
+        <Route path={ROUTE_PATTERNS.CHAT_CONVERSATION} element={<Chat />} />
+
+        <Route path="settings" element={<SettingsLayout />}>
+          <Route index element={<Settings />} />
+          <Route path="profile" element={<ProfileSettings />} />
+          <Route path="password" element={<PasswordSettings />} />
+          <Route path="privacy" element={<PrivacySettings />} />
+          <Route path="notifications" element={<NotificationSettings />} />
+          <Route path="subscriptions" element={<SubscriptionSettings />} />
+          <Route path="purchases" element={<PurchaseHistory />} />
+          <Route path="sales" element={<SalesHistory />} />
+          <Route path="liked" element={<LikedItems />} />
+          <Route path="blocked" element={<BlockedUsers />} />
+          <Route path="support" element={<HelpAndSupport />} />
+        </Route>
+      </Route>
+
+      {/* Public Pages but with feature-level auth (e.g. creating) */}
       <Route path="shop" element={<Shop />} />
-      <Route path="wallet" element={<Wallet />} />
       <Route path="test" element={<Test />} />
-      <Route path="success" element={<SuccessPage />} />
-
       <Route path={ROUTE_PATTERNS.ART_PAGE} element={<ArtPage />} />
 
-      <Route path="bidding" element={<BiddingPage />}>
-        <Route index element={<BiddingListPage />} />
-        <Route path="my-bids" element={<MyBidsPage />} />
-        <Route path="my-auctions" element={<MyAuctionsPage />} />
-        <Route path=":id" element={<BiddingDetailPage />} />
-      </Route>
-
-      <Route path="chat" element={<Chat />} />
-      <Route path={ROUTE_PATTERNS.CHAT_CONVERSATION} element={<Chat />} />
-
-      {/* Settings Routes - Protected */}
-      <Route path="settings" element={<SettingsLayout />}>
-        <Route index element={<Settings />} />
-        <Route path="profile" element={<ProfileSettings />} />
-        <Route path="password" element={<PasswordSettings />} />
-        <Route path="privacy" element={<PrivacySettings />} />
-        <Route path="notifications" element={<NotificationSettings />} />
-        <Route path="subscriptions" element={<SubscriptionSettings />} />
-        <Route path="purchases" element={<PurchaseHistory />} />
-        <Route path="sales" element={<SalesHistory />} />
-        <Route path="liked" element={<LikedItems />} />
-        <Route path="blocked" element={<BlockedUsers />} />
-        <Route path="support" element={<HelpAndSupport />} />
-      </Route>
-
-      {/* Profile Routes */}
+      {/* Profile Routes - Partially public */}
       <Route path={ROUTE_PATTERNS.PROFILE} element={<Profile />}>
         <Route index element={<ProfileGallery />} />
         <Route path="gallery" element={<ProfileGallery />} />

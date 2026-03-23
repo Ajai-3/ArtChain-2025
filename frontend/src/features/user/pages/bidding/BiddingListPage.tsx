@@ -34,6 +34,9 @@ export default function BiddingListPage() {
 
     const formattedDate = date ? format(date, "yyyy-MM-dd") : "";
 
+    const user = useSelector((state: RootState) => state.user.user);
+    const isAuthenticated = useSelector((state: RootState) => state.user.isAuthenticated);
+
     // Fetch from API
     const {
         data,
@@ -86,12 +89,16 @@ export default function BiddingListPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => navigate("/bidding/my-bids")}>
-                        <Gavel className="mr-2 h-4 w-4" /> My Bids
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={() => navigate("/bidding/my-auctions")}>
-                        <LayoutList className="mr-2 h-4 w-4" /> My Auctions
-                    </Button>
+                    {isAuthenticated && (
+                        <>
+                            <Button variant="outline" size="sm" onClick={() => navigate("/bidding/my-bids")}>
+                                <Gavel className="mr-2 h-4 w-4" /> My Bids
+                            </Button>
+                            <Button variant="outline" size="sm" onClick={() => navigate("/bidding/my-auctions")}>
+                                <LayoutList className="mr-2 h-4 w-4" /> My Auctions
+                            </Button>
+                        </>
+                    )}
 
                     <Popover open={isVisiable} onOpenChange={setIsVisiable}>
                         <PopoverTrigger asChild>
@@ -147,14 +154,16 @@ export default function BiddingListPage() {
                         </PopoverContent>
                     </Popover>
 
-                    <Button size="sm" variant="main" onClick={() => setIsCreateModalOpen(true)}>
-                        <Plus className="mr-2 h-4 w-4" /> Create
-                    </Button>
+                    {isAuthenticated && user?.role === "artist" && (
+                        <Button size="sm" variant="main" onClick={() => setIsCreateModalOpen(true)}>
+                            <Plus className="mr-2 h-4 w-4" /> Create
+                        </Button>
+                    )}
                 </div>
             </div>
 
             {/* Grid */}
-            {(loading && (!auctions || auctions.length === 0)) ? ( // Show skeleton if loading AND no redux data yet
+            {(loading && (!auctions || auctions.length === 0)) ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {[...Array(8)].map((_, i) => (
                         <AuctionCardSkeleton key={i} />

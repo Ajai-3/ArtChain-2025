@@ -4,6 +4,7 @@ import type { ApiError } from "../types/apiError";
 import { logout, setAccessToken } from "../redux/slices/userSlice";
 import type { RefreshTokenResponse } from "../types/refreshTokenResponse";
 import { adminLogout, setAdminAccessToken } from "../redux/slices/adminSlice";
+import toast from "react-hot-toast";
 
 const MAX_REFRESH_RETRIES = 3;
 let refreshRetryCount = 0;
@@ -143,11 +144,15 @@ apiClient.interceptors.response.use(
         });
       }
     }
-    console.log(error.response);
+    if (error.response.status === 429) {
+      toast.error(error.response.data?.message || "Too many requests. Please try again after 15 minutes", {
+        id: "rate-limit-toast",
+      });
+    }
 
     return Promise.reject({
       status: error.response.status,
-      message: error.response.data?.body?.error?.message || "Request failed",
+      message: error.response.data?.message || error.response.data?.body?.error?.message || "Request failed",
       fullError: error.response,
     });
   }

@@ -4,6 +4,7 @@ import ProfileTopBar from "../components/profile/ProfileTopBar";
 import ProfileSelectBar from "../components/profile/ProfileSelectBar";
 import { useProfileData } from "../hooks/profile/useProfileData";
 import ProfileSkeleton from "../components/skeletons/ProfileSkeleton";
+import UserNotFound from "../../../components/UserNotFound";
 
 const Profile: React.FC = () => {
   const { username } = useParams<{ username?: string }>();
@@ -18,7 +19,7 @@ const Profile: React.FC = () => {
   } = useProfileData(username);
 
   if (isLoading) return <ProfileSkeleton />;
-  if (!profileUser) return <div>User not found</div>;
+  if (!profileUser) return <UserNotFound />;
 
   if (window.location.pathname === `/${username}`) {
     return <Navigate to={`/${username}/gallery`} replace />;

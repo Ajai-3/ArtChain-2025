@@ -10,7 +10,7 @@ export const useGetReportTarget = (targetId: string, targetType: "ART" | "COMMEN
         return res.data.data;
       } else if (targetType === "ART") {
         const res = await apiClient.get(`/api/v1/art/${targetId}`); 
-        return res.data.art;
+        return res.data;
       } else if (targetType === "COMMENT") {
         const res = await apiClient.get(`/api/v1/art/comment/${targetId}`);
         return res.data.comment;

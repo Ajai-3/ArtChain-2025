@@ -23,6 +23,7 @@ import {
 import { Button } from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import { signInWithGoogle } from "../../../../firebase/config";
+import AuthBackground from "./AuthBackground";
 
 const Auth: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -109,8 +110,10 @@ const Auth: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6">
-      <div className="w-full max-w-md sm:max-w-md md:max-w-md bg-card p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="relative flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6 overflow-hidden">
+      <AuthBackground />
+      
+      <div className="relative z-10 w-full max-w-md sm:max-w-md md:max-w-md bg-card/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900/80">
         {!forgotMode ? (
           <>
             <div className="mb-6 text-center">

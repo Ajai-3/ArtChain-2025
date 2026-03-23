@@ -10,6 +10,7 @@ import {
   passwordSchema,
   type PasswordFormInput,
 } from "../../schemas/authSchemas";
+import AuthBackground from "./AuthBackground";
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -55,8 +56,9 @@ const ResetPassword: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6">
-      <div className="w-full max-w-md sm:max-w-lg md:max-w-md bg-card p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="relative flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6 overflow-hidden">
+      <AuthBackground />
+      <div className="relative z-10 w-full max-w-md sm:max-w-lg md:max-w-md bg-card/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900/80">
         <div className="mb-6 text-center space-y-2">
           <h2 className="text-xl sm:text-2xl font-bold">Create New Password</h2>
           <p className="text-sm sm:text-base text-muted-foreground">

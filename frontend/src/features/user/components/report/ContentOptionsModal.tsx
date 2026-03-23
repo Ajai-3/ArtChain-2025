@@ -113,14 +113,16 @@ export const ContentOptionsModal: React.FC<ContentOptionsModalProps> = ({
                 </Button>
               </>
             )}
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={() => setView("report")}
-            >
-              <Flag className="mr-2 h-4 w-4" />
-              Report
-            </Button>
+            {!canEdit && (
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => setView("report")}
+              >
+                <Flag className="mr-2 h-4 w-4" />
+                Report
+              </Button>
+            )}
             <Button
               variant="ghost"
               className="w-full justify-start"
