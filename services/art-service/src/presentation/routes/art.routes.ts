@@ -56,6 +56,8 @@ router.get(ROUTES.ART.SALES_ANALYTICS, artController.salesAnalytics);
 router.get(ROUTES.ART.PURCHASED, artController.purchasedArtWorks);
 router.get(ROUTES.ART.PURCHASE_ANALYTICS, artController.purchaseAnalytics);
 router.get(ROUTES.ART.BY_ID, artController.getArtById);
+router.patch(ROUTES.ART.BY_ID, artController.updateArt);
+router.delete(ROUTES.ART.BY_ID, artController.deleteArt);
 
 // Comment
 router.put(ROUTES.COMMENT.EDIT, commentController.editComment);

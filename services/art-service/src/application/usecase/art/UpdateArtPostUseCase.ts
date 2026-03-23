@@ -18,7 +18,7 @@ export class UpdateArtPostUseCase implements IUpdateArtPostUseCase {
 
     if (!art) throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
 
-    if (art.art.userId !== dto.userId) {
+    if (art.userId !== dto.userId) {
       throw new BadRequestError(ART_MESSAGES.YOU_ARE_NOT_AUTHORIZED_TO_UPDATE_THIS_ART);
     }
 
