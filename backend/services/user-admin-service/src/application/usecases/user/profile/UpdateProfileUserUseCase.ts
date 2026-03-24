@@ -7,7 +7,7 @@ import {
   NotFoundError,
 } from 'art-chain-shared';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
-import { UpdateUserProfileDto } from '../../../interface/dtos/user/profile/UpdateUserProfileDto';
+import { UpdateUserProfileDto } from '../../../interface/dtos/user/profile/UpdateUserProfileDTO';
 import { IUpdateProfileUserUseCase } from '../../../interface/usecases/user/profile/IUpdateProfileUserUseCase';
 import { IEventBus } from '../../../interface/events/IEventBus';
 import { UserUpdatedEvent } from '../../../../domain/events/UserUpdatedEvent';

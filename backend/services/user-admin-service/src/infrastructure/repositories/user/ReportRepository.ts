@@ -1,9 +1,9 @@
 import { injectable } from 'inversify';
 import { prisma } from '../../db/prisma';
-import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
 import { Report } from '../../../domain/entities/Report';
 import { IReportRepository } from '../../../domain/repositories/user/IReportRepository';
 import { config } from '../../config/env';
+import { Prisma, ReportStatus } from '@prisma/client';
 
 @injectable()
 export class ReportRepository implements IReportRepository {
@@ -14,12 +14,17 @@ export class ReportRepository implements IReportRepository {
   }
 
   async create(data: Partial<Report>): Promise<Report> {
-    const res = await this.model.create({ data });
+    const res = await this.model.create({ 
+      data: data as Prisma.ReportCreateInput 
+    });
     return this.toSafe(res);
   }
 
   async update(id: string, data: Partial<Report>): Promise<Report> {
-    const res = await this.model.update({ where: { id }, data });
+    const res = await this.model.update({ 
+      where: { id }, 
+      data: data as Prisma.ReportUpdateInput 
+    });
     return this.toSafe(res);
   }
 
@@ -64,7 +69,7 @@ export class ReportRepository implements IReportRepository {
         targetType: targetType.toUpperCase() as any,
       },
       data: {
-        status,
+        status: status as ReportStatus,
         updatedAt: new Date(),
       },
     });
@@ -79,10 +84,10 @@ export class ReportRepository implements IReportRepository {
   ): Promise<{ data: Report[]; meta: { total: number; page: number; limit: number } }> {
     const where: any = {};
     if (filters?.status && filters.status !== 'ALL') {
-      where.status = filters.status;
+      where.status = filters.status as ReportStatus;
     }
     if (filters?.targetType && filters.targetType !== 'ALL') {
-      where.targetType = filters.targetType;
+      where.targetType = filters.targetType.toUpperCase();
     }
 
     const skip = (page - 1) * limit;
@@ -109,7 +114,6 @@ export class ReportRepository implements IReportRepository {
       }),
     ]);
 
-    // Add domain to profile images
     const CDN = config.aws_cdn_domain;
     const transformedReports = reports.map((report: any) => ({
       ...report,

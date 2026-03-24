@@ -7,7 +7,7 @@
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node --loader @esbuild-kit/esm-loader --no-warnings dist/server.js"
   },
   "keywords": [],
   "type": "module",
@@ -15,6 +15,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@esbuild-kit/esm-loader": "^2.6.5",
     "@aws-sdk/client-cloudfront": "^3.913.0",
     "@tensorflow/tfjs": "^4.22.0",
     "amqplib": "^0.10.9",

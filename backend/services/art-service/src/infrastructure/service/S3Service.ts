@@ -7,12 +7,12 @@ import { IS3Service } from '../../domain/interfaces/IS3Service';
 export class S3Service implements IS3Service {
   private url = config.api_gateway_url;
 
-  constructor() {}
+  constructor() { }
 
   async getSignedUrl(
     key: string,
     category: string,
-    fileName: string,
+    fileName?: string,
   ): Promise<string> {
     try {
       const url = `${this.url}/api/v1/upload/signed-url?key=${key}&category=${category}&fileName=${fileName}`;

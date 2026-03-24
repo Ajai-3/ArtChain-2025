@@ -4,13 +4,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npx tsc
 
 # Stage 2: Runtime
 FROM node:20-alpine
 WORKDIR /app
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install
 COPY --from=builder /app/dist ./dist
 EXPOSE 4000
-CMD ["node", "--loader", "@esbuild-kit/esm-loader", "dist/server.js"]
+CMD ["node", "--loader", "@esbuild-kit/esm-loader", "--no-warnings", "dist/server.js"]

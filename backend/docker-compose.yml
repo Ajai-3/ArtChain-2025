@@ -10,7 +10,7 @@ services:
     volumes:
       - ./infra/redis/redis.conf:/usr/local/etc/redis/redis.conf
       - redis_data:/data
-    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+    command: [ 'redis-server', '/usr/local/etc/redis/redis.conf' ]
     networks:
       - backend
 
@@ -29,7 +29,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      test: [ 'CMD-SHELL', 'pg_isready -U postgres' ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -50,6 +50,18 @@ services:
     networks:
       - backend
 
+  stripe-cli:
+    container_name: stripe-cli
+    image: stripe/stripe-cli:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: >
+      listen  --api-key ${STRIPE_SECRET_KEY} --forward-to http://wallet-service:4003/api/v1/wallet/stripe/webhook --log-level debug
+    depends_on:
+      - wallet-service
+    networks:
+      - backend
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
     container_name: elasticsearch
@@ -64,7 +76,7 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:9200/ || exit 1']
+      test: [ 'CMD-SHELL', 'curl -f http://localhost:9200/ || exit 1' ]
       interval: 10s
       retries: 5
 
@@ -119,8 +131,7 @@ services:
         condition: service_healthy
     networks:
       - backend
-    command: sh -c "npx prisma db push --accept-data-loss && npx prisma generate && npm run dev"
-
+      
   art-service:
     container_name: art-service
     build: ./services/art-service
@@ -147,7 +158,6 @@ services:
         condition: service_healthy
     networks:
       - backend
-    command: sh -c "npx prisma migrate deploy && npm run dev"
 
   elastic-search-service:
     container_name: elastic-search-service
@@ -197,6 +207,7 @@ services:
 
 networks:
   backend:
+
 
 volumes:
   pg_data:

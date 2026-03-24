@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 import { TYPES } from '../../../../infrastructure/inversify/types';
-import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQueryDto';
+import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQueryDTO';
 import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
 import { IGetAllArtistRequestsUseCase } from '../../../interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase';
 

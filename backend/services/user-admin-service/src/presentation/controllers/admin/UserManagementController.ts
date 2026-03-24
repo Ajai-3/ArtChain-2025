@@ -6,7 +6,7 @@ import { USER_MESSAGES } from '../../../constants/userMessages';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
 import { IUserManageMentController } from './../../interfaces/admin/IUserManagementController';
-import { GetAllUsersQueryDto } from '../../../application/interface/dtos/admin/GetAllUsersQueryDto';
+import { GetAllUsersQueryDto } from '../../../application/interface/dtos/admin/GetAllUsersQueryDTO';
 import { IGetAllUsersUseCase } from '../../../application/interface/usecases/admin/user-management/IGetAllUsersUseCase';
 import { IBanOrUnbanUserUseCase } from '../../../application/interface/usecases/admin/user-management/IBanOrUnbanUserUseCase';
 import { ArtistAproveRejectRequestDto } from '../../../application/interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
@@ -80,7 +80,7 @@ export class UserManageMentController implements IUserManageMentController {
     next: NextFunction
   ): Promise<any> => {
     try {
-      const { userId } = req.params;
+      const { userId } = req.params as { userId: string };
 
       if (!userId) {
         return res.status(400).json({ message: 'Missing userId' });
@@ -140,7 +140,7 @@ export class UserManageMentController implements IUserManageMentController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
 
       if (!id) {
         return res
@@ -174,7 +174,7 @@ export class UserManageMentController implements IUserManageMentController {
     next: NextFunction
   ): Promise<Response | void> => {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const { reason } = req.body;
 
       if (!id) {

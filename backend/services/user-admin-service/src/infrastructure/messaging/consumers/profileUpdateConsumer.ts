@@ -1,15 +1,14 @@
 import amqp from 'amqplib';
 import { config } from '../../config/env';
 import { TYPES } from '../../inversify/types';
-import type { Channel, Connection } from 'amqplib';
 import { container } from '../../inversify/inversify.config';
 import { IUpdateProfileUserUseCase } from '../../../application/interface/usecases/user/profile/IUpdateProfileUserUseCase';
 
 const QUEUE = 'profile_update';
 
 export async function initProfileUpdateConsumer() {
-  const conn: Connection = await amqp.connect(config.rabbitmq_URL) as any;
-  const ch: Channel = await conn.createChannel();
+  const conn: any = await amqp.connect(config.rabbitmq_URL);
+  const ch: any = await conn.createChannel();
 
   console.log(`👂 Listening on queue: ${QUEUE}`);
 
@@ -19,7 +18,7 @@ export async function initProfileUpdateConsumer() {
 
   ch.consume(
     QUEUE,
-    async (msg) => {
+    async (msg: any) => {
       if (!msg) return;
 
       try {
@@ -51,7 +50,7 @@ export async function initProfileUpdateConsumer() {
         console.log('✅ User profile updated successfully');
       } catch (err) {
         console.error('❌ Failed to process profile update:', err);
-        ch.nack(msg, false, false); 
+        ch.nack(msg, false, false);
       }
     },
     { noAck: false }

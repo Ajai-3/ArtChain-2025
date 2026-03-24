@@ -9,7 +9,7 @@ import { IUserController } from '../../interfaces/user/IUserController';
 import { getSupportSchema } from '../../../application/validations/user/GetSupportSchema';
 import { updateProfileSchema } from '../../../application/validations/user/updateProfileSchema';
 import { getUsersBatchSchema } from '../../../application/validations/user/getUsersBatchSchema';
-import { UpdateUserProfileDto } from '../../../application/interface/dtos/user/profile/UpdateUserProfileDto';
+import { UpdateUserProfileDto } from '../../../application/interface/dtos/user/profile/UpdateUserProfileDTO';
 import { IGetUserProfileUseCase } from '../../../application/interface/usecases/user/profile/IGetUserProfileUseCase';
 import { GetUserProfileRequestDto } from '../../../application/interface/dtos/user/profile/GetUserProfileRequestDto';
 import { ISupportUserUseCase } from '../../../application/interface/usecases/user/user-intraction/ISupportUserUseCase';

@@ -1,6 +1,5 @@
 import amqp from 'amqplib';
 import { config } from '../../config/env';
-import type { Channel, Connection } from 'amqplib';
 
 const DLQ_MAPPING = {
   'profile_update.dlq': 'profile_update',
@@ -9,11 +8,11 @@ const DLQ_MAPPING = {
 const MAX_RETRIES = 3;
 
 export async function initDLQHandler(): Promise<void> {
-  let conn: Connection;
-  let ch: Channel;
+  let conn: any;
+  let ch: any;
 
   try {
-    conn = await amqp.connect(config.rabbitmq_URL) as any;
+    conn = await amqp.connect(config.rabbitmq_URL);
     ch = await conn.createChannel();
 
     for (const [dlq, originalQueue] of Object.entries(DLQ_MAPPING)) {
@@ -28,15 +27,15 @@ export async function initDLQHandler(): Promise<void> {
 }
 
 async function processDLQ(
-  ch: Channel,
-  dlq: string,
+  ch: any, 
+  dlq: string, 
   originalQueue: string
 ): Promise<void> {
   await ch.assertQueue(dlq, { durable: true });
 
   ch.consume(
     dlq,
-    async (msg) => {
+    async (msg: any) => {
       if (!msg) return;
 
       try {
