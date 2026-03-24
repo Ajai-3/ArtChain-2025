@@ -1,0 +1,70 @@
+import { inject, injectable } from 'inversify';
+import { Like } from '../../../domain/entities/Like';
+import {
+  ConflictError,
+  BadRequestError,
+  NotFoundError,
+} from 'art-chain-shared';
+import { ART_MESSAGES } from '../../../constants/ArtMessages';
+import { LIKE_MESSAGES } from '../../../constants/LikeMessages';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { UserService } from '../../../infrastructure/service/UserService';
+import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
+import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
+import { ILikePostUseCase } from '../../interface/usecase/like/ILikePostUseCase';
+import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
+import { IUserService } from '../../interface/service/IUserService';
+
+@injectable()
+export class LikePostUseCase implements ILikePostUseCase {
+  constructor(
+     @inject(TYPES.IUserService) private readonly _userService: IUserService,
+    @inject(TYPES.IArtPostRepository)
+    private readonly _artRepo: IArtPostRepository,
+    @inject(TYPES.ILikeRepository)
+    private readonly _likeRepository: ILikeRepository
+  ) {}
+
+  async execute(postId: string, userId: string) {
+    if (!postId || !userId) {
+      throw new BadRequestError(LIKE_MESSAGES.MISSING_USER_ID);
+    }
+
+    const post = await this._artRepo.findById(postId);
+
+    if (!post) {
+      throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
+    }
+
+    const existingLike = await this._likeRepository.findLike(postId, userId);
+    if (existingLike) {
+      throw new ConflictError(LIKE_MESSAGES.ALREADY_LIKED);
+    }
+
+    const like = new Like(postId, userId);
+
+    const savedLike = await this._likeRepository.create(like);
+
+    if (post.userId !== userId) {
+      console.log(post.userId, userId);
+      const userIds = [post.userId, userId];
+      const users = await this._userService.getUsersByIds(userIds);
+      const userMap = new Map(users.map((u: any) => [u.id, u]));
+
+      const likedUser = userMap.get(post.userId);
+      const likerUser = userMap.get(userId);
+
+      if (likedUser && likerUser) {
+        await publishNotification('like', {
+          likedUserId: likedUser.id,
+          likerId: likerUser.id,
+          likerName: likerUser.username,
+          likerProfile: likerUser.profileImage ?? null,
+          createdAt: new Date().toISOString(),
+        });
+      }
+    }
+
+    return savedLike;
+  }
+}

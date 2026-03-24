@@ -1,0 +1,15 @@
+# Node
+node_modules/
+dist/
+
+# Env
+.env
+
+# Logs
+*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor junk
+.vscode/
