@@ -1,5 +1,6 @@
 export interface IEmailTokenVerifier {
-  verify(token: string): {
+  verifyEmail(token: string): {
     email?: string;
+    newEmail?: string;
   } | null;
 }

@@ -17,7 +17,7 @@ export class ResetPasswordUserUseCase implements IResetPasswordUserUseCase {
   async execute(data: ResetPasswordRequestDto): Promise<void> {
     const { token, password } = data;
 
-    const decoded = this._emailTokenVerifier.verify(token);
+    const decoded = this._emailTokenVerifier.verifyEmail(token);
     if (!decoded) {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_RESET_TOKEN);
     }

@@ -23,7 +23,7 @@ export class VerifyEmailTokenUserUseCase
   async execute(data: VerifyEmailTokenRequestDto): Promise<any> {
     const { userId, token } = data;
 
-    const decoded = this._emailTokenVerifier.verify(token);
+    const decoded = this._emailTokenVerifier.verifyEmail(token);
     if (!decoded) {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_CHANGE_EMAIL_TOKEN);
     }
