@@ -12,6 +12,7 @@ const PORT = config.port;
 const server = http.createServer(app);
 
 const io = new Server(server, {
+  path: '/socket.io/notification',
   cors: { origin: config.frontend_url },
 });
 
