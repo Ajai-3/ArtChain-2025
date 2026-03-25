@@ -30,7 +30,7 @@ if (config.redis_url) {
 
 export const globalRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, 
-  max: 100, 
+  max: 150, 
   standardHeaders: true,
   legacyHeaders: false,
   store: store, 
