@@ -1,0 +1,153 @@
+import { TYPES } from './types';
+import { Container } from 'inversify';
+
+// Repositories
+import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
+
+import { MessageRepositoryImp } from '../repositories/MessageRepositoryImp';
+import { ConversationRepositoryImp } from '../repositories/ConversationRepositoryImp';
+
+// Use-Case
+import { ISendMessageUseCase } from '../../applications/interface/usecase/ISendMessageUseCase';
+import { IListMessagesUseCase } from '../../applications/interface/usecase/IListMessagesUseCase';
+import { IDeleteMessageUseCase } from '../../applications/interface/usecase/IDeleteMessageUseCase';
+import { IGetAllResendConversationUseCase } from '../../applications/interface/usecase/IGetAllResendConversationUseCase';
+import { ICreatePrivateConversationUseCase } from '../../applications/interface/usecase/ICreatePrivateConversationUseCase';
+import { ICreateRequestConversationUseCase } from '../../applications/interface/usecase/ICreateRequestConversationUseCase';
+
+import { SendMessageUseCase } from '../../applications/usecase/SendMessageUseCase';
+import { ListMessagesUseCase } from '../../applications/usecase/ListMessagesUseCase';
+import { DeleteMessageUseCase } from '../../applications/usecase/DeleteMessageUseCase';
+import { GetAllResendConversationUseCase } from '../../applications/usecase/GetAllResendConversationUseCase';
+import { CreatePrivateConversationUseCase } from '../../applications/usecase/CreatePrivateConversationUseCase';
+import { CreateRequestConversationUseCase } from '../../applications/usecase/CreateRequestConversationUseCase';
+import { IMarkMessagesReadUseCase } from '../../applications/interface/usecase/IMarkMessagesReadUseCase';
+import { MarkMessagesReadUseCase } from '../../applications/usecase/MarkMessagesReadUseCase';
+import { ICreateGroupConversationUseCase } from '../../applications/interface/usecase/ICreateGroupConversationUseCase';
+import { CreateGroupConversationUseCase } from '../../applications/usecase/CreateGroupConversationUseCase';
+import { IGetGroupMembersUseCase } from '../../applications/interface/usecase/IGetGroupMembersUseCase';
+import { IRemoveGroupMemberUseCase } from '../../applications/interface/usecase/IRemoveGroupMemberUseCase';
+import { IAddGroupAdminUseCase } from '../../applications/interface/usecase/IAddGroupAdminUseCase';
+import { GetGroupMembersUseCase } from '../../applications/usecase/GetGroupMembersUseCase';
+import { RemoveGroupMemberUseCase } from '../../applications/usecase/RemoveGroupMemberUseCase';
+import { AddGroupAdminUseCase } from '../../applications/usecase/AddGroupAdminUseCase';
+import { IRemoveGroupAdminUseCase } from '../../applications/interface/usecase/IRemoveGroupAdminUseCase';
+import { RemoveGroupAdminUseCase } from '../../applications/usecase/RemoveGroupAdminUseCase';
+import { IAddGroupMemberUseCase } from '../../applications/interface/usecase/IAddGroupMemberUseCase';
+import { AddGroupMemberUseCase } from '../../applications/usecase/AddGroupMemberUseCase';
+import { IUpdateCallMessageUseCase } from '../../applications/interface/usecase/IUpdateCallMessageUseCase';
+import { UpdateCallMessageUseCase } from '../../applications/usecase/UpdateCallMessageUseCase';
+
+// Services
+import { UserService } from '../http/UserService';
+import { RedisCacheService } from '../cache/RedisCacheService';
+import { MessageCacheService } from '../services/MessageCacheService';
+import { MessageBroadcastService } from '../services/MessageBroadcastService';
+import { ConversationCacheService } from '../services/ConversationCacheService';
+
+import { ICacheService } from '../../domain/service/ICacheService';
+import { IUserService } from '../../applications/interface/http/IUserService';
+import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
+import { IMessageCacheService } from '../../applications/interface/service/IMessageCacheService';
+import { IConversationCacheService } from '../../applications/interface/service/IConversationCacheService';
+
+// Handlers
+import { IClientEventHandler } from '../socket/interface/IClientEventHandler';
+
+import { ClientEventHandler } from '../socket/handlers/ClientEventHandler';
+
+// Controller
+import { IMessageController } from '../../presentation/interface/IMessageController';
+import { IConversationController } from '../../presentation/interface/IConversationController';
+
+import { MessageController } from '../../presentation/controllers/MessageController';
+import { ConversationController } from '../../presentation/controllers/ConversationController';
+
+const container = new Container();
+
+// Repositories
+container
+  .bind<IMessageRepository>(TYPES.IMessageRepository)
+  .to(MessageRepositoryImp)
+  .inSingletonScope();
+container
+  .bind<IConversationRepository>(TYPES.IConversationRepository)
+  .to(ConversationRepositoryImp)
+  .inSingletonScope();
+
+// Use-Case
+container
+  .bind<ISendMessageUseCase>(TYPES.ISendMessageUseCase)
+  .to(SendMessageUseCase);
+container
+  .bind<IListMessagesUseCase>(TYPES.IListMessagesUseCase)
+  .to(ListMessagesUseCase);
+container
+  .bind<IDeleteMessageUseCase>(TYPES.IDeleteMessageUseCase)
+  .to(DeleteMessageUseCase);
+container
+  .bind<ICreatePrivateConversationUseCase>(
+    TYPES.ICreatePrivateConversationUseCase
+  )
+  .to(CreatePrivateConversationUseCase);
+container
+  .bind<ICreateRequestConversationUseCase>(TYPES.ICreateRequestConversationUseCase)
+  .to(CreateRequestConversationUseCase);
+container
+  .bind<IGetAllResendConversationUseCase>(
+    TYPES.IGetAllResendConversationUseCase
+  )
+  .to(GetAllResendConversationUseCase);
+container
+  .bind<IMarkMessagesReadUseCase>(TYPES.IMarkMessagesReadUseCase)
+  .to(MarkMessagesReadUseCase);
+container
+  .bind<ICreateGroupConversationUseCase>(TYPES.ICreateGroupConversationUseCase)
+  .to(CreateGroupConversationUseCase);
+container
+  .bind<IGetGroupMembersUseCase>(TYPES.IGetGroupMembersUseCase)
+  .to(GetGroupMembersUseCase);
+container
+  .bind<IRemoveGroupMemberUseCase>(TYPES.IRemoveGroupMemberUseCase)
+  .to(RemoveGroupMemberUseCase);
+container
+  .bind<IAddGroupAdminUseCase>(TYPES.IAddGroupAdminUseCase)
+  .to(AddGroupAdminUseCase);
+container
+  .bind<IRemoveGroupAdminUseCase>(TYPES.IRemoveGroupAdminUseCase)
+  .to(RemoveGroupAdminUseCase);
+container
+  .bind<IAddGroupMemberUseCase>(TYPES.IAddGroupMemberUseCase)
+  .to(AddGroupMemberUseCase);
+container
+  .bind<IUpdateCallMessageUseCase>(TYPES.IUpdateCallMessageUseCase)
+  .to(UpdateCallMessageUseCase);
+
+// Srevice
+container.bind<IUserService>(TYPES.IUserService).to(UserService);
+container.bind<ICacheService>(TYPES.ICacheService).to(RedisCacheService);
+container
+  .bind<IMessageBroadcastService>(TYPES.IMessageBroadcastService)
+  .to(MessageBroadcastService);
+container
+  .bind<IMessageCacheService>(TYPES.IMessageCacheService)
+  .to(MessageCacheService);
+container
+  .bind<IConversationCacheService>(TYPES.IConversationCacheService)
+  .to(ConversationCacheService);
+
+// Handlers
+container
+  .bind<IClientEventHandler>(TYPES.IClientEventHandler)
+  .to(ClientEventHandler);
+
+// Controller
+container
+  .bind<IMessageController>(TYPES.IMessageController)
+  .to(MessageController);
+container
+  .bind<IConversationController>(TYPES.IConversationController)
+  .to(ConversationController);
+
+export default container;

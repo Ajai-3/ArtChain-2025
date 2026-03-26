@@ -21,17 +21,17 @@ export const SocketProvider = ({ children }: Props) => {
   useEffect(() => {
     if (!accessToken) return;
 
-    const notificationSocket = initSocket(accessToken, "http://localhost:4005");
-    const chatSocket = initSocket(accessToken, "http://localhost:4007");
-    const biddingSocket = initSocket(accessToken, import.meta.env.VITE_ART_SERVICE_URL || "http://localhost:4002");
+    const notificationSocket = initSocket(accessToken, import.meta.env.VITE_NOTIFICATION_SERVICE_URL, '/socket.io/notification');
+    const chatSocket = initSocket(accessToken, import.meta.env.VITE_CHAT_SERVICE_URL, '/socket.io/chat');
+    const biddingSocket = initSocket(accessToken, import.meta.env.VITE_ART_SERVICE_URL, '/socket.io/bidding');
 
     setNotificationSocket(notificationSocket);
     setChatSocket(chatSocket);
     setBiddingSocket(biddingSocket);
 
-     registerNotificationSocketEvents(notificationSocket);
-     registerChatSocketEvents(chatSocket);
-     registerBiddingSocketEvents(biddingSocket);
+    registerNotificationSocketEvents(notificationSocket);
+    registerChatSocketEvents(chatSocket);
+    registerBiddingSocketEvents(biddingSocket);
 
     return () => {
       disconnectSocket(notificationSocket);

@@ -1,0 +1,24 @@
+FROM node:20-slim
+
+# 1. Install the libraries canvas needs (Debian version)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY package*.json ./
+# This should now pull a pre-built binary and skip the 'make' step
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+EXPOSE 4006
+CMD ["node", "--loader", "@esbuild-kit/esm-loader", "--no-warnings", "dist/server.js"]

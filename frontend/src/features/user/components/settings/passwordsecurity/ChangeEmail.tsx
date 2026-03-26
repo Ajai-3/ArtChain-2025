@@ -34,6 +34,7 @@ const ChangeEmail: React.FC = () => {
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
   } = useForm<ChangeEmailSchema>({
     resolver: zodResolver(changeEmailSchema(currentEmail)),
   });
@@ -41,7 +42,7 @@ const ChangeEmail: React.FC = () => {
   // ✅ Mutation hooks using React Query's isPending
   const { mutate: updateEmail, isPending: isUpdating } = useChangeEmailMutation(
     (msg) => {
-      if (msg) console.log(msg);
+      if (msg) setError("newEmail", { type: "server", message: msg });
     }
   );
 
