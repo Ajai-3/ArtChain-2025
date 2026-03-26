@@ -7,7 +7,7 @@ import { IFileRepository } from '../../domain/repositories/IFileRepository';
 import { DeleteImageUseCase } from '../../application/usecases/DeleteImageUseCase';
 import { UploadImageUseCase } from '../../application/usecases/UploadImageUseCase';
 import { UploadController } from '../../presentation/controllers/UploadController';
-import { IUploadController } from './../../presentation/interface/IUploadController';
+import { IUploadController } from '../../presentation/interface/IUploadController';
 import { IDeleteImageUseCase } from '../../application/interface/usecases/IDeleteImageUseCase';
 import { IUploadImageUseCase } from '../../application/interface/usecases/IUploadImageUseCase';
 import { IGetSignedUrlUseCase } from '../../application/interface/usecases/IGetSignedUrlUseCase';
