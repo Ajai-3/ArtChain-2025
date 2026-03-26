@@ -21,5 +21,10 @@ export const env = {
   jwt: {
     accessSecret: secrets.jwtAccessSecret,
   },
+  loki: {
+    host: process.env.LOKI_HOST!,
+    user: process.env.LOKI_USER,
+    token: process.env.LOKI_TOKEN,
+  },
   aws_cdn_domain: secrets.aws_cdn_domain,
 };
