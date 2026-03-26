@@ -7,7 +7,8 @@ dontenv.config();
 
 // Using hardcoded values from .env file instead
 const secrets = {
-  aws_cdn_domain: process.env.AWS_CDN_DOMAIN || 'your-cdn-domain-here.cloudfront.net',
+  aws_cdn_domain:
+    process.env.AWS_CDN_DOMAIN || 'your-cdn-domain-here.cloudfront.net',
 };
 
 export const config = {
@@ -28,5 +29,10 @@ export const config = {
     cdn_domain: secrets.aws_cdn_domain!,
     cloudfront_key_pair_id: process.env.CLOUDFRONT_KEY_PAIR_ID!,
     cloudfront_private_key: process.env.CLOUDFRONT_PRIVATE_KEY!,
+  },
+  loki: {
+    host: process.env.LOKI_HOST || '',
+    user: process.env.LOKI_USER || '',
+    token: process.env.LOKI_TOKEN || '',
   },
 };
