@@ -21,6 +21,11 @@ export const config = {
     elastic: process.env.ELASTIC_SEARCH_SERVICE_URL,
     chat: process.env.CHAT_SERVICE_URL,
   },
+  loki: {
+    host: process.env.LOKI_HOST!,
+    user: process.env.LOKI_USER,
+    token: process.env.LOKI_TOKEN,
+  },
   jwt: {
     accessSecret: secrets.jwtAccessSecret,
     refreshSecret: secrets.jwtRefreshSecret,
@@ -34,3 +39,4 @@ export const config = {
   },
   redis_url: process.env.REDIS_URL,
 };
+
