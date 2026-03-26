@@ -1,5 +1,6 @@
 import { createLogger, format, transports } from 'winston';
 import LokiTransport from 'winston-loki';
+import { config } from '../infrastructure/config/env';
 
 const { combine, timestamp, printf, colorize, json } = format;
 const serviceName = 'user-admin-service';
@@ -18,9 +19,14 @@ export const logger = createLogger({
     }),
 
     new LokiTransport({
-      host: 'http://loki:3100',
+      host: config.loki.host,
+      basicAuth: `${config.loki.user}:${config.loki.token}`,
       labels: { service: serviceName },
       json: true,
+      batching: false,
+      gracefulShutdown: true,
+      timeout: 10000,
+      onConnectionError: (err) => console.error('LOKI CONNECTION ERROR:', err),
     }),
   ],
 });

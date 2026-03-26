@@ -41,6 +41,11 @@ export const config = {
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
     privateKey: process.env.FIREBASE_PRIVATE_KEY,
   },
+  loki: {
+    host: process.env.LOKI_HOST || '',
+    user: process.env.LOKI_USER || '',
+    token: process.env.LOKI_TOKEN || '',
+  },
 };
 
 console.log(config);
