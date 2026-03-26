@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "baseUrl": "src",
     "paths": {
       "@/*": ["./*"]
