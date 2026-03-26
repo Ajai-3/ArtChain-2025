@@ -21,6 +21,11 @@ export const config = {
     cloudfront_key_pair_id: process.env.CLOUDFRONT_KEY_PAIR_ID!,
     cloudfront_private_key: process.env.CLOUDFRONT_PRIVATE_KEY!,
   },
+  loki: {
+    host: process.env.LOKI_HOST!,
+    user: process.env.LOKI_USER,
+    token: process.env.LOKI_TOKEN,
+  },
   jwt_secret: secrets.jwtAccessSecret!,
   platform_admin_id: process.env.PLATFORM_ADMIN_ID!,
 };
