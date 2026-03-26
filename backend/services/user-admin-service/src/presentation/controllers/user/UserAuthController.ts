@@ -67,19 +67,16 @@ export class UserAuthController implements IUserAuthController {
   initializeAuth = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const refreshToken =
         req.cookies.adminRefreshToken || req.cookies.userRefreshToken;
 
-      const { accessToken, user } = await this._initializeAuthUseCase.execute(
-        refreshToken
-      );
+      const { accessToken, user } =
+        await this._initializeAuthUseCase.execute(refreshToken);
 
-      this._logger.info(
-        `Auth initialized for user: ${user.email}`
-      );
+      this._logger.info(`Auth initialized for user: ${user.email}`);
 
       return res
         .status(HttpStatus.OK)
@@ -99,15 +96,19 @@ export class UserAuthController implements IUserAuthController {
   startRegister = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const dto: StartRegisterRequestDto = validateWithZod(startRegisterSchema, req.body);
-      const { token, payload } = await this._startRegisterUserUseCase.execute(
-        dto
+      const dto: StartRegisterRequestDto = validateWithZod(
+        startRegisterSchema,
+        req.body,
       );
+      const { token, payload } =
+        await this._startRegisterUserUseCase.execute(dto);
 
-      this._logger.info(`Start registration sucessfull of user ${payload.name}`);
+      this._logger.info(
+        `Start registration sucessfull of user ${payload.name}`,
+      );
 
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
@@ -129,7 +130,7 @@ export class UserAuthController implements IUserAuthController {
   registerUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { token, password } = req.body;
@@ -154,10 +155,10 @@ export class UserAuthController implements IUserAuthController {
       res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
+        domain: '.ajaiiii.cloud',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
-
 
       this._logger.info(`${user.username} account created successfully.`);
 
@@ -181,7 +182,7 @@ export class UserAuthController implements IUserAuthController {
   loginUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const dto: LoginRequestDto = validateWithZod(loginUserSchema, req.body);
@@ -191,12 +192,13 @@ export class UserAuthController implements IUserAuthController {
       res.cookie('userRefreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
+        domain: '.ajaiiii.cloud',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
       this._logger.info(
-        `${user.username} Logged at ${new Date().toLocaleTimeString()}`
+        `${user.username} Logged at ${new Date().toLocaleTimeString()}`,
       );
 
       return res.status(HttpStatus.OK).json({
@@ -219,10 +221,13 @@ export class UserAuthController implements IUserAuthController {
   googleAuthUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const dto: GoogleAuthRequestDto = validateWithZod(googleAuthSchema, req.body);
+      const dto: GoogleAuthRequestDto = validateWithZod(
+        googleAuthSchema,
+        req.body,
+      );
       const { user, isNewUser, accessToken, refreshToken } =
         await this._googleAuthUserUseCase.execute(dto);
 
@@ -236,7 +241,7 @@ export class UserAuthController implements IUserAuthController {
       this._logger.info(
         `${user.username} has ${
           isNewUser ? 'just registered (new user)' : 'logged in (existing user)'
-        }`
+        }`,
       );
 
       return res.status(isNewUser ? HttpStatus.CREATED : HttpStatus.OK).json({
@@ -261,14 +266,13 @@ export class UserAuthController implements IUserAuthController {
   forgotPassword = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { identifier } = validateWithZod(forgotPasswordSchema, req.body);
 
-      const { user } = await this._forgotPasswordUserUseCase.execute(
-        identifier
-      );
+      const { user } =
+        await this._forgotPasswordUserUseCase.execute(identifier);
 
       this._logger.info(`Password reset requested for email: ${identifier}`);
 
@@ -290,14 +294,17 @@ export class UserAuthController implements IUserAuthController {
   resetPassword = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const dto: ResetPasswordRequestDto = validateWithZod(passwordTokenSchema, req.body);
+      const dto: ResetPasswordRequestDto = validateWithZod(
+        passwordTokenSchema,
+        req.body,
+      );
       await this._resetPasswordUserUseCase.execute(dto);
 
       this._logger.info(
-        `Password reset attempt with token: ${JSON.stringify(dto.token)} for user.`
+        `Password reset attempt with token: ${JSON.stringify(dto.token)} for user.`,
       );
 
       return res
@@ -318,20 +325,19 @@ export class UserAuthController implements IUserAuthController {
   refreshToken = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const refreshToken =
         req.cookies.adminRefreshToken || req.cookies.userRefreshToken;
 
-      const { accessToken } = await this._refreshTokenUserUseCase.execute(
-        refreshToken
-      );
+      const { accessToken } =
+        await this._refreshTokenUserUseCase.execute(refreshToken);
 
       this._logger.info(
         `Access token refresh requested. Refresh token present: ${JSON.stringify(
-          refreshToken
-        )}`
+          refreshToken,
+        )}`,
       );
 
       return res
@@ -352,7 +358,7 @@ export class UserAuthController implements IUserAuthController {
   logoutUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const refreshToken = req.cookies.userRefreshToken;
