@@ -12,6 +12,11 @@ export const config = {
   isProduction: process.env.NODE_ENV === 'production',
   stripe_secret_key: process.env.STRIPE_SECRET_KEY || '',
   stripe_webhook_secret: process.env.STRIPE_WEBHOOK_SECRET || '',
+  loki: {
+    host: process.env.LOKI_HOST || '',
+    user: process.env.LOKI_USER || '',
+    token: process.env.LOKI_TOKEN || '',
+  },
 };
 
 console.log(config);
