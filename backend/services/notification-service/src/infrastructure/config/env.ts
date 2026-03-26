@@ -1,12 +1,8 @@
 import 'dotenv-flow/config';
-// import { getArtChainSecrets } from "art-chain-shared";
 
-// COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
-// const secrets = await getArtChainSecrets();
-
-// Using hardcoded values from .env file instead
 const secrets = {
-  jwtAccessSecret: process.env.JWT_ACCESS_SECRET || 'your-access-secret-key-here',
+  jwtAccessSecret:
+    process.env.JWT_ACCESS_SECRET || 'your-access-secret-key-here',
 };
 
 export const config = {
@@ -24,11 +20,16 @@ export const config = {
     secure: process.env.EMAIL_SECURE === 'true',
   },
   aws: {
-    email_template_bucket: process.env.EMAIL_TEMPLATE_BUCKET
+    email_template_bucket: process.env.EMAIL_TEMPLATE_BUCKET,
+  },
+  loki: {
+    host: process.env.LOKI_HOST || '',
+    user: process.env.LOKI_USER || '',
+    token: process.env.LOKI_TOKEN || '',
   },
   jwt: {
-    accessSecret: secrets.jwtAccessSecret
-  }
+    accessSecret: secrets.jwtAccessSecret,
+  },
 };
 
 console.log(config);
