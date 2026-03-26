@@ -1,5 +1,4 @@
-import React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import React from 'react';
 
 interface ArtImageSectionProps {
   imageUrl: string;
@@ -13,11 +12,11 @@ const ArtImageSection: React.FC<ArtImageSectionProps> = ({
   onImageClick,
 }) => {
   return (
-    <div className="relative w-full flex justify-center items-center">
+    <div className='relative w-full flex justify-center items-center'>
       <img
-        src={imageUrl || "/placeholder.png"}
+        src={imageUrl || '/placeholder.png'}
         alt={title}
-        className="w-full max-h-[500px] sm:max-h-[400px] md:max-h-[500px] object-contain rounded cursor-zoom-in shadow-sm"
+        className='w-full max-h-[500px] sm:max-h-[400px] md:max-h-[500px] object-contain rounded cursor-zoom-in shadow-sm'
         onClick={onImageClick}
       />
     </div>

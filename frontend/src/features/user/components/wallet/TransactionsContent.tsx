@@ -1,66 +1,74 @@
 // src/components/wallet/TransactionsContent.tsx
-import React from "react";
+import React from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "../../../../components/ui/card";
-import TransactionsTable from "./TransactionsTable";
-import WalletSummaryStats from "./WalletSummaryStats";
-import { useGetWalletChartData } from "../../hooks/wallet/useGetWalletChartData";
+} from '../../../../components/ui/card';
+import TransactionsTable from './TransactionsTable';
+import WalletSummaryStats from './WalletSummaryStats';
+import { useGetWalletChartData } from '../../hooks/wallet/useGetWalletChartData';
 
 // ...
 
 interface TransactionsContentProps {
   transactionSummary: Record<string, number>;
-  transactions: { id: string | number; date: string; type: string; amount: number; category?: string }[];
+  transactions: {
+    id: string | number;
+    date: string;
+    type: string;
+    amount: number;
+    category?: string;
+  }[];
 }
 
-const TransactionsContent: React.FC<TransactionsContentProps> = ({
-  transactions,
-}) => {
-  const [timeRange, setTimeRange] = React.useState<"7d" | "1m" | "all">("all");
+const TransactionsContent: React.FC<TransactionsContentProps> = () => {
+  const [timeRange, setTimeRange] = React.useState<'7d' | '1m' | 'all'>('all');
   const [activeTab, setActiveTab] = React.useState<
-    "overview" | "earned" | "spent"
-  >("overview");
+    'overview' | 'earned' | 'spent'
+  >('overview');
 
-  const { data: backendChartData, isLoading } = useGetWalletChartData(timeRange);
+  const { data: backendChartData } = useGetWalletChartData(timeRange);
 
   const summary = React.useMemo(() => {
-      const earned = Number(backendChartData?.stats.find((s) => s.name === "Earned")?.value || 0);
-      const spent = Number(backendChartData?.stats.find((s) => s.name === "Spent")?.value || 0);
-      return {
-          totalCredited: earned,
-          totalDebited: spent,
-          businessEarned: earned,
-          businessSpent: spent,
-          netGain: earned - spent,
-          netFlow: earned - spent
-      };
+    const earned = Number(
+      backendChartData?.stats.find((s) => s.name === 'Earned')?.value || 0,
+    );
+    const spent = Number(
+      backendChartData?.stats.find((s) => s.name === 'Spent')?.value || 0,
+    );
+    return {
+      totalCredited: earned,
+      totalDebited: spent,
+      businessEarned: earned,
+      businessSpent: spent,
+      netGain: earned - spent,
+      netFlow: earned - spent,
+    };
   }, [backendChartData]);
 
   const chartData = {
-      overview: backendChartData?.trend || [],
-      businessEarned: [], 
-      businessSpent: []
+    overview: backendChartData?.trend || [],
+    businessEarned: [],
+    businessSpent: [],
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 items-start h-full">
-      <div className="flex-1 w-full flex flex-col min-h-[500px]">
-        <Card className="dark:bg-secondary-color rounded-lg shadow-md flex-1 flex flex-col">
+    <div className='flex flex-col md:flex-row gap-6 items-start h-full'>
+      <div className='flex-1 w-full flex flex-col min-h-[500px]'>
+        <Card className='dark:bg-secondary-color rounded-lg shadow-md flex-1 flex flex-col'>
           <CardHeader>
-            <CardTitle className="text-2xl">Transaction History</CardTitle>
+            <CardTitle className='text-2xl'>Transaction History</CardTitle>
           </CardHeader>
-          <CardContent className="flex-1">
+          <CardContent className='flex-1'>
             <TransactionsTable />
           </CardContent>
         </Card>
       </div>
 
-      <div className="w-full md:w-[360px] lg:w-[400px] shrink-0">
-        <WalletSummaryStats 
+      <div className='w-full md:w-[360px] lg:w-[400px] shrink-0'>
+        <WalletSummaryStats
           summary={summary}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
