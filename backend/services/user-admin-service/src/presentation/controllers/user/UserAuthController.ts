@@ -357,7 +357,8 @@ export class UserAuthController implements IUserAuthController {
       res.clearCookie('userRefreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
+        domain: '.ajaiiii.cloud',
       });
 
       return res

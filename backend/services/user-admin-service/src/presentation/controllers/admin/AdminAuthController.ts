@@ -43,6 +43,7 @@ export class AdminAuthController implements IAdminAuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
+        domain: '.ajaiiii.cloud',
         maxAge: 30 * 24 * 60 * 60 * 1000,
       });
 
@@ -87,7 +88,8 @@ export class AdminAuthController implements IAdminAuthController {
       res.clearCookie('adminRefreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
+        sameSite: 'lax',
+        domain: '.ajaiiii.cloud',
       });
 
       return res
