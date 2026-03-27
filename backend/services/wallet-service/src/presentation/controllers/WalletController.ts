@@ -187,9 +187,15 @@ export class WalletController implements IWalletController {
       );
 
       const result = await this._lockFundsUseCase.execute(dto);
+      if (!result) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          success: false,
+          message: WALLET_MESSAGES.FUNDS_LOCKED_FAILED,
+        });
+      }
 
       return res.status(HttpStatus.OK).json({
-        success: result,
+        success: true,
         message: WALLET_MESSAGES.FUNDS_LOCKED_SUCCESS,
       });
     } catch (error) {
@@ -221,9 +227,15 @@ export class WalletController implements IWalletController {
       );
 
       const result = await this._unlockFundsUseCase.execute(dto);
+      if (!result) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          success: false,
+          message: WALLET_MESSAGES.FUNDS_UNLOCKED_FAILED,
+        });
+      }
 
       return res.status(HttpStatus.OK).json({
-        success: result,
+        success: true,
         message: WALLET_MESSAGES.FUNDS_UNLOCKED_SUCCESS,
       });
     } catch (error) {
@@ -251,6 +263,11 @@ export class WalletController implements IWalletController {
       );
 
       const result = await this._settleAuctionUseCase.execute(dto);
+      if (!result) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: WALLET_MESSAGES.AUCTION_SETTLED_FAILED,
+        });
+      }
 
       logger.info(`[WalletController] Auction settled successfully for user ${dto.winnerId}`);
       return res
@@ -280,7 +297,12 @@ export class WalletController implements IWalletController {
         req.body,
       );
 
-      await this._processSplitPurchaseUseCase.execute(dto);
+      const result = await this._processSplitPurchaseUseCase.execute(dto);
+      if (!result) {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: WALLET_MESSAGES.PURCHASE_FAILED,
+        });
+      }
 
       return res
         .status(HttpStatus.OK)

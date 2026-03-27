@@ -12,9 +12,9 @@ const sslMode = url.searchParams.get('sslmode');
 
 const pool = new Pool({
   connectionString,
-  max: 10,
+  max: 30,
   idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000,
+  connectionTimeoutMillis: 20000,
   ssl:
     sslMode === 'require' || sslMode === 'no-verify'
       ? { rejectUnauthorized: false }

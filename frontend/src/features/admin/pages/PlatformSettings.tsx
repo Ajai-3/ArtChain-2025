@@ -13,10 +13,11 @@ import CustomLoader from '../../../components/CustomLoader';
 import { Gavel, ShoppingCart, Gift, Coins } from 'lucide-react';
 
 const formSchema = z.object({
-    auctionCommissionPercentage: z.coerce.number().min(0).max(100),
-    artSaleCommissionPercentage: z.coerce.number().min(0).max(100),
-    welcomeBonus: z.coerce.number().min(0),
-    artCoinRate: z.coerce.number().min(1),
+    auctionCommissionPercentage: z.coerce.number().min(0).max(50, "Maximum commission is 50%"),
+    artSaleCommissionPercentage: z.coerce.number().min(0).max(50, "Maximum commission is 50%"),
+    commissionArtPercentage: z.coerce.number().min(0).max(50, "Maximum commission is 50%"),
+    welcomeBonus: z.coerce.number().min(0).max(100),
+    artCoinRate: z.coerce.number().min(1).max(1000),
 });
 
 const PlatformSettings: React.FC = () => {
@@ -36,6 +37,7 @@ const PlatformSettings: React.FC = () => {
             reset({
                 auctionCommissionPercentage: config.auctionCommissionPercentage,
                 artSaleCommissionPercentage: config.artSaleCommissionPercentage,
+                commissionArtPercentage: config.commissionArtPercentage,
                 welcomeBonus: config.welcomeBonus,
                 artCoinRate: config.artCoinRate,
             });
@@ -136,6 +138,23 @@ const PlatformSettings: React.FC = () => {
                                 )}
                                 <p className="text-sm text-muted-foreground">
                                     Percentage deducted from art sale price
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="commissionArtPercentage">Artist Commission (%)</Label>
+                                <Input 
+                                    id="commissionArtPercentage" 
+                                    type="number" 
+                                    step="0.1" 
+                                    placeholder="5.0" 
+                                    {...register("commissionArtPercentage")} 
+                                />
+                                {errors.commissionArtPercentage && (
+                                    <p className="text-sm text-red-500">{errors.commissionArtPercentage.message}</p>
+                                )}
+                                <p className="text-sm text-muted-foreground">
+                                    Percentage deducted from artist-related operations
                                 </p>
                             </div>
 

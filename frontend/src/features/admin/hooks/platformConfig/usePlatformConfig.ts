@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast";
 interface PlatformConfig {
   auctionCommissionPercentage: number;
   artSaleCommissionPercentage: number;
+  commissionArtPercentage: number;
   welcomeBonus: number;
   referralBonus: number;
   artCoinRate: number;

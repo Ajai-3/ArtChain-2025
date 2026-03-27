@@ -504,7 +504,7 @@ export class WalletRepositoryImpl
           '[WalletRepository] Settlement transaction committed successfully for',
           auctionId,
         );
-      });
+      }, { timeout: 30000 });
       return true;
     } catch (error) {
       logger.error(

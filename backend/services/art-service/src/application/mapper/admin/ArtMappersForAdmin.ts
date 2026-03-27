@@ -3,7 +3,7 @@ import { mapCdnUrl } from "../../../utils/mapCdnUrl";
 export const toGetAllArtForAdmin = (art: any, user: any, counts: any) => {
   return {
     id: art?.id as string,
-    artname: art?.artName,
+    artName: art?.artName,
     title: art?.title,
     description: art?.description,
     postType: art.postType,
@@ -12,6 +12,7 @@ export const toGetAllArtForAdmin = (art: any, user: any, counts: any) => {
     status: art?.status, 
     priceType: art?.priceType, 
     artcoins: art?.artcoins,
+    fiatPrice: art?.fiatPrice,
     previewUrl: mapCdnUrl(art.previewUrl),
     user: {
         name: user?.name || 'Unknown',
