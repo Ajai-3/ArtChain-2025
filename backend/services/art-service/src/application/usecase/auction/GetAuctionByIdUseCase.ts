@@ -13,21 +13,21 @@ import { IUserService } from '../../interface/service/IUserService';
 @injectable()
 export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
   constructor(
-    @inject(TYPES.IAuctionRepository) private _repository: IAuctionRepository,
-    @inject(TYPES.IBidRepository) private _bidRepository: IBidRepository,
-    @inject(TYPES.IS3Service) private _s3Service: IS3Service,
-    @inject(TYPES.IUserService) private _userService: IUserService
+    @inject(TYPES.IAuctionRepository) private readonly _auctionRepo: IAuctionRepository,
+    @inject(TYPES.IBidRepository) private readonly _bidRepo: IBidRepository,
+    @inject(TYPES.IS3Service) private readonly _s3Service: IS3Service,
+    @inject(TYPES.IUserService) private readonly _userService: IUserService
   ) {}
 
   async execute(dto: GetAuctionByIdDTO): Promise<any | null> {
     const { id } = dto;
-    const auction = await this._repository.getById(id);
+    const auction = await this._auctionRepo.getById(id);
     if (!auction) {
         throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
     };
 
     const [{ bids }, signedImageUrl] = await Promise.all([
-      this._bidRepository.findByAuctionId(auction._id!),
+      this._bidRepo.findByAuctionId(auction._id!),
       this._s3Service.getSignedUrl(auction.imageKey, 'bidding') 
     ]);
 

@@ -4,6 +4,9 @@ import { Container } from 'inversify';
 
 const container = new Container();
 
+import { AppLogger } from '../logger/Applogger';
+import { ILogger } from '../../application/interface/ILogger';
+
 // Repositories
 import { ILikeRepository } from '../../domain/repositories/ILikeRepository';
 import { IArtPostRepository } from '../../domain/repositories/IArtPostRepository';
@@ -245,6 +248,8 @@ import { ElasticSearchClient } from '../clients/ElasticSearchClient';
 import { DeleteUserArtPostUseCase } from '../../application/usecase/art/DeleteUserArtPostUseCase';
 import { IDeleteUserArtPostUseCase } from '../../application/interface/usecase/art/IDeleteUserArtPostUseCase';
 
+
+container.bind<ILogger>(TYPES.ILogger).to(AppLogger);
 
 
 // AI Repositories

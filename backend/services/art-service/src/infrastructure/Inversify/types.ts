@@ -1,4 +1,7 @@
 export const TYPES = {
+
+  ILogger: Symbol.for('ILogger'),
+  
   // Repositories
   ILikeRepository: Symbol.for('ILikeRepository'),
   IArtPostRepository: Symbol.for('IArtPostRepository'),
