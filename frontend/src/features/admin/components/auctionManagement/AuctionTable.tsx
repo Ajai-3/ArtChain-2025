@@ -319,7 +319,8 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
                       </Button>
 
                       {auction.status !== 'ENDED' &&
-                        auction.status !== 'CANCELLED' && (
+                        auction.status !== 'CANCELLED' &&
+                        auction.status !== 'UNSOLD' && (
                           <Button
                             variant="ghost"
                             size="icon"
@@ -333,7 +334,7 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
                           </Button>
                         )}
 
-                      {auction.status === 'ENDED' &&
+                      {(auction.status === 'ENDED') &&
                         auction.paymentStatus !== 'SUCCESS' && (
                           <Button
                             variant="outline"

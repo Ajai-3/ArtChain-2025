@@ -63,6 +63,7 @@ export class AuctionMapper {
         }
         : null,
       winnerId: auction.winnerId,
+      paymentStatus: auction.paymentStatus,
       createdAt: auction.createdAt,
       updatedAt: auction.updatedAt,
     };

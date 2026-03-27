@@ -11,7 +11,29 @@ export const useSettleAuction = () => {
       return response.data;
     },
     onSuccess: (_, id) => {
-      // Refresh the auctions lists for admin
+      // 1. Manually update the cache for all matching "admin-auctions" queries for instant feedback
+      queryClient.setQueriesData({ queryKey: ["admin-auctions"] }, (oldData: any) => {
+        if (!oldData || !oldData.data || !oldData.data.auctions) return oldData;
+        
+        return {
+          ...oldData,
+          data: {
+            ...oldData.data,
+            auctions: oldData.data.auctions.map((auction: any) => {
+              if (auction._id === id || auction.id === id) {
+                return { 
+                  ...auction, 
+                  status: "ENDED", 
+                  paymentStatus: "SUCCESS" 
+                };
+              }
+              return auction;
+            }),
+          },
+        };
+      });
+
+      // 2. Trigger a background refetch to ensure source of truth
       queryClient.invalidateQueries({ queryKey: ["admin-auctions"] });
       
       toast.success("Auction funds settled successfully");

@@ -35,11 +35,12 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     // it was lazily updated but NOT settled. We should allow processing.
     const canProcess = auction && (
         auction.status === 'ACTIVE' || 
-        (auction.status === 'ENDED' && auction.paymentStatus === 'NONE')
+        (auction.status === 'ENDED' && (auction.paymentStatus === 'NONE' || auction.paymentStatus === 'FAILED')) ||
+        (auction.status === 'CANCELLED' && auction.paymentStatus === 'FAILED')
     );
 
     if (!canProcess) {
-      this._logger.warn(`Auction ${auctionId} status is ${auction?.status}. Skipping settlement.`);
+      this._logger.warn(`Auction ${auctionId} status is ${auction?.status} and paymentStatus is ${auction?.paymentStatus}. Skipping settlement.`);
       return false;
     }
 
@@ -103,7 +104,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       this._logger.error(`Settlement FAILED for auction ${auctionId}.`);
       
       await this._auctionRepository.update(auctionId, {
-        status: 'CANCELLED', 
+        status: 'ENDED', 
         paymentStatus: 'FAILED',
       });
 
