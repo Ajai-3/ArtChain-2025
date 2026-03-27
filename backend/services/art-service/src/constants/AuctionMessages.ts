@@ -26,4 +26,6 @@ export const AUCTION_MESSAGES = {
   AUCTION_COUNTS_FETCHED: 'Auction counts fetched successfully',
   YOU_ARE_NOT_BIDDER: 'You are not the bidder for this auction',
   AUCTION_NOT_ENDED: 'Auction has not ended yet',
+  AUCTION_SETTLED_SUCCESS: 'Auction funds settled successfully',
+  AUCTION_SETTLED_FAILED: 'Failed to settle auction funds',
 } as const;

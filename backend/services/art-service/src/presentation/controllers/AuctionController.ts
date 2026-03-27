@@ -17,6 +17,7 @@ import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auct
 import { IGetUserBiddingHistoryUseCase } from '../../application/interface/usecase/auction/IGetUserBiddingHistoryUseCase';
 import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
 import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
+import { IEndAuctionUseCase } from '../../application/interface/usecase/auction/IEndAuctionUseCase';
 
 
 @injectable()
@@ -35,7 +36,9 @@ export class AuctionController implements IAuctionController {
     @inject(TYPES.ICancelAuctionUseCase)
     private readonly _cancelAuctionUseCase: ICancelAuctionUseCase,
     @inject(TYPES.IGetRecentAuctionsUseCase)
-    private readonly _getRecentAuctionsUseCase: IGetRecentAuctionsUseCase
+    private readonly _getRecentAuctionsUseCase: IGetRecentAuctionsUseCase,
+    @inject(TYPES.IEndAuctionUseCase)
+    private readonly _endAuctionUseCase: IEndAuctionUseCase
   ) { }
 
   //# ================================================================================================================
@@ -338,21 +341,54 @@ export class AuctionController implements IAuctionController {
   getAuctionAlertCounts = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       logger.info('Fetching auction alert counts (active & scheduled)');
       const stats = await this._getAuctionStatsUseCase.execute('all');
-      
+
       return res.status(HttpStatus.OK).json({
         message: AUCTION_MESSAGES.AUCTION_COUNTS_FETCHED,
         data: {
           active: stats.active,
-          scheduled: stats.scheduled
+          scheduled: stats.scheduled,
         },
       });
     } catch (error) {
       logger.error('Error in getAuctionAlertCounts', error);
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# SETTLE AUCTION (ADMIN ONLY)
+  //# ================================================================================================================
+  //# POST /api/v1/art/admin/auctions/:id/settle
+  //# Params: id
+  //# Handles manual settlement of funds for a completed auction.
+  //# ================================================================================================================
+  settleAuction = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> => {
+    try {
+      const { id } = req.params;
+      logger.info(`Manually settling auction id=${id} (Admin Trigger)`);
+
+      const success = await this._endAuctionUseCase.execute(id);
+
+      if (success) {
+        return res.status(HttpStatus.OK).json({
+          message: AUCTION_MESSAGES.AUCTION_SETTLED_SUCCESS || 'Auction settled successfully',
+        });
+      } else {
+        return res.status(HttpStatus.BAD_REQUEST).json({
+          message: AUCTION_MESSAGES.AUCTION_SETTLED_FAILED || 'Failed to settle auction',
+        });
+      }
+    } catch (error) {
+      logger.error('Error in settleAuction', error);
       next(error);
     }
   };

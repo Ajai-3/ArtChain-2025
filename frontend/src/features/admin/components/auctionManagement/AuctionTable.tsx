@@ -12,6 +12,8 @@ import { Eye, Trash2, Gavel } from 'lucide-react';
 import { format, formatDistance } from 'date-fns';
 import ConfirmModal from '../../../../components/modals/ConfirmModal';
 import { useCancelAuction } from '../../hooks/auctionManagement/useCancelAuction';
+import { useSettleAuction } from '../../hooks/auctionManagement/useSettleAuction';
+import { CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 
 interface AuctionTableProps {
   auctions: any[];
@@ -38,6 +40,11 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
   );
 
   const { mutate: cancelAuction, isPending: isCanceling } = useCancelAuction();
+  const { mutate: settleAuction, isPending: isSettling } = useSettleAuction();
+
+  const handleSettleClick = (id: string) => {
+    settleAuction(id);
+  };
 
   const handleDeleteClick = (id: string) => {
     setSelectedAuctionId(id);
@@ -132,7 +139,7 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
               <TableHead className="px-4 py-3 text-left">Price / Bid</TableHead>
               <TableHead className="px-4 py-3 text-left">Duration</TableHead>
               <TableHead className="px-4 py-3 text-left">Status</TableHead>
-              <TableHead className="px-4 py-3 text-left">Created At</TableHead>
+              <TableHead className="px-4 py-3 text-left">Payment</TableHead>
               <TableHead className="px-4 py-3 text-left">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -269,10 +276,33 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
                     </span>
                   </TableCell>
 
-                  <TableCell className="px-4 py-3 text-sm text-zinc-500">
-                    {format(
-                      new Date(auction.createdAt || Date.now()),
-                      'MMM d, yyyy',
+                  <TableCell className="px-4 py-3">
+                    {auction.status === 'ENDED' || auction.status === 'CANCELLED' ? (
+                      <div className="flex items-center gap-1.5 min-w-[100px]">
+                        {auction.paymentStatus === 'SUCCESS' ? (
+                          <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span className="text-xs font-medium">Success</span>
+                          </div>
+                        ) : auction.paymentStatus === 'PENDING' ? (
+                          <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+                            <Clock className="w-4 h-4" />
+                            <span className="text-xs font-medium">Pending</span>
+                          </div>
+                        ) : auction.paymentStatus === 'FAILED' ? (
+                          <div className="flex items-center gap-1.5 text-red-600 dark:text-red-400">
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-xs font-medium">Failed</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-zinc-400">
+                            <AlertCircle className="w-4 h-4" />
+                            <span className="text-xs font-medium">None</span>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-zinc-400 italic">Pre-Settlement</span>
                     )}
                   </TableCell>
 
@@ -300,6 +330,25 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
                             title="Cancel Auction"
                           >
                             <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
+
+                      {auction.status === 'ENDED' &&
+                        auction.paymentStatus !== 'SUCCESS' && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 flex items-center gap-2 border-emerald-500/50 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 dark:border-emerald-800/50"
+                            onClick={() =>
+                              handleSettleClick(auction._id || auction.id)
+                            }
+                            disabled={isSettling}
+                            title="Manually Settle Auction Funds"
+                          >
+                            <Gavel className="w-3.5 h-3.5" />
+                            <span className="text-xs">
+                              {isSettling ? 'Settling...' : 'Settle'}
+                            </span>
                           </Button>
                         )}
                     </div>

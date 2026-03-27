@@ -98,6 +98,7 @@ export const authRoutesConfig = {
 
     { path: ROUTES.ART.MY_BIDDING_HISTORY, methods: ['GET'] },
     { path: ROUTES.ART.BUY, methods: ['POST'] },
+     { path: ROUTES.ART.BASE, method: ['POST'] },
   ],
 
   user_optional: [
@@ -105,6 +106,8 @@ export const authRoutesConfig = {
     { path: ROUTES.USER.PROFILE_BY_USERNAME, methods: ['GET'] },
 
     { path: ROUTES.ART.FAVORITES_BY_USER, methods: ['GET'] },
+
+   
 
     { path: ROUTES.ART.BASE, methods: ['GET'] },
     { path: ROUTES.ART.BY_ID, methods: ['GET'] },
@@ -142,5 +145,11 @@ export const authRoutesConfig = {
     { path: ROUTES.ADMIN.ADMIN_COMMISSIONS, methods: ['GET'] },
     { path: ROUTES.ADMIN.ADMIN_COMMISSION_STATS, methods: ['GET'] },
     { path: ROUTES.ADMIN.ADMIN_RESOLVE_COMMISSION, methods: ['POST'] },
+    { path: ROUTES.ADMIN.ADMIN_AUCTIONS, methods: ['GET'] },
+    { path: ROUTES.ADMIN.ADMIN_AUCTION_BY_ID, methods: ['GET'] },
+    { path: ROUTES.ADMIN.ADMIN_AUCTION_STATS, methods: ['GET'] },
+    { path: ROUTES.ADMIN.ADMIN_AUCTION_CANCEL, methods: ['PATCH'] },
+    { path: ROUTES.ADMIN.ADMIN_AUCTION_RECENT, methods: ['GET'] },
+    { path: ROUTES.ADMIN.ADMIN_AUCTION_SETTLE, methods: ['POST'] },
   ],
 };

@@ -108,6 +108,7 @@ export const ROUTES = {
     STATS: '/admin/auctions/stats',
     CANCEL: '/admin/auctions/:id/cancel',
     RECENT: '/admin/auctions/recent',
+    SETTLE: '/admin/auctions/:id/settle',
   },
 
   // Admin Config routes

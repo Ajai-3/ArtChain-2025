@@ -13,5 +13,6 @@ adminAuctionRouter.get(ROUTES.ADMIN_AUCTION.STATS, (req, res, next) => auctionCo
 adminAuctionRouter.get(ROUTES.ADMIN_AUCTION.RECENT, (req, res, next) => auctionController.getRecentAuctions(req, res, next));
 adminAuctionRouter.get(ROUTES.ADMIN_AUCTION.BY_ID, (req, res, next) => auctionController.getAuction(req, res, next));
 adminAuctionRouter.patch(ROUTES.ADMIN_AUCTION.CANCEL, (req, res, next) => auctionController.cancelAuction(req, res, next));
+adminAuctionRouter.post(ROUTES.ADMIN_AUCTION.SETTLE, (req, res, next) => auctionController.settleAuction(req, res, next));
 
 export default adminAuctionRouter;

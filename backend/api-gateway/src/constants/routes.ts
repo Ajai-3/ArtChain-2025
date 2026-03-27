@@ -128,6 +128,12 @@ export const ROUTES = {
     ADMIN_COMMISSIONS: '/api/v1/art/admin/commissions/all',
     ADMIN_COMMISSION_STATS: '/api/v1/art/admin/commissions/stats',
     ADMIN_RESOLVE_COMMISSION: '/api/v1/art/admin/commissions/resolve/:id',
+    ADMIN_AUCTIONS: '/api/v1/art/admin/auctions',
+    ADMIN_AUCTION_BY_ID: '/api/v1/art/admin/auctions/:id',
+    ADMIN_AUCTION_STATS: '/api/v1/art/admin/auctions/stats',
+    ADMIN_AUCTION_CANCEL: '/api/v1/art/admin/auctions/:id/cancel',
+    ADMIN_AUCTION_RECENT: '/api/v1/art/admin/auctions/recent',
+    ADMIN_AUCTION_SETTLE: '/api/v1/art/admin/auctions/:id/settle',
   },
   ELASTIC: {
     BASE: '/api/v1/elastic',

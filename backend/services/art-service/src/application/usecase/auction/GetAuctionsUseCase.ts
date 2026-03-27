@@ -43,22 +43,18 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     if (!auctions.length) return { auctions: [], total: 0 };
 
     const now = new Date();
-    const updatedAuctions = await Promise.all(
-      auctions.map(async (auction) => {
-        if (
-          auction.status === 'SCHEDULED' &&
-          new Date(auction.startTime) <= now
-        ) {
-          await this._repository.updateStatus(auction._id!, 'ACTIVE');
-          return { ...auction, status: 'ACTIVE' };
-        }
-        if (auction.status === 'ACTIVE' && new Date(auction.endTime) <= now) {
-          await this._repository.updateStatus(auction._id!, 'ENDED');
-          return { ...auction, status: 'ENDED' };
-        }
-        return auction;
-      }),
-    );
+    const updatedAuctions = auctions.map((auction) => {
+      if (
+        auction.status === 'SCHEDULED' &&
+        new Date(auction.startTime) <= now
+      ) {
+        return { ...auction, status: 'ACTIVE' };
+      }
+      if (auction.status === 'ACTIVE' && new Date(auction.endTime) <= now) {
+        return { ...auction, status: 'ENDED' };
+      }
+      return auction;
+    });
 
     const finalAuctions = updatedAuctions as any[];
 

@@ -30,9 +30,23 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     this._logger.info(`Attempting to close auction: ${auctionId}`);
 
     const auction = await this._auctionRepository.getById(auctionId);
-    if (!auction || auction.status !== 'ACTIVE') {
-      this._logger.warn(`Auction ${auctionId} is not active or not found.`);
+    
+    // Recovery Check: If auction is already 'ENDED' but 'paymentStatus' is 'NONE', it means
+    // it was lazily updated but NOT settled. We should allow processing.
+    const canProcess = auction && (
+        auction.status === 'ACTIVE' || 
+        (auction.status === 'ENDED' && auction.paymentStatus === 'NONE')
+    );
+
+    if (!canProcess) {
+      this._logger.warn(`Auction ${auctionId} status is ${auction?.status}. Skipping settlement.`);
       return false;
+    }
+
+    // Skip if already being processed or already successful
+    if (auction.paymentStatus === 'PENDING' || auction.paymentStatus === 'SUCCESS') {
+      this._logger.info(`Auction ${auctionId} payment is already ${auction.paymentStatus}. Skipping.`);
+      return true;
     }
 
     const winningBid = await this._bidRepository.findHighestBid(auctionId);
@@ -53,8 +67,8 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     }
 
     const platformConfig = await this._platformConfigRepository.getConfig();
-    const commissionRate = platformConfig.auctionCommissionPercentage / 100;
-    const commissionAmount = winningBid.amount * commissionRate;
+    const commissionRate = (platformConfig?.auctionCommissionPercentage ?? 0) / 100;
+    const commissionAmount = Math.max(0, winningBid.amount * commissionRate);
 
     await this._auctionRepository.update(auctionId, { paymentStatus: 'PENDING' });
 
