@@ -23,6 +23,8 @@ export const useStripeSession = (sessionId: string | null) => {
       const { data } = await apiClient.get<StripeSessionResponse>(
         `/api/v1/wallet/stripe/session/${sessionId}`
       );
+
+      console.log("strip top up data", data)
       return data;
     },
     enabled: !!sessionId, // Only fetch if sessionId exists

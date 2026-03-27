@@ -125,7 +125,7 @@ const SuccessPage = () => {
 
                 <div className="bg-gray-100 dark:bg-zinc-800/50 rounded-xl p-3 sm:p-4 mb-6">
                   <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-                    ₹{session.amountPaid.toFixed(2)}
+                    ₹{(session.amountPaid || 0).toFixed(2)}
                   </p>
                   <p className="text-green-600 dark:text-green-400 text-sm font-semibold">
                     Amount Paid

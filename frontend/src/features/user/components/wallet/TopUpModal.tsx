@@ -236,7 +236,8 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
                 <span className='font-medium'>Stripe</span>
               </Button>
 
-              <Button
+              {/* Razorpay Hidden by Request */}
+              {/* <Button
                 variant='outline'
                 className={`flex-1 items-center justify-center gap-1 border-2 ${
                   paymentMethod === 'razorpay'
@@ -249,7 +250,7 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
                   Razorpay
                 </span>
                 <span className='font-medium'>Razorpay</span>
-              </Button>
+              </Button> */}
             </div>
 
             <Button
@@ -274,17 +275,7 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
                   : `Pay with Stripe ₹${Number(amount) * 10}`}
               </Button>
             )}
-            {paymentMethod === 'razorpay' && (
-              <Button
-                className='w-full text-white font-medium !bg-blue-600 hover:bg-blue-700'
-                onClick={handleRazorpayCheckout}
-                disabled={isRazorpayLoading || !isValidAmount()}
-              >
-                {isRazorpayLoading
-                  ? 'Processing...'
-                  : `Pay with Razorpay ₹${Number(amount) * 10}`}
-              </Button>
-            )}
+            {/* Razorpay Section Removed */}
             <Button
               variant='outline'
               className='w-full mt-2'
