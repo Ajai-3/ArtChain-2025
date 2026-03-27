@@ -23,10 +23,11 @@ const seedAIConfigs = async () => {
         defaultModel: 'flux',
         availableModels: [
           'flux',
-          'flux-realism',
-          'flux-anime',
-          'flux-3d',
-          'turbo',
+          'zimage',
+          'gptimage',
+          'klein',
+          'qwen-image',
+          'grok-imagine',
         ],
         maxPromptLength: 1000,
         allowedResolutions: [
