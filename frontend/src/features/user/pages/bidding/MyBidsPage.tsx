@@ -18,7 +18,7 @@ export default function MyBidsPage() {
     if (error) return <div className="p-10 text-center text-destructive font-semibold">Failed to load history.</div>;
 
     return (
-        <div className="container mx-auto space-y-6 px-4 py-6">
+        <div className="container mx-auto">
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
