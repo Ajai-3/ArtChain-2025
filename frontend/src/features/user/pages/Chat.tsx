@@ -62,9 +62,8 @@ const Chat: React.FC = () => {
     }
   }, [data?.pages, conversations.length, dispatch]); 
 
-  const [mobileView] = useState<"list" | "chat">(
-    conversationId ? "chat" : "list"
-  );
+  // Use conversationId directly to determine view state on mobile
+  const isChatOpen = !!conversationId;
 
   const selectedConversation = useMemo(
     () =>
@@ -112,7 +111,7 @@ const Chat: React.FC = () => {
     <div className="flex h-full bg-background overflow-hidden">
       <div
         className={`${
-          mobileView === "list" || !conversationId ? "flex" : "hidden"
+          isChatOpen ? "hidden" : "flex"
         } md:flex w-full md:w-80 flex-shrink-0`}
       >
         <ChatUserList
@@ -128,7 +127,7 @@ const Chat: React.FC = () => {
 
       <div
         className={`${
-          mobileView === "chat" && conversationId ? "flex" : "hidden"
+          isChatOpen ? "flex" : "hidden"
         } md:flex flex-1 w-full`}
       >
         <ChatArea
