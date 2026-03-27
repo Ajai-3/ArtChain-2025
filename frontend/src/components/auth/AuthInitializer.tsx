@@ -4,7 +4,6 @@ import apiClient from '../../api/axios';
 import { setUser } from '../../redux/slices/userSlice';
 import { setAdmin } from '../../redux/slices/adminSlice';
 import { useGetPlatformConfig } from '../../features/user/hooks/platform/useGetPlatformConfig';
-import toast from 'react-hot-toast';
 
 interface AuthInitializerProps {
   children: React.ReactNode;
@@ -38,7 +37,6 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({
         if (accessToken && user) {
           // Check if user is an admin
           if (user.role === 'admin') {
-            console.log('✅ Admin user detected, dispatching to both slices');
             dispatch(
               setAdmin({
                 accessToken,
@@ -61,8 +59,6 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({
             );
           }
         }
-      } catch {
-        toast.error('No active session found or session expired.');
       } finally {
         setTimeout(() => setLoading(false), 1500);
       }
