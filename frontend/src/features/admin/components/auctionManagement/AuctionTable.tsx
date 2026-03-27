@@ -39,8 +39,8 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
     null,
   );
 
-  const { mutate: cancelAuction, isPending: isCanceling } = useCancelAuction();
-  const { mutate: settleAuction, isPending: isSettling } = useSettleAuction();
+  const { mutate: cancelAuction, isPending: isCanceling, variables: cancelingId } = useCancelAuction();
+  const { mutate: settleAuction, isPending: isSettling, variables: settlingId } = useSettleAuction();
 
   const handleSettleClick = (id: string) => {
     settleAuction(id);
@@ -328,6 +328,7 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
                             onClick={() =>
                               handleDeleteClick(auction._id || auction.id)
                             }
+                            disabled={isCanceling && cancelingId === (auction._id || auction.id)}
                             title="Cancel Auction"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -343,12 +344,12 @@ const AuctionTable: React.FC<AuctionTableProps> = ({
                             onClick={() =>
                               handleSettleClick(auction._id || auction.id)
                             }
-                            disabled={isSettling}
+                            disabled={isSettling && settlingId === (auction._id || auction.id)}
                             title="Manually Settle Auction Funds"
                           >
                             <Gavel className="w-3.5 h-3.5" />
                             <span className="text-xs">
-                              {isSettling ? 'Settling...' : 'Settle'}
+                              {isSettling && settlingId === (auction._id || auction.id) ? 'Settling...' : 'Settle'}
                             </span>
                           </Button>
                         )}
