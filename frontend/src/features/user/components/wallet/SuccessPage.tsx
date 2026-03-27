@@ -55,7 +55,11 @@ const SuccessPage = () => {
       </div>
     );
 
-  const artCoins = Math.floor(session.amountPaid / 10);
+  const amountPaid = session?.amountPaid || 0;
+  const artCoins = Math.floor(amountPaid / 10);
+  const transactionDate = session?.created 
+    ? new Date(session.created * 1000).toLocaleDateString()
+    : new Date().toLocaleDateString();
 
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-100 to-white dark:from-zinc-900 dark:to-black overflow-auto py-2">
@@ -161,7 +165,7 @@ const SuccessPage = () => {
                   ["Payment ID", session.paymentId],
                   ["User ID", session.userId],
                   ["Status", session.paymentStatus || "Completed"],
-                  ["Date", new Date().toLocaleDateString()],
+                  ["Date", transactionDate],
                 ].map(([label, value]) => (
                   <div
                     key={label}
