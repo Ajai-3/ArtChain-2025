@@ -4,6 +4,7 @@ import { IWalletService } from '../../application/interface/http/IWalletService'
 import { config } from '../config/env';
 import { TYPES } from '../inversify/types';
 import { ILogger } from '../../application/interface/ILogger';
+import { ROUTES } from '../../constants/routes';
 
 @injectable()
 export class WalletService implements IWalletService {
@@ -57,7 +58,7 @@ export class WalletService implements IWalletService {
   ): Promise<any[]> {
     try {
       const res = await axios.get(
-        `${this.baseUrl}/api/v1/wallet/admin/transactions/recent`,
+        `${this.baseUrl}${ROUTES.EXTERNAL.WALLET_TRANSACTIONS_RECENT}`,
         {
           headers: { Authorization: `Bearer ${token}` },
           params: { limit },
@@ -73,7 +74,7 @@ export class WalletService implements IWalletService {
   async getTransactionStats(token: string): Promise<any[]> {
     try {
       const res = await axios.get(
-        `${this.baseUrl}/api/v1/wallet/admin/transactions/stats`,
+        `${this.baseUrl}${ROUTES.EXTERNAL.WALLET_TRANSACTIONS_STATS}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -97,7 +98,7 @@ export class WalletService implements IWalletService {
       if (endDate) params.endDate = endDate.toISOString();
 
       const res = await axios.get(
-        `${this.baseUrl}/api/v1/wallet/admin/revenue-stats`,
+        `${this.baseUrl}${ROUTES.EXTERNAL.WALLET_REVENUE_STATS}`,
         {
           params,
           headers: {

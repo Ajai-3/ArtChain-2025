@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { inject, injectable } from 'inversify';
 import { config } from '../config/env';
+import { BadRequestError } from 'art-chain-shared';
 import { IArtService } from '../../application/interface/http/IArtService';
 import { ROUTES } from '../../constants/routes';
 import { TYPES } from '../inversify/types';
@@ -33,8 +34,7 @@ export class ArtService implements IArtService {
     type: 'likes' | 'price' = 'likes',
   ): Promise<any[]> {
     try {
-      const route = ROUTES.EXTERNAL.ART_TOP;
-      const res = await axios.get(`${this.baseUrl}${route}`, {
+      const res = await axios.get(`${this.baseUrl}${ROUTES.EXTERNAL.ART_TOP}`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { limit, type },
       });
@@ -47,10 +47,12 @@ export class ArtService implements IArtService {
 
   async getCategoryStats(token: string): Promise<any[]> {
     try {
-      const route = ROUTES.EXTERNAL.ART_CATEGORY;
-      const res = await axios.get(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${this.baseUrl}${ROUTES.EXTERNAL.ART_CATEGORY}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       return res.data.data;
     } catch (err) {
       this._logger.error('Error getting category stats:', err);
@@ -60,11 +62,13 @@ export class ArtService implements IArtService {
 
   async getRecentAuctions(token: string, limit: number = 5): Promise<any[]> {
     try {
-      const route = ROUTES.EXTERNAL.ART_AUCTION_RECENT;
-      const res = await axios.get(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
-      });
+      const res = await axios.get(
+        `${this.baseUrl}${ROUTES.EXTERNAL.ART_AUCTION_RECENT}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { limit },
+        },
+      );
       return res.data.data;
     } catch (err) {
       this._logger.error('Error getting recent auctions:', err);
@@ -74,11 +78,13 @@ export class ArtService implements IArtService {
 
   async getRecentCommissions(token: string, limit: number = 5): Promise<any[]> {
     try {
-      const route = ROUTES.EXTERNAL.ART_COMMISSION_RECENT;
-      const res = await axios.get(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit },
-      });
+      const res = await axios.get(
+        `${this.baseUrl}${ROUTES.EXTERNAL.ART_COMMISSION_RECENT}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { limit },
+        },
+      );
       return res.data.data;
     } catch (err) {
       this._logger.error('Error getting recent commissions:', err);
@@ -88,10 +94,12 @@ export class ArtService implements IArtService {
 
   async getArtworkCounts(token: string): Promise<any> {
     try {
-      const route = ROUTES.EXTERNAL.ART_COUNT;
-      const res = await axios.get(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${this.baseUrl}/api/v1/art/admin/art/stats`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       return res.data.data;
     } catch (err) {
       this._logger.error('Error getting artwork counts:', err);
@@ -101,11 +109,13 @@ export class ArtService implements IArtService {
 
   async getAuctionCounts(token: string, timeRange?: string): Promise<any> {
     try {
-      const route = ROUTES.EXTERNAL.ART_AUCTION_RECENT;
-      const res = await axios.get(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { timeRange },
-      });
+      const res = await axios.get(
+        `${this.baseUrl}/api/v1/art/admin/auctions/stats`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { timeRange },
+        },
+      );
       return res.data.data;
     } catch (err) {
       this._logger.error('Error getting auction counts:', err);
@@ -115,11 +125,13 @@ export class ArtService implements IArtService {
 
   async getCommissionCounts(token: string, timeRange?: string): Promise<any> {
     try {
-      const route = ROUTES.EXTERNAL.ART_COMMISSION_RECENT;
-      const res = await axios.get(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { timeRange },
-      });
+      const res = await axios.get(
+        `${this.baseUrl}/api/v1/art/admin/commissions/stats`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { timeRange },
+        },
+      );
       return res.data.data;
     } catch (err) {
       this._logger.error('Error getting commission counts:', err);
@@ -133,9 +145,8 @@ export class ArtService implements IArtService {
     status: string,
   ): Promise<any> {
     try {
-      const route = ROUTES.EXTERNAL.ART_STATUS.replace(':artId', artId);
       const res = await axios.patch(
-        `${this.baseUrl}${route}`,
+        `${this.baseUrl}/api/v1/art/admin/art/${artId}/status`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } },
       );
@@ -148,13 +159,10 @@ export class ArtService implements IArtService {
 
   async deleteComment(token: string, commentId: string): Promise<any> {
     try {
-      const route = ROUTES.EXTERNAL.ART_COMMENT.replace(
-        ':commentId',
-        commentId,
+      const res = await axios.delete(
+        `${this.baseUrl}/api/v1/art/admin/art/comment/${commentId}`,
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      const res = await axios.delete(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
       return res.data;
     } catch (err) {
       this._logger.error('Error deleting comment:', err);
@@ -176,13 +184,10 @@ export class ArtService implements IArtService {
 
   async getComment(token: string, commentId: string): Promise<any> {
     try {
-      const route = ROUTES.EXTERNAL.ART_COMMENT.replace(
-        ':commentId',
-        commentId,
+      const res = await axios.get(
+        `${this.baseUrl}/api/v1/art/comment/${commentId}`,
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      const res = await axios.get(`${this.baseUrl}${route}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
       return res.data;
     } catch (err) {
       this._logger.error('Error fetching comment:', err);

@@ -17,7 +17,7 @@ export const useReport = () => {
       return { success: true };
     },
     onError: (error: any) => {
-      toast.error(error.fullError.data.message);
+      toast.error(error.fullError.data.body.error.message || "Something went wrong");
     },
   })
 };

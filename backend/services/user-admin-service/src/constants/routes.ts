@@ -63,6 +63,7 @@ export const ROUTES = {
 
   // External service routes
   EXTERNAL: {
+    // Art service routes
     ART_COUNT: '/api/v1/art/count/:userId',
     ART_TOP: '/api/v1/art/admin/art/stats/top',
     ART_CATEGORY: '/api/v1/art/admin/art/stats/categories',
@@ -70,6 +71,12 @@ export const ROUTES = {
     ART_AUCTION_RECENT: '/api/v1/art/admin/auctions/recent',
     ART_COMMISSION_RECENT: '/api/v1/art/admin/commissions/recent',
     ART_STATUS: '/api/v1/art/admin/art/:artId/status',
-    ART_COMMENT: '/api/v1/art/admin/art/comment/:commentId',
+    ART_COMMENT: '/api/v1/art/comment/:commentId',
+
+    // Wallet service routes
+    WALLET_ADMIN_TRANSACTIONS: '/api/v1/wallet/admin/transactions',
+    WALLET_TRANSACTIONS_RECENT: '/api/v1/wallet/admin/transactions/recent',
+    WALLET_TRANSACTIONS_STATS: '/api/v1/wallet/admin/transactions/stats',
+    WALLET_REVENUE_STATS: '/api/v1/wallet/admin/revenue-stats',
   },
 } as const;
