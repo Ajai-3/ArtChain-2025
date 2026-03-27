@@ -4,7 +4,7 @@ import { Container } from 'inversify';
 
 const container = new Container();
 
-import { AppLogger } from '../logger/Applogger';
+import { AppLogger } from '../logger/AppLogger';
 import { ILogger } from '../../application/interface/ILogger';
 
 // Repositories
