@@ -34,6 +34,13 @@ export class AdminWalletController implements IAdminWalletController {
     private readonly _getAdminTransactionsUseCase: IGetAdminTransactionsUseCase
   ) {}
 
+  //# ================================================================================================================
+  //# GET ALL WALLETS
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/admin/wallets
+  //# Request Params: page, limit, query, status, minBalance, maxBalance
+  //# This controller helps to get all wallets.
+  //# ================================================================================================================
   getAllWallets = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -69,6 +76,14 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
+  //# ================================================================================================================
+  //# UPDATE WALLET STATUS
+  //# ================================================================================================================
+  //# PATCH /api/v1/wallet/admin/wallets/:walletId
+  //# Request Params: walletId
+  //# Request Body: { status }
+  //# This controller helps to update the status of a wallet.
+  //# ================================================================================================================
   updateWalletStatus = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { walletId } = req.params;
@@ -85,6 +100,14 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET USER TRANSACTIONS
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/admin/wallets/:walletId/transactions
+  //# Request Params: walletId
+  //# Request Body: { page, limit, type, category, status, startDate, endDate }
+  //# This controller helps to get all transactions of a user.
+  //# ================================================================================================================
   getUserTransactions = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { walletId } = req.params;
@@ -115,6 +138,13 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET REVENUE STATS
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/admin/wallets/revenue-stats
+  //# Request Params: startDate, endDate
+  //# This controller helps to get the revenue stats of the platform.
+  //# ================================================================================================================
   getRevenueStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const adminId = (req.headers['x-admin-id'] as string) || config.platform_admin_id;
@@ -139,6 +169,13 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET ALL RECENT TRANSACTIONS
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/admin/wallets/recent-transactions
+  //# Request Params: limit
+  //# This controller helps to get all recent transactions.
+  //# ================================================================================================================
   getAllRecentTransactions = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const limit = parseInt(req.query.limit as string) || 5;
@@ -152,12 +189,21 @@ export class AdminWalletController implements IAdminWalletController {
       next(error);
     }
   };
+
+  //# ================================================================================================================
+  //# GET TRANSACTION STATS
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/admin/wallets/transaction-stats
+  //# Request Params: timeRange
+  //# This controller helps to get the transaction stats of the platform.
+  //# ================================================================================================================
   getTransactionStats = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const timeRange = (req.query.timeRange as string) || '7d';
       const stats = await this._getTransactionStatsUseCase.execute(timeRange);
       
       return res.status(HttpStatus.OK).json({
+        message: WALLET_MESSAGES.TRANSACTION_STATS_FETCH_SUCCESS,
         data: stats
       });
     } catch (error) {
@@ -165,6 +211,13 @@ export class AdminWalletController implements IAdminWalletController {
     }
   };
 
+  //# ================================================================================================================
+  //# GET ADMIN TRANSACTIONS
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/admin/wallets/admin-transactions
+  //# Request Params: startDate, endDate
+  //# This controller helps to get the admin transactions.
+  //# ================================================================================================================
   getAdminTransactions = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const adminId = config.platform_admin_id;

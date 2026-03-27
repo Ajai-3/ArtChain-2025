@@ -48,4 +48,5 @@ export enum WALLET_MESSAGES {
   FUNDS_LOCKED_SUCCESS = 'Funds locked successfully',
   FUNDS_UNLOCKED_SUCCESS = 'Funds unlocked successfully',
   INSUFFICIENT_LOCKED_FUNDS = 'Insufficient locked funds to unlock',
+  WITHDRAWAL_STATUS_UPDATED = 'Withdrawal status updated successfully',
 }

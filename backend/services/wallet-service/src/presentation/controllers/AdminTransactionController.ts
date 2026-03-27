@@ -1,47 +1,27 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../infrastructure/inversify/types';
-import { IWalletRepository } from '../../domain/repository/IWalletRepository';
 import { HttpStatus } from 'art-chain-shared';
+import { WALLET_MESSAGES } from '../../constants/WalletMessages';
+import { IGetAdminTransactionsUseCase } from '../../application/interface/usecase/admin/IGetAdminTransactionsUseCase';
 
 @injectable()
 export class AdminTransactionController {
   constructor(
-    @inject(TYPES.IWalletRepository)
-    private readonly _walletRepository: IWalletRepository
+    @inject(TYPES.IGetAdminTransactionsUseCase)
+    private readonly _getAdminTransactionsUseCase: IGetAdminTransactionsUseCase
   ) {}
 
-  getAdminTransactions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getAdminTransactions = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
       const { adminId } = req.params;
       const startDate = req.query.startDate ? new Date(req.query.startDate as string) : undefined;
       const endDate = req.query.endDate ? new Date(req.query.endDate as string) : undefined;
 
-      if (!adminId) {
-        res.status(HttpStatus.BAD_REQUEST).json({
-          success: false,
-          message: 'Admin ID is required',
-        });
-        return;
-      }
+      const transactions = await this._getAdminTransactionsUseCase.execute(adminId, startDate, endDate);
 
-      const wallet = await this._walletRepository.getByUserId(adminId);
-      if (!wallet) {
-        res.status(HttpStatus.NOT_FOUND).json({
-          success: false,
-          message: 'Admin wallet not found',
-        });
-        return;
-      }
-
-      const transactions = await this._walletRepository.getAdminCommissionTransactions(
-        wallet.id,
-        startDate,
-        endDate
-      );
-
-      res.status(HttpStatus.OK).json({
-        success: true,
+      return res.status(HttpStatus.OK).json({
+        message: WALLET_MESSAGES.ADMIN_TRANSACTIONS_FETCH_SUCCESS,
         data: { transactions },
       });
     } catch (error) {

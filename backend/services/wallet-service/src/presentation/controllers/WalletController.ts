@@ -153,9 +153,7 @@ export class WalletController implements IWalletController {
       const userId = req.headers['x-user-id'] as string;
       const updateData = req.body;
       logger.info(
-        `[WalletController] Updating wallet for userId: ${userId} with data: ${JSON.stringify(
-          updateData,
-        )}`,
+        `[WalletController] Updating wallet for userId: ${userId}`,
       );
 
       logger.info(
@@ -213,7 +211,6 @@ export class WalletController implements IWalletController {
     next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      console.log(req.body, 'req.body');
       const dto: UnlockFundsDTO = validateWithZod(
         lockUnlockFundsSchema,
         req.body,
@@ -311,7 +308,6 @@ export class WalletController implements IWalletController {
     try {
       const senderId = req.headers['x-user-id'] as string;
 
-      console.log(req.body, 'req.body');
 
       const dto: GiftArtCoinsDTO = validateWithZod(giftArtCoinsSchema, {
         ...req.body,

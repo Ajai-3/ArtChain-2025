@@ -19,6 +19,13 @@ export class AdminWithdrawalController implements IAdminWithdrawalController {
     this.updateWithdrawalStatus = this.updateWithdrawalStatus.bind(this);
   }
 
+  //# ================================================================================================================
+  //# GET ALL WITHDRAWAL REQUESTS
+  //# ================================================================================================================
+  //# GET /api/v1/wallet/admin/withdrawal-requests
+  //# Request Params: page, limit, status
+  //# This controller helps to get all withdrawal requests.
+  //# ================================================================================================================
   async getAllWithdrawalRequests(
     req: Request,
     res: Response,
@@ -42,6 +49,14 @@ export class AdminWithdrawalController implements IAdminWithdrawalController {
     }
   }
 
+  //# ================================================================================================================
+  //# UPDATE WITHDRAWAL STATUS
+  //# ================================================================================================================
+  //# PATCH /api/v1/wallet/admin/withdrawal-requests/:withdrawalId
+  //# Request Params: withdrawalId
+  //# Request Body: { status, rejectionReason }
+  //# This controller helps to update the status of a withdrawal request.
+  //# ================================================================================================================
   async updateWithdrawalStatus(
     req: Request,
     res: Response,
@@ -58,7 +73,7 @@ export class AdminWithdrawalController implements IAdminWithdrawalController {
       });
 
       res.status(HttpStatus.OK).json({
-        message: 'Withdrawal status updated successfully',
+        message: WALLET_MESSAGES.WITHDRAWAL_STATUS_UPDATED,
         data: {
           withdrawal: updatedWithdrawal,
         },

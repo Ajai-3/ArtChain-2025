@@ -78,7 +78,7 @@ export class TransactionController implements ITransactionController {
         status,
         type,
       };
-      console.log(dto);
+      
       const transactionData = await this._getTransactionsUseCase.execute(dto);
 
       logger.info(
@@ -114,13 +114,9 @@ export class TransactionController implements ITransactionController {
       const { type, category, amount, description } = req.body;
 
       logger.info(
-        `[TransactionController] Creating transaction for userId: ${userId} | data: ${JSON.stringify(
-          req.body
-        )}`
+        `[TransactionController] Creating transaction for userId: ${userId}`
       );
 
-      // Your logic to create transaction goes here
-      // const transaction = await transactionRepo.create({ walletId, type, amount, description });
 
       logger.info(
         `[TransactionController] Transaction created successfully for userId: ${userId}`
@@ -173,11 +169,11 @@ export class TransactionController implements ITransactionController {
         );
         return res
           .status(HttpStatus.OK)
-          .json({ message: 'Payment successful' });
+          .json({ message: TRANSACTION_MESSAGES.PAYMENT_SUCCESS });
       } else {
         return res
           .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'Payment failed' });
+          .json({ message: TRANSACTION_MESSAGES.PAYMENT_FAILED });
       }
     } catch (error) {
       logger.error(
@@ -202,9 +198,9 @@ export class TransactionController implements ITransactionController {
       const { userId, commissionId, amount } = req.body;
       const success = await this._lockCommissionFundsUseCase.execute(userId, commissionId, amount);
       if (success) {
-        return res.status(HttpStatus.OK).json({ message: 'Funds locked successfully' });
+        return res.status(HttpStatus.OK).json({ message: TRANSACTION_MESSAGES.FUNDS_LOCKED_SUCCESS });
       }
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to lock funds' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: TRANSACTION_MESSAGES.FUNDS_LOCKED_FAILED });
     } catch (error) {
       next(error);
     }
@@ -224,9 +220,9 @@ export class TransactionController implements ITransactionController {
     try {
       const success = await this._distributeCommissionFundsUseCase.execute(req.body);
       if (success) {
-        return res.status(HttpStatus.OK).json({ message: 'Funds distributed successfully' });
+        return res.status(HttpStatus.OK).json({ message: TRANSACTION_MESSAGES.FUNDS_DISTRIBUTED_SUCCESS });
       }
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to distribute funds' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: TRANSACTION_MESSAGES.FUNDS_DISTRIBUTED_FAILED });
     } catch (error) {
       next(error);
     }
@@ -247,9 +243,9 @@ export class TransactionController implements ITransactionController {
       const { userId, artistId, commissionId, amount } = req.body;
       const success = await this._refundCommissionFundsUseCase.execute(userId, artistId, commissionId, amount);
       if (success) {
-        return res.status(HttpStatus.OK).json({ message: 'Funds refunded successfully' });
+        return res.status(HttpStatus.OK).json({ message: TRANSACTION_MESSAGES.FUNDS_REFUNDED_SUCCESS });
       }
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to refund funds' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: TRANSACTION_MESSAGES.FUNDS_REFUNDED_FAILED });
     } catch (error) {
     }
   };
@@ -268,9 +264,9 @@ export class TransactionController implements ITransactionController {
     try {
       const success = await this._transferLockedCommissionFundsUseCase.execute(req.body);
       if (success) {
-        return res.status(HttpStatus.OK).json({ message: 'Locked funds transferred successfully' });
+        return res.status(HttpStatus.OK).json({ message: TRANSACTION_MESSAGES.LOCKED_FUNDS_TRANSFERRED_SUCCESS });
       }
-      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Failed to transfer locked funds' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: TRANSACTION_MESSAGES.LOCKED_FUNDS_TRANSFERRED_FAILED });
     } catch (error) {
       next(error);
     }

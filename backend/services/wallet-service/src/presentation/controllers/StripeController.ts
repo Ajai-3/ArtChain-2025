@@ -6,6 +6,7 @@ import { IStripeController } from '../interface/IStripeController';
 import { IGetStripeSessionUseCase } from '../../application/interface/usecase/stripe/IGetStripeSessionUseCase';
 import { IHandleStripeWebhookUseCase } from '../../application/interface/usecase/stripe/IHandleStripeWebhookUseCase';
 import { ICreateStripeCheckoutSessionUseCase } from '../../application/interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase';
+import { STRIPE_MESSAGES } from '../../constants/StripeMessages';
 
 @injectable()
 export class StripeController implements IStripeController {
@@ -37,7 +38,7 @@ export class StripeController implements IStripeController {
       const session = await this._createCheckoutUseCase.execute(userId, amount);
 
       return res.status(HttpStatus.CREATED).json({
-        message: 'Checkout session created',
+        message: STRIPE_MESSAGES.CHECKOUT_SESSION_CREATED,
         sessionId: session.id,
       });
     } catch (error) {
@@ -53,13 +54,12 @@ export class StripeController implements IStripeController {
   //# ================================================================================================================
   handleWebhook = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // Access the rawBody attached by the express.json verify function
     const payload = (req as any).rawBody; 
     const signature = req.headers['stripe-signature'] as string;
 
     await this._handleWebhookUseCase.execute(payload, signature);
 
-    res.sendStatus(HttpStatus.OK);
+    return res.status(HttpStatus.OK).json({ message: STRIPE_MESSAGES.WEBHOOK_RECEIVED });
   } catch (error) {
     next(error);
   }
@@ -79,8 +79,8 @@ export class StripeController implements IStripeController {
   ): Promise<Response | void> => {
     try {
       const sessionData = await this._getSessionUseCase.execute(req.params.id);
-      console.log(sessionData);
-      return res.json(sessionData);
+
+      return res.status(HttpStatus.OK).json({ message: STRIPE_MESSAGES.SESSION_FETCHED, sessionData });
     } catch (error) {
       next(error);
     }

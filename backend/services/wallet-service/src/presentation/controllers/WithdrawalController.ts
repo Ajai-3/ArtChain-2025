@@ -89,7 +89,6 @@ export class WithdrawalController implements IWithdrawalController {
       logger.info(`[WithdrawalController] Fetching withdrawal requests for userId: ${userId}, page: ${page}, limit: ${limit}, status: ${status}, method: ${method}`);
 
       const dto: GetWithdrawalRequestsDTO = { userId, page, limit, status, method };
-
       const { requests, total } = await this._getWithdrawalRequestsUseCase.execute(dto);
 
       logger.info(
