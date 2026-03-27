@@ -48,18 +48,21 @@ const WithdrawalTable: React.FC<WithdrawalTableProps> = ({
     }
   };
 
+  const selectableWithdrawals = withdrawals?.filter(
+    (w) => !["APPROVED", "REJECTED", "COMPLETED", "FAILED"].includes(w.status)
+  ) || [];
+
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      onToggleSelectAll(withdrawals.map((w) => w.id));
+      onToggleSelectAll(selectableWithdrawals.map((w) => w.id));
     } else {
       onToggleSelectAll([]);
     }
   };
 
   const allSelected = 
-    withdrawals && 
-    withdrawals.length > 0 && 
-    withdrawals.every((w) => selectedIds.includes(w.id));
+    selectableWithdrawals.length > 0 && 
+    selectableWithdrawals.every((w) => selectedIds.includes(w.id));
 
   return (
      <div className="overflow-x-auto rounded-lg border border-zinc-800">
@@ -69,10 +72,12 @@ const WithdrawalTable: React.FC<WithdrawalTableProps> = ({
             <TableHead className="w-[50px] px-4 py-3">
               <input
                 type="checkbox"
-                className="rounded border-gray-300 text-main-color focus:ring-main-color w-4 h-4 cursor-pointer accent-main-color"
+                className={`rounded border-gray-300 text-main-color focus:ring-main-color w-4 h-4 accent-main-color ${
+                  isLoading || !selectableWithdrawals.length ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+                }`}
                 checked={allSelected}
                 onChange={handleSelectAll}
-                disabled={isLoading || !withdrawals || withdrawals.length === 0}
+                disabled={isLoading || !selectableWithdrawals.length}
               />
             </TableHead>
             <TableHead className="px-4 py-3 text-left font-medium">User</TableHead>
@@ -101,9 +106,14 @@ const WithdrawalTable: React.FC<WithdrawalTableProps> = ({
                   <TableCell className="px-4 py-3">
                     <input
                       type="checkbox"
-                      className="rounded border-gray-300 text-main-color focus:ring-main-color w-4 h-4 cursor-pointer accent-main-color"
+                      className={`rounded border-gray-300 text-main-color focus:ring-main-color w-4 h-4 accent-main-color ${
+                        ["APPROVED", "REJECTED", "COMPLETED", "FAILED"].includes(withdrawal.status)
+                          ? "cursor-not-allowed opacity-50"
+                          : "cursor-pointer"
+                      }`}
                       checked={isSelected}
                       onChange={() => onToggleSelect(withdrawal.id)}
+                      disabled={["APPROVED", "REJECTED", "COMPLETED", "FAILED"].includes(withdrawal.status)}
                     />
                   </TableCell>
                   <TableCell className="px-4 py-3">
