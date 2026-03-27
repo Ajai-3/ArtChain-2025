@@ -63,7 +63,7 @@ export const CallOverlay: React.FC = () => {
         
         <div className="absolute inset-0 bg-black/50" />
         
-        {remoteStream && isRemoteCameraOn && !isOutgoing ? (
+        {remoteStream && remoteStream.getVideoTracks().length > 0 && isRemoteCameraOn && !isOutgoing ? (
           <video
             ref={remoteVideoRef}
             autoPlay

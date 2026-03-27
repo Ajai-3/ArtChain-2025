@@ -153,6 +153,12 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         remoteUserProfile: data.callerProfileImage,
         isGroup: data.isGroup,
       });
+
+      // Initialize peer connection immediately on incoming call to start gathering/queuing ICE candidates
+      if (!data.isGroup && data.callerId) {
+          console.log("[VideoCallContext] Pre-initializing PC for incoming call from:", data.callerId);
+          createPeerConnection(data.callerId);
+      }
     });
 
     socket.on('call:accepted', async (data: any) => {
@@ -290,6 +296,16 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 to: receiverId,
                 signal: offer
             });
+
+            // Initial status sync
+            socket.emit('call:signal', {
+                to: receiverId,
+                signal: { type: 'camera-toggle', enabled: isCameraOn }
+            });
+            socket.emit('call:signal', {
+                to: receiverId,
+                signal: { type: 'mic-toggle', enabled: isMicOn }
+            });
         }
     } catch (error) {
         console.error("[VideoCallContext] Error in startCall:", error);
@@ -306,13 +322,24 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         joinRoom(callState.conversationId, currentUser.id, stream);
     } else {
         if (callState.remoteUserId) {
-            createPeerConnection(callState.remoteUserId);
+            // peerConnection might already be initialized by incoming call listener
             addLocalStream(stream);
 
             if (incomingOffer) {
+                console.log("[VideoCallContext] Accepting call with stored offer.");
                 await handleSignal(incomingOffer.signal, incomingOffer.from);
                 setIncomingOffer(null);
             }
+
+            // Sync status to the caller
+            socket.emit('call:signal', {
+                to: callState.remoteUserId,
+                signal: { type: 'camera-toggle', enabled: isCameraOn }
+            });
+            socket.emit('call:signal', {
+                to: callState.remoteUserId,
+                signal: { type: 'mic-toggle', enabled: isMicOn }
+            });
         }
     }
 
