@@ -11,6 +11,7 @@ import { UpdateUserProfileDto } from '../../../interface/dtos/user/profile/Updat
 import { IUpdateProfileUserUseCase } from '../../../interface/usecases/user/profile/IUpdateProfileUserUseCase';
 import { IEventBus } from '../../../interface/events/IEventBus';
 import { UserUpdatedEvent } from '../../../../domain/events/UserUpdatedEvent';
+import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 
 @injectable()
 export class UpdateProfileUserUseCase implements IUpdateProfileUserUseCase {
@@ -38,6 +39,8 @@ export class UpdateProfileUserUseCase implements IUpdateProfileUserUseCase {
     const updatedUser = await this._userRepo.update(userId, {
       ...updateData,
       ...(username && username !== user.username ? { username } : {}),
+      profileImage: mapCdnUrl(updateData.profileImage),
+      
     });
 
     if (!updatedUser) {

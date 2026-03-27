@@ -9,6 +9,28 @@ import ProfileImageSection from './ProfileImageSection';
 import ImageCropper from './ImageCropper';
 import { useUploadUserImage } from '../../../hooks/profile/useUploadUserImage';
 import { useUpdateProfileMutation } from '../../../hooks/profile/useUpdateProfileMutation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const profileSchema = z.object({
+  name: z.string()
+    .min(3, "Name is too short")
+    .max(20, "Name is too long")
+    .regex(/^[A-Za-z\s]+$/, "Only letters and spaces allowed"),
+  username: z.string()
+    .min(3, "Username too short")
+    .max(20, "Username too long")
+    .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, underscores allowed")
+    .transform((val) => val.toLowerCase()),
+  bio: z.string()
+    .max(160, "Bio is too long (max 160 characters)")
+    .optional()
+    .or(z.literal('')),
+  country: z.string().optional().or(z.literal('')),
+});
+
+type ProfileFormValues = z.infer<typeof profileSchema>;
 
 const ProfileSettings: React.FC = () => {
   const userData = useSelector((state: RootState) => state.user.user);
@@ -20,15 +42,30 @@ const ProfileSettings: React.FC = () => {
     userData?.backgroundImage || null,
   );
 
-  const [name, setName] = useState(userData?.name || '');
-  const [username, setUsername] = useState(userData?.username || '');
-  const [bio, setBio] = useState(userData?.bio || '');
-  const [country, setCountry] = useState(userData?.country || '');
-
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [cropType, setCropType] = useState<'banner' | 'background'>('banner');
   const [isSaving, setIsSaving] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    setValue,
+  } = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: userData?.name || '',
+      username: userData?.username || '',
+      bio: userData?.bio || '',
+      country: userData?.country || '',
+    },
+    mode: 'onChange',
+  });
+
+  const nameValue = watch('name');
+  const usernameValue = watch('username');
 
   const uploadUserImage = useUploadUserImage();
   const updateProfileMutation = useUpdateProfileMutation();
@@ -77,12 +114,12 @@ const ProfileSettings: React.FC = () => {
     setSelectedFile(null);
   };
 
-  const handleSaveProfile = () => {
+  const onSubmit = (data: ProfileFormValues) => {
     const updatedFields: any = {};
-    if (name !== userData?.name) updatedFields.name = name;
-    if (username !== userData?.username) updatedFields.username = username;
-    if (bio !== userData?.bio) updatedFields.bio = bio;
-    if (country !== userData?.country) updatedFields.country = country;
+    if (data.name !== userData?.name) updatedFields.name = data.name;
+    if (data.username !== userData?.username) updatedFields.username = data.username;
+    if (data.bio !== userData?.bio) updatedFields.bio = data.bio;
+    if (data.country !== userData?.country) updatedFields.country = data.country;
 
     if (Object.keys(updatedFields).length > 0) {
       updateProfileMutation.mutate(updatedFields);
@@ -95,17 +132,12 @@ const ProfileSettings: React.FC = () => {
         Edit Profile
       </h1>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSaveProfile();
-        }}
-      >
+      <form onSubmit={handleSubmit(onSubmit)}>
         {/* Profile Image Section */}
         <ProfileImageSection
           profileImage={userData?.profileImage || null}
-          name={name}
-          username={username}
+          name={nameValue}
+          username={usernameValue}
         />
 
         {/* Banner & Background */}
@@ -172,10 +204,12 @@ const ProfileSettings: React.FC = () => {
             <Input
               variant='green-focus'
               placeholder='Your full name'
-              className='text-sm'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              className={`text-sm ${errors.name ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+              {...register('name')}
             />
+            {errors.name && (
+              <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           <div>
@@ -185,10 +219,12 @@ const ProfileSettings: React.FC = () => {
             <Input
               variant='green-focus'
               placeholder='Your username'
-              className='text-sm'
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              className={`text-sm ${errors.username ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+              {...register('username')}
             />
+            {errors.username && (
+              <p className="text-xs text-red-500 mt-1">{errors.username.message}</p>
+            )}
           </div>
 
           <div className='md:col-span-2'>
@@ -199,10 +235,19 @@ const ProfileSettings: React.FC = () => {
               variant='green-focus'
               placeholder='Tell something about yourself...'
               rows={3}
-              className='text-sm'
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
+              className={`text-sm ${errors.bio ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+              {...register('bio')}
             />
+            <div className="flex justify-between mt-1">
+              {errors.bio ? (
+                <p className="text-xs text-red-500">{errors.bio.message}</p>
+              ) : (
+                <div />
+              )}
+              <p className={`text-[10px] ${watch('bio')?.length > 160 ? 'text-red-500' : 'text-gray-400'}`}>
+                {watch('bio')?.length || 0}/160
+              </p>
+            </div>
           </div>
 
           <div>
@@ -210,9 +255,10 @@ const ProfileSettings: React.FC = () => {
               Country
             </label>
             <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              className='w-full rounded-md border border-gray-300 bg-transparent dark:border-zinc-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600'
+              {...register('country')}
+              className={`w-full rounded-md border bg-transparent dark:border-zinc-700 px-3 py-2 text-gray-900 dark:text-gray-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-600 ${
+                errors.country ? 'border-red-500 ring-red-500' : 'border-gray-300'
+              }`}
             >
               <option value=''>Select your country</option>
               {COUNTRIES.map((c) => (

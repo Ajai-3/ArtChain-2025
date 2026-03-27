@@ -15,9 +15,9 @@ export const updateProfileSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers, underscores allowed')
     .transform((val) => val.toLowerCase())
     .optional(),
-  profileImage: z.string().url().or(z.string()).optional(),
-  bannerImage: z.string().url().or(z.string()).optional(),
-  backgroundImage: z.string().url().or(z.string()).optional(),
+  profileImage: z.string().optional(),
+  bannerImage: z.string().optional(),
+  backgroundImage: z.string().optional(),
   bio: z.string().max(160, 'Bio too long').optional(),
   country: z.string().optional(),
 });

@@ -82,7 +82,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (s) setSocket(s);
 
     const cleanup = onChatSocketAvailable((s: any) => {
-        console.log("VideoCallContext: Socket available", s.id);
         setSocket(s);
     });
     
@@ -137,7 +136,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     if (!socket) return;
 
     socket.on('call:incoming', (data: any) => {
-      console.log("Incoming call:", data);
       setCallState({
         status: 'INCOMING',
         type: data.isGroup ? 'GROUP' : 'PRIVATE',
@@ -156,37 +154,30 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       // Initialize peer connection immediately on incoming call to start gathering/queuing ICE candidates
       if (!data.isGroup && data.callerId) {
-          console.log("[VideoCallContext] Pre-initializing PC for incoming call from:", data.callerId);
           createPeerConnection(data.callerId);
       }
     });
 
     socket.on('call:accepted', async (data: any) => {
-      console.log("Call accepted:", data);
       if (callState.status === 'ENDING') return;
       
       setCallState(prev => ({ ...prev, status: 'ACTIVE' }));
     });
 
     socket.on('call:rejected', (data: any) => {
-      console.log("Call rejected:", data);
       endCallCleanup();
     });
 
     socket.on('call:ended', (data: any) => {
-      console.log("Call ended:", data);
       endCallCleanup();
     });
 
     socket.on('call:signal', (data: any) => {
         if (data.signal.type === 'offer') {
-            console.log("[VideoCallContext] Received offer, storing it.");
             setIncomingOffer(data);
         } else if (data.signal.type === 'camera-toggle') {
-            console.log("[VideoCallContext] Remote camera toggled:", data.signal.enabled);
             setIsRemoteCameraOn(data.signal.enabled);
         } else if (data.signal.type === 'mic-toggle') {
-            console.log("[VideoCallContext] Remote mic toggled:", data.signal.enabled);
             setIsRemoteMicOn(data.signal.enabled);
         } else {
             handleSignal(data.signal, data.from);
@@ -194,7 +185,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
 
     socket.on('call:error', (data: any) => {
-        console.error("Call error:", data);
         endCallCleanup();
     });
 
@@ -209,9 +199,7 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [socket, callState, handleSignal]);
 
   const getMediaStream = async (audioDeviceId?: string) => {
-    console.log("[VideoCallContext] Requesting media permissions...");
     if (localStream) {
-       console.log("Using existing localStream.");
        return localStream;
     }
     
@@ -225,9 +213,7 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setIsCameraOn(true);
       return stream;
     } catch (err: any) {
-      console.error("[VideoCallContext] Error accessing media devices:", err);
       if (err.name === 'NotReadableError' || err.name === 'NotFoundError' || err.name === 'NotAllowedError') {
-         console.log("Video device in use or not found, falling back to audio only.");
          try {
             const fallbackConstraints = {
                video: false,
@@ -238,7 +224,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             setIsCameraOn(false);
             return fallbackStream;
          } catch (fallbackErr) {
-            console.error("Audio fallback also failed", fallbackErr);
             return null;
          }
       }
@@ -247,8 +232,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const startCall = async (conversationId: string, receiverId: string, isGroup: boolean, receiverName?: string, receiverImage?: string) => {
-    console.log(`[VideoCallContext] startCall. convId=${conversationId}, receiverId=${receiverId}`);
-    
     if (!socket || !currentUser) return;
 
     const stream = await getMediaStream();
@@ -308,7 +291,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             });
         }
     } catch (error) {
-        console.error("[VideoCallContext] Error in startCall:", error);
     }
   };
 
@@ -326,7 +308,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             addLocalStream(stream);
 
             if (incomingOffer) {
-                console.log("[VideoCallContext] Accepting call with stored offer.");
                 await handleSignal(incomingOffer.signal, incomingOffer.from);
                 setIncomingOffer(null);
             }
@@ -361,7 +342,6 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const endCall = () => {
     const targetId = callState.remoteUserId || callState.caller?.id;
-    console.log("[VideoCallContext] Ending call. Target:", targetId, "Role:", callState.status);
     
     socket?.emit('call:end', {
         conversationId: callState.conversationId,

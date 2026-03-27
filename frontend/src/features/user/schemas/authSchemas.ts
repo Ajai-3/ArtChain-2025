@@ -9,12 +9,14 @@ export const SignupSchema = z.object({
   name: z
     .string()
     .min(3, "Name is too short")
+    .max(20, "Name is too long")
     .regex(/^[A-Za-z\s]+$/, "Only letters and spaces allowed"),
   username: z
     .string()
-    .min(1, "Username is required")
-    .min(3, "Too short")
-    .regex(/^[a-zA-Z0-9_]+$/, "Use letters, numbers, or _ only"),
+    .min(3, 'Username too short')
+    .max(20, 'Username too long')
+    .regex(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers, underscores allowed')
+    .transform((val) => val.toLowerCase()),
   email: z.string().email("Enter a valid email"),
 });
 

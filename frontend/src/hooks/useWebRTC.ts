@@ -8,7 +8,6 @@ export const useWebRTC = () => {
   const socket = getChatSocket();
 
   const createPeerConnection = useCallback((targetUserId: string) => {
-    console.log("[useWebRTC] Creating new PeerConnection for:", targetUserId);
     const pc = new RTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -25,7 +24,6 @@ export const useWebRTC = () => {
 
     pc.onicecandidate = (event) => {
       if (event.candidate && socket) {
-        console.log("[useWebRTC] New ICE candidate gathered.");
         socket.emit('call:signal', {
           to: targetUserId,
           signal: { type: 'candidate', candidate: event.candidate }
@@ -34,11 +32,8 @@ export const useWebRTC = () => {
     };
 
     pc.ontrack = (event) => {
-      console.log(`[useWebRTC] Received remote track: ${event.track.kind}. Streams provided: ${event.streams.length}`);
-      
       // Preferred way: use the stream provided by the browser (Unified Plan)
       if (event.streams && event.streams[0]) {
-        console.log("[useWebRTC] Assigning browser-provided stream.");
         // We only update if the stream reference is actually different
         setRemoteStream(prev => (prev?.id === event.streams[0].id ? prev : event.streams[0]));
       } else {
@@ -58,7 +53,6 @@ export const useWebRTC = () => {
     };
 
     pc.oniceconnectionstatechange = () => {
-        console.log("[useWebRTC] ICE Connection State:", pc.iceConnectionState);
     };
 
     peerConnection.current = pc;
@@ -66,7 +60,6 @@ export const useWebRTC = () => {
   }, [socket]);
 
   const addLocalStream = useCallback((stream: MediaStream) => {
-    console.log("[useWebRTC] Adding local stream tracks to PC.");
     if (peerConnection.current) {
       const currentSenders = peerConnection.current.getSenders();
       stream.getTracks().forEach(track => {
@@ -81,20 +74,17 @@ export const useWebRTC = () => {
   const processCandidateQueue = useCallback(async () => {
     if (!peerConnection.current || !peerConnection.current.remoteDescription) return;
     
-    console.log(`[useWebRTC] Processing ${candidateQueue.current.length} queued candidates.`);
     while (candidateQueue.current.length > 0) {
       const candidate = candidateQueue.current.shift();
       try {
         await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (err) {
-        console.error("[useWebRTC] Error adding queued candidate:", err);
       }
     }
   }, []);
 
   const handleSignal = useCallback(async (signal: any, fromUserId: string) => {
     if (!peerConnection.current) {
-      console.warn("[useWebRTC] Received signal but peerConnection is not initialized.");
       if (signal.type === 'candidate') {
           candidateQueue.current.push(signal.candidate);
       }
@@ -105,7 +95,6 @@ export const useWebRTC = () => {
 
     try {
       if (signal.type === 'offer') {
-        console.log("[useWebRTC] Processing offer.");
         await pc.setRemoteDescription(new RTCSessionDescription(signal));
         await processCandidateQueue();
         const answer = await pc.createAnswer();
@@ -115,19 +104,16 @@ export const useWebRTC = () => {
           signal: answer
         });
       } else if (signal.type === 'answer') {
-        console.log("[useWebRTC] Processing answer.");
         await pc.setRemoteDescription(new RTCSessionDescription(signal));
         await processCandidateQueue();
       } else if (signal.type === 'candidate') {
         if (pc.remoteDescription && pc.remoteDescription.type) {
           await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
         } else {
-          console.log("[useWebRTC] Queuing candidate (SDP not yet set).");
           candidateQueue.current.push(signal.candidate);
         }
       }
     } catch (err) {
-      console.error("[useWebRTC] Error handling signal:", err);
     }
   }, [socket, processCandidateQueue]);
 
