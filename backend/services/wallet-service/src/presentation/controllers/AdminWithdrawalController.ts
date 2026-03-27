@@ -29,17 +29,9 @@ export class AdminWithdrawalController implements IAdminWithdrawalController {
       const limit = parseInt(req.query.limit as string) || 10;
       const status = req.query.status as string | undefined;
       
-      console.log('🔍 Backend received params:', { page, limit, status });
-      
       const token = req.headers.authorization?.split(' ')[1] || req.cookies?.token;
 
       const result = await this._getAllWithdrawalRequestsUseCase.execute(page, limit, token, status);
-
-      console.log('✅ Backend returning:', { 
-        totalRequests: result.withdrawalRequests?.length, 
-        total: result.total,
-        statusCounts: result.statusCounts 
-      });
 
       res.status(HttpStatus.OK).json({
         message: WALLET_MESSAGES.WITHDRAWAL_REQUESTS_FETCHED,
@@ -50,7 +42,6 @@ export class AdminWithdrawalController implements IAdminWithdrawalController {
     }
   }
 
-  // PATCH /api/v1/wallet/admin/withdrawal/requests/:withdrawalId/status
   async updateWithdrawalStatus(
     req: Request,
     res: Response,

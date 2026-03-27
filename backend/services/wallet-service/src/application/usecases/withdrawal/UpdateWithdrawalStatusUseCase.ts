@@ -29,7 +29,8 @@ export class UpdateWithdrawalStatusUseCase implements IUpdateWithdrawalStatusUse
     if (
       existingWithdrawal.status === WithdrawalStatus.COMPLETED ||
       existingWithdrawal.status === WithdrawalStatus.REJECTED ||
-      existingWithdrawal.status === WithdrawalStatus.FAILED
+      existingWithdrawal.status === WithdrawalStatus.FAILED ||
+      existingWithdrawal.status === WithdrawalStatus.APPROVED
     ) {
       throw new BadRequestError(WALLET_MESSAGES.WITHDRAWAL_ALREADY_PROCESSED);
     }
