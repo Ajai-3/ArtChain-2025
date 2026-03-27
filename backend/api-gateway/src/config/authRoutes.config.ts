@@ -94,11 +94,10 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.COMMISSION_UPDATE, methods: ['PATCH'] },
 
     { path: ROUTES.AI.DELETE_GENERATION, methods: ['DELETE'] },
-    { path: ROUTES.AI.DELETE_GENERATION, methods: ['DELETE'] },
 
     { path: ROUTES.ART.MY_BIDDING_HISTORY, methods: ['GET'] },
     { path: ROUTES.ART.BUY, methods: ['POST'] },
-     { path: ROUTES.ART.BASE, method: ['POST'] },
+    { path: ROUTES.ART.BASE, methods: ['POST'] },
   ],
 
   user_optional: [
