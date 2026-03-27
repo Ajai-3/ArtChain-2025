@@ -34,7 +34,7 @@ export const SocketProvider = ({ children }: Props) => {
     );
     const chatSocket = initSocket(
       accessToken,
-      import.meta.env.VITE_CHAT_SERVICE_URL,
+      import.meta.env.VITE_API_URL,
       '/socket.io/chat',
     );
     const biddingSocket = initSocket(
