@@ -31,5 +31,3 @@ export const config = {
     accessSecret: secrets.jwtAccessSecret,
   },
 };
-
-console.log(config);

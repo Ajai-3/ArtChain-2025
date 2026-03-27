@@ -47,5 +47,3 @@ export const config = {
     token: process.env.LOKI_TOKEN || '',
   },
 };
-
-console.log(config);

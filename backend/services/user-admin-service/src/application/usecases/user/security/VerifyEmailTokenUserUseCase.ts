@@ -12,16 +12,19 @@ import {
 } from 'art-chain-shared';
 
 @injectable()
-export class VerifyEmailTokenUserUseCase
-  implements IVerifyEmailTokenUserUseCase
-{
+export class VerifyEmailTokenUserUseCase implements IVerifyEmailTokenUserUseCase {
   constructor(
-    @inject(TYPES.IEmailTokenVerifier) private readonly _emailTokenVerifier: IEmailTokenVerifier,
-    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository
+    @inject(TYPES.IEmailTokenVerifier)
+    private readonly _emailTokenVerifier: IEmailTokenVerifier,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
   ) {}
 
   async execute(data: VerifyEmailTokenRequestDto): Promise<any> {
     const { userId, token } = data;
+
+    if (!token) {
+      throw new BadRequestError(AUTH_MESSAGES.TOKEN_REQUIRED);
+    }
 
     const decoded = this._emailTokenVerifier.verifyEmail(token);
     if (!decoded) {

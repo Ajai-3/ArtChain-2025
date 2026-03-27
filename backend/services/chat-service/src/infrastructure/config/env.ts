@@ -1,10 +1,5 @@
 import 'dotenv-flow/config';
-// import { getArtChainSecrets } from "art-chain-shared";
 
-// COMMENTED OUT: AWS Secrets Manager (AWS credentials not working)
-// const secrets = await getArtChainSecrets("ArtChainCommonSecret");
-
-// Using hardcoded values from .env file instead
 const secrets = {
   jwtAccessSecret:
     process.env.JWT_ACCESS_SECRET || 'your-access-secret-key-here',

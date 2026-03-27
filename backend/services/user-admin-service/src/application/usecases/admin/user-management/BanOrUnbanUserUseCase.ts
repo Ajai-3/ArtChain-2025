@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { NotFoundError } from 'art-chain-shared';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { USER_MESSAGES } from '../../../../constants/userMessages';
 import { TYPES } from './../../../../infrastructure/inversify/types';
 import { SafeUser } from '../../../../domain/entities/User';
@@ -9,23 +9,27 @@ import { IBanOrUnbanUserUseCase } from '../../../interface/usecases/admin/user-m
 @injectable()
 export class BanOrUnbanUserUseCase implements IBanOrUnbanUserUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private _userRepository: IUserRepository
+    @inject(TYPES.IUserRepository) private _userRepository: IUserRepository,
   ) {}
 
-  async execute(userId: string): Promise<SafeUser> {
-    const user = await this._userRepository.findById(userId);
-    if (!user) throw new Error('User not found');
+  async execute(userId: string): Promise<{ action: string; user: SafeUser }> {
+    const existingUser = await this._userRepository.findById(userId);
+    if (!existingUser) {
+      throw new BadRequestError(USER_MESSAGES.USER_NOT_FOUND);
+    }
 
-    const newStatus = user.status === 'banned' ? 'active' : 'banned';
+    const newStatus = existingUser.status === 'banned' ? 'active' : 'banned';
 
-    const updatedUser = await this._userRepository.update(userId, {
+    const user = await this._userRepository.update(userId, {
       status: newStatus,
     });
 
-    if (!updatedUser) {
+    if (!user) {
       throw new NotFoundError(USER_MESSAGES.USER_NOT_FOUND);
     }
 
-    return updatedUser;
+    const action = user.status === 'banned' ? 'banned' : 'unbanned';
+
+    return { action, user };
   }
 }

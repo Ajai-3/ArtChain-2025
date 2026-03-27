@@ -23,6 +23,7 @@ export const USER_MESSAGES = {
   CANNOT_SUPPORT_YOURSELF: 'You cannot support yourself.',
 
   // Account & Status
+  YOUR_ACCOUNT_HAS_BANNED: 'Your account has banned.',
   ACCOUNT_DEACTIVATED: 'Your account has been deactivated.',
   ACCOUNT_REACTIVATED: 'Your account has been reactivated.',
   ACCOUNT_NOT_FOUND: 'User account not found.',
@@ -39,4 +40,19 @@ export const USER_MESSAGES = {
   NOT_SUPPORTING: 'You are not currently supporting this user.',
   USER_NOT_FOUND: 'User not found.',
   USERS_FETCH_SUCCESS: 'Users fetched successfully.',
+
+  // User reports
+  YOU_ALREADY_REPORTED_THE_CONTENT: 'You have already reported this content.',
+  YOU_CANNOT_REPORT_YOUR_OWN_COMMENT: 'You cannot report your own comment.',
+  YOU_CANNOT_REPORT_YOUR_OWN_ARTWORK: 'You cannot report your own artwork.',
+  YOU_CANNOT_REPORT_YOURSELF: 'You cannot report yourself.',
+
+  REPORTED_SUCCESSFULLY: 'Reported successfully.',
+
+  // Security
+  PASSWORD_CHANGED_SUCCESSFULLY: 'Password changed successfully.',
+  CHANGE_EMAIL_TOKEN_SENDED_SUCCESSFULLY:
+    'Change email token sended successfully',
+  ACCOUNT_DEACTIVATED_SUCCESSFULLY: 'Account deactivated successfully',
+  EMAIL_UPDATED_SUCCESSFULLY: 'Email updated successfully',
 } as const;

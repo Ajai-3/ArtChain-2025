@@ -13,13 +13,17 @@ import {
   ForbiddenError,
   UnauthorizedError,
 } from 'art-chain-shared';
+import { USER_MESSAGES } from '../../../../constants/userMessages';
 
 @injectable()
 export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
   constructor(
-  @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator, 
-  @inject(TYPES.IRefreshTokenVerifier) private readonly _refreshTokenVerifier: IRefreshTokenVerifier,
-  @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository) {}
+    @inject(TYPES.ITokenGenerator)
+    private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.IRefreshTokenVerifier)
+    private readonly _refreshTokenVerifier: IRefreshTokenVerifier,
+    @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
+  ) {}
 
   async execute(refreshToken: string): Promise<RefreshTokenResultDto> {
     if (!refreshToken) {
@@ -44,7 +48,7 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
     }
 
     if (user.status === 'banned') {
-      throw new ForbiddenError('Your account has been banned.');
+      throw new ForbiddenError(USER_MESSAGES.YOUR_ACCOUNT_HAS_BANNED);
     }
 
     const accessToken = this._tokenGenerator.generateAccess({
@@ -52,8 +56,6 @@ export class RefreshTokenUserUseCase implements IRefreshTokenUseCase {
       email: user.email,
       role: user.role,
     });
-
-    console.log(payload, accessToken, user);
 
     return { accessToken };
   }

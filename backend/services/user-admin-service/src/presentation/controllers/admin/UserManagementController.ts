@@ -4,6 +4,7 @@ import { logger } from '../../../utils/logger';
 import { Request, Response, NextFunction } from 'express';
 import { USER_MESSAGES } from '../../../constants/userMessages';
 import { TYPES } from '../../../infrastructure/inversify/types';
+import { ILogger } from '../../../application/interface/ILogger';
 import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
 import { IUserManageMentController } from './../../interfaces/admin/IUserManagementController';
 import { GetAllUsersQueryDto } from '../../../application/interface/dtos/admin/GetAllUsersQueryDTO';
@@ -17,6 +18,7 @@ import { IApproveArtistRequestUseCase } from '../../../application/interface/use
 @injectable()
 export class UserManageMentController implements IUserManageMentController {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.IGetAllUsersUseCase)
     private readonly _getAllUsersUseCase: IGetAllUsersUseCase,
     @inject(TYPES.IBanOrUnbanUserUseCase)
@@ -26,7 +28,7 @@ export class UserManageMentController implements IUserManageMentController {
     @inject(TYPES.IApproveArtistRequestUseCase)
     private readonly _approveArtistRequestUseCase: IApproveArtistRequestUseCase,
     @inject(TYPES.IRejectArtistRequestUseCase)
-    private readonly _rejectArtistRequestUseCase: IRejectArtistRequestUseCase
+    private readonly _rejectArtistRequestUseCase: IRejectArtistRequestUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -77,18 +79,15 @@ export class UserManageMentController implements IUserManageMentController {
   banOrUnbanUser = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<any> => {
     try {
       const { userId } = req.params as { userId: string };
 
-      if (!userId) {
-        return res.status(400).json({ message: 'Missing userId' });
-      }
+      const { action, user } =
+        await this._banOrUnbanUserUseCase.execute(userId);
 
-      const user = await this._banOrUnbanUserUseCase.execute(userId);
-
-      const action = user.status === 'banned' ? 'banned' : 'unbanned';
+      this._logger.info(`User ${action} successfully`);
 
       return res
         .status(200)
@@ -108,7 +107,7 @@ export class UserManageMentController implements IUserManageMentController {
   getAllArtistRequests = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -117,12 +116,13 @@ export class UserManageMentController implements IUserManageMentController {
       const dto: GetAllUsersQueryDto = { page, limit };
       const result = await this._getAllArtistRequestsUseCase.execute(dto);
 
-      logger.info('Artist request fetched.');
+      this._logger.info('Artist request fetched.');
+
       return res
         .status(HttpStatus.OK)
         .json({ message: ARTIST_MESSAGES.ARTISRT_REQUEST_FETCHED, result });
     } catch (error) {
-      logger.error(`Error getting all artist request ${error}`);
+      this._logger.error(`Error getting all artist request ${error}`);
       next(error);
     }
   };
@@ -137,26 +137,20 @@ export class UserManageMentController implements IUserManageMentController {
   approveArtistRequest = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { id } = req.params as { id: string };
 
-      if (!id) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'Artist request id is required' });
-      }
-
       const dto: ArtistAproveRejectRequestDto = { id };
       const result = await this._approveArtistRequestUseCase.execute(dto);
 
-      logger.info(`Artist request ${id} approved.`);
+      this._logger.info(`Artist request ${id} approved.`);
       return res
         .status(HttpStatus.OK)
         .json({ message: ARTIST_MESSAGES.ARTIST_REQUEST_APPROVED, result });
     } catch (error) {
-      logger.error(`Error approving artist request: ${error}`);
+      this._logger.error(`Error approving artist request: ${error}`);
       next(error);
     }
   };
@@ -171,33 +165,21 @@ export class UserManageMentController implements IUserManageMentController {
   rejectArtistRequest = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { id } = req.params as { id: string };
       const { reason } = req.body;
 
-      if (!id) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'Artist request id is required' });
-      }
-
-      if (!reason) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'Rejection reason is required' });
-      }
-
       const dto: ArtistAproveRejectRequestDto = { id, reason };
       const result = await this._rejectArtistRequestUseCase.execute(dto);
 
-      logger.info(`Artist request ${id} rejected. Reason: ${reason}`);
+      this._logger.info(`Artist request ${id} rejected. Reason: ${reason}`);
       return res
         .status(HttpStatus.OK)
         .json({ message: ARTIST_MESSAGES.ARTIST_REQUEST_REJECTED, result });
     } catch (error) {
-      logger.error(`Error rejecting artist request: ${error}`);
+      this._logger.error(`Error rejecting artist request: ${error}`);
       next(error);
     }
   };

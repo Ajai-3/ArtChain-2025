@@ -64,7 +64,12 @@ export const ROUTES = {
   // External service routes
   EXTERNAL: {
     ART_COUNT: '/api/v1/art/count/:userId',
+    ART_TOP: '/api/v1/art/admin/art/stats/top',
+    ART_CATEGORY: '/api/v1/art/admin/art/stats/categories',
     ELASTIC_SEARCH: '/api/v1/elastic/admin/search',
+    ART_AUCTION_RECENT: '/api/v1/art/admin/auctions/recent',
+    ART_COMMISSION_RECENT: '/api/v1/art/admin/commissions/recent',
+    ART_STATUS: '/api/v1/art/admin/art/:artId/status',
+    ART_COMMENT: '/api/v1/art/admin/art/comment/:commentId',
   },
 } as const;
-

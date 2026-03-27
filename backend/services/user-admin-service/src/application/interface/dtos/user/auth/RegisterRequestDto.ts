@@ -1,6 +1,4 @@
-import { StartRegisterRequestDto } from './StartRegisterRequestDto';
-
-export interface RegisterRequestDto extends StartRegisterRequestDto {
+export interface RegisterRequestDto {
   token?: string;
   password: string;
 }

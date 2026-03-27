@@ -56,7 +56,6 @@ export class UploadController implements IUploadController {
 
       const result = await this._uploadImageUseCase.execute(dto);
 
-      logger.info(`${JSON.stringify(result)}`);
       logger.info(
         `Image uploaded successfully | userId=${userId} | file=${file.originalname}`,
       );
@@ -97,7 +96,6 @@ export class UploadController implements IUploadController {
 
       const result = await this._uploadArtImage.execute(dto);
 
-      logger.info(`${JSON.stringify(result)}`);
       logger.info(
         `Art image uploaded successfully | userId=${userId} | file=${file.originalname}`,
       );
@@ -137,7 +135,6 @@ export class UploadController implements IUploadController {
 
       const result = await this._uploadImageUseCase.execute(dto);
 
-      logger.info(`${JSON.stringify(result)}`);
       logger.info(
         `Commission image uploaded successfully | userId=${userId} | file=${file.originalname}`,
       );
@@ -174,6 +171,10 @@ export class UploadController implements IUploadController {
         category: fileType,
       };
       await this._deleteImageUseCase.execute(dto);
+
+      logger.info(
+        `Image deleted successfully | userId=${userId} | file=${fileUrl}`,
+      );
 
       return res
         .status(HttpStatus.OK)

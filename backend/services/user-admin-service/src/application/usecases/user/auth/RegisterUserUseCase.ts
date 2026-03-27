@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { inject, injectable } from 'inversify';
-import { ConflictError } from 'art-chain-shared';
+import { BadRequestError, ConflictError } from 'art-chain-shared';
 import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
@@ -11,21 +11,41 @@ import { RegisterRequestDto } from '../../../interface/dtos/user/auth/RegisterRe
 import { IRegisterUserUseCase } from '../../../interface/usecases/user/auth/IRegisterUserUseCase';
 import { IEventBus } from '../../../interface/events/IEventBus';
 import { UserCreatedEvent } from '../../../../domain/events/UserCreatedEvent';
+import { IEmailTokenVerifier } from '../../../interface/auth/IEmailTokenVerifier';
 
 @injectable()
 export class RegisterUserUseCase implements IRegisterUserUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
-    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
-    @inject(TYPES.IEventBus) private readonly _eventBus: IEventBus
+    @inject(TYPES.IEmailTokenVerifier)
+    private readonly _emailTokenVerifier: IEmailTokenVerifier,
+    @inject(TYPES.ITokenGenerator)
+    private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.IEventBus) private readonly _eventBus: IEventBus,
   ) {}
 
   async execute(data: RegisterRequestDto): Promise<AuthResultDto> {
-    const { name, username, email, password } = data;
+    const { token, password } = data;
+    let decodedPayload: any;
 
-    const existingUserByUsername = await this._userRepo.findByUsername(
-      username
-    );
+    if (!token) {
+      throw new BadRequestError(AUTH_MESSAGES.TOKEN_REQUIRED);
+    }
+
+    try {
+      decodedPayload = this._emailTokenVerifier.verifyEmail(token);
+    } catch (err) {
+      throw new BadRequestError(AUTH_MESSAGES.INVALID_EMAIL_TOKEN);
+    }
+
+    const { name, email, username } = decodedPayload;
+
+    if (!name || !email || !username) {
+      throw new BadRequestError(AUTH_MESSAGES.INVALID_TOKEN);
+    }
+
+    const existingUserByUsername =
+      await this._userRepo.findByUsername(username);
     if (existingUserByUsername) {
       throw new ConflictError(AUTH_MESSAGES.DUPLICATE_USERNAME);
     }

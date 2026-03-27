@@ -1,25 +1,28 @@
 import { injectable, inject } from 'inversify';
+import { ILogger } from '../../../interface/ILogger';
 import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
 import { IEventBus } from '../../../interface/events/IEventBus';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { BadRequestError, ForbiddenError } from 'art-chain-shared';
 import { ITokenGenerator } from '../../../interface/auth/ITokenGenerator';
-import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
-import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { UserCreatedEvent } from '../../../../domain/events/UserCreatedEvent';
+import { AuthResultDto } from '../../../interface/dtos/user/auth/AuthResultDto';
+import { IGoogleTokenVerifier } from '../../../interface/auth/IGoogleTokenVerifier';
+import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
 import { GoogleAuthRequestDto } from '../../../interface/dtos/user/auth/GoogleAuthRequestDto';
 import { IGoogleAuthUserUseCase } from '../../../interface/usecases/user/auth/IGoogleAuthUserUseCase';
-import { IGoogleTokenVerifier } from '../../../interface/auth/IGoogleTokenVerifier';
 
 @injectable()
 export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.IEventBus) private readonly _eventBus: IEventBus,
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
-    @inject(TYPES.ITokenGenerator) private readonly _tokenGenerator: ITokenGenerator,
+    @inject(TYPES.ITokenGenerator)
+    private readonly _tokenGenerator: ITokenGenerator,
     @inject(TYPES.IGoogleTokenVerifier)
-    private readonly _googleTokenVerifier: IGoogleTokenVerifier
+    private readonly _googleTokenVerifier: IGoogleTokenVerifier,
   ) {}
 
   async execute(data: GoogleAuthRequestDto): Promise<AuthResultDto> {
@@ -32,9 +35,8 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
     }
 
     let normalizedUsername = name.trim().toLowerCase().replace(/\s+/g, '_');
-    const usernameExists = await this._userRepo.findByUsername(
-      normalizedUsername
-    );
+    const usernameExists =
+      await this._userRepo.findByUsername(normalizedUsername);
     if (usernameExists) {
       normalizedUsername += Math.floor(Math.random() * 1000).toString();
     }
@@ -99,8 +101,11 @@ export class GoogleAuthUserUseCase implements IGoogleAuthUserUseCase {
     };
 
     if (isNewUser) {
-          await this._eventBus.publish(new UserCreatedEvent(existingUser));
-          console.log('Published UserCreatedEvent for new user google user:', existingUser.id);
+      await this._eventBus.publish(new UserCreatedEvent(existingUser));
+      this._logger.info(
+        'Published UserCreatedEvent for new user google user:',
+        existingUser.id,
+      );
     }
 
     const refreshToken = this._tokenGenerator.generateRefresh(payload);

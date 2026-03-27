@@ -1,10 +1,10 @@
 import { HttpStatus } from 'art-chain-shared';
 import { injectable, inject } from 'inversify';
-import { logger } from '../../../utils/logger';
 import { Request, Response, NextFunction } from 'express';
 import { validateWithZod } from '../../../utils/zodValidator';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { USER_MESSAGES } from '../../../constants/userMessages';
+import { ILogger } from '../../../application/interface/ILogger';
 import { IUserController } from '../../interfaces/user/IUserController';
 import { getSupportSchema } from '../../../application/validations/user/GetSupportSchema';
 import { updateProfileSchema } from '../../../application/validations/user/updateProfileSchema';
@@ -26,7 +26,7 @@ import { IGetUserSupportingUseCase } from '../../../application/interface/usecas
 @injectable()
 export class UserController implements IUserController {
   constructor(
-    @inject(TYPES.ILogger) private readonly _logger: typeof logger,
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.ISupportUserUseCase)
     private readonly _supportUserUseCase: ISupportUserUseCase,
     @inject(TYPES.IUnSupportUserUseCase)
@@ -62,7 +62,6 @@ export class UserController implements IUserController {
       const { username } = req.params as { username: string };
       const currentUserId = req.headers['x-user-id'] as string;
 
-      // be - add zod validation here
       const dto: GetUserProfileRequestDto = { username, currentUserId };
       const result = await this._getUserProfileUseCase.execute(dto);
 
@@ -129,9 +128,10 @@ export class UserController implements IUserController {
     try {
       const userId = req.headers['x-user-id'] as string;
 
-      const validatedData = validateWithZod(updateProfileSchema, req.body);
-
-      const dto: UpdateUserProfileDto = { ...validatedData, userId };
+      const dto: UpdateUserProfileDto = validateWithZod(updateProfileSchema, {
+        ...req.body,
+        userId,
+      });
       const user = await this._updateProfileUserUseCase.execute(dto);
 
       this._logger.info(`User profile updated ${JSON.stringify(user)}`);
@@ -253,7 +253,7 @@ export class UserController implements IUserController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      logger.debug(`Get supporing user userId: ${userId}`);
+      this._logger.debug(`Get supporing user userId: ${userId}`);
 
       const dto: GetSupportersRequestDto = validateWithZod(getSupportSchema, {
         currentUserId,
@@ -291,7 +291,7 @@ export class UserController implements IUserController {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
-      logger.debug(`Get supporing user userId: ${userId}`);
+      this._logger.debug(`Get supporing user userId: ${userId}`);
 
       const dto: GetSupportingRequestDto = validateWithZod(getSupportSchema, {
         currentUserId,
@@ -336,7 +336,7 @@ export class UserController implements IUserController {
         currentUserId,
       );
 
-      logger.info('user with id fetched correctly');
+      this._logger.info('user with id fetched correctly');
       return res
         .status(HttpStatus.OK)
         .json({ message: USER_MESSAGES.USERS_FETCH_SUCCESS, data: users });

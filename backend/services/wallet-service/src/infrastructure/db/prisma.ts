@@ -10,17 +10,15 @@ const connectionString = process.env.DATABASE_URL;
 const url = new URL(connectionString!);
 const sslMode = url.searchParams.get('sslmode');
 
-console.log(sslMode, url);
-
 const pool = new Pool({
   connectionString,
   max: 10,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
-  // If the URL has sslmode=require or noverify, enable the SSL object
-  ssl: (sslMode === 'require' || sslMode === 'no-verify') 
-    ? { rejectUnauthorized: false } 
-    : false,
+  ssl:
+    sslMode === 'require' || sslMode === 'no-verify'
+      ? { rejectUnauthorized: false }
+      : false,
 });
 
 const adapter = new PrismaPg(pool);

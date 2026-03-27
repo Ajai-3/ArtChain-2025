@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 export const createArtistRequestSchema = z.object({
+  userId: z.string().min(1, 'User ID cannot be empty'),
   bio: z
     .string()
     .min(20, 'Bio must be at least 20 characters')
@@ -16,6 +17,6 @@ export const createArtistRequestSchema = z.object({
   country: z
     .string()
     .min(2, 'Country must be at least 2 characters')
-    .max(56, 'Country name too long') 
+    .max(56, 'Country name too long')
     .optional(),
 });

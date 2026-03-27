@@ -29,11 +29,11 @@ if (config.redis_url) {
 }
 
 export const globalRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 150, 
+  windowMs: 5 * 60 * 1000,
+  max: 450,
   standardHeaders: true,
   legacyHeaders: false,
-  store: store, 
+  store: store,
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again after 15 minutes',

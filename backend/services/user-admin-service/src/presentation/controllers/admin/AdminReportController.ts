@@ -6,37 +6,55 @@ import { IAdminReportController } from '../../interfaces/admin/IAdminReportContr
 import { IGetAllReportsUseCase } from '../../../application/interface/usecases/admin/report/IGetAllReportsUseCase';
 import { IGetGroupedReportsUseCase } from '../../../application/interface/usecases/admin/report/IGetGroupedReportsUseCase';
 import { IUpdateReportStatusBulkUseCase } from '../../../application/interface/usecases/admin/report/IUpdateReportStatusBulkUseCase';
+import { ADMIN_MESSAGES } from '../../../constants/adminMessages';
+import { ILogger } from '../../../application/interface/ILogger';
 
 @injectable()
 export class AdminReportController implements IAdminReportController {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.IGetAllReportsUseCase)
     private readonly _getAllReportsUseCase: IGetAllReportsUseCase,
     @inject(TYPES.IGetGroupedReportsUseCase)
     private readonly _getGroupedReportsUseCase: IGetGroupedReportsUseCase,
     @inject(TYPES.IUpdateReportStatusBulkUseCase)
-    private readonly _updateReportStatusBulkUseCase: IUpdateReportStatusBulkUseCase
+    private readonly _updateReportStatusBulkUseCase: IUpdateReportStatusBulkUseCase,
   ) {}
 
+  ///# ================================================================================================================
+  //# GET ALL REPORTS
+  //# ================================================================================================================
+  //# PATCH /api/v1/admin/report
+  //# Query params: none
+  //# This controller allows the admin to fetch all the reports with optional filters
+  //# ================================================================================================================
   getAllReports = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { status, targetType } = req.query;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
-      
+
       const filters = {
         status: status as string,
         targetType: targetType as string,
       };
 
-      const result = await this._getAllReportsUseCase.execute(page, limit, filters);
+      const result = await this._getAllReportsUseCase.execute(
+        page,
+        limit,
+        filters,
+      );
+
+      this._logger.info(
+        '[AdminReportController] All reports fetched successfully',
+      );
 
       return res.status(HttpStatus.OK).json({
-        message: 'Reports fetched successfully',
+        message: ADMIN_MESSAGES.REPORTS_FETCHED_SUCCESS,
         data: result.data,
         meta: result.meta,
       });
@@ -45,25 +63,40 @@ export class AdminReportController implements IAdminReportController {
     }
   };
 
+  ///# ================================================================================================================
+  //# GET GROUPED REPORTS
+  //# ================================================================================================================
+  //# PATCH /api/v1/admin/report/grouped
+  //# Query params: none
+  //# This controller allows the admin to fetch the grouped reports with optional filters
+  //# ================================================================================================================
   getGroupedReports = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { status, targetType } = req.query;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 6;
-      
+
       const filters = {
         status: status as string,
         targetType: targetType as string,
       };
 
-      const result = await this._getGroupedReportsUseCase.execute(page, limit, filters);
+      const result = await this._getGroupedReportsUseCase.execute(
+        page,
+        limit,
+        filters,
+      );
+
+      this._logger.info(
+        '[AdminReportController] Grouped reports fetched successfully',
+      );
 
       return res.status(HttpStatus.OK).json({
-        message: 'Grouped reports fetched successfully',
+        message: ADMIN_MESSAGES.REPORTS_FETCHED_SUCCESS,
         data: result.data,
         meta: result.meta,
       });
@@ -72,43 +105,37 @@ export class AdminReportController implements IAdminReportController {
     }
   };
 
+  ///# ================================================================================================================
+  //# UPDATE REPORT STATUS BULK
+  //# ================================================================================================================
+  //# PATCH /api/v1/admin/report/bulk
+  //# Query params: none
+  //# This controller allows the admin to update the status of multiple reports at once
+  //# ================================================================================================================
   updateReportStatusBulk = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { targetId, targetType, status } = req.body;
-      console.log('[AdminReportController] Bulk update request:', { targetId, targetType, status });
-
-      if (!targetId || !targetType || !status) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'targetId, targetType, and status are required',
-        });
-      }
-
-      if (!['resolved', 'dismissed'].includes(status)) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'status must be either "resolved" or "dismissed"',
-        });
-      }
 
       const token = req.headers.authorization?.split(' ')[1];
       const result = await this._updateReportStatusBulkUseCase.execute(
         targetId,
         targetType,
         status,
-        token
+        token,
       );
 
-      console.log('[AdminReportController] Bulk update result:', result);
+      this._logger.info('[AdminReportController] Bulk update result', result);
 
       return res.status(HttpStatus.OK).json({
-        message: `Successfully updated ${result.updated} report(s)`,
+        message: ADMIN_MESSAGES.REPORTS_UPDATED_SUCCESSFULLY,
         data: result,
       });
     } catch (error) {
-      console.error('[AdminReportController] Bulk update error:', error);
+      this._logger.error('[AdminReportController] Bulk update error', error);
       next(error);
     }
   };

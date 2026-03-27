@@ -5,7 +5,6 @@ import { TYPES } from '../../../infrastructure/inversify/types';
 import { ILogger } from '../../../application/interface/ILogger';
 
 import { tokenService } from '../../service/token.service';
-import { config } from '../../../infrastructure/config/env';
 import { validateWithZod } from '../../../utils/zodValidator';
 import { AUTH_MESSAGES } from '../../../constants/authMessages';
 import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
@@ -110,6 +109,8 @@ export class UserAuthController implements IUserAuthController {
         `Start registration sucessfull of user ${payload.name}`,
       );
 
+      console.log(token);
+
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,
         token,
@@ -133,21 +134,9 @@ export class UserAuthController implements IUserAuthController {
     next: NextFunction,
   ): Promise<Response | void> => {
     try {
-      const { token, password } = req.body;
-
-      const decoded = tokenService.verifyEmailVerificationToken(token);
-      if (!decoded) {
-        return res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ error: AUTH_MESSAGES.INVALID_VERIFICATION_TOKEN });
-      }
-
-      const dto: RegisterRequestDto = validateWithZod(registerUserSchema, {
-        name: decoded.name,
-        username: decoded.username,
-        email: decoded.email,
-        password,
-      });
+      const dto: RegisterRequestDto = {
+        ...validateWithZod(registerUserSchema, req.body),
+      };
 
       const { user, accessToken, refreshToken } =
         await this._registerUserUseCase.execute(dto);

@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 import { validateWithZod } from '../../../utils/zodValidator';
 import { USER_MESSAGES } from '../../../constants/userMessages';
 import { TYPES } from '../../../infrastructure/inversify/types';
+import { ILogger } from '../../../application/interface/ILogger';
 import { ARTIST_MESSAGES } from '../../../constants/artistMessages';
 import { IArtistRequestController } from '../../interfaces/user/IArtistRequestController';
 import { createArtistRequestSchema } from '../../../application/validations/user/createArtistRequestSchema';
@@ -15,10 +16,11 @@ import { ICheckUserArtistRequestUseCase } from '../../../application/interface/u
 @injectable()
 export class ArtistRequestController implements IArtistRequestController {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.ICreateArtistRequestUseCase)
     private _createArtistRequestUseCase: ICreateArtistRequestUseCase,
     @inject(TYPES.ICheckUserArtistRequestUseCase)
-    private _checkUserArtistRequestUseCase: ICheckUserArtistRequestUseCase
+    private _checkUserArtistRequestUseCase: ICheckUserArtistRequestUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -33,24 +35,20 @@ export class ArtistRequestController implements IArtistRequestController {
   createArtistRequest = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-      if (!userId) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: USER_MESSAGES.USER_ID_REQUIRED });
-      }
-      const result = validateWithZod(createArtistRequestSchema, req.body);
 
-      const { bio, phone, country } = result;
-
-      const dto: CreateArtistRequestDto = { userId, bio, phone, country };
+      const dto: CreateArtistRequestDto = {
+        ...validateWithZod(createArtistRequestSchema, { ...req.body, userId }),
+      };
 
       const request = await this._createArtistRequestUseCase.execute(dto);
 
-      logger.info(`Artist request submitted successfully for user: ${userId}`);
+      this._logger.info(
+        `Artist request submitted successfully for user: ${userId}`,
+      );
 
       return res.status(HttpStatus.OK).json({
         message: ARTIST_MESSAGES.REQUEST_SUBMITTED_SUCCESS,
@@ -73,21 +71,16 @@ export class ArtistRequestController implements IArtistRequestController {
   hasUserSubmittedRequest = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-      if (!userId) {
-        return res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: USER_MESSAGES.USER_ID_REQUIRED });
-      }
 
       const { alreadySubmitted, latestRequest } =
         await this._checkUserArtistRequestUseCase.execute(userId);
 
-      logger.info(
-        `Artist request status fetched successfully for user: ${userId}`
+      this._logger.info(
+        `Artist request status fetched successfully for user: ${userId}`,
       );
 
       return res.status(HttpStatus.OK).json({

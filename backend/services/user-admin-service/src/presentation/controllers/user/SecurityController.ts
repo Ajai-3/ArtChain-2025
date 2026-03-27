@@ -1,26 +1,27 @@
 import { HttpStatus } from 'art-chain-shared';
 import { injectable, inject } from 'inversify';
-import { logger } from '../../../utils/logger';
 import { Request, Response, NextFunction } from 'express';
 import { validateWithZod } from '../../../utils/zodValidator';
 import { TYPES } from '../../../infrastructure/inversify/types';
+import { ILogger } from '../../../application/interface/ILogger';
 import { ISecurityController } from '../../interfaces/user/ISecurityController';
-import { publishNotification } from '../../../infrastructure/messaging/rabbitmq';
 import { ChangePasswordRequestDto } from '../../../application/interface/dtos/user/security/ChangePasswordRequestDto';
 import { IChangeEmailUserUseCase } from '../../../application/interface/usecases/user/security/IChangeEmailUserUseCase';
 import { currentPasswordNewPasswordSchema } from '../../../application/validations/user/CurrentPasswordNewPasswordSchema';
 import { IChangePasswordUserUseCase } from '../../../application/interface/usecases/user/security/IChangePasswordUserUseCase';
 import { IVerifyEmailTokenUserUseCase } from '../../../application/interface/usecases/user/security/IVerifyEmailTokenUserUseCase';
+import { USER_MESSAGES } from '../../../constants/userMessages';
 
 @injectable()
 export class SecurityController implements ISecurityController {
   constructor(
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
     @inject(TYPES.IChangeEmailUserUseCase)
     private readonly _changeEmailUserUseCase: IChangeEmailUserUseCase,
     @inject(TYPES.IChangePasswordUserUseCase)
     private readonly _changePasswordUserUseCase: IChangePasswordUserUseCase,
     @inject(TYPES.IVerifyEmailTokenUserUseCase)
-    private readonly _verifyEmailTokenUserUseCase: IVerifyEmailTokenUserUseCase
+    private readonly _verifyEmailTokenUserUseCase: IVerifyEmailTokenUserUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -33,11 +34,11 @@ export class SecurityController implements ISecurityController {
   changePassword = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-      logger.info(`Changing password for user: ${userId}`);
+      this._logger.info(`Changing password for user: ${userId}`);
 
       const dto: ChangePasswordRequestDto = {
         ...validateWithZod(currentPasswordNewPasswordSchema, req.body),
@@ -45,10 +46,10 @@ export class SecurityController implements ISecurityController {
       };
       await this._changePasswordUserUseCase.execute(dto);
 
-      logger.info(`${userId} user password changed`);
+      this._logger.info(`${userId} user password changed`);
       return res
         .status(HttpStatus.OK)
-        .json({ message: 'Password changed successfully' });
+        .json({ message: USER_MESSAGES.PASSWORD_CHANGED_SUCCESSFULLY });
     } catch (err) {
       next(err);
     }
@@ -64,23 +65,23 @@ export class SecurityController implements ISecurityController {
   changeEmail = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       const { newEmail } = req.body;
-      logger.info(`Changing email for user: ${userId} to ${newEmail}`);
+      this._logger.info(`Changing email for user: ${userId} to ${newEmail}`);
 
       const token = await this._changeEmailUserUseCase.execute({
         userId,
         newEmail,
       });
 
-      logger.debug(`token ${token}`);
+      this._logger.debug(`token ${token}`);
 
       return res.status(HttpStatus.OK).json({
         data: token,
-        message: 'Change email token sended successfully',
+        message: USER_MESSAGES.CHANGE_EMAIL_TOKEN_SENDED_SUCCESSFULLY,
       });
     } catch (err) {
       next(err);
@@ -97,31 +98,24 @@ export class SecurityController implements ISecurityController {
   emailVerifyToken = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       const { token } = req.body;
 
-      if (!token) {
-        res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'Token is required' });
-        return;
-      }
-
-      logger.info(`Verifying email token for user: ${userId}`);
+      this._logger.info(`Verifying email token for user: ${userId}`);
 
       const user = await this._verifyEmailTokenUserUseCase.execute({
         userId,
         token,
       });
 
-      logger.debug(`Email token verified for user: ${user.id}`);
+      this._logger.debug(`Email token verified for user: ${user.id}`);
 
       res.status(HttpStatus.OK).json({
         data: user,
-        message: 'Email Updated successfully',
+        message: USER_MESSAGES.EMAIL_UPDATED_SUCCESSFULLY,
       });
     } catch (err) {
       next(err);
@@ -138,16 +132,16 @@ export class SecurityController implements ISecurityController {
   deactivateAccount = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-      logger.info(`Deactivating account for user: ${userId}`);
+      this._logger.info(`Deactivating account for user: ${userId}`);
 
       // TODO: call service/repo here
       res
         .status(HttpStatus.OK)
-        .json({ message: 'Account deactivated successfully' });
+        .json({ message: USER_MESSAGES.ACCOUNT_DEACTIVATED_SUCCESSFULLY });
     } catch (err) {
       next(err);
     }

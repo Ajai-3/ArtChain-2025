@@ -25,8 +25,6 @@ connectDB().then(async () => {
       logger.error('Failed to start AuctionEndedConsumer', err),
     );
 
-  console.log(config);
-
   server.listen(PORT, () => {
     logger.info(`Art Service starts on port ${PORT}`);
   });

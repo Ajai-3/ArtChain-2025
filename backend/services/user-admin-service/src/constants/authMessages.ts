@@ -25,7 +25,8 @@ export const AUTH_MESSAGES = {
   INVALID_RESET_TOKEN: 'Invalid or expired reset token.',
   PASSWORD_RESET_SUCCESS: 'Password updated successfully.',
   RESET_EMAIL_SENT: 'Password reset email sent successfully.',
-  INVALID_FORGOT_PASSWORD_IDENTIFIER: 'Invalid request. Please provide a valid email or username.',
+  INVALID_FORGOT_PASSWORD_IDENTIFIER:
+    'Invalid request. Please provide a valid email or username.',
 
   // Tokens
   TOKEN_REFRESH_SUCCESS: 'Access token refreshed successfully.',
@@ -37,7 +38,8 @@ export const AUTH_MESSAGES = {
 
   // Change Password
   PASSWORD_UPDATED: 'Password updated successfully.',
-  NEW_PASSWORD_IS_SAME_AS_CURRENT: 'New password cannot be the same as the current password.',
+  NEW_PASSWORD_IS_SAME_AS_CURRENT:
+    'New password cannot be the same as the current password.',
   INCORRECT_CURRENT_PASSWORD: 'The current password you entered is incorrect.',
 
   // Logout
@@ -55,10 +57,11 @@ export const AUTH_MESSAGES = {
   ADMIN_ONLY: 'Admin access required.',
   USER_NOT_FOUND: 'User not found.',
 
-
   INVALID_CHANGE_EMAIL_TOKEN: 'Invalid change email token',
   EMAIL_UPDATE_FAILED: 'Email updation failed',
 
   USER_BANNED: 'Your account has been banned.',
   USER_SUSPENDED: 'Your account has been suspended.',
+
+  INVALID_EMAIL_TOKEN: 'Invalid or expired email token.',
 } as const;
