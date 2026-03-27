@@ -18,11 +18,11 @@ import { IUserService } from '../../interface/service/IUserService';
 @injectable()
 export class LikePostUseCase implements ILikePostUseCase {
   constructor(
-     @inject(TYPES.IUserService) private readonly _userService: IUserService,
+    @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
     @inject(TYPES.ILikeRepository)
-    private readonly _likeRepository: ILikeRepository
+    private readonly _likeRepository: ILikeRepository,
   ) {}
 
   async execute(postId: string, userId: string) {
@@ -46,7 +46,6 @@ export class LikePostUseCase implements ILikePostUseCase {
     const savedLike = await this._likeRepository.create(like);
 
     if (post.userId !== userId) {
-      console.log(post.userId, userId);
       const userIds = [post.userId, userId];
       const users = await this._userService.getUsersByIds(userIds);
       const userMap = new Map(users.map((u: any) => [u.id, u]));

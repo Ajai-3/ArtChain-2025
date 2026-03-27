@@ -16,17 +16,9 @@ export const useSFU = () => {
     console.log(`Joining SFU room: ${roomId} as ${userId} with stream ${localStream.id}`);
     setIsConnected(true);
     
-    // Mock adding some participants after a delay
-    setTimeout(() => {
-      setParticipants([
-        { id: 'user-1', stream: null, isMuted: false, isVideoOff: false },
-        { id: 'user-2', stream: null, isMuted: true, isVideoOff: false },
-      ]);
-    }, 1000);
   }, []);
 
   const leaveRoom = useCallback(() => {
-    console.log("Leaving SFU room");
     setIsConnected(false);
     setParticipants([]);
   }, []);

@@ -56,13 +56,6 @@ export const useSendMessage = () => {
         mediaUrl: mediaUrl,
       };
 
-      console.log("📤 Sending message via socket:", {
-        conversationId,
-        content: safeContent,
-        id,
-        mediaType,
-        mediaUrl
-      });
 
       dispatch(addMessage(tempMessage));
 

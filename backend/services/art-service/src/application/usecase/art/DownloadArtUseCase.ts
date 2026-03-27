@@ -27,8 +27,6 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
       throw new BadRequestError(ART_MESSAGES.INVALID_REQUEST_PARAMETERS);
     }
 
-    console.log(category, id, userId);
-
     let originalKey: string = '';
     let fileName: string = '';
 
@@ -81,8 +79,6 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
         throw new NotFoundError(AUCTION_MESSAGES.AUCTION_NOT_FOUND);
       }
 
-      console.log(auction);
-
       if (auction.status !== 'ENDED') {
         throw new BadRequestError(AUCTION_MESSAGES.AUCTION_NOT_ENDED);
       }
@@ -100,8 +96,6 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
     } else {
       throw new BadRequestError('Unsupported category');
     }
-
-    console.log('✅ Generating Signed URL for Key:', originalKey);
 
     return this._s3Service.getSignedUrl(originalKey, category as any, fileName);
   }

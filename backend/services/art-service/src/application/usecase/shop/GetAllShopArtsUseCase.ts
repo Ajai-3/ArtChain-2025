@@ -14,7 +14,7 @@ export class GetAllShopArtsUseCase {
     @inject(TYPES.IFavoriteRepository)
     private readonly _favoriteRepo: IFavoriteRepository,
     @inject(TYPES.IUserService)
-    private readonly _userService: IUserService
+    private readonly _userService: IUserService,
   ) {}
 
   async execute(
@@ -26,14 +26,9 @@ export class GetAllShopArtsUseCase {
       titleOrder?: 'asc' | 'desc';
       minPrice?: number;
       maxPrice?: number;
-    }
+    },
   ): Promise<any[]> {
     const query: any = { isForSale: true, status: 'active' };
-
-    if (filters) {
-      console.log('categories', filters.category);
-    }
-
     // Multi-category filter
     if (filters?.category && filters.category.length > 0) {
       query.artType = { $in: filters.category };
@@ -59,7 +54,7 @@ export class GetAllShopArtsUseCase {
       query,
       page,
       limit,
-      sort
+      sort,
     );
 
     if (!arts.length) return [];
@@ -73,12 +68,12 @@ export class GetAllShopArtsUseCase {
     const mapped = await Promise.all(
       arts.map(async (art: any) => {
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-          art._id
+          art._id,
         );
         const user = userRes.find((u: any) => u.id === art.userId);
-        
+
         return toShopArtListResponse(art, user, favoriteCount);
-      })
+      }),
     );
 
     return mapped;

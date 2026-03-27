@@ -16,7 +16,6 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
 
   // Refine Status Logic
   let status = auction.status;
-  console.log('status', status);
   if (status === 'SCHEDULED' && now >= startTime) status = 'ACTIVE';
   if (status === 'ACTIVE' && now >= endTime) status = 'ENDED';
 
@@ -36,11 +35,11 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
             ? 'border-yellow-600/50 shadow-yellow-500/20'
             : isScheduled
               ? 'border-indigo-600/50 shadow-indigo-500/20'
-            : isUnsold
-              ? 'border-neutral-600/50 shadow-neutral-500/20'
-              : isCanceled
-                ? 'border-red-600/50 shadow-red-500/20'
-                : ''
+              : isUnsold
+                ? 'border-neutral-600/50 shadow-neutral-500/20'
+                : isCanceled
+                  ? 'border-red-600/50 shadow-red-500/20'
+                  : ''
       }`}
     >
       <AuctionCardImage
@@ -52,8 +51,8 @@ export const AuctionCard = ({ auction }: AuctionCardProps) => {
         isUnsold={isUnsold}
       />
 
-      <CardHeader className="p-4 pb-2">
-        <h3 className="font-bold text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+      <CardHeader className='p-4 pb-2'>
+        <h3 className='font-bold text-lg leading-tight line-clamp-1 group-hover:text-primary transition-colors'>
           {auction.title}
         </h3>
       </CardHeader>

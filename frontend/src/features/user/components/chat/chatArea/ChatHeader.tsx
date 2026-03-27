@@ -26,8 +26,6 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 }) => {
   const userCache = useSelector(selectUserCache);
 
-  console.log('🟢 ChatHeader - Conversation:', conversation);
-
   const partnerId =
     conversation.type === 'PRIVATE' || conversation.type === 'REQUEST'
       ? conversation.memberIds?.find((id) => id !== currentUserId) ||
@@ -86,26 +84,26 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
 
   return (
-    <div className="flex items-center justify-between py-2 px-4 border-b border-border bg-background/80 backdrop-blur-sm">
+    <div className='flex items-center justify-between py-2 px-4 border-b border-border bg-background/80 backdrop-blur-sm'>
       {/* Left side - Back button and conversation info */}
-      <div className="flex items-center space-x-3">
+      <div className='flex items-center space-x-3'>
         {/* Back button */}
         {onBack && (
           <button
             onClick={onBack}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
+            className='p-2 hover:bg-muted rounded-full transition-colors'
           >
             <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+              className='w-5 h-5'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
             >
               <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                strokeLinecap='round'
+                strokeLinejoin='round'
                 strokeWidth={2}
-                d="M15 19l-7-7 7-7"
+                d='M15 19l-7-7 7-7'
               />
             </svg>
           </button>
@@ -113,30 +111,30 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
 
         {/* Conversation avatar and info */}
         <div
-          className="flex items-center space-x-3 cursor-pointer"
+          className='flex items-center space-x-3 cursor-pointer'
           onClick={onToggleDetails}
         >
-          <div className="relative w-11 h-11">
-            <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+          <div className='relative w-11 h-11'>
+            <div className='w-full h-full rounded-full bg-primary/10 flex items-center justify-center overflow-hidden'>
               {profileImage ? (
                 <img
                   src={profileImage}
                   alt={getConversationName()}
-                  className="w-full h-full object-cover"
+                  className='w-full h-full object-cover'
                 />
               ) : (
-                <span className="text-sm font-medium text-primary">
+                <span className='text-sm font-medium text-primary'>
                   {getInitials(getConversationName())}
                 </span>
               )}
             </div>
             {/* Dot is now outside overflow-hidden, positioned relative to the outer wrapper */}
             {conversation.type === 'PRIVATE' && isOnline && (
-              <span className="absolute z-50 -bottom-0.5 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+              <span className='absolute z-50 -bottom-0.5 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full' />
             )}
           </div>
           <div>
-            <h2 className="font-semibold text-foreground">
+            <h2 className='font-semibold text-foreground'>
               {getConversationName()}
             </h2>
             <p
@@ -148,26 +146,26 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center space-x-1">
+      <div className='flex items-center space-x-1'>
         {onVideoCall &&
           (conversation.type === 'PRIVATE' ||
             conversation.type === 'REQUEST') && (
             <button
               onClick={onVideoCall}
-              className="p-2 hover:bg-muted rounded-full transition-colors"
-              title="Video call"
+              className='p-2 hover:bg-muted rounded-full transition-colors'
+              title='Video call'
             >
-              <Video className="w-5 h-5" />
+              <Video className='w-5 h-5' />
             </button>
           )}
 
         {conversation.type !== 'REQUEST' && (
           <button
             onClick={onToggleDetails}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
-            title="More options"
+            className='p-2 hover:bg-muted rounded-full transition-colors'
+            title='More options'
           >
-            <MoreVertical className="w-5 h-5" />
+            <MoreVertical className='w-5 h-5' />
           </button>
         )}
       </div>

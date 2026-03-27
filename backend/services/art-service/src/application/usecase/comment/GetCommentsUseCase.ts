@@ -6,7 +6,7 @@ import { ICommentRepository } from '../../../domain/repositories/ICommentReposit
 @injectable()
 export class GetCommentsUseCase {
   constructor(
-      @inject(TYPES.IUserService) private readonly _userService: IUserService,
+    @inject(TYPES.IUserService) private readonly _userService: IUserService,
     @inject(TYPES.ICommentRepository)
     private readonly _commentRepo: ICommentRepository,
   ) {}
@@ -22,9 +22,8 @@ export class GetCommentsUseCase {
 
     const enrichedComments = comments.map((comment) => {
       const user = users.find(
-        (u) => u?.id?.toString() === comment.userId?.toString()
+        (u) => u?.id?.toString() === comment.userId?.toString(),
       );
-      console.log(user);
 
       return {
         ...comment,

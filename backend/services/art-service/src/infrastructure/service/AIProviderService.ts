@@ -26,7 +26,7 @@ class PollinationsProvider implements IAIProvider {
   async generateImage(params: AIGenerationParams): Promise<AIGenerationResult> {
     const { prompt, seed, model, resolution } = params;
     const images: string[] = [];
-    
+
     const modelName = model || 'flux';
     const seedValue = seed || Math.floor(Math.random() * 1000000);
     const [width, height] = resolution.split('x').map(Number);
@@ -34,35 +34,39 @@ class PollinationsProvider implements IAIProvider {
 
     // Construct URL
     const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?model=${modelName}&width=${width}&height=${height}&seed=${seedValue}&nologo=true`;
-    
-    console.log(`[Pollinations] Generating: ${url}`);
 
     try {
       // Try to download the image to save as base64
       const response = await axios.get(url, {
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
       });
 
-      const base64Image = Buffer.from(response.data, 'binary').toString('base64');
+      const base64Image = Buffer.from(response.data, 'binary').toString(
+        'base64',
+      );
       const dataUri = `data:image/jpeg;base64,${base64Image}`;
-      
+
       images.push(dataUri);
-      console.log('[Pollinations] Image downloaded successfully');
     } catch (error) {
-      console.warn('[Pollinations] Download failed, falling back to URL:', error instanceof Error ? error.message : error);
+      console.warn(
+        '[Pollinations] Download failed, falling back to URL:',
+        error instanceof Error ? error.message : error,
+      );
       // Fallback: Save the URL if download fails
       images.push(url);
     }
 
     return {
       images,
-      generationTime: 0
+      generationTime: 0,
     };
   }
 
   async testConnection(): Promise<boolean> {
     try {
-      await axios.get('https://image.pollinations.ai/prompt/test?width=64&height=64');
+      await axios.get(
+        'https://image.pollinations.ai/prompt/test?width=64&height=64',
+      );
       return true;
     } catch (error) {
       return false;
@@ -76,7 +80,9 @@ class PuterProvider implements IAIProvider {
 
   async generateImage(params: AIGenerationParams): Promise<AIGenerationResult> {
     // TODO: Implement Puter.js API integration
-    throw new Error('Puter.js provider not yet implemented. Please configure API key and implementation.');
+    throw new Error(
+      'Puter.js provider not yet implemented. Please configure API key and implementation.',
+    );
   }
 
   async testConnection(): Promise<boolean> {
@@ -103,24 +109,22 @@ class GeminiProvider implements IAIProvider {
     const modelToUse = model || 'gemini-2.5-flash-image';
     const images: string[] = [];
 
-    console.log(`[Gemini] Generating with model: ${modelToUse}`);
-
     try {
       const result = await this.client.models.generateContent({
         model: modelToUse,
         contents: prompt,
       });
 
-      const candidates = result.candidates || (result as any).response?.candidates;
+      const candidates =
+        result.candidates || (result as any).response?.candidates;
 
       if (candidates && candidates.length > 0) {
         for (const part of candidates[0].content.parts) {
-           if (part.inlineData) {
+          if (part.inlineData) {
             const imageData = part.inlineData.data;
-            const mimeType = part.inlineData.mimeType || 'image/png'; 
+            const mimeType = part.inlineData.mimeType || 'image/png';
             const dataUri = `data:${mimeType};base64,${imageData}`;
             images.push(dataUri);
-            console.log('[Gemini] Image generated successfully');
           }
         }
       }
@@ -131,7 +135,7 @@ class GeminiProvider implements IAIProvider {
 
       return {
         images,
-        generationTime: 0 
+        generationTime: 0,
       };
     } catch (error) {
       console.error('Gemini generation error:', error);
@@ -161,15 +165,18 @@ export class AIProviderService {
     // Initialize providers
     this.providers.set('pollinations', new PollinationsProvider());
     this.providers.set('puter', new PuterProvider());
-    
+
     // Initialize Gemini with env var if available
     const geminiKey = process.env.GEMINI_API_KEY;
     this.providers.set('gemini', new GeminiProvider(geminiKey));
   }
 
-  async generateImage(provider: string, params: AIGenerationParams): Promise<AIGenerationResult> {
+  async generateImage(
+    provider: string,
+    params: AIGenerationParams,
+  ): Promise<AIGenerationResult> {
     const providerInstance = this.providers.get(provider);
-    
+
     if (!providerInstance) {
       throw new Error(`Provider '${provider}' not found`);
     }
@@ -179,7 +186,7 @@ export class AIProviderService {
 
   async testProvider(provider: string): Promise<boolean> {
     const providerInstance = this.providers.get(provider);
-    
+
     if (!providerInstance) {
       throw new Error(`Provider '${provider}' not found`);
     }

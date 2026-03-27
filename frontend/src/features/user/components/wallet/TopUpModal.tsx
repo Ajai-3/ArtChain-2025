@@ -1,20 +1,20 @@
 // TopUpModal.tsx
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../../../components/ui/dialog";
-import { Button } from "../../../../components/ui/button";
-import { Input } from "../../../../components/ui/input";
+} from '../../../../components/ui/dialog';
+import { Button } from '../../../../components/ui/button';
+import { Input } from '../../../../components/ui/input';
 
-import { loadStripe } from "@stripe/stripe-js";
-import toast from "react-hot-toast";
+import { loadStripe } from '@stripe/stripe-js';
+import toast from 'react-hot-toast';
 
-import { useCreateStripeSession } from "../../hooks/wallet/useCreateStripeSession";
-import { useCreateRazorpayOrder } from "../../hooks/wallet/useCreateRazorpayOrder";
+import { useCreateStripeSession } from '../../hooks/wallet/useCreateStripeSession';
+import { useCreateRazorpayOrder } from '../../hooks/wallet/useCreateRazorpayOrder';
 
 interface TopUpModalProps {
   trigger: React.ReactNode;
@@ -23,9 +23,9 @@ interface TopUpModalProps {
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
-  const [amount, setAmount] = useState<number | "">("");
+  const [amount, setAmount] = useState<number | ''>('');
   const [paymentMethod, setPaymentMethod] = useState<
-    "stripe" | "razorpay" | null
+    'stripe' | 'razorpay' | null
   >(null);
   const [showCheckout, setShowCheckout] = useState(false);
 
@@ -43,16 +43,16 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    
+
     // Allow empty input
-    if (value === "") {
-      setAmount("");
+    if (value === '') {
+      setAmount('');
       return;
     }
-    
+
     // Only allow positive numbers
     const numValue = Number(value);
-    
+
     // Check if it's a valid positive number
     if (!isNaN(numValue) && numValue >= 0) {
       // Apply limits
@@ -70,20 +70,20 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
   };
 
   const resetState = () => {
-    setAmount("");
+    setAmount('');
     setPaymentMethod(null);
     setShowCheckout(false);
   };
 
   const isValidAmount = () => {
-    if (amount === "") return false;
+    if (amount === '') return false;
     const numAmount = Number(amount);
     return numAmount >= MIN_ARTCOIN && numAmount <= MAX_ARTCOIN;
   };
 
   const getErrorMessage = () => {
-    if (amount === "") return "";
-    
+    if (amount === '') return '';
+
     const numAmount = Number(amount);
     if (numAmount < MIN_ARTCOIN) {
       return `Minimum ArtCoin amount is ${MIN_ARTCOIN}`;
@@ -91,7 +91,7 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
     if (numAmount > MAX_ARTCOIN) {
       return `Maximum ArtCoin amount is ${MAX_ARTCOIN}`;
     }
-    return "";
+    return '';
   };
 
   const handleStripeCheckout = async () => {
@@ -105,7 +105,7 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
       await stripe?.redirectToCheckout({ sessionId });
     } catch (err) {
       console.error(err);
-      toast.error("Stripe checkout failed. Try again.");
+      toast.error('Stripe checkout failed. Try again.');
     }
   };
 
@@ -122,20 +122,19 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderAmount,
         currency,
-        name: "ArtCoin Topup",
-        description: "Add ArtCoin balance",
+        name: 'ArtCoin Topup',
+        description: 'Add ArtCoin balance',
         order_id: orderId,
         handler: (response: any) => {
-          console.log("Razorpay success:", response);
-          toast.success("Razorpay payment successful!");
+          toast.success('Razorpay payment successful!');
           resetState();
         },
         prefill: {
-          email: "test@example.com",
-          contact: "9876543210",
+          email: 'test@example.com',
+          contact: '9876543210',
         },
         theme: {
-          color: "#3399cc",
+          color: '#3399cc',
         },
       };
 
@@ -143,56 +142,56 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
       razor.open();
     } catch (err) {
       console.error(err);
-      toast.error("Razorpay checkout failed. Try again.");
+      toast.error('Razorpay checkout failed. Try again.');
     }
   };
 
-  const isStripeLoading = stripeMutation.status === "pending";
-  const isRazorpayLoading = razorpayMutation.status === "pending";
+  const isStripeLoading = stripeMutation.status === 'pending';
+  const isRazorpayLoading = razorpayMutation.status === 'pending';
   const errorMessage = getErrorMessage();
   const hasError = !!errorMessage;
 
   return (
     <Dialog onOpenChange={(open) => !open && resetState()}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className="max-w-md w-full bg-background rounded-lg p-8">
+      <DialogContent className='max-w-md w-full bg-background rounded-lg p-8'>
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold">
+          <DialogTitle className='text-lg font-bold'>
             Top Up ArtCoin
           </DialogTitle>
         </DialogHeader>
 
         {!showCheckout ? (
-          <div className="mt-4">
-            <p className="text-sm text-gray-400 mb-2">
+          <div className='mt-4'>
+            <p className='text-sm text-gray-400 mb-2'>
               How much would you like to add? (1 AC = 10 INR)
             </p>
-            <div className="flex gap-2 mb-4">
+            <div className='flex gap-2 mb-4'>
               {PRESET_AMOUNTS.map((amt) => (
                 <Button
                   key={amt.ac}
-                  variant="outline"
+                  variant='outline'
                   className={`flex-1 flex flex-col items-center justify-center !py-6 gap-1 ${
-                    amount === amt.ac ? "border-2 border-primary" : ""
+                    amount === amt.ac ? 'border-2 border-primary' : ''
                   }`}
                   onClick={() => handlePresetAmount(amt.ac)}
                 >
-                  <span className="font-semibold">{amt.ac} AC</span>
-                  <span className="text-xs text-gray-400">₹{amt.inr}</span>
+                  <span className='font-semibold'>{amt.ac} AC</span>
+                  <span className='text-xs text-gray-400'>₹{amt.inr}</span>
                 </Button>
               ))}
             </div>
 
-            <div className="mb-3">
-              <label className="block text-sm font-medium mb-1">
+            <div className='mb-3'>
+              <label className='block text-sm font-medium mb-1'>
                 Amount (ArtCoin)
               </label>
               <Input
-                type="number"
+                type='number'
                 value={amount}
                 onChange={handleChange}
-                className={`mb-1 ${hasError ? "border-red-500" : ""}`}
-                placeholder="0"
+                className={`mb-1 ${hasError ? 'border-red-500' : ''}`}
+                placeholder='0'
                 min={MIN_ARTCOIN}
                 max={MAX_ARTCOIN}
                 onKeyDown={(e) => {
@@ -202,59 +201,60 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
                   }
                 }}
               />
-              <div className="flex justify-between">
-                <p className="text-xs text-gray-400">
+              <div className='flex justify-between'>
+                <p className='text-xs text-gray-400'>
                   ≈ ₹{amount ? Number(amount) * 10 : 0} INR
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className='text-xs text-gray-400'>
                   Limit: {MIN_ARTCOIN} - {MAX_ARTCOIN} AC
                 </p>
               </div>
               {hasError && (
-                <p className="text-xs text-red-500 mt-1">{errorMessage}</p>
+                <p className='text-xs text-red-500 mt-1'>{errorMessage}</p>
               )}
             </div>
 
-            <p className="text-xs text-green-400 mb-4">
-              Your ArtCoin will be available immediately after payment confirmation
+            <p className='text-xs text-green-400 mb-4'>
+              Your ArtCoin will be available immediately after payment
+              confirmation
             </p>
 
-            <p className="text-sm font-medium mb-2">Payment Method</p>
-            <div className="flex gap-2 mb-4">
+            <p className='text-sm font-medium mb-2'>Payment Method</p>
+            <div className='flex gap-2 mb-4'>
               <Button
-                variant="outline"
+                variant='outline'
                 className={`flex-1 items-center justify-center gap-1 border-2 ${
-                  paymentMethod === "stripe"
-                    ? "border-purple-600 text-purple-700"
-                    : "border-gray-300"
+                  paymentMethod === 'stripe'
+                    ? 'border-purple-600 text-purple-700'
+                    : 'border-gray-300'
                 }`}
-                onClick={() => setPaymentMethod("stripe")}
+                onClick={() => setPaymentMethod('stripe')}
               >
-                <span className="text-xs px-1 rounded-md bg-purple-600 text-white">
+                <span className='text-xs px-1 rounded-md bg-purple-600 text-white'>
                   Stripe
                 </span>
-                <span className="font-medium">Stripe</span>
+                <span className='font-medium'>Stripe</span>
               </Button>
 
               <Button
-                variant="outline"
+                variant='outline'
                 className={`flex-1 items-center justify-center gap-1 border-2 ${
-                  paymentMethod === "razorpay"
-                    ? "border-blue-600 text-blue-700"
-                    : "border-gray-300"
+                  paymentMethod === 'razorpay'
+                    ? 'border-blue-600 text-blue-700'
+                    : 'border-gray-300'
                 }`}
-                onClick={() => setPaymentMethod("razorpay")}
+                onClick={() => setPaymentMethod('razorpay')}
               >
-                <span className="text-xs px-1 rounded-md bg-blue-600 text-white">
+                <span className='text-xs px-1 rounded-md bg-blue-600 text-white'>
                   Razorpay
                 </span>
-                <span className="font-medium">Razorpay</span>
+                <span className='font-medium'>Razorpay</span>
               </Button>
             </div>
 
             <Button
-              variant="main"
-              className="w-full bg-green-600 hover:bg-green-700"
+              variant='main'
+              className='w-full bg-green-600 hover:bg-green-700'
               disabled={!isValidAmount() || !paymentMethod}
               onClick={() => setShowCheckout(true)}
             >
@@ -262,32 +262,32 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
             </Button>
           </div>
         ) : (
-          <div className="mt-4">
-            {paymentMethod === "stripe" && (
+          <div className='mt-4'>
+            {paymentMethod === 'stripe' && (
               <Button
-                className="w-full text-white font-medium bg-purple-600 hover:bg-purple-700"
+                className='w-full text-white font-medium bg-purple-600 hover:bg-purple-700'
                 onClick={handleStripeCheckout}
                 disabled={isStripeLoading || !isValidAmount()}
               >
                 {isStripeLoading
-                  ? "Processing..."
+                  ? 'Processing...'
                   : `Pay with Stripe ₹${Number(amount) * 10}`}
               </Button>
             )}
-            {paymentMethod === "razorpay" && (
+            {paymentMethod === 'razorpay' && (
               <Button
-                className="w-full text-white font-medium !bg-blue-600 hover:bg-blue-700"
+                className='w-full text-white font-medium !bg-blue-600 hover:bg-blue-700'
                 onClick={handleRazorpayCheckout}
                 disabled={isRazorpayLoading || !isValidAmount()}
               >
                 {isRazorpayLoading
-                  ? "Processing..."
+                  ? 'Processing...'
                   : `Pay with Razorpay ₹${Number(amount) * 10}`}
               </Button>
             )}
             <Button
-              variant="outline"
-              className="w-full mt-2"
+              variant='outline'
+              className='w-full mt-2'
               onClick={() => setShowCheckout(false)}
             >
               Back

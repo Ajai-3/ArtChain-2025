@@ -38,12 +38,7 @@ const ArtPage: React.FC = () => {
   const buyArtMutation = useBuyArtMutation();
   const downloadArtMutation = useDownloadFileMutation();
 
-  const {
-    data: apiResponse,
-    isLoading,
-    isError,
-    error,
-  } = useGetArtByName(artname!);
+  const { data: apiResponse, isLoading, isError } = useGetArtByName(artname!);
   const data = apiResponse as unknown as { data: ArtWithUserResponse };
 
   const [zoomed, setZoomed] = useState(false);
@@ -94,10 +89,8 @@ const ArtPage: React.FC = () => {
         <ArtPageSkeleton />
       </div>
     );
-  if (isError)
-    return <ContentUnavailable />;
-  if (!data?.data?.art)
-    return <ContentUnavailable />;
+  if (isError) return <ContentUnavailable />;
+  if (!data?.data?.art) return <ContentUnavailable />;
 
   const art = data.data.art;
   const actualUser = data.data.user;
@@ -154,7 +147,6 @@ const ArtPage: React.FC = () => {
       console.error('Critical: Art ID is missing from the object', art);
       return;
     }
-    console.log(art.id, art);
     downloadArtMutation.mutate({
       id: artId,
       category: 'art',
@@ -336,7 +328,10 @@ const ArtPage: React.FC = () => {
             priceType: (price?.type as 'artcoin' | 'fiat') || 'artcoin',
             artcoins: price?.artcoins,
             fiatPrice: price?.fiat,
-            postType: (art.postType || 'original') as 'original' | 'repost' | 'purchased',
+            postType: (art.postType || 'original') as
+              | 'original'
+              | 'repost'
+              | 'purchased',
             createdAt: art.createdAt,
             updatedAt: art.updatedAt,
           }}
@@ -355,10 +350,10 @@ const ArtPage: React.FC = () => {
               },
             });
           }}
-          title="Delete Artwork"
-          description="Are you sure you want to delete this artwork? This action cannot be undone."
-          confirmText="Delete"
-          confirmVariant="destructive"
+          title='Delete Artwork'
+          description='Are you sure you want to delete this artwork? This action cannot be undone.'
+          confirmText='Delete'
+          confirmVariant='destructive'
           isLoading={isDeleting}
         />
       )}

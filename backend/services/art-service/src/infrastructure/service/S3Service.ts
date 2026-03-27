@@ -18,7 +18,6 @@ export class S3Service implements IS3Service {
       const url = `${this.url}/api/v1/upload/signed-url?key=${key}&category=${category}&fileName=${fileName}`;
       const response = await axios.get(url);
 
-      // console.log(response.data);
       return response.data.data;
     } catch (error) {
       console.error('Error creating signed URL:', error);

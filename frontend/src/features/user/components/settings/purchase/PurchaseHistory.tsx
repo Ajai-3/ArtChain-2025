@@ -12,9 +12,6 @@ const PurchaseHistory: React.FC = () => {
   const { data: analytics, isLoading: isChartLoading } = usePurchasedAnalytics(range);
   const { data: artworks, isLoading: isArtLoading } = usePurchasedArt(page, limit);
 
-  console.log('artworks', artworks);
-  console.log("analytics", analytics);
-
   const isFetching = isChartLoading || isArtLoading;
   const hasNoData = !isFetching && (!artworks || artworks.length === 0);
 

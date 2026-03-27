@@ -41,8 +41,6 @@ const ConversationMembers: React.FC<ConversationMembersProps> = ({
   const sortedMembers = useMemo(() => {
     if (!membersData?.pages) return [];
 
-    console.log('Members data:', membersData);
-
     const allMembers = membersData.pages
       .flatMap((page: any) => page.members)
       .filter((m: any) => m.id !== currentUserId);

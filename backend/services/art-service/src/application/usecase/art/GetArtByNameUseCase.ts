@@ -59,10 +59,6 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
 
     let purchaser = null;
     if (!artFull.isForSale && artFull.isSold) {
-      console.log(
-        'artFull.isForSale && artFull.isSold',
-        artFull.isForSale && artFull.isSold,
-      );
       const purchase = await this._purchaseRepo.findByArtId(artFull._id);
       if (purchase) {
         purchaser = await this._userService.getUserById(

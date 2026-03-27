@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   LoginSchema,
   SignupSchema,
@@ -8,22 +8,22 @@ import {
   type LoginFormInputs,
   type SignupFormInputs,
   type ForgotPasswordFormInputs,
-} from "../../schemas/authSchemas";
-import { useForgottPasswordMutation } from "../../hooks/auth/useForgotPasswordMutation";
-import { useSignupMutation } from "../../hooks/auth/useSignupMutation";
-import { useGoogleAuthMutation } from "../../hooks/auth/useGoogleAuthMutation";
-import { useLoginMutation } from "../../hooks/auth/useLoginMutation";
-import { Eye, EyeOff, Mail, Loader2 } from "lucide-react";
+} from '../../schemas/authSchemas';
+import { useForgottPasswordMutation } from '../../hooks/auth/useForgotPasswordMutation';
+import { useSignupMutation } from '../../hooks/auth/useSignupMutation';
+import { useGoogleAuthMutation } from '../../hooks/auth/useGoogleAuthMutation';
+import { useLoginMutation } from '../../hooks/auth/useLoginMutation';
+import { Eye, EyeOff, Mail, Loader2 } from 'lucide-react';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../../../../components/ui/tabs";
-import { Button } from "../../../../components/ui/button";
-import { Input } from "../../../../components/ui/input";
-import { signInWithGoogle } from "../../../../firebase/config";
-import AuthBackground from "./AuthBackground";
+} from '../../../../components/ui/tabs';
+import { Button } from '../../../../components/ui/button';
+import { Input } from '../../../../components/ui/input';
+import { signInWithGoogle } from '../../../../firebase/config';
+import AuthBackground from './AuthBackground';
 
 const Auth: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -95,7 +95,7 @@ const Auth: React.FC = () => {
         name,
       });
     } catch (error) {
-      console.error("Google login failed:", error);
+      console.error('Google login failed:', error);
     }
   };
 
@@ -106,68 +106,67 @@ const Auth: React.FC = () => {
   const handleForgot = (data: ForgotPasswordFormInputs) => {
     forgotMutation(data);
     setIsResetDisabled(true);
-    console.log("Forgot password:", data.identifier);
   };
 
   return (
-    <div className="relative flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6 overflow-hidden">
+    <div className='relative flex flex-col h-screen items-center justify-center bg-background text-foreground px-4 py-6 overflow-hidden'>
       <AuthBackground />
-      
-      <div className="relative z-10 w-full max-w-md sm:max-w-md md:max-w-md bg-card/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900/80">
+
+      <div className='relative z-10 w-full max-w-md sm:max-w-md md:max-w-md bg-card/80 backdrop-blur-sm p-6 sm:p-8 rounded-2xl shadow-xl border dark:border-zinc-800 dark:bg-zinc-900/80'>
         {!forgotMode ? (
           <>
-            <div className="mb-6 text-center">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+            <div className='mb-6 text-center'>
+              <h2 className='text-xl sm:text-2xl font-bold mb-2'>
                 Welcome to Art Chain
               </h2>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className='text-sm sm:text-base text-muted-foreground'>
                 Secure access to your digital art collection
               </p>
             </div>
 
             {formError && (
-              <p className="text-sm text-red-500 text-center mb-2">
+              <p className='text-sm text-red-500 text-center mb-2'>
                 {formError}
               </p>
             )}
 
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="w-full grid grid-cols-2 mb-6">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            <Tabs defaultValue='login' className='w-full'>
+              <TabsList className='w-full grid grid-cols-2 mb-6'>
+                <TabsTrigger value='login'>Login</TabsTrigger>
+                <TabsTrigger value='signup'>Sign Up</TabsTrigger>
               </TabsList>
 
               {/* LOGIN TAB */}
-              <TabsContent value="login">
+              <TabsContent value='login'>
                 <form
                   onSubmit={handleLoginSubmit(handleLogin)}
-                  className="space-y-4 w-full"
+                  className='space-y-4 w-full'
                   noValidate
                 >
                   <div>
                     <Input
-                      variant="green-focus"
-                      placeholder="Email or Username"
-                      {...loginRegister("identifier")}
+                      variant='green-focus'
+                      placeholder='Email or Username'
+                      {...loginRegister('identifier')}
                     />
                     {loginErrors.identifier && (
-                      <p className="text-sm text-red-500 mt-1">
+                      <p className='text-sm text-red-500 mt-1'>
                         {loginErrors.identifier.message}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <div className="relative">
+                    <div className='relative'>
                       <Input
-                        variant="green-focus"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Password"
-                        className="pr-10"
-                        {...loginRegister("password")}
+                        variant='green-focus'
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder='Password'
+                        className='pr-10'
+                        {...loginRegister('password')}
                       />
                       <div
-                        className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground"
+                        className='absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground'
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -178,62 +177,62 @@ const Auth: React.FC = () => {
                       </div>
                     </div>
                     {loginErrors.password && (
-                      <p className="text-sm text-red-500 mt-1">
+                      <p className='text-sm text-red-500 mt-1'>
                         {loginErrors.password.message}
                       </p>
                     )}
                   </div>
 
                   <p
-                    className="text-sm text-muted-foreground text-end cursor-pointer hover:underline"
+                    className='text-sm text-muted-foreground text-end cursor-pointer hover:underline'
                     onClick={() => setForgotMode(true)}
                   >
                     Forgot Password?
                   </p>
 
                   <Button
-                    variant="main"
-                    type="submit"
-                    className="w-full"
+                    variant='main'
+                    type='submit'
+                    className='w-full'
                     disabled={isLoggingIn}
                   >
                     {isLoggingIn ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                         Logging in...
                       </>
                     ) : (
-                      "Log In"
+                      'Log In'
                     )}
                   </Button>
 
                   <Button
-                    variant="outline"
-                    type="button"
-                    className="w-full flex items-center gap-2 justify-center"
+                    variant='outline'
+                    type='button'
+                    className='w-full flex items-center gap-2 justify-center'
                     onClick={handleGoogleLogin}
                   >
-                    <Mail className="w-4 h-4" />
+                    <Mail className='w-4 h-4' />
                     Continue with Google
                   </Button>
                 </form>
               </TabsContent>
 
               {/* SIGNUP TAB */}
-              <TabsContent value="signup">
+              <TabsContent value='signup'>
                 <form
                   onSubmit={handleSignupSubmit(handleSignup)}
-                  className="space-y-4 w-full"
+                  className='space-y-4 w-full'
                   noValidate
                 >
                   <div>
                     <Input
-                      variant="green-focus"
-                      placeholder="Full Name"
-                      {...signupRegister("name")}
+                      variant='green-focus'
+                      placeholder='Full Name'
+                      {...signupRegister('name')}
                     />
                     {signupErrors.name && (
-                      <p className="text-sm text-red-500 mt-1">
+                      <p className='text-sm text-red-500 mt-1'>
                         {signupErrors.name.message}
                       </p>
                     )}
@@ -241,12 +240,12 @@ const Auth: React.FC = () => {
 
                   <div>
                     <Input
-                      variant="green-focus"
-                      placeholder="Username"
-                      {...signupRegister("username")}
+                      variant='green-focus'
+                      placeholder='Username'
+                      {...signupRegister('username')}
                     />
                     {signupErrors.username && (
-                      <p className="text-sm text-red-500 mt-1">
+                      <p className='text-sm text-red-500 mt-1'>
                         {signupErrors.username.message}
                       </p>
                     )}
@@ -254,45 +253,45 @@ const Auth: React.FC = () => {
 
                   <div>
                     <Input
-                      variant="green-focus"
-                      placeholder="Email"
-                      {...signupRegister("email")}
+                      variant='green-focus'
+                      placeholder='Email'
+                      {...signupRegister('email')}
                     />
                     {signupErrors.email && (
-                      <p className="text-sm text-red-500 mt-1">
+                      <p className='text-sm text-red-500 mt-1'>
                         {signupErrors.email.message}
                       </p>
                     )}
                   </div>
 
-                  <p className="text-sm text-muted-foreground">
+                  <p className='text-sm text-muted-foreground'>
                     A verification link will be sent to your email. Please click
                     the link to complete account setup.
                   </p>
 
                   <Button
-                    variant="main"
-                    type="submit"
-                    className="w-full"
+                    variant='main'
+                    type='submit'
+                    className='w-full'
                     disabled={isSigningUp}
                   >
                     {isSigningUp ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                         Sending link...
                       </>
                     ) : (
-                      "Send Verification Link"
+                      'Send Verification Link'
                     )}
                   </Button>
 
                   <Button
-                    variant="outline"
-                    type="button"
-                    className="w-full flex items-center gap-2 justify-center"
+                    variant='outline'
+                    type='button'
+                    className='w-full flex items-center gap-2 justify-center'
                     onClick={handleGoogleLogin}
                   >
-                    <Mail className="w-4 h-4" />
+                    <Mail className='w-4 h-4' />
                     Continue with Google
                   </Button>
                 </form>
@@ -302,49 +301,49 @@ const Auth: React.FC = () => {
         ) : (
           <>
             {/* FORGOT PASSWORD */}
-            <div className="mb-6 text-center">
-              <h2 className="text-xl sm:text-2xl font-bold mb-2">
+            <div className='mb-6 text-center'>
+              <h2 className='text-xl sm:text-2xl font-bold mb-2'>
                 Reset Password
               </h2>
-              <p className="text-sm sm:text-base text-muted-foreground">
+              <p className='text-sm sm:text-base text-muted-foreground'>
                 Enter your email to receive a reset link
               </p>
             </div>
             {formError && (
-              <p className="text-sm text-red-500 text-center mb-2">
+              <p className='text-sm text-red-500 text-center mb-2'>
                 {formError}
               </p>
             )}
             <form
               onSubmit={handleForgotSubmit(handleForgot)}
-              className="space-y-4 w-full max-w-md mx-auto"
+              className='space-y-4 w-full max-w-md mx-auto'
               noValidate
             >
               <div>
                 <Input
-                  variant="green-focus"
-                  placeholder="Email or Username"
-                  {...forgotRegister("identifier")}
+                  variant='green-focus'
+                  placeholder='Email or Username'
+                  {...forgotRegister('identifier')}
                 />
                 {forgotErrors.identifier && (
-                  <p className="text-sm text-red-500 mt-1">
+                  <p className='text-sm text-red-500 mt-1'>
                     {forgotErrors.identifier.message}
                   </p>
                 )}
               </div>
 
               <Button
-                variant="main"
-                type="submit"
-                className="w-full"
+                variant='main'
+                type='submit'
+                className='w-full'
                 disabled={isResetDisabled}
               >
                 {isResetDisabled
                   ? `Resend in ${countdown}s`
-                  : "Send Reset Link"}
+                  : 'Send Reset Link'}
               </Button>
               <p
-                className="text-sm text-center cursor-pointer text-blue-500 hover:underline"
+                className='text-sm text-center cursor-pointer text-blue-500 hover:underline'
                 onClick={() => setForgotMode(false)}
               >
                 Back to login

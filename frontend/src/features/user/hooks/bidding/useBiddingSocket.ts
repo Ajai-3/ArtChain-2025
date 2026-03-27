@@ -16,8 +16,6 @@ export const useBiddingSocket = (
   const [activeUsers, setActiveUsers] = useState<number>(0);
 
   useEffect(() => {
-    console.log('initialBids:', initialBids);
-    console.log('redux bids:', bids);
     if (initialBids.length > 0) {
       dispatch(setBids(initialBids));
     }
@@ -50,7 +48,6 @@ export const useBiddingSocket = (
 
     // Listeners
     const handleNewBid = (newBid: any) => {
-      console.log("⚡ [Frontend Hook] Received 'bid_placed' event:", newBid);
       dispatch(addBid(newBid));
     };
 

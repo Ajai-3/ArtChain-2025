@@ -42,7 +42,6 @@ export default function BiddingDetailPage() {
 
   useEffect(() => {
     if (fetchedAuction) {
-      console.log('fetchedAuction.bids:', fetchedAuction.bids);
       dispatch(setActiveAuctionData(fetchedAuction));
       dispatch(setBids(fetchedAuction.bids || []));
     }
@@ -51,7 +50,7 @@ export default function BiddingDetailPage() {
   if (loading) return <BiddingDetailPageSkeleton />;
   if (!auction)
     return (
-      <div className="h-full flex items-center justify-center text-muted-foreground">
+      <div className='h-full flex items-center justify-center text-muted-foreground'>
         Auction not found
       </div>
     );
@@ -65,8 +64,8 @@ export default function BiddingDetailPage() {
   const isCanceled = auction.status === 'CANCELLED';
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 w-full max-w-[1600px] mx-auto md:h-[calc(100vh-80px)] md:overflow-hidden">
-      <div className="flex-1 flex flex-col gap-4 min-w-0 h-full">
+    <div className='flex flex-col md:flex-row gap-4 w-full max-w-[1600px] mx-auto md:h-[calc(100vh-80px)] md:overflow-hidden'>
+      <div className='flex-1 flex flex-col gap-4 min-w-0 h-full'>
         <DetailNavigation
           auction={auction}
           navigate={navigate}
@@ -91,7 +90,7 @@ export default function BiddingDetailPage() {
       </div>
 
       {/* Right Panel: Action & Bids */}
-      <div className="w-full md:w-[450px] lg:w-[500px] shrink-0 flex flex-col gap-4 h-full overflow-hidden">
+      <div className='w-full md:w-[450px] lg:w-[500px] shrink-0 flex flex-col gap-4 h-full overflow-hidden'>
         <DetailStatsCard
           auction={auction}
           isLive={isLive}

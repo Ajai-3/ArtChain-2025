@@ -29,9 +29,6 @@ const ConversationDetails: React.FC<ConversationDetailsProps> = ({
     isLoading: isLoadingMembers,
   } = useGroupMembers(conversation.id);
 
-  console.log('Status:', { isLoadingMembers, hasNextPage });
-  console.log('Raw membersData:', membersData);
-
   const { removeMember, addAdmin, removeAdmin, addMember } = useGroupActions(
     conversation.id,
   );

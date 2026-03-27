@@ -14,8 +14,6 @@ export const authMiddleware = (socket: Socket, next: (err?: Error) => void) => {
 
     const decoded = jwt.verify(token, config.jwt_secret) as { id: string };
 
-    console.log(decoded, token);
-
     socket.data.userId = decoded.id;
 
     logger.info(`✅ Socket authenticated for user: ${socket.data.userId}`);

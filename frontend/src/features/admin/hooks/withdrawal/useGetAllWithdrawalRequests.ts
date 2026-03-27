@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import apiClient from "../../../../api/axios";
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../../../../api/axios';
 
 interface GetAllWithdrawalRequestsParams {
   page: number;
@@ -7,25 +7,28 @@ interface GetAllWithdrawalRequestsParams {
   status?: string;
 }
 
-export const useGetAllWithdrawalRequests = ({ page, limit = 6, status }: GetAllWithdrawalRequestsParams) => {
+export const useGetAllWithdrawalRequests = ({
+  page,
+  limit = 6,
+  status,
+}: GetAllWithdrawalRequestsParams) => {
   return useQuery({
-    queryKey: ["admin", "withdrawalRequests", page, limit, status],
+    queryKey: ['admin', 'withdrawalRequests', page, limit, status],
     queryFn: async () => {
       const params: any = { page, limit };
-      
+
       // Only add status if it's not "ALL"
-      if (status && status !== "ALL") {
+      if (status && status !== 'ALL') {
         params.status = status;
       }
-      
-      console.log("🔍 Fetching withdrawals with params:", params);
-      
-      const response = await apiClient.get("/api/v1/wallet/admin/withdrawal/requests", {
-        params,
-      });
-      
-      console.log("✅ Received data:", response.data.data);
-      
+
+      const response = await apiClient.get(
+        '/api/v1/wallet/admin/withdrawal/requests',
+        {
+          params,
+        },
+      );
+
       return response.data.data;
     },
     enabled: true,

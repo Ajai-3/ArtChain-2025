@@ -2,7 +2,10 @@ import { inject, injectable } from 'inversify';
 import mongoose from 'mongoose';
 import { CreateCommissionDto } from '../../interface/dto/CreateCommissionDto';
 import { ICreateCommissionUseCase } from '../../interface/usecase/commission/ICreateCommissionUseCase';
-import { Commission, CommissionStatus } from '../../../domain/entities/Commission';
+import {
+  Commission,
+  CommissionStatus,
+} from '../../../domain/entities/Commission';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
 import { IChatService } from '../../../domain/interfaces/IChatService';
@@ -21,48 +24,57 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
     @inject(TYPES.IChatService)
     private readonly _chatService: IChatService,
     @inject(TYPES.IPlatformConfigRepository)
-    private readonly _platformConfigRepository: IPlatformConfigRepository
+    private readonly _platformConfigRepository: IPlatformConfigRepository,
   ) {}
 
   async execute(dto: CreateCommissionDto): Promise<any> {
-    const { requesterId, artistId, title, description, referenceImages, budget, deadline } = dto;
-
-    console.log(referenceImages);
+    const {
+      requesterId,
+      artistId,
+      title,
+      description,
+      referenceImages,
+      budget,
+      deadline,
+    } = dto;
 
     if (!requesterId || !artistId) {
-      throw new BadRequestError(COMMISSION_MESSAGES.REQUESTER_AND_ARTIST_REQUIRED);
+      throw new BadRequestError(
+        COMMISSION_MESSAGES.REQUESTER_AND_ARTIST_REQUIRED,
+      );
     }
 
     if (requesterId === artistId) {
-      throw new BadRequestError(COMMISSION_MESSAGES.REQUESTER_AND_ARTIST_REQUIRED);
+      throw new BadRequestError(
+        COMMISSION_MESSAGES.REQUESTER_AND_ARTIST_REQUIRED,
+      );
     }
 
-    console.log(requesterId, artistId);
-    console.log('Validating artist:', artistId);
     const artist = await this._userService.getUserById(artistId);
     if (!artist) {
       console.error('Artist validation failed for ID:', artistId);
       throw new NotFoundError(COMMISSION_MESSAGES.ARTIST_NOT_FOUND);
     }
-    console.log(artist);
-    
+
     if ((artist as any).role !== 'artist') {
       console.error('User is not an artist:', artistId);
       throw new BadRequestError(COMMISSION_MESSAGES.INVALID_ARTIST_ROLE);
     }
-    console.log('Artist validated:', (artist as any).name || (artist as any).username);
 
     // User is now able to create multiple commissions instead of blocking if one exists
 
     // 1. Create Conversation in Chat Service (Type: REQUEST)
     let conversationId: string;
     try {
-        console.log('Creating conversation between', requesterId, 'and', artistId);
-        conversationId = await this._chatService.createRequestConversation(requesterId, artistId);
-        console.log('Conversation created with ID:', conversationId);
+      conversationId = await this._chatService.createRequestConversation(
+        requesterId,
+        artistId,
+      );
     } catch (error) {
-        console.error('Failed to create conversation:', error);
-        throw new BadRequestError(COMMISSION_MESSAGES.CONVERSATION_CREATION_FAILED);
+      console.error('Failed to create conversation:', error);
+      throw new BadRequestError(
+        COMMISSION_MESSAGES.CONVERSATION_CREATION_FAILED,
+      );
     }
 
     // 2. Create Commission Entity
@@ -97,19 +109,20 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
       requesterAgreed: false,
       artistAgreed: false,
       history: [
-          {
-              action: CommissionStatus.REQUESTED,
-              userId: requesterId,
-              timestamp: new Date(),
-              details: 'Commission Requested'
-          }
+        {
+          action: CommissionStatus.REQUESTED,
+          userId: requesterId,
+          timestamp: new Date(),
+          details: 'Commission Requested',
+        },
       ],
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     };
 
     // 3. Save to Repository
-    const createdCommission = await this._commissionRepository.create(commission);
+    const createdCommission =
+      await this._commissionRepository.create(commission);
 
     return CommissionMapper.toDTO(createdCommission);
   }

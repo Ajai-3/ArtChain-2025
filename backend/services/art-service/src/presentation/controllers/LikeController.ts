@@ -23,7 +23,7 @@ export class LikeController implements ILikeController {
     @inject(TYPES.IGetLikedUsersUseCase)
     private readonly _getLikedUsersUseCase: IGetLikedUsersUseCase,
     @inject(TYPES.IGetUserLikedArtsWithUseCase)
-    private readonly _getUserLikedArtsUseCase: IGetUserLikedArtsWithUseCase
+    private readonly _getUserLikedArtsUseCase: IGetUserLikedArtsWithUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -36,7 +36,7 @@ export class LikeController implements ILikeController {
   likePost = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
@@ -63,7 +63,7 @@ export class LikeController implements ILikeController {
   unlikePost = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
@@ -90,7 +90,7 @@ export class LikeController implements ILikeController {
   getLikeCount = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
@@ -114,7 +114,7 @@ export class LikeController implements ILikeController {
   getLikedUsers = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
@@ -127,11 +127,11 @@ export class LikeController implements ILikeController {
         currentUserId,
         postId,
         page,
-        limit
+        limit,
       );
 
       logger.info(
-        `✅ Found ${users.length} liked users for postId=${postId} (total=${likeCount})`
+        `✅ Found ${users.length} liked users for postId=${postId} (total=${likeCount})`,
       );
       return res.status(HttpStatus.OK).json({
         message: LIKE_MESSAGES.LIKED_USERS_FETCHED_SUCCESS,
@@ -154,25 +154,21 @@ export class LikeController implements ILikeController {
   getUserLikedArts = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 15;
       const userId = req.headers['x-user-id'] as string;
 
-      console.log(userId);
-
       const arts = await this._getUserLikedArtsUseCase.execute(
         userId,
         page,
-        limit
+        limit,
       );
 
-      console.log(arts);
-
       logger.info(
-        `✅ [GetUserLikedArts] Fetched ${arts.length} liked arts for userId=${userId}`
+        `✅ [GetUserLikedArts] Fetched ${arts.length} liked arts for userId=${userId}`,
       );
 
       return res.status(HttpStatus.OK).json({

@@ -34,7 +34,6 @@ export class AdminPlatformConfigController implements IAdminPlatformConfigContro
     try {
       const config = await this._getPlatformConfigUseCase.execute();
 
-      console.log('haii');
       res.status(HttpStatus.OK).json({
         message: PLATFORM_CONFIG_MESSAGES.FETCH_SUCCESS,
         data: config,

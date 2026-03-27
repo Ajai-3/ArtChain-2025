@@ -313,7 +313,7 @@ export class AuctionController implements IAuctionController {
       const limit = parseInt(req.query.limit as string) || 10;
       const status = req.query.status as string;
 
-      console.log(`Fetching bidding history for user id=${userId} with page=${page}, limit=${limit}, status=${status}`);
+      logger.info(`Fetching bidding history for user id=${userId} with page=${page}, limit=${limit}, status=${status}`);
 
       const auctions = await this._getUserBiddingHistoryUseCase.execute(userId, page, limit, status);
 

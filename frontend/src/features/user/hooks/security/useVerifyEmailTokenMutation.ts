@@ -1,11 +1,11 @@
-import { useMutation } from "@tanstack/react-query";
-import type { UseMutationResult } from "@tanstack/react-query";
-import apiClient from "../../../../api/axios";
-import toast from "react-hot-toast";
-import type { ApiError } from "../../../../types/apiError";
-import { updateProfile } from "../../../../redux/slices/userSlice";
-import { useDispatch } from "react-redux";
-import type { User } from "../../../../types/users/user/user";
+import { useMutation } from '@tanstack/react-query';
+import type { UseMutationResult } from '@tanstack/react-query';
+import apiClient from '../../../../api/axios';
+import toast from 'react-hot-toast';
+import type { ApiError } from '../../../../types/apiError';
+import { updateProfile } from '../../../../redux/slices/userSlice';
+import { useDispatch } from 'react-redux';
+import type { User } from '../../../../types/users/user/user';
 
 export interface VerifyEmailTokenFormData {
   token: string;
@@ -17,7 +17,7 @@ interface VerifyEmailTokenResponse {
 }
 
 export const useVerifyEmailTokenMutation = (
-  setFormError: (msg: string | null) => void
+  setFormError: (msg: string | null) => void,
 ): UseMutationResult<
   VerifyEmailTokenResponse,
   ApiError,
@@ -31,15 +31,14 @@ export const useVerifyEmailTokenMutation = (
   >({
     mutationFn: async (data: VerifyEmailTokenFormData) => {
       const res = await apiClient.post<VerifyEmailTokenResponse>(
-        "/api/v1/user/verify-email-token",
-        { token: data.token }
+        '/api/v1/user/verify-email-token',
+        { token: data.token },
       );
       return res.data;
     },
 
     onSuccess: (data) => {
-      toast.success(data.message || "Email changed successfully");
-      console.log("data", data, data.data);
+      toast.success(data.message || 'Email changed successfully');
       if (data.data) {
         dispatch(updateProfile({ user: data.data }));
       }

@@ -118,14 +118,11 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
             }
         }
 
-        console.log(bidder, bid);
 
         const bidDTO = BidMapper.toDTO(bid, bidder);
 
-        console.log(bidDTO);
         
         this._socketService.publishBid(bidDTO);
-        console.log(`📢 [PlaceBidUseCase] Published bid_placed event for auction ${auctionId}`);
 
         return bidDTO;
 

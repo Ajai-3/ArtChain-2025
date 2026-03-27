@@ -31,7 +31,6 @@ export class GetAllArtWithUserIdUseCase {
     const arts = await this._artRepo.getAllByUser(userId, page, limit);
     if (!arts.length) return [];
 
-    console.log(currentUserId, userId);
 
     const userRes = await this._userService.getUserById(userId, currentUserId);
     if (!userRes) {

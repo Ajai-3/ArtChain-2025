@@ -9,7 +9,7 @@ import { IUnlikePostUseCase } from '../../interface/usecase/like/IUnlikePostUseC
 export class UnlikePostUseCase implements IUnlikePostUseCase {
   constructor(
     @inject(TYPES.ILikeRepository)
-    private readonly _likeRepository: ILikeRepository
+    private readonly _likeRepository: ILikeRepository,
   ) {}
 
   async execute(postId: string, userId: string) {
@@ -18,7 +18,6 @@ export class UnlikePostUseCase implements IUnlikePostUseCase {
     }
 
     const existingLike = await this._likeRepository.findLike(postId, userId);
-    console.log(existingLike);
     if (!existingLike) {
       throw new BadRequestError(LIKE_MESSAGES.CANNOT_UNLIKE_THE_POST);
     }

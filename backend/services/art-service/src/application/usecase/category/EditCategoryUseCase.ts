@@ -11,12 +11,11 @@ import { IEditCategoryUseCase } from '../../interface/usecase/category/IEditCate
 export class EditCategoryUseCase implements IEditCategoryUseCase {
   constructor(
     @inject(TYPES.ICategoryRepository)
-    private readonly _categoryRepo: ICategoryRepository
+    private readonly _categoryRepo: ICategoryRepository,
   ) {}
 
   async execute(data: EditCategoryDTO): Promise<Category> {
     const { id, name, count, status } = data;
-    console.log(data);
 
     if (name) {
       const category = await this._categoryRepo.findByName(name);

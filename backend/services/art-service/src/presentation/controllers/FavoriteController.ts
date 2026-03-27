@@ -23,7 +23,7 @@ export class FavoriteController implements IFavoriteController {
     @inject(TYPES.IGetFavoritedUsersUseCase)
     private readonly _getFavoritedUsersUseCase: IGetFavoritedUsersUseCase,
     @inject(TYPES.IGetUserFavoritedArtsUseCase)
-    private readonly _getUserFavoritedArtsUseCase: IGetUserFavoritedArtsUseCase
+    private readonly _getUserFavoritedArtsUseCase: IGetUserFavoritedArtsUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -36,7 +36,7 @@ export class FavoriteController implements IFavoriteController {
   addFavorite = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
@@ -45,7 +45,7 @@ export class FavoriteController implements IFavoriteController {
       await this._addFavoriteUseCase.execute(postId, userId);
 
       logger.info(
-        `✅ [AddFavorite] User ${userId} successfully added post ${postId} to favorites`
+        `✅ [AddFavorite] User ${userId} successfully added post ${postId} to favorites`,
       );
       return res
         .status(HttpStatus.CREATED)
@@ -65,7 +65,7 @@ export class FavoriteController implements IFavoriteController {
   removeFavorite = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
@@ -74,7 +74,7 @@ export class FavoriteController implements IFavoriteController {
       await this._removeFavoriteUseCase.execute(postId, userId);
 
       logger.info(
-        `✅ [RemoveFavorite] User ${userId} removed post ${postId} from favorites`
+        `✅ [RemoveFavorite] User ${userId} removed post ${postId} from favorites`,
       );
       return res
         .status(HttpStatus.OK)
@@ -93,7 +93,7 @@ export class FavoriteController implements IFavoriteController {
   getFavoriteCount = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
@@ -101,7 +101,7 @@ export class FavoriteController implements IFavoriteController {
       const count = await this._getFavoriteCountUseCase.execute(postId);
 
       logger.info(
-        `✅ [GetFavoriteCount] postId=${postId} has ${count} favorites`
+        `✅ [GetFavoriteCount] postId=${postId} has ${count} favorites`,
       );
       return res
         .status(HttpStatus.OK)
@@ -121,7 +121,7 @@ export class FavoriteController implements IFavoriteController {
   getFavoritedUsers = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const { postId } = req.params;
@@ -135,11 +135,11 @@ export class FavoriteController implements IFavoriteController {
           currentUserId,
           postId,
           page,
-          limit
+          limit,
         );
 
       logger.info(
-        `✅ [GetFavoritedUsers] Found ${users.length} users for postId=${postId} (total=${favoriteCount})`
+        `✅ [GetFavoritedUsers] Found ${users.length} users for postId=${postId} (total=${favoriteCount})`,
       );
 
       return res.status(HttpStatus.OK).json({
@@ -163,7 +163,7 @@ export class FavoriteController implements IFavoriteController {
   getUserFavoritedArts = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<Response | void> => {
     try {
       const userId = req.params.userId;
@@ -175,14 +175,12 @@ export class FavoriteController implements IFavoriteController {
         userId,
         currentUserId,
         page,
-        limit
+        limit,
       );
 
       logger.info(
-        `✅ [GetUserFavoritedArts] Fetched ${arts.length} favorited arts for userId=${userId}`
+        `✅ [GetUserFavoritedArts] Fetched ${arts.length} favorited arts for userId=${userId}`,
       );
-
-      console.log(arts);
 
       return res.status(HttpStatus.OK).json({
         data: arts,
