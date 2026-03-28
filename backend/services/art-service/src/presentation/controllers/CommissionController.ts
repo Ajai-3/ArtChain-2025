@@ -8,6 +8,7 @@ import { CreateCommissionDto } from '../../application/interface/dto/CreateCommi
 import { ICreateCommissionUseCase } from '../../application/interface/usecase/commission/ICreateCommissionUseCase';
 import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
 import { IGetCommissionByConversationUseCase } from '../../application/interface/usecase/commission/IGetCommissionByConversationUseCase';
+import { ICheckOngoingCommissionUseCase } from '../../application/interface/usecase/commission/ICheckOngoingCommissionUseCase';
 
 @injectable()
 export class CommissionController implements ICommissionController {
@@ -17,7 +18,9 @@ export class CommissionController implements ICommissionController {
     @inject(TYPES.IGetCommissionByConversationUseCase)
     private readonly _getCommissionByConversationUseCase: IGetCommissionByConversationUseCase,
     @inject(TYPES.IUpdateCommissionUseCase)
-    private readonly _updateCommissionUseCase: IUpdateCommissionUseCase
+    private readonly _updateCommissionUseCase: IUpdateCommissionUseCase,
+    @inject(TYPES.ICheckOngoingCommissionUseCase)
+    private readonly _checkOngoingCommissionUseCase: ICheckOngoingCommissionUseCase
   ) {}
 
   //# ================================================================================================================
@@ -104,6 +107,28 @@ export class CommissionController implements ICommissionController {
         message: COMMISSION_MESSAGES.UPDATE_SUCCESS,
         data: result
       });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  //# ================================================================================================================
+  //# CHECK ONGOING COMMISSION
+  //# ================================================================================================================
+  //# GET /api/v1/art/commission/check-ongoing
+  //# Request headers: x-user-id, Query: artistId
+  //# Returns { hasOngoing: boolean } — true if there is an active commission between user and artist
+  //# ================================================================================================================
+  checkOngoingCommission = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response | void> => {
+    try {
+      const requesterId = req.headers['x-user-id'] as string;
+      const { artistId } = req.query as { artistId: string };
+      const result = await this._checkOngoingCommissionUseCase.execute(requesterId, artistId);
+      return res.status(HttpStatus.OK).json(result);
     } catch (error) {
       next(error);
     }

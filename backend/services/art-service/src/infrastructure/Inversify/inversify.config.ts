@@ -231,6 +231,8 @@ import { IGetCommissionByConversationUseCase } from '../../application/interface
 import { GetCommissionByConversationUseCase } from '../../application/usecase/commission/GetCommissionByConversationUseCase';
 import { IUpdateCommissionUseCase } from '../../application/interface/usecase/commission/IUpdateCommissionUseCase';
 import { UpdateCommissionUseCase } from '../../application/usecase/commission/UpdateCommissionUseCase';
+import { ICheckOngoingCommissionUseCase } from '../../application/interface/usecase/commission/ICheckOngoingCommissionUseCase';
+import { CheckOngoingCommissionUseCase } from '../../application/usecase/commission/CheckOngoingCommissionUseCase';
 
 import { ICommissionController } from '../../presentation/interface/ICommissionController';
 import { CommissionController } from '../../presentation/controllers/CommissionController';
@@ -541,6 +543,9 @@ container
 container
   .bind<IUpdateCommissionUseCase>(TYPES.IUpdateCommissionUseCase)
   .to(UpdateCommissionUseCase);
+container
+  .bind<ICheckOngoingCommissionUseCase>(TYPES.ICheckOngoingCommissionUseCase)
+  .to(CheckOngoingCommissionUseCase);
 container
   .bind<ICommissionController>(TYPES.ICommissionController)
   .to(CommissionController);

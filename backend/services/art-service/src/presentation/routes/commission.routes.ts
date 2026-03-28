@@ -14,6 +14,11 @@ router.post(
 );
 
 router.get(
+  ROUTES.COMMISSION.CHECK_ONGOING,
+  commissionController.checkOngoingCommission
+);
+
+router.get(
   ROUTES.COMMISSION.BY_CONVERSATION,
   commissionController.getCommissionByConversation
 );

@@ -81,6 +81,7 @@ export const TYPES = {
   ICreateCommissionUseCase: Symbol.for('ICreateCommissionUseCase'),
   IGetCommissionByConversationUseCase: Symbol.for('IGetCommissionByConversationUseCase'),
   IUpdateCommissionUseCase: Symbol.for('IUpdateCommissionUseCase'),
+  ICheckOngoingCommissionUseCase: Symbol.for('ICheckOngoingCommissionUseCase'),
   IGetCommissionStatsUseCase: Symbol.for('IGetCommissionStatsUseCase'),
   IResolveCommissionDisputeUseCase: Symbol.for('IResolveCommissionDisputeUseCase'),
   IGetAllCommissionsUseCase: Symbol.for('IGetAllCommissionsUseCase'),
