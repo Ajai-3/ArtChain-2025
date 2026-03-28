@@ -35,11 +35,13 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
     let currentStatus = auction.status;
 
     if (currentStatus === 'SCHEDULED' && new Date(auction.startTime) <= now) {
-      currentStatus = 'ACTIVE';
-    }
-    else if (currentStatus === 'ACTIVE' && new Date(auction.endTime) <= now) {
-      currentStatus = bids.length > 0 ? 'ENDED' : 'UNSOLD';
-    }
+          currentStatus = 'ACTIVE';
+          this._auctionRepo.update(auction._id!, { status: 'ACTIVE' }).catch(() => {});
+        } 
+        else if (currentStatus === 'ACTIVE' && new Date(auction.endTime) <= now) {
+          currentStatus = bids.length > 0 ? 'ENDED' : 'UNSOLD';
+        }
+
 
     const updatedAuction = { ...auction, status: currentStatus };
 

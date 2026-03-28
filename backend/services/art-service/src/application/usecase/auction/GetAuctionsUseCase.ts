@@ -12,7 +12,7 @@ import { IUserService } from '../../interface/service/IUserService';
 export class GetAuctionsUseCase implements IGetAuctionsUseCase {
   constructor(
     @inject(TYPES.IUserService) private _userService: IUserService,
-    @inject(TYPES.IAuctionRepository) private _repository: IAuctionRepository,
+    @inject(TYPES.IAuctionRepository) private _auctionRepo: IAuctionRepository,
     @inject(TYPES.IBidRepository) private _bidRepository: IBidRepository,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
   ) { }
@@ -29,7 +29,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
       hostId,
     } = dto;
 
-    const { auctions, total } = await this._repository.findActiveAuctions(
+    const { auctions, total } = await this._auctionRepo.findActiveAuctions(
       page,
       limit,
       filterStatus,
@@ -56,6 +56,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
 
         if (currentStatus === 'SCHEDULED' && new Date(auction.startTime) <= now) {
           currentStatus = 'ACTIVE';
+          this._auctionRepo.update(auction._id!, { status: 'ACTIVE' }).catch(() => {});
         } 
         else if (currentStatus === 'ACTIVE' && new Date(auction.endTime) <= now) {
           currentStatus = bids.length > 0 ? 'ENDED' : 'UNSOLD';
