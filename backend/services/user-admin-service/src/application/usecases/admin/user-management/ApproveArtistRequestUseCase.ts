@@ -44,14 +44,14 @@ export class ApproveArtistRequestUseCase
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    const accountAgeInDays =
-      (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    // const accountAgeInDays =
+    //   (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
 
-    if (accountAgeInDays < 3) {
-      throw new BadRequestError(
-        'User account must be at least 3 days old to become an artist.'
-      );
-    }
+    // if (accountAgeInDays < 3) {
+    //   throw new BadRequestError(
+    //     'User account must be at least 3 days old to become an artist.'
+    //   );
+    // }
 
     // const accountAgeInMonths =
     //   (Date.now() - new Date(user.createdAt).getTime()) /
