@@ -41,13 +41,13 @@ export class CreateArtistRequestUseCase implements ICreateArtistRequestUseCase {
       throw new BadRequestError(ARTIST_MESSAGES.REQUEST_ALREADY_EXISTS);
     }
 
-    const accountAgeInDays =
-      (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-    if (accountAgeInDays < 3) {
-      throw new BadRequestError(
-        'User account must be at least 3 days old to create an artist request.'
-      );
-    }
+    // const accountAgeInDays =
+    //   (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+    // if (accountAgeInDays < 3) {
+    //   throw new BadRequestError(
+    //     'User account must be at least 3 days old to create an artist request.'
+    //   );
+    // }
 
     // Original 1 month check commented out
     // const accountAgeInMonths =
