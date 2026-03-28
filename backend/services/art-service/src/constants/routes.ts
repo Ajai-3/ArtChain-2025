@@ -124,7 +124,7 @@ export const ROUTES = {
     BASE: '/commission',
     REQUEST: '/request',
     BY_CONVERSATION: '/conversation/:conversationId',
-    CHECK_ONGOING: '/commission/check-ongoing',
+    CHECK_ONGOING: '/check-ongoing',
     BY_ID: '/:id',
   },
 
