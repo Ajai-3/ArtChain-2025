@@ -9,6 +9,7 @@ import type { RootState } from "../../../../redux/store";
 
 import { useRequestCommissionMutation } from "../../hooks/commission/useRequestCommissionMutation";
 import { useUploadCommissionImageMutation } from "../../hooks/commission/useUploadCommitionImageMutation";
+import { useCheckOngoingCommission } from "../../hooks/commission/useCheckOngoingCommission";
 import { commissionRequestSchema } from "../../schemas/CommissionRequestSchema";
 import type { CommissionRequestFormValues } from "../../schemas/CommissionRequestSchema";
 
@@ -58,11 +59,20 @@ export const CommissionRequestModal: React.FC<CommissionRequestModalProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-  // Redux: Get Art Coin Rate
+  // Redux: Get Art Coin Rate and current user ID
   const { artCoinRate } = useSelector((state: RootState) => state.platform);
+  const currentUserId = useSelector((state: RootState) => state.user.user?.id);
 
   const requestCommissionMutation = useRequestCommissionMutation();
   const uploadImageMutation = useUploadCommissionImageMutation();
+
+  // Check for ongoing commission only when the modal is open
+  const { data: ongoingData, isLoading: isCheckingOngoing } = useCheckOngoingCommission(
+    currentUserId,
+    artistId,
+    isOpen
+  );
+  const hasOngoing = ongoingData?.hasOngoing ?? false;
 
   const form = useForm<CommissionRequestFormValues>({
     resolver: zodResolver(commissionRequestSchema),
@@ -167,7 +177,24 @@ export const CommissionRequestModal: React.FC<CommissionRequestModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Form {...form}>
+        {/* Ongoing commission blocker */}
+        {isCheckingOngoing ? (
+          <div className="flex items-center justify-center py-12">
+            <CustomLoader />
+          </div>
+        ) : hasOngoing ? (
+          <div className="py-8 px-4 flex flex-col items-center gap-4 text-center">
+            <div className="text-4xl">🎨</div>
+            <h3 className="text-lg font-semibold text-amber-400">Active Commission Exists</h3>
+            <p className="text-sm text-zinc-400 max-w-sm">
+              You already have an ongoing commission with <span className="text-white font-medium">{artistName}</span>. 
+              Please wait until the current commission is <span className="text-emerald-400">Completed</span> or <span className="text-rose-400">Cancelled</span> before making a new request.
+            </p>
+            <Button variant="ghost" onClick={onClose} className="mt-2 border border-zinc-700">
+              Got it, close
+            </Button>
+          </div>
+        ) : (
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
             
             <FormField
@@ -214,6 +241,8 @@ export const CommissionRequestModal: React.FC<CommissionRequestModalProps> = ({
                         <Input 
                             type="number" 
                             placeholder="0" 
+                            min={1}
+                            max={999999}
                             {...field} 
                             className="bg-zinc-900 border-zinc-700 focus-visible:ring-green-500" 
                         />
@@ -383,7 +412,7 @@ export const CommissionRequestModal: React.FC<CommissionRequestModalProps> = ({
               </Button>
             </div>
           </form>
-        </Form>
+        )}
       </DialogContent>
     </Dialog>
   );

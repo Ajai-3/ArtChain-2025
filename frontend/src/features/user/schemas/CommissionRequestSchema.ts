@@ -12,6 +12,7 @@ export const commissionRequestSchema = z.object({
   budget: z
     .coerce.number()
     .min(1, "Budget must be at least 1 Art Coin")
+    .max(999999, "Budget cannot exceed 999,999 Art Coins (6 digits)")
     .positive("Budget must be a positive number"),
   deadline: z.date({
     required_error: "A deadline is required.",

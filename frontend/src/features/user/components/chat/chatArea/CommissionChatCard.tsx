@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Button } from "../../../../../components/ui/button";
 import { Badge } from "../../../../../components/ui/badge";
+import { useSelector } from "react-redux";
+import { type RootState } from "../../../../../redux/store";
 import { useGetCommissionByConversation } from "../../../hooks/commission/useGetCommissionByConversation";
 
 import { CommissionEditModal } from "./CommissionEditModal";
@@ -52,6 +54,8 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
 
   const updateMutation = useUpdateCommissionMutation();
   const lockMutation = useLockCommissionMutation();
+
+  const { balance } = useSelector((state: RootState) => state.wallet);
 
   const commission = res?.active;
   const history = res?.history || [];
@@ -378,11 +382,12 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
                 {commission.status === "AGREED" && isRequester && (
                   <Button
                     size="sm"
-                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold h-9 px-6 rounded-lg shadow-xl shadow-emerald-900/50 border-none transition-all hover:scale-105 active:scale-95"
+                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold h-9 px-6 rounded-lg shadow-xl shadow-emerald-900/50 border-none transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                     onClick={handlePayment}
-                    disabled={lockMutation.isPending}
+                    disabled={lockMutation.isPending || balance < commission.budget}
+                    title={balance < commission.budget ? `Insufficient Balance (Required: ${commission.budget} Art Coins)` : "Pay & Start Commission"}
                   >
-                    {lockMutation.isPending ? "Processing..." : "Pay & Start Commission"}
+                    {lockMutation.isPending ? "Processing..." : balance < commission.budget ? "Insufficient Balance" : "Pay & Start Commission"}
                   </Button>
                 )}
                 {commission.status === "AGREED" && isArtist && (

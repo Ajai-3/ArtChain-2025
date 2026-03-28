@@ -9,5 +9,6 @@ export const useGetCommissionByConversation = (conversationId: string) => {
       return response.data.data;
     },
     enabled: !!conversationId,
+    refetchInterval: 5000,
   });
 };

@@ -274,7 +274,7 @@ export const CreateAuctionModal = ({
                 name="startPrice"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} type="number" variant="green-focus" />
+                  <Input {...field} type="number" min={1} max={999999} variant="green-focus" />
                 )}
               />
               {errors.startPrice && (

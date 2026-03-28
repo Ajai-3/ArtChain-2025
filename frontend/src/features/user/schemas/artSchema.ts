@@ -29,7 +29,7 @@ export const postFormSchema = z.object({
   priceType: z.enum(["artcoin", "fiat"]).optional(),
   artcoins: z.number()
     .min(1, "Amount must be at least 1 ArtCoin")
-    .max(100000, "Amount can't exceed 100,000 ArtCoins")
+    .max(999999, "Amount cannot exceed 999,999 Art Coins (6 digits)")
     .optional(),
 }).superRefine((data, ctx) => {
   if (data.isForSale) {

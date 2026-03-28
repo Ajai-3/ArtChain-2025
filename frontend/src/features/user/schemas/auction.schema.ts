@@ -15,6 +15,7 @@ export const createAuctionSchema = z.object({
   startPrice: z.coerce
     .number({ invalid_type_error: "Price must be a number" })
     .min(0.1, "Start price must be at least 0.1")
+    .max(999999, "Start price cannot exceed 999,999 Art Coins (6 digits)")
     .positive("Price must be positive"),
   startDate: z.date({ required_error: "Start date is required" }),
   startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Time must be HH:MM"),
