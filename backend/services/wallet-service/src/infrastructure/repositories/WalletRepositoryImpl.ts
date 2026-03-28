@@ -11,7 +11,7 @@ import {
   TransactionStatus,
   TransactionType,
 } from '../../domain/entities/Transaction';
-import { IWalletRepository } from '../../domain/repository/IWalletRepository.js';
+import { IWalletRepository } from '../../domain/repository/IWalletRepository';
 
 @injectable()
 export class WalletRepositoryImpl
@@ -414,17 +414,40 @@ export class WalletRepositoryImpl
       );
 
       await prisma.$transaction(async (tx) => {
-        logger.info(
-          `[WalletRepository] Updating winner wallet ${winnerId}. Decrementing lockedAmount by ${totalAmount}`,
-        );
+        // First verify winner wallet exists to avoid Prisma error on update
+        const winnerWalletCheck = await tx.wallet.findUnique({
+          where: { userId: winnerId },
+        });
+
+        if (!winnerWalletCheck) {
+          throw new Error(`Winner wallet not found for user: ${winnerId}`);
+        }
+
+        let lockedDecrement = totalAmount;
+        let balanceDecrement = 0;
+
+        if (winnerWalletCheck.lockedAmount < totalAmount) {
+          logger.warn(`[WalletRepository] Winner wallet lockedAmount (${winnerWalletCheck.lockedAmount}) is less than totalAmount (${totalAmount}). Taking remainder from balance.`);
+          lockedDecrement = winnerWalletCheck.lockedAmount;
+          balanceDecrement = totalAmount - winnerWalletCheck.lockedAmount;
+        } else {
+          logger.info(`[WalletRepository] Updating winner wallet ${winnerId}. Current lockedAmount: ${winnerWalletCheck.lockedAmount}. Decrementing by ${totalAmount}`);
+        }
+
+        const updateData: any = {};
+        if (lockedDecrement > 0) {
+          updateData.lockedAmount = { decrement: lockedDecrement };
+        }
+        if (balanceDecrement > 0) {
+          updateData.balance = { decrement: balanceDecrement };
+        }
+
         const winnerWallet = await tx.wallet.update({
           where: { userId: winnerId },
-          data: {
-            lockedAmount: { decrement: totalAmount },
-          },
+          data: updateData,
         });
         logger.info(
-          `[WalletRepository] Winner wallet updated. New lockedAmount: ${winnerWallet.lockedAmount}`,
+          `[WalletRepository] Winner wallet updated. New lockedAmount: ${winnerWallet.lockedAmount}, New balance: ${winnerWallet.balance}`,
         );
 
         logger.info(

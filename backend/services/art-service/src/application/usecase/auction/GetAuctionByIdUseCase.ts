@@ -31,6 +31,18 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
       this._s3Service.getSignedUrl(auction.imageKey, 'bidding') 
     ]);
 
+    const now = new Date();
+    let currentStatus = auction.status;
+
+    if (currentStatus === 'SCHEDULED' && new Date(auction.startTime) <= now) {
+      currentStatus = 'ACTIVE';
+    }
+    else if (currentStatus === 'ACTIVE' && new Date(auction.endTime) <= now) {
+      currentStatus = bids.length > 0 ? 'ENDED' : 'UNSOLD';
+    }
+
+    const updatedAuction = { ...auction, status: currentStatus };
+
     const userIds = new Set<string>();
     userIds.add(auction.hostId);
     if (auction.winnerId) userIds.add(auction.winnerId);
@@ -41,6 +53,6 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
 
     const host = userMap.get(auction.hostId);
     
-    return AuctionMapper.toDTO(auction, signedImageUrl, host, bids, userMap);
+    return AuctionMapper.toDTO(updatedAuction, signedImageUrl, host, bids, userMap);
   }
 }

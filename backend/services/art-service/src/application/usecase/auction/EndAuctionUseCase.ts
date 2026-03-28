@@ -1,5 +1,4 @@
 import { injectable, inject } from 'inversify';
-import { logger } from '../../../utils/logger';
 import { ILogger } from '../../interface/ILogger';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { IWalletService } from '../../../domain/interfaces/IWalletService';
@@ -24,7 +23,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     private readonly _socketService: ISocketService,
     @inject(TYPES.IPlatformConfigRepository)
     private readonly _platformConfigRepository: IPlatformConfigRepository,
-  ) { }
+  ) {}
 
   async execute(auctionId: string): Promise<boolean> {
     this._logger.info(`Attempting to close auction: ${auctionId}`);
@@ -36,8 +35,10 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       return false;
     }
 
+    // Nothing to do — ack and discard
     if (auction.status === 'CANCELLED' || auction.status === 'UNSOLD') {
-      return false;
+      this._logger.warn(`Auction ${auctionId} is ${auction.status}. Skipping.`);
+      return true;
     }
 
     const now = new Date();
@@ -51,17 +52,14 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       return true;
     }
 
-
     const winningBid = await this._bidRepository.findHighestBid(auctionId);
 
     if (!winningBid) {
       this._logger.info(`No bids for auction ${auctionId}. Marking as UNSOLD.`);
-
       await this._auctionRepository.update(auctionId, {
         status: 'UNSOLD',
-        paymentStatus: 'NONE'
+        paymentStatus: 'NONE',
       });
-
       this._socketService.publishAuctionEnded({
         auctionId,
         status: 'UNSOLD',
@@ -107,6 +105,7 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
 
       await this._auctionRepository.update(auctionId, {
         status: 'ENDED',
+        winnerId: winningBid.bidderId, // fixed — always save winnerId
         paymentStatus: 'FAILED',
       });
 

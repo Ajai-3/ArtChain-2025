@@ -1,5 +1,4 @@
 import 'dotenv-flow/config';
-import { da } from 'zod/v4/locales';
 
 export const config = {
   port: process.env.PORT || '4002',
