@@ -32,7 +32,6 @@ export class CreateAuctionUseCase implements ICreateAuctionUseCase {
         const endTime = new Date(savedAuction.endTime);
         const delay = endTime.getTime() - now.getTime();
         
-        // Only schedule if future (or near future)
         if (delay > 0) {
             await this.rabbitMQService.publishDelayedAuctionEnd(savedAuction._id, delay);
         }

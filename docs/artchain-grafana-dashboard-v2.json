@@ -1,0 +1,799 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_LOKI",
+      "label": "Loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
+    }
+  ],
+  "__requires": [
+    { "type": "datasource", "id": "loki", "name": "Loki", "version": "1.0.0" },
+    { "type": "panel", "id": "logs", "name": "Logs", "version": "" },
+    { "type": "panel", "id": "stat", "name": "Stat", "version": "" },
+    { "type": "panel", "id": "timeseries", "name": "Time series", "version": "" },
+    { "type": "panel", "id": "piechart", "name": "Pie chart", "version": "" },
+    { "type": "panel", "id": "bargauge", "name": "Bar gauge", "version": "" },
+    { "type": "panel", "id": "gauge", "name": "Gauge", "version": "" },
+    { "type": "panel", "id": "histogram", "name": "Histogram", "version": "" },
+    { "type": "panel", "id": "table", "name": "Table", "version": "" },
+    { "type": "panel", "id": "text", "name": "Text", "version": "" }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "ArtChain Backend - Full Service Monitoring Dashboard v2",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+
+    {
+      "gridPos": { "h": 2, "w": 24, "x": 0, "y": 0 },
+      "id": 999,
+      "options": {
+        "content": "<div style=\"text-align:center; padding: 8px; background: linear-gradient(90deg, #1a1a2e, #16213e, #0f3460); border-radius: 8px;\">\n  <span style=\"font-size: 22px; font-weight: bold; color: #e94560; letter-spacing: 3px;\">⛓ ARTCHAIN</span>\n  <span style=\"font-size: 16px; color: #a8b2d8; margin-left: 12px;\">Backend Monitoring Dashboard</span>\n  <span style=\"font-size: 12px; color: #64ffda; margin-left: 20px;\">● LIVE</span>\n</div>",
+        "mode": "html"
+      },
+      "title": "",
+      "type": "text",
+      "transparent": true
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 2 },
+      "id": 100,
+      "title": "🟢 Service Health Overview",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 0, "y": 3 },
+      "id": 1,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "🌐 API Gateway",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"api-gateway\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 3, "y": 3 },
+      "id": 2,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "🔐 Auth Service",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"user-admin-service\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 6, "y": 3 },
+      "id": 3,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "🎨 Art Service",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"art-service\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 9, "y": 3 },
+      "id": 4,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "💰 Wallet Service",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"wallet-service\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 12, "y": 3 },
+      "id": 5,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "💬 Chat Service",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"chat-service\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 15, "y": 3 },
+      "id": 6,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "🔔 Notification",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"notification-service\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 18, "y": 3 },
+      "id": 7,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "📦 S3 Service",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"s3-service\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 21, "y": 3 },
+      "id": 8,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "🔍 ElasticSearch",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"elastic-search-service\"} [1m]))", "instant": true, "refId": "A" }]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 },
+      "id": 200,
+      "title": "⚡ Quick Stats - Total Counts",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 0, "y": 8 },
+      "id": 201,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "📊 Total Logs (All Services)",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"} [$__range]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 10 }, { "color": "red", "value": 50 }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 4, "y": 8 },
+      "id": 202,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "🔴 Total Errors (All Services)",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 5 }, { "color": "red", "value": 20 }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 8, "y": 8 },
+      "id": 203,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "⚠️ Total Warnings",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"} |~ \"(?i)warn|warning\" [$__range]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": null }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 12, "y": 8 },
+      "id": 204,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "ℹ️ Total Info Logs",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"} |~ \"(?i)info\" [$__range]))", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "purple", "value": null }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 16, "y": 8 },
+      "id": 205,
+      "options": { "colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "title": "📡 Logs/min Right Now",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"} [1m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 3 }, { "color": "red", "value": 5 }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 3, "w": 4, "x": 20, "y": 8 },
+      "id": 206,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "value_and_name" },
+      "title": "🔥 Services with Errors Now",
+      "type": "stat",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "count(sum by (service_name) (count_over_time({service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"} |~ \"(?i)error|exception|failed\" [5m])) > 0)", "instant": true, "refId": "A" }]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 11 },
+      "id": 101,
+      "title": "📊 Log Volume & Traffic",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisLabel": "logs/min",
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "scheme",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "showPoints": "never",
+            "stacking": { "group": "A", "mode": "none" }
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 12 },
+      "id": 10,
+      "options": { "legend": { "calcs": ["sum", "max", "mean"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "📈 Log Volume per Service (per minute)",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"api-gateway\"} [1m])) * 60", "legendFormat": "API Gateway", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"user-admin-service\"} [1m])) * 60", "legendFormat": "Auth Service", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"art-service\"} [1m])) * 60", "legendFormat": "Art Service", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"wallet-service\"} [1m])) * 60", "legendFormat": "Wallet Service", "refId": "D" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"chat-service\"} [1m])) * 60", "legendFormat": "Chat Service", "refId": "E" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"notification-service\"} [1m])) * 60", "legendFormat": "Notification Service", "refId": "F" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"s3-service\"} [1m])) * 60", "legendFormat": "S3 Service", "refId": "G" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"elastic-search-service\"} [1m])) * 60", "legendFormat": "ElasticSearch Service", "refId": "H" }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+      "id": 11,
+      "options": { "displayLabels": ["percent", "name"], "legend": { "displayMode": "table", "placement": "bottom", "showLegend": true, "values": ["percent"] }, "pieType": "donut", "tooltip": { "mode": "single", "sort": "none" } },
+      "title": "🍩 Log Share by Service",
+      "type": "piechart",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"api-gateway\"} [$__range]))", "instant": true, "legendFormat": "API Gateway", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"user-admin-service\"} [$__range]))", "instant": true, "legendFormat": "Auth Service", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"art-service\"} [$__range]))", "instant": true, "legendFormat": "Art Service", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"wallet-service\"} [$__range]))", "instant": true, "legendFormat": "Wallet Service", "refId": "D" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"chat-service\"} [$__range]))", "instant": true, "legendFormat": "Chat Service", "refId": "E" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"notification-service\"} [$__range]))", "instant": true, "legendFormat": "Notification", "refId": "F" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"s3-service\"} [$__range]))", "instant": true, "legendFormat": "S3 Service", "refId": "G" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"elastic-search-service\"} [$__range]))", "instant": true, "legendFormat": "ElasticSearch", "refId": "H" }
+      ]
+    },
+
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "lineWidth": 1,
+            "showPoints": "never",
+            "stacking": { "group": "A", "mode": "normal" }
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
+      "id": 12,
+      "options": { "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "📊 Stacked Log Volume — All Services (5min buckets)",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"api-gateway\"} [5m])) * 300", "legendFormat": "API Gateway", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"user-admin-service\"} [5m])) * 300", "legendFormat": "Auth Service", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"art-service\"} [5m])) * 300", "legendFormat": "Art Service", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"wallet-service\"} [5m])) * 300", "legendFormat": "Wallet Service", "refId": "D" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"chat-service\"} [5m])) * 300", "legendFormat": "Chat Service", "refId": "E" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"notification-service\"} [5m])) * 300", "legendFormat": "Notification", "refId": "F" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"s3-service\"} [5m])) * 300", "legendFormat": "S3 Service", "refId": "G" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"elastic-search-service\"} [5m])) * 300", "legendFormat": "ElasticSearch", "refId": "H" }
+      ]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 28 },
+      "id": 102,
+      "title": "🔴 Error Monitoring",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "drawStyle": "bars", "fillOpacity": 80, "gradientMode": "none", "lineWidth": 1, "showPoints": "never" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 10 }] }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 29 },
+      "id": 20,
+      "options": { "legend": { "calcs": ["sum"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "🚨 Error Logs per Service",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"api-gateway\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "API Gateway", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"user-admin-service\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "Auth Service", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"art-service\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "Art Service", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"wallet-service\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "Wallet", "refId": "D" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"chat-service\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "Chat", "refId": "E" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"notification-service\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "Notification", "refId": "F" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"s3-service\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "S3", "refId": "G" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"elastic-search-service\"} |~ \"(?i)error|exception|failed|ERR\" [1m]))", "legendFormat": "ElasticSearch", "refId": "H" }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 5 }, { "color": "red", "value": 20 }] },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 29 },
+      "id": 21,
+      "options": { "displayMode": "gradient", "minVizHeight": 10, "orientation": "horizontal", "reduceOptions": { "calcs": ["sum"], "fields": "", "values": false }, "showUnfilled": true },
+      "title": "🔥 Total Errors by Service (in range)",
+      "type": "bargauge",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"api-gateway\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "API Gateway", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"user-admin-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Auth Service", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"art-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Art Service", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"wallet-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Wallet Service", "refId": "D" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"chat-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Chat Service", "refId": "E" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"notification-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Notification", "refId": "F" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"s3-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "S3 Service", "refId": "G" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"elastic-search-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "ElasticSearch", "refId": "H" }
+      ]
+    },
+
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "drawStyle": "line", "fillOpacity": 10, "gradientMode": "opacity", "lineInterpolation": "smooth", "lineWidth": 2, "showPoints": "never" },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 37 },
+      "id": 22,
+      "options": { "legend": { "calcs": ["sum", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "desc" } },
+      "title": "⚠️ Warning Logs per Service",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"api-gateway\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "API Gateway", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"user-admin-service\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "Auth Service", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"art-service\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "Art Service", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"wallet-service\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "Wallet", "refId": "D" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"chat-service\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "Chat", "refId": "E" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"notification-service\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "Notification", "refId": "F" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"s3-service\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "S3", "refId": "G" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"elastic-search-service\"} |~ \"(?i)warn|warning\" [1m]))", "legendFormat": "ElasticSearch", "refId": "H" }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } }
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 37 },
+      "id": 23,
+      "options": { "displayLabels": ["percent", "name"], "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] }, "pieType": "pie", "tooltip": { "mode": "single" } },
+      "title": "🥧 Error Distribution by Service",
+      "type": "piechart",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"api-gateway\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "API Gateway", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"user-admin-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Auth Service", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"art-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Art Service", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"wallet-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Wallet", "refId": "D" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"chat-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Chat", "refId": "E" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"notification-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "Notification", "refId": "F" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"s3-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "S3", "refId": "G" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({service_name=\"elastic-search-service\"} |~ \"(?i)error|exception|failed\" [$__range]))", "instant": true, "legendFormat": "ElasticSearch", "refId": "H" }
+      ]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 45 },
+      "id": 300,
+      "title": "🎯 Per-Service Health Gauges",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 10 }, { "color": "green", "value": 50 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 200
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 46 },
+      "id": 301,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "🌐 API Gateway Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"api-gateway\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 20 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 46 },
+      "id": 302,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "🔐 Auth Service Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"user-admin-service\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 20 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 46 },
+      "id": 303,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "🎨 Art Service Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"art-service\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 20 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 46 },
+      "id": 304,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "💰 Wallet Service Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"wallet-service\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 20 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 52 },
+      "id": 305,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "💬 Chat Service Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"chat-service\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 20 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 52 },
+      "id": 306,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "🔔 Notification Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"notification-service\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 20 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 52 },
+      "id": 307,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "📦 S3 Service Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"s3-service\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 5 }, { "color": "green", "value": 20 }] },
+          "unit": "short",
+          "min": 0,
+          "max": 100
+        }
+      },
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 52 },
+      "id": 308,
+      "options": { "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "showThresholdLabels": false, "showThresholdMarkers": true },
+      "title": "🔍 ElasticSearch Activity",
+      "type": "gauge",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(rate({service_name=\"elastic-search-service\"} [2m])) * 60", "instant": true, "refId": "A" }]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 58 },
+      "id": 103,
+      "title": "📝 Live Logs per Service",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 59 },
+      "id": 30,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "🌐 API Gateway - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"api-gateway\"}", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 59 },
+      "id": 31,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "🔐 Auth Service - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"user-admin-service\"}", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 67 },
+      "id": 32,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "🎨 Art Service - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"art-service\"}", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 67 },
+      "id": 33,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "💰 Wallet Service - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"wallet-service\"}", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 75 },
+      "id": 34,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "💬 Chat Service - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"chat-service\"}", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 75 },
+      "id": 35,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "🔔 Notification Service - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"notification-service\"}", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 83 },
+      "id": 36,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "📦 S3 Service - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"s3-service\"}", "refId": "A" }]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 83 },
+      "id": 37,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": false, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "🔍 ElasticSearch Service - Live Logs",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=\"elastic-search-service\"}", "refId": "A" }]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 91 },
+      "id": 104,
+      "title": "🚨 All Errors - Combined View",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 92 },
+      "id": 40,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": true, "showLabels": true, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "🔴 All Error Logs - All Services",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"} |~ \"(?i)error|exception|failed|ERR\"", "refId": "A" }]
+    },
+
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 102 },
+      "id": 105,
+      "title": "📋 All Services - Combined Live Feed",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 103 },
+      "id": 50,
+      "options": { "dedupStrategy": "none", "enableLogDetails": true, "prettifyLogMessage": false, "showCommonLabels": false, "showLabels": true, "showTime": true, "sortOrder": "Descending", "wrapLogMessage": true },
+      "title": "📡 All Services - Live Log Feed",
+      "type": "logs",
+      "targets": [{ "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "{service_name=~\"api-gateway|user-admin-service|art-service|wallet-service|chat-service|notification-service|s3-service|elastic-search-service\"}", "refId": "A" }]
+    }
+
+  ],
+  "refresh": "10s",
+  "schemaVersion": 38,
+  "tags": ["artchain", "loki", "microservices", "backend", "v2"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "multi": false,
+        "name": "DS_LOKI",
+        "options": [],
+        "query": "loki",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource",
+        "label": "Loki Datasource"
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "ArtChain Backend Monitor v2",
+  "uid": "artchain-backend-monitor-v2",
+  "version": 1
+}

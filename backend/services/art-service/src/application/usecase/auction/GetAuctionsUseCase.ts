@@ -2,7 +2,6 @@ import { injectable, inject } from 'inversify';
 import { IGetAuctionsUseCase } from '../../interface/usecase/auction/IGetAuctionsUseCase';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { IAuctionRepository } from '../../../domain/repositories/IAuctionRepository';
-import { UserService } from '../../../infrastructure/service/UserService';
 import { IBidRepository } from '../../../domain/repositories/IBidRepository';
 import { IS3Service } from '../../../domain/interfaces/IS3Service';
 import { AuctionMapper } from '../../mapper/AuctionMapper';
@@ -16,7 +15,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     @inject(TYPES.IAuctionRepository) private _repository: IAuctionRepository,
     @inject(TYPES.IBidRepository) private _bidRepository: IBidRepository,
     @inject(TYPES.IS3Service) private _s3Service: IS3Service,
-  ) {}
+  ) { }
 
   async execute(
     dto: GetAuctionsDTO,
@@ -30,7 +29,6 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
       hostId,
     } = dto;
 
-    // Destructure result from repository
     const { auctions, total } = await this._repository.findActiveAuctions(
       page,
       limit,
@@ -43,40 +41,33 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     if (!auctions.length) return { auctions: [], total: 0 };
 
     const now = new Date();
-    const updatedAuctions = auctions.map((auction) => {
-      if (
-        auction.status === 'SCHEDULED' &&
-        new Date(auction.startTime) <= now
-      ) {
-        return { ...auction, status: 'ACTIVE' };
-      }
-      if (auction.status === 'ACTIVE' && new Date(auction.endTime) <= now) {
-        return { ...auction, status: 'ENDED' };
-      }
-      return auction;
-    });
-
-    const finalAuctions = updatedAuctions as any[];
-
-    const hostIds = finalAuctions.map((a) => a.hostId);
-    let allUserIds = new Set<string>(hostIds);
-    finalAuctions.forEach((a) => {
-      if (a.winnerId) allUserIds.add(a.winnerId);
-    });
+    const allUserIds = new Set<string>();
 
     const auctionsData = await Promise.all(
-      finalAuctions.map(async (auction) => {
-        const { bids } = await this._bidRepository.findByAuctionId(
-          auction._id!,
-        );
+      auctions.map(async (auction) => {
+        const { bids } = await this._bidRepository.findByAuctionId(auction._id!);
+        
         const signedImageUrl = await this._s3Service.getSignedUrl(
           auction.imageKey,
           'bidding',
         );
 
+        let currentStatus = auction.status;
+
+        if (currentStatus === 'SCHEDULED' && new Date(auction.startTime) <= now) {
+          currentStatus = 'ACTIVE';
+        } 
+        else if (currentStatus === 'ACTIVE' && new Date(auction.endTime) <= now) {
+          currentStatus = bids.length > 0 ? 'ENDED' : 'UNSOLD';
+        }
+
+        const updatedAuction = { ...auction, status: currentStatus };
+
+        allUserIds.add(auction.hostId);
+        if (auction.winnerId) allUserIds.add(auction.winnerId);
         bids.forEach((bid) => allUserIds.add(bid.bidderId));
 
-        return { auction, bids, signedImageUrl };
+        return { auction: updatedAuction, bids, signedImageUrl };
       }),
     );
 

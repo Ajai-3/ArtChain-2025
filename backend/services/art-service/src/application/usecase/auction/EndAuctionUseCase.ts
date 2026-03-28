@@ -24,40 +24,42 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     private readonly _socketService: ISocketService,
     @inject(TYPES.IPlatformConfigRepository)
     private readonly _platformConfigRepository: IPlatformConfigRepository,
-  ) {}
+  ) { }
 
   async execute(auctionId: string): Promise<boolean> {
     this._logger.info(`Attempting to close auction: ${auctionId}`);
 
     const auction = await this._auctionRepository.getById(auctionId);
-    
-    // Recovery Check: If auction is already 'ENDED' but 'paymentStatus' is 'NONE', it means
-    // it was lazily updated but NOT settled. We should allow processing.
-    const canProcess = auction && (
-        auction.status === 'ACTIVE' || 
-        (auction.status === 'ENDED' && (auction.paymentStatus === 'NONE' || auction.paymentStatus === 'FAILED')) ||
-        (auction.status === 'CANCELLED' && auction.paymentStatus === 'FAILED')
-    );
 
-    if (!canProcess) {
-      this._logger.warn(`Auction ${auctionId} status is ${auction?.status} and paymentStatus is ${auction?.paymentStatus}. Skipping settlement.`);
+    if (!auction) {
+      this._logger.error(`Auction ${auctionId} not found.`);
       return false;
     }
 
-    // Skip if already being processed or already successful
-    if (auction.paymentStatus === 'PENDING' || auction.paymentStatus === 'SUCCESS') {
-      this._logger.info(`Auction ${auctionId} payment is already ${auction.paymentStatus}. Skipping.`);
+    if (auction.status === 'CANCELLED' || auction.status === 'UNSOLD') {
+      return false;
+    }
+
+    const now = new Date();
+    if (now < new Date(auction.endTime)) {
+      this._logger.warn(`Auction ${auctionId} has not ended yet.`);
+      return false;
+    }
+
+    if (auction.paymentStatus === 'SUCCESS') {
+      this._logger.info(`Auction ${auctionId} payment already SUCCESS. Skipping.`);
       return true;
     }
+
 
     const winningBid = await this._bidRepository.findHighestBid(auctionId);
 
     if (!winningBid) {
       this._logger.info(`No bids for auction ${auctionId}. Marking as UNSOLD.`);
-      
-      await this._auctionRepository.update(auctionId, { 
+
+      await this._auctionRepository.update(auctionId, {
         status: 'UNSOLD',
-        paymentStatus: 'NONE' 
+        paymentStatus: 'NONE'
       });
 
       this._socketService.publishAuctionEnded({
@@ -102,9 +104,9 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
       return true;
     } else {
       this._logger.error(`Settlement FAILED for auction ${auctionId}.`);
-      
+
       await this._auctionRepository.update(auctionId, {
-        status: 'ENDED', 
+        status: 'ENDED',
         paymentStatus: 'FAILED',
       });
 
