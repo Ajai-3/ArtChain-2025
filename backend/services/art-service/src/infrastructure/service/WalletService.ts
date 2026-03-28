@@ -83,8 +83,12 @@ export class WalletService implements IWalletService {
         },
       );
       return response.status === 200 || response.status === 201;
-    } catch (error) {
-      console.error('Error settling auction:', error);
+    } catch (error: any) {
+      console.error('Error settling auction:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
       return false;
     }
   }
