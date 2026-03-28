@@ -98,6 +98,7 @@ export const authRoutesConfig = {
     { path: ROUTES.ART.MY_BIDDING_HISTORY, methods: ['GET'] },
     { path: ROUTES.ART.BUY, methods: ['POST'] },
     { path: ROUTES.ART.BASE, methods: ['POST'] },
+    { path: ROUTES.ART.CHECK_COMMISSION, methods: ['GET'] },
   ],
 
   user_optional: [
@@ -105,8 +106,6 @@ export const authRoutesConfig = {
     { path: ROUTES.USER.PROFILE_BY_USERNAME, methods: ['GET'] },
 
     { path: ROUTES.ART.FAVORITES_BY_USER, methods: ['GET'] },
-
-   
 
     { path: ROUTES.ART.BASE, methods: ['GET'] },
     { path: ROUTES.ART.BY_ID, methods: ['GET'] },

@@ -60,6 +60,7 @@ export const ROUTES = {
     PURCHASE_ANALYTICS: '/api/v1/art/purchase-analytics',
     MY_BIDDING_HISTORY: '/api/v1/art/my-bidding-history',
     AUCTION_COUNTS: '/api/v1/art/auctions/counts',
+    CHECK_COMMISSION: '/api/v1/art/commission/check-ongoing',
   },
   UPLOAD: {
     BASE: '/api/v1/upload',
@@ -90,7 +91,8 @@ export const ROUTES = {
     COMMISSION_LOCK: '/api/v1/wallet/transaction/commission/lock',
     COMMISSION_DISTRIBUTE: '/api/v1/wallet/transaction/commission/distribute',
     COMMISSION_REFUND: '/api/v1/wallet/transaction/commission/refund',
-    COMMISSION_TRANSFER_LOCKED: '/api/v1/wallet/transaction/commission/transfer-locked',
+    COMMISSION_TRANSFER_LOCKED:
+      '/api/v1/wallet/transaction/commission/transfer-locked',
   },
   CHAT: {
     BASE: '/api/v1/chat',
