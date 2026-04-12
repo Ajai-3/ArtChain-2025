@@ -6,6 +6,7 @@ interface CommentInput {
   postId: string;
   artname: string; // must pass this
   content: string;
+  replyToId?: string;
 }
 
 interface OnMutateContext {
@@ -16,8 +17,8 @@ export const usePostComment = () => {
   const queryClient = useQueryClient();
 
   return useMutation<ArtWithUserResponse, Error, CommentInput, OnMutateContext>({
-    mutationFn: ({ postId, content }: CommentInput) =>
-      apiClient.post(`/api/v1/art/comment/`, { postId, content }),
+    mutationFn: ({ postId, content, replyToId }: CommentInput) =>
+      apiClient.post(`/api/v1/art/comment/`, { postId, content, replyToId }),
 
     onMutate: async ({ postId, artname }) => {
       await queryClient.cancelQueries({ queryKey: ["art", artname] });

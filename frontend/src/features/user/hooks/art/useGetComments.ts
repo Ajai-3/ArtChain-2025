@@ -11,6 +11,7 @@ export interface Comment {
   createdAt: string;
   updatedAt: string;
   profileImage: string;
+  replyToId?: string;
 }
 
 export interface CommentPage {
