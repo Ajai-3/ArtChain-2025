@@ -6,6 +6,7 @@ export interface UserResponse {
   bannerImage?: string;
   status: string;
   isVerified: boolean;
+  role?: string;
   plan: string;
   supportersCount: number;
   supportingCount: number;

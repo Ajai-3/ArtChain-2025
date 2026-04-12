@@ -30,6 +30,8 @@ export class GetCommentsUseCase {
         name: user?.name ?? 'Unknown User',
         userName: user?.username ?? 'unknown',
         profileImage: user?.profileImage ?? null,
+        role: user?.role ?? 'user',
+        isVerified: user?.isVerified ?? false,
       };
     });
 

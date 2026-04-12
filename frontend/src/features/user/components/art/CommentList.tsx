@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useGetComments } from "../../hooks/art/useGetComments";
 import type { Comment } from "../../hooks/art/useGetComments";
-import { User, MoreVertical, X, Check } from "lucide-react";
+import { User, MoreVertical, X, Check, Shield } from "lucide-react";
 import CommentInputSection from "./CommentInputSection";
 import { ContentOptionsModal } from "../report/ContentOptionsModal";
 import { useNavigate } from "react-router-dom";
@@ -112,12 +112,21 @@ const CommentList: React.FC<Props> = ({ postId, artName }) => {
             <div className="flex flex-col bg-zinc-900 w-full p-2 border border-zinc-800 rounded-lg">
               <div className="flex items-center gap-2">
                 {/* Clickable user name */}
-                <span
+                <div 
+                  className="flex items-center gap-1 cursor-pointer group"
                   onClick={() => handleUserClick(c.userName)}
-                  className="font-semibold text-white cursor-pointer hover:text-main-color"
                 >
-                  {c.name}
-                </span>
+                  <span className="font-semibold text-white group-hover:text-main-color">
+                    {c.name}
+                  </span>
+                  {c.isVerified && c.role === 'artist' && (
+                    <Shield
+                      className="w-[1em] h-[1em] text-main-color-dark flex-shrink-0"
+                      strokeWidth={2}
+                      fill="currentColor"
+                    />
+                  )}
+                </div>
                 <span className="text-gray-500 text-xs">
                   {formatTimeAgo(c.createdAt)}
                 </span>
