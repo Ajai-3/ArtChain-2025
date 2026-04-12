@@ -57,6 +57,8 @@ export const toArtWithUserResponse = (
         name: purchaser.name,
         username: purchaser.username,
         profileImage: purchaser.profileImage,
+        role: purchaser.role,
+        isVerified: purchaser.isVerified,
       },
     }),
   };

@@ -11,9 +11,12 @@ import toast from "react-hot-toast";
 interface Props {
   postId: string;
   artname: string;
+  replyToId?: string;
+  onSuccessAction?: () => void;
+  onCancel?: () => void;
 }
 
-const CommentInputSection: React.FC<Props> = ({ postId, artname }) => {
+const CommentInputSection: React.FC<Props> = ({ postId, artname, replyToId, onSuccessAction, onCancel }) => {
   const user = useSelector((state: RootState) => state.user.user);
   const [comment, setComment] = useState("");
   const mutation = usePostComment();
@@ -25,8 +28,15 @@ const CommentInputSection: React.FC<Props> = ({ postId, artname }) => {
     }
     const trimmed = comment.trim();
     if (trimmed.length === 0 || trimmed.length > 500) return;
-    mutation.mutate({ postId, artname, content: trimmed });
-    setComment("");
+    mutation.mutate(
+      { postId, artname, content: trimmed, replyToId },
+      {
+        onSuccess: () => {
+          setComment("");
+          if (onSuccessAction) onSuccessAction();
+        },
+      }
+    );
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +47,9 @@ const CommentInputSection: React.FC<Props> = ({ postId, artname }) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    } else if (e.key === "Escape" && onCancel) {
+      e.preventDefault();
+      onCancel();
     }
   };
 
@@ -65,9 +78,10 @@ const CommentInputSection: React.FC<Props> = ({ postId, artname }) => {
           value={comment}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder="Write a comment..."
+          placeholder={replyToId ? "Write a reply..." : "Write a comment..."}
           variant="search"
           className="py-5 pl-14 pr-10"
+          autoFocus={!!replyToId}
         />
 
         {comment.trim().length > 0 && (
@@ -88,9 +102,14 @@ const CommentInputSection: React.FC<Props> = ({ postId, artname }) => {
         )}
       </div>
 
-      {/* Character counter */}
-      <div className="text-xs text-gray-400 mt-1 text-right">
-        {comment.length}/500
+      {/* Character counter and Cancel */}
+      <div className="flex justify-between items-center mt-1">
+        {onCancel ? (
+          <button type="button" onClick={onCancel} className="text-xs text-zinc-400 hover:text-white transition">Cancel</button>
+        ) : <div />}
+        <div className="text-xs text-gray-400 text-right">
+          {comment.length}/500
+        </div>
       </div>
     </div>
   );

@@ -23,7 +23,10 @@ export class CreateCommentUseCase implements ICreateCommentUseCase {
       dto.postId,
       dto.userId,
       dto.content,
-      'original'
+      'original',
+      undefined,
+      undefined,
+      dto.replyToId
     );
 
     const created = await this._commentRepo.create(comment);

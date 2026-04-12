@@ -11,6 +11,9 @@ export interface Comment {
   createdAt: string;
   updatedAt: string;
   profileImage: string;
+  role?: string;
+  isVerified?: boolean;
+  replyToId?: string;
 }
 
 export interface CommentPage {
