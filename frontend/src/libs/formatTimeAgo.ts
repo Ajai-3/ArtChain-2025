@@ -5,7 +5,7 @@ export function formatTimeAgo(date: Date | string): string {
   const past = new Date(date);
 
   const seconds = differenceInSeconds(now, past);
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 60) return `${Math.max(0, seconds)}s`;
 
   const minutes = differenceInMinutes(now, past);
   if (minutes < 60) return `${minutes}m`;
