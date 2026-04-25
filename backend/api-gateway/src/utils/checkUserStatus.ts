@@ -28,8 +28,9 @@ export const checkUserStatus = async (
     if (userStatus === 'suspended' && method !== 'GET') {
       throw new ForbiddenError(USER_STATUS_MESSAGES.SUSPENDED);
     }
-  } catch (err: any) {
+  } catch (err) {
     if (err instanceof ForbiddenError) throw err;
-    logger.error(`Failed to fetch user status in ${contextName} middleware: ${err.message}`);
+    const error = err as Error;
+    logger.error(`Failed to fetch user status in ${contextName} middleware: ${error.message}`);
   }
 };

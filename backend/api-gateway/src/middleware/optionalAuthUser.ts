@@ -1,7 +1,8 @@
 import { logger } from '../utils/logger';
 import { checkUserStatus } from '../utils/checkUserStatus';
 import { tokenService } from '../service/tokenService';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { TokenPayload, AuthenticatedRequest } from '../types/TokenPayload';
 import {
   ERROR_MESSAGES,
   ForbiddenError,
@@ -10,10 +11,10 @@ import {
 } from 'art-chain-shared';
 
 export const optionalAuthUser = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-): Promise<any> => {
+): Promise<Response | void> => {
   try {
     const authHeader = req.headers.authorization;
     const accessToken = authHeader?.split(' ')[1];
@@ -23,7 +24,7 @@ export const optionalAuthUser = async (
     }
 
 
-    const decoded = tokenService.verifyAccessToken(accessToken);
+    const decoded = tokenService.verifyAccessToken(accessToken) as TokenPayload | null;
     if (!decoded || typeof decoded !== 'object' || !decoded.id) {
       throw new UnauthorizedError(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
     }
@@ -39,7 +40,7 @@ export const optionalAuthUser = async (
     await checkUserStatus(decoded.id, req.method, 'optional auth');
 
     req.headers['x-user-id'] = decoded.id;
-    (req as any).user = decoded;
+    req.user = decoded;
 
     next();
   } catch (error) {
