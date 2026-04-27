@@ -3,6 +3,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { AUTH_MESSAGES } from '../../../../constants/authMessages';
 import { tokenService } from '../../../../presentation/service/token.service';
+import { ILogger } from '../../../interface/ILogger';
 import {
   BadRequestError,
   ERROR_MESSAGES,
@@ -16,7 +17,8 @@ import { IRefreshTokenUseCase } from '../../../interface/usecases/user/auth/IRef
 @injectable()
 export class RefreshTokenUseCase implements IRefreshTokenUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository
+    @inject(TYPES.IUserRepository) private _userRepo: IUserRepository,
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
   ) {}
 
   async execute(refreshToken: string): Promise<RefreshTokenResultDto> {
@@ -51,7 +53,7 @@ export class RefreshTokenUseCase implements IRefreshTokenUseCase {
       role: admin.role,
     });
 
-    console.log(payload, accessToken, admin);
+    this._logger.debug('Admin token refreshed', { userId: admin.id });
 
     return { accessToken };
   }

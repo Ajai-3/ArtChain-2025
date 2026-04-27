@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../../infrastructure/inversify/types';
 import { ARTIST_MESSAGES } from '../../../../constants/artistMessages';
 import { IUserRepository } from '../../../../domain/repositories/user/IUserRepository';
+import { ILogger } from '../../../interface/ILogger';
 import {
   BadRequestError,
   ERROR_MESSAGES,
@@ -18,6 +19,7 @@ export class RejectArtistRequestUseCase implements IRejectArtistRequestUseCase {
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.IArtistRequestRepository)
     private readonly _artistRepo: IArtistRequestRepository,
+    @inject(TYPES.ILogger) private readonly _logger: ILogger,
   ) {}
 
   async execute(
@@ -46,6 +48,13 @@ export class RejectArtistRequestUseCase implements IRejectArtistRequestUseCase {
     }
 
     const rejectedRequest = await this._artistRepo.reject(id, reason);
+
+    this._logger.info('Artist request rejected', {
+      requestId: id,
+      userId,
+      reason,
+    });
+
     return { request: rejectedRequest };
   }
 }
