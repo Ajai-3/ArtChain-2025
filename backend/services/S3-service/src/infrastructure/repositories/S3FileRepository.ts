@@ -7,8 +7,6 @@ import { generateFileName } from '../utils/generateFileName';
 import { IFileRepository } from '../../domain/repositories/IFileRepository';
 import { config } from '../config/env';
 
-import { createSignedUrl } from '../utils/createSignedUrl';
-
 @injectable()
 export class S3FileRepository implements IFileRepository {
   async upload(

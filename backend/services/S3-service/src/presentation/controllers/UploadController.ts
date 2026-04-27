@@ -63,8 +63,8 @@ export class UploadController implements IUploadController {
       res
         .status(HttpStatus.CREATED)
         .json({ data: result, message: UPLOAD_MESSAGES.IMAGE_UPLOAD_SUCCESS });
-    } catch (error: any) {
-      logger.error(`Upload art error | message=${error.message}`);
+    } catch (error: unknown) {
+      logger.error(`Upload image error | message=${error}`);
       next(error);
     }
   };
@@ -103,8 +103,8 @@ export class UploadController implements IUploadController {
       res
         .status(HttpStatus.CREATED)
         .json({ data: result, message: UPLOAD_MESSAGES.ART_UPLOAD_SUCCESS });
-    } catch (error: any) {
-      logger.error(`Upload art error | message=${error.message}`);
+    } catch (error: unknown) {
+      logger.error(`Upload art error | message=${error}`);
       next(error);
     }
   };
@@ -142,8 +142,8 @@ export class UploadController implements IUploadController {
       res
         .status(HttpStatus.CREATED)
         .json({ data: result, message: UPLOAD_MESSAGES.IMAGE_UPLOAD_SUCCESS });
-    } catch (error: any) {
-      logger.error(`Upload commission image error | message=${error.message}`);
+    } catch (error: unknown) {
+      logger.error(`Upload commission image error | message=${error}`);
       next(error);
     }
   };
@@ -153,7 +153,7 @@ export class UploadController implements IUploadController {
   //# =============================================================================================================
   //# POST /api/v1/upload/delete
   //# Request body: filename
-  //# This controller will help you to delete the image like profile, banner, background, art any type of images.
+  //# This controller will help you to delete the image like profile, banner, background, art unknown type of images.
   //# =============================================================================================================
   deleteImage = async (
     req: Request,
