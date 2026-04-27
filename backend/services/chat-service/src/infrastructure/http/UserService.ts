@@ -31,7 +31,6 @@ export class UserService implements IUserService {
           ids: userIds,
         },
       );
-      console.log(res.data, 'getUsersByIds');
       return res.data.data;
     } catch (err) {
       return [];

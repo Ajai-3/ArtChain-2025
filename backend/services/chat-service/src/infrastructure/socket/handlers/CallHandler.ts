@@ -3,6 +3,8 @@ import { ISendMessageUseCase } from '../../../applications/interface/usecase/ISe
 import { SendMessageDto } from '../../../applications/interface/dto/SendMessageDto';
 import { MediaType, CallStatus } from '../../../domain/entities/Message';
 import { IUpdateCallMessageUseCase } from '../../../applications/interface/usecase/IUpdateCallMessageUseCase';
+import { SignalData } from '../../../types';
+import { logger } from '../../utils/logger';
 
 export class CallHandler {
   constructor(
@@ -13,7 +15,7 @@ export class CallHandler {
 
   initiateCall = async (socket: Socket, payload: { receiverId: string; conversationId: string; isGroup: boolean; callerName?: string; callerProfileImage?: string; callId?: string }) => {
     const senderId = socket.data.userId;
-    console.log(`📞 Call initiated by ${senderId} to ${payload.receiverId} in ${payload.conversationId}`);
+    logger.info(`Call initiated by ${senderId} to ${payload.receiverId} in ${payload.conversationId}`);
 
     // Create "Call Started" message
     const messageDto: SendMessageDto = {
@@ -48,13 +50,13 @@ export class CallHandler {
          }
       }
     } catch (error) {
-      console.error('Error initiating call:', error);
+      logger.error('Error initiating call:', error);
     }
   };
 
   acceptCall = async (socket: Socket, payload: { callerId: string; callId: string; conversationId: string }) => {
       const userId = socket.data.userId;
-      console.log(`✅ Call accepted by ${userId}`);
+      logger.info(`Call accepted by ${userId}`);
       
       // Notify caller
       const callerSocketId = this.onlineUsers.get(payload.callerId);
@@ -74,7 +76,7 @@ export class CallHandler {
 
   rejectCall = async (socket: Socket, payload: { callerId: string; callId: string; conversationId: string }) => {
       const userId = socket.data.userId;
-      console.log(`❌ Call rejected by ${userId}`);
+      logger.info(`Call rejected by ${userId}`);
       
       try {
           await this._updateCallMessageUseCase.execute(payload.callId, {
@@ -82,7 +84,7 @@ export class CallHandler {
               content: 'Call declined'
           });
       } catch (error) {
-          console.error('Error setting call to missed:', error);
+          logger.error('Error setting call to missed:', error);
       }
 
       // Notify caller
@@ -97,7 +99,7 @@ export class CallHandler {
 
   endCall = async (socket: Socket, payload: { conversationId: string; callId: string; duration?: number; to?: string }) => {
       const userId = socket.data.userId;
-      console.log(`🏁 Call ended by ${userId}`);
+      logger.info(`Call ended by ${userId}`);
 
       const duration = payload.duration || 0;
       const status = duration > 0 ? CallStatus.ENDED : CallStatus.MISSED;
@@ -125,13 +127,13 @@ export class CallHandler {
               }
           }
       } catch (error) {
-          console.error('Error ending call:', error);
+          logger.error('Error ending call:', error);
       }
   };
 
-  signal = (socket: Socket, payload: { to: string; signal: any }) => {
+  signal = (socket: Socket, payload: SignalData) => {
       const senderId = socket.data.userId;
-      console.log(`[CallHandler] 📡 Signal from ${senderId} to ${payload.to}`);
+      logger.info(`Signal from ${senderId} to ${payload.to}`);
       
       const receiverSocketId = this.onlineUsers.get(payload.to);
       if (receiverSocketId) {
@@ -140,7 +142,7 @@ export class CallHandler {
               signal: payload.signal
           });
       } else {
-          console.warn(`[CallHandler] Signal target ${payload.to} is OFFLINE`);
+          logger.warn(`Signal target ${payload.to} is OFFLINE`);
       }
   };
 }

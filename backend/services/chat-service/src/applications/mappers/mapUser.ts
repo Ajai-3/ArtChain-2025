@@ -1,6 +1,16 @@
 import { UserDto } from '../interface/dto/MessageResponseDto';
 
-export function mapToUserDto(userData: any): UserDto {
+export interface RawUserData {
+  id: string;
+  name: string;
+  username: string;
+  profileImage?: string;
+  plan?: string;
+  role?: string;
+  status?: string;
+}
+
+export function mapToUserDto(userData: RawUserData): UserDto {
   return {
     id: userData.id,
     name: userData.name,

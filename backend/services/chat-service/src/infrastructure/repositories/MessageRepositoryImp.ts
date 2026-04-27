@@ -4,6 +4,7 @@ import { Message } from '../../domain/entities/Message';
 import { BaseRepositoryImp } from './BaseRepositoryImp';
 import { IMessageDocument, MessageModel } from '../models/MessageModel';
 import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
+import { logger } from '../utils/logger';
 
 @injectable()
 export class MessageRepositoryImp
@@ -19,11 +20,11 @@ export class MessageRepositoryImp
     limit: number,
     fromId?: string
   ): Promise<Message[]> {
-    const query: any = { conversationId };
+    const query: Record<string, unknown> = { conversationId };
     if (fromId) query._id = { $lt: fromId };
 
     const messages = await this.model
-      .find(query)
+      .find(query as Record<string, unknown>)
       .sort({ _id: -1 })
       .limit(limit)
       .lean();
@@ -35,7 +36,7 @@ export class MessageRepositoryImp
     try {
       const validIds = messageIds.filter(id => Types.ObjectId.isValid(id));
       if (validIds.length === 0) {
-        console.warn('No valid ObjectIds found in messageIds:', messageIds);
+        logger.warn('No valid ObjectIds found in messageIds:', messageIds);
         return;
       }
 
@@ -45,9 +46,9 @@ export class MessageRepositoryImp
           $addToSet: { readBy: userId }
         }
       );
-      console.log(`Marked ${result.modifiedCount} messages as read for user ${userId}`);
+      logger.info(`Marked ${result.modifiedCount} messages as read for user ${userId}`);
     } catch (error) {
-      console.error('Error marking messages as read:', error);
+      logger.error('Error marking messages as read:', error);
       throw error;
     }
   }
@@ -91,16 +92,16 @@ export class MessageRepositoryImp
       const result = await this.model.updateMany(
         {
            conversationId: conversationId,
-           senderId: { $ne: userId }, // Don't mark own messages as read (optional, but good practice)
+           senderId: { $ne: userId }, 
            readBy: { $ne: userId }
-        },
-        {
-          $addToSet: { readBy: userId }
-        }
+         },
+         {
+           $addToSet: { readBy: userId }
+         }
       );
-      console.log(`Marked ${result.modifiedCount} messages as read in conversation ${conversationId} for user ${userId}`);
+      logger.info(`Marked ${result.modifiedCount} messages as read in conversation ${conversationId} for user ${userId}`);
     } catch (error) {
-       console.error('Error marking all messages as read:', error);
+       logger.error('Error marking all messages as read:', error);
        throw error;
     }
   }

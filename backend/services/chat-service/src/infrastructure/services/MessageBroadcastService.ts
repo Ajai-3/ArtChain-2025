@@ -1,7 +1,9 @@
 import { injectable } from 'inversify';
 import { redisPub } from '../config/redis';
 import { Message } from '../../domain/entities/Message';
+import { Conversation } from '../../domain/entities/Conversation';
 import { IMessageBroadcastService } from '../../domain/service/IMessageBroadcastService';
+import { GroupUpdateData } from '../../types';
 
 @injectable()
 export class MessageBroadcastService implements IMessageBroadcastService {
@@ -38,7 +40,7 @@ export class MessageBroadcastService implements IMessageBroadcastService {
   }
 
   async publishNewPrivateConversation(
-    conversation: any,
+    conversation: Conversation,
     recipientId: string
   ): Promise<void> {
     await redisPub.publish(
@@ -53,7 +55,7 @@ export class MessageBroadcastService implements IMessageBroadcastService {
   }
 
   async publishNewGroupConversation(
-    conversation: any,
+    conversation: Conversation,
     memberIds: string[]
   ): Promise<void> {
     await redisPub.publish(
@@ -70,7 +72,7 @@ export class MessageBroadcastService implements IMessageBroadcastService {
   async publishGroupUpdate(
     conversationId: string,
     updateType: string,
-    data: any
+    data: GroupUpdateData
   ): Promise<void> {
     await redisPub.publish(
       this.CHANNEL,

@@ -2,46 +2,45 @@ import { inject, injectable } from 'inversify';
 import { HttpStatus } from 'art-chain-shared';
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../../infrastructure/utils/logger';
+import { CHAT_MESSAGE } from '../../constants/ChatMessages';
+import { SUCCESS_MESSAGES } from '../../constants/messages';
 import { TYPES } from '../../infrastructure/Inversify/types';
 import { validateWithZod } from '../../infrastructure/utils/zodValidater';
+import { createGroupConversationSchema } from '../validators/createGroupConversationSchema';
 import { createPrivateConversationSchema } from '../validators/createPrivateConversationSchema';
+import { IAddGroupAdminUseCase } from '../../applications/interface/usecase/IAddGroupAdminUseCase';
+import { IAddGroupMemberUseCase } from '../../applications/interface/usecase/IAddGroupMemberUseCase';
+import { IGetGroupMembersUseCase } from '../../applications/interface/usecase/IGetGroupMembersUseCase';
+import { IRemoveGroupAdminUseCase } from '../../applications/interface/usecase/IRemoveGroupAdminUseCase';
+import { CreateGroupConversationDto } from '../../applications/interface/dto/CreateGroupConversationDto';
+import { IRemoveGroupMemberUseCase } from '../../applications/interface/usecase/IRemoveGroupMemberUseCase';
 import { CreatePrivateConversationDto } from '../../applications/interface/dto/CreatePrivateConversationDto';
+import { ICreateGroupConversationUseCase } from '../../applications/interface/usecase/ICreateGroupConversationUseCase';
 import { IGetAllResendConversationUseCase } from '../../applications/interface/usecase/IGetAllResendConversationUseCase';
 import { ICreatePrivateConversationUseCase } from '../../applications/interface/usecase/ICreatePrivateConversationUseCase';
 import { ICreateRequestConversationUseCase } from '../../applications/interface/usecase/ICreateRequestConversationUseCase';
-import { ICreateGroupConversationUseCase } from '../../applications/interface/usecase/ICreateGroupConversationUseCase';
-import { createGroupConversationSchema } from '../validators/createGroupConversationSchema';
-import { CreateGroupConversationDto } from '../../applications/interface/dto/CreateGroupConversationDto';
-import { IGetGroupMembersUseCase } from '../../applications/interface/usecase/IGetGroupMembersUseCase';
-import { IRemoveGroupMemberUseCase } from '../../applications/interface/usecase/IRemoveGroupMemberUseCase';
-import { IAddGroupAdminUseCase } from '../../applications/interface/usecase/IAddGroupAdminUseCase';
-import { IRemoveGroupAdminUseCase } from '../../applications/interface/usecase/IRemoveGroupAdminUseCase';
-import { IAddGroupMemberUseCase } from '../../applications/interface/usecase/IAddGroupMemberUseCase';
-import { SUCCESS_MESSAGES } from '../../constants/messages';
-import { ROUTES } from '../../constants/routes';
-import { CHAT_MESSAGE } from '../../constants/ChatMessages';
 
 @injectable()
 export class ConversationController {
   constructor(
+    @inject(TYPES.IAddGroupAdminUseCase)
+    private readonly _addGroupAdminUseCase: IAddGroupAdminUseCase,
+    @inject(TYPES.IAddGroupMemberUseCase)
+    private readonly _addGroupMemberUseCase: IAddGroupMemberUseCase,
+    @inject(TYPES.IGetGroupMembersUseCase)
+    private readonly _getGroupMembersUseCase: IGetGroupMembersUseCase,
+    @inject(TYPES.IRemoveGroupAdminUseCase)
+    private readonly _removeGroupAdminUseCase: IRemoveGroupAdminUseCase,
+    @inject(TYPES.IRemoveGroupMemberUseCase)
+    private readonly _removeGroupMemberUseCase: IRemoveGroupMemberUseCase,
+    @inject(TYPES.ICreateGroupConversationUseCase)
+    private readonly _createGroupConversationUseCase: ICreateGroupConversationUseCase,
     @inject(TYPES.IGetAllResendConversationUseCase)
     private readonly _getAllResendConversationUseCase: IGetAllResendConversationUseCase,
     @inject(TYPES.ICreatePrivateConversationUseCase)
     private readonly _createPrivateConversationUseCase: ICreatePrivateConversationUseCase,
     @inject(TYPES.ICreateRequestConversationUseCase)
     private readonly _createRequestConversationUseCase: ICreateRequestConversationUseCase,
-    @inject(TYPES.ICreateGroupConversationUseCase)
-    private readonly _createGroupConversationUseCase: ICreateGroupConversationUseCase,
-    @inject(TYPES.IGetGroupMembersUseCase)
-    private readonly _getGroupMembersUseCase: IGetGroupMembersUseCase,
-    @inject(TYPES.IRemoveGroupMemberUseCase)
-    private readonly _removeGroupMemberUseCase: IRemoveGroupMemberUseCase,
-    @inject(TYPES.IAddGroupAdminUseCase)
-    private readonly _addGroupAdminUseCase: IAddGroupAdminUseCase,
-    @inject(TYPES.IRemoveGroupAdminUseCase)
-    private readonly _removeGroupAdminUseCase: IRemoveGroupAdminUseCase,
-    @inject(TYPES.IAddGroupMemberUseCase)
-    private readonly _addGroupMemberUseCase: IAddGroupMemberUseCase,
   ) {}
 
   //#========================================================================================================================
@@ -185,8 +184,6 @@ export class ConversationController {
       const page = Number(req.query.page) || 1;
 
       const userId = req.headers['x-user-id'] as string;
-
-      console.log(userId);
 
       logger.info(
         `ConversationController.getAllResendConversation: userId: ${userId}`,

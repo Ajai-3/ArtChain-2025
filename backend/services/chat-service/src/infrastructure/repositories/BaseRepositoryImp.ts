@@ -1,17 +1,19 @@
-import { Model } from 'mongoose';
+import { Model, Document } from 'mongoose';
 import { injectable } from 'inversify';
 import { IBaseRepository } from '../../domain/repositories/IBaseRepositories';
 
 @injectable()
-export abstract class BaseRepositoryImp<T, D> implements IBaseRepository<T> {
+export abstract class BaseRepositoryImp<T, D extends Document> implements IBaseRepository<T> {
   protected model: Model<D>;
 
   constructor(model: Model<D>) {
     this.model = model;
   }
-  protected mapDbToDomain(dbObj: any): T {
-    if (!dbObj) return null as any;
-    const obj = dbObj.toObject ? dbObj.toObject({ versionKey: false }) : dbObj;
+  protected mapDbToDomain(dbObj: unknown): T {
+    if (!dbObj) return null as T;
+    const obj = typeof dbObj === 'object' && dbObj !== null && 'toObject' in dbObj 
+      ? (dbObj as { toObject: (options?: unknown) => Record<string, unknown> }).toObject({ versionKey: false }) 
+      : dbObj as Record<string, unknown>;
 
     const { _id, ...rest } = obj;
     return {
@@ -19,7 +21,7 @@ export abstract class BaseRepositoryImp<T, D> implements IBaseRepository<T> {
       id: obj.id ?? _id?.toString(),
     } as T;
   }
-  protected mapDbArrayToDomain(docs: any[]): T[] {
+  protected mapDbArrayToDomain(docs: unknown[]): T[] {
     return docs.map((doc) => this.mapDbToDomain(doc)!).filter(Boolean);
   }
 
@@ -38,7 +40,7 @@ export abstract class BaseRepositoryImp<T, D> implements IBaseRepository<T> {
     return this.mapDbToDomain(dbItem);
   }
   async update(id: string, item: Partial<T>): Promise<T> {
-    const dbItem = await this.model.findByIdAndUpdate(id, item as any, {
+    const dbItem = await this.model.findByIdAndUpdate(id, item as unknown as Record<string, unknown>, {
       new: true,
     });
     return this.mapDbToDomain(dbItem);

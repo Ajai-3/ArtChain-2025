@@ -1,11 +1,13 @@
 import { inject, injectable } from 'inversify';
-import { IMarkMessagesReadUseCase } from '../interface/usecase/IMarkMessagesReadUseCase';
-import { TYPES } from '../../infrastructure/Inversify/types';
-import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
-import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
-import { IMessageCacheService } from '../interface/service/IMessageCacheService';
 import { BadRequestError } from 'art-chain-shared';
 import { ERROR_MESSAGES } from '../../constants/messages';
+import { logger } from '../../infrastructure/utils/logger';
+import { CHAT_MESSAGE } from '../../constants/ChatMessages';
+import { TYPES } from '../../infrastructure/Inversify/types';
+import { IMessageCacheService } from '../interface/service/IMessageCacheService';
+import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
+import { IMarkMessagesReadUseCase } from '../interface/usecase/IMarkMessagesReadUseCase';
+import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
 
 @injectable()
 export class MarkMessagesReadUseCase implements IMarkMessagesReadUseCase {
@@ -25,14 +27,14 @@ export class MarkMessagesReadUseCase implements IMarkMessagesReadUseCase {
     }
 
     if (!conversation.memberIds.includes(userId)) {
-      throw new BadRequestError('You are not a member of this conversation');
+      throw new BadRequestError(CHAT_MESSAGE.NOT_A_MEMBER_OF_CONVERSATION);
     }
 
     if (!messageIds || messageIds.length === 0) {
-        console.log(`MarkMessagesReadUseCase: Marking ALL messages as read for user ${userId} in conversation ${conversationId}`);
+        logger.info(`MarkMessagesReadUseCase: Marking ALL messages as read for user ${userId} in conversation ${conversationId}`);
         await this._messageRepository.markAllRead(conversationId, userId);
     } else {
-        console.log(`MarkMessagesReadUseCase: Marking ${messageIds.length} messages as read for user ${userId} in conversation ${conversationId}`);
+        logger.info(`MarkMessagesReadUseCase: Marking ${messageIds.length} messages as read for user ${userId} in conversation ${conversationId}`);
         await this._messageRepository.markRead(messageIds, userId);
     }
     
