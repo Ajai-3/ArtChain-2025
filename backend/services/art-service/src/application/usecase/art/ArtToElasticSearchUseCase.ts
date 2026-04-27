@@ -2,14 +2,15 @@ import { injectable } from 'inversify';
 import { logger } from '../../../utils/logger';
 import { config } from '../../../infrastructure/config/env';
 import { IArtToElasticSearchUseCase } from '../../interface/usecase/art/IArtToElasticSearchUseCase';
+import type { ArtToElasticSearchInput, ArtToElasticSearchResponse } from '../../../types/usecase-response';
 
 @injectable()
 export class ArtToElasticSearchUseCase implements IArtToElasticSearchUseCase {
-  async execute(art: any): Promise<any> {
+  async execute(art: ArtToElasticSearchInput): Promise<ArtToElasticSearchResponse> {
     const relativeImageUrl = art.watermarkedUrl.replace(config.cdn_domain, '');
 
     const elasticArt = {
-      id: art._id,
+      id: art.id,
       artname: art.artName,
       title: art.title,
       imageUrl: relativeImageUrl,
@@ -19,6 +20,6 @@ export class ArtToElasticSearchUseCase implements IArtToElasticSearchUseCase {
 
     logger.debug(elasticArt);
 
-    return elasticArt;
+    return { success: true, art };
   }
 }

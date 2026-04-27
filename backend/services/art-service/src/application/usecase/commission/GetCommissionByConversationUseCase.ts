@@ -1,11 +1,12 @@
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../../../infrastructure/Inversify/types';
-import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
-import { IGetCommissionByConversationUseCase } from '../../interface/usecase/commission/IGetCommissionByConversationUseCase';
-import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { NotFoundError } from 'art-chain-shared';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { UserService } from '../../../infrastructure/service/UserService';
 import { COMMISSION_MESSAGES } from '../../../constants/CommissionMessage';
+import { GetCommissionByConversationResponse } from '../../../types/usecase-response';
+import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
+import { IGetCommissionByConversationUseCase } from '../../interface/usecase/commission/IGetCommissionByConversationUseCase';
 
 @injectable()
 export class GetCommissionByConversationUseCase implements IGetCommissionByConversationUseCase {
@@ -15,7 +16,7 @@ export class GetCommissionByConversationUseCase implements IGetCommissionByConve
     private readonly _commissionRepository: ICommissionRepository
   ) {}
 
-  async execute(conversationId: string): Promise<any> {
+  async execute(conversationId: string): Promise<GetCommissionByConversationResponse> {
     const commissions = await this._commissionRepository.findAllByConversationId(conversationId);
     
     if (!commissions || commissions.length === 0) {

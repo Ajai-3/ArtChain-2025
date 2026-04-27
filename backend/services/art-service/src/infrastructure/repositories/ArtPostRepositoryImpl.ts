@@ -1,8 +1,11 @@
 import { injectable } from 'inversify';
+import mongoose, { Model, Document } from 'mongoose';
 import { ArtPostModel } from '../models/ArtPostModel';
 import { ArtPost, PostStatus } from '../../domain/entities/ArtPost';
 import { BaseRepositoryImpl } from '../repositories/BaseRepositoryImpl';
 import { AdminArtFilters, IArtPostRepository } from '../../domain/repositories/IArtPostRepository';
+import type { MongoQuery, MongoSort } from '../../types/mongo';
+import type { ArtPostLean } from '../../types/art';
 
 @injectable()
 export class ArtPostRepositoryImpl
@@ -13,19 +16,25 @@ export class ArtPostRepositoryImpl
     super(ArtPostModel);
   }
 
-  async findById(postId: string): Promise<any> {
-    const art = await ArtPostModel.findById({ _id: postId, status: 'active' });
+  async findById(postId: string): Promise<ArtPostLean | null> {
+    const art = await ArtPostModel.findOne({
+      _id: postId,
+      status: 'active',
+    }).lean<ArtPostLean | null>();
     return art;
   }
 
-  async findByArtName(artName: string): Promise<any> {
-    const art = await ArtPostModel.findOne({ artName, status: 'active' }).lean();
+  async findByArtName(artName: string): Promise<ArtPostLean> {
+    const art = await ArtPostModel.findOne({ artName, status: 'active' }).lean<ArtPostLean | null>();
     if (!art) throw new Error(`Art with name ${artName} not found`);
-    return art as ArtPost;
+    return art;
   }
 
-  async findByIds(artIds: string[]): Promise<any[]> {
-    const arts = await ArtPostModel.find({ _id: { $in: artIds }, status: 'active' }).lean();
+  async findByIds(artIds: string[]): Promise<ArtPostLean[]> {
+    const arts = await ArtPostModel.find({
+      _id: { $in: artIds },
+      status: 'active',
+    }).lean<ArtPostLean[]>();
     return arts;
   }
 
@@ -33,12 +42,12 @@ export class ArtPostRepositoryImpl
     return ArtPostModel.countDocuments({ userId, status: 'active' });
   }
 
-  async getAllArt(page = 1, limit = 10): Promise<any[]> {
+  async getAllArt(page = 1, limit = 10): Promise<ArtPostLean[]> {
     const arts = await ArtPostModel.find({ status: 'active' })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .lean();
+      .lean<ArtPostLean[]>();
     return arts;
   }
 
@@ -55,23 +64,23 @@ export class ArtPostRepositoryImpl
     categoryId: string,
     page = 1,
     limit = 10
-  ): Promise<any[]> {
+  ): Promise<ArtPostLean[]> {
     return await ArtPostModel.find({ artType: categoryId, status: 'active' })
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .lean();
+      .lean<ArtPostLean[]>();
   }
 
   async findAllWithFilters(
-    query: any,
+    query: MongoQuery,
     page = 1,
     limit = 10,
-    sort: any = { createdAt: -1 }
+    sort: MongoSort = { createdAt: -1 }
   ): Promise<ArtPost[]> {
     const skip = (page - 1) * limit;
     const arts = await ArtPostModel.find({ ...query, status: 'active' })
-      .sort(sort)
+      .sort(sort as Record<string, 1 | -1>)
       .skip(skip)
       .limit(limit)
       .lean();
@@ -116,12 +125,12 @@ export class ArtPostRepositoryImpl
     page: number,
     limit: number,
     filters?: AdminArtFilters
-  ): Promise<{ arts: any[]; total: number}> {
-    const query: any = {};
+  ): Promise<{ arts: Array<ArtPostLean & { id: string }>; total: number}> {
+    const query: MongoQuery = {};
 
-    if (filters?.status && filters.status !== ('all' as any)) query.status = filters.status;
-    if (filters?.postType && filters.postType !== ('all' as any)) query.postType = filters.postType;
-    if (filters?.priceType && filters.priceType !== ('all' as any)) query.priceType = filters.priceType;
+    if (filters?.status) query.status = filters.status;
+    if (filters?.postType) query.postType = filters.postType;
+    if (filters?.priceType) query.priceType = filters.priceType;
     if (filters?.userId) query.userId = filters.userId;
     
     // If artIds are provided (from Elasticsearch), use them
@@ -138,14 +147,14 @@ export class ArtPostRepositoryImpl
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .lean(),
+        .lean<ArtPostLean[]>(),
       ArtPostModel.countDocuments(query),
     ]);
 
 
-    const mappedArts = arts.map((art: any) => ({
+    const mappedArts = arts.map((art) => ({
       ...art,
-      id: art._id.toString(),
+      id: (typeof art._id === 'string' ? art._id : art._id?.toString()) ?? '',
     }));
 
     return { arts: mappedArts, total };
@@ -177,13 +186,15 @@ export class ArtPostRepositoryImpl
       id,
       { status },
       { new: true }
-    ).lean();
+    ).lean<ArtPostLean | null>();
     
     if (!updated) return null;
     
     return {
       ...updated,
-      id: (updated as any)._id.toString(),
+      id: (typeof updated._id === 'string'
+        ? updated._id
+        : updated._id?.toString()) ?? '',
     } as unknown as ArtPost;
   }
 
@@ -192,10 +203,10 @@ export class ArtPostRepositoryImpl
         const arts = await ArtPostModel.find({ status: 'active', isSold: false })
           .sort({ artcoins: -1 })
           .limit(limit)
-          .lean();
-        return arts.map((art: any) => ({
+          .lean<ArtPostLean[]>();
+        return arts.map((art) => ({
           ...art,
-          id: art._id.toString(),
+          id: (typeof art._id === 'string' ? art._id : art._id?.toString()) ?? '',
           likes: 0
         })) as unknown as ArtPost[];
     }
@@ -222,9 +233,9 @@ export class ArtPostRepositoryImpl
       { $project: { likesData: 0, strId: 0 } }
     ]);
 
-    return arts.map((art: any) => ({
+    return (arts as ArtPostLean[]).map((art) => ({
       ...art,
-      id: art._id.toString(),
+      id: (typeof art._id === 'string' ? art._id : art._id?.toString()) ?? '',
     })) as unknown as ArtPost[];
   }
 
@@ -267,7 +278,7 @@ export class ArtPostRepositoryImpl
       }
     ]);
 
-    return stats.map((stat: any) => ({
+    return (stats as Array<{ category?: string; count: number }>).map((stat) => ({
       category: stat.category || 'Uncategorized',
       count: stat.count
     }));

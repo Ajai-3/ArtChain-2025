@@ -3,6 +3,15 @@ import { TYPES } from '../../../infrastructure/Inversify/types';
 import { ICommissionRepository } from '../../../domain/repositories/ICommissionRepository';
 import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { IUserService } from '../../interface/service/IUserService';
+import { Commission } from '../../../domain/entities/Commission';
+import type { MongoQuery } from '../../../types/mongo';
+
+interface UserInfo {
+  id?: string;
+  name?: string;
+  username?: string;
+  profileImage?: string;
+}
 
 @injectable()
 export class GetAllCommissionsUseCase {
@@ -12,28 +21,25 @@ export class GetAllCommissionsUseCase {
     private readonly _commissionRepository: ICommissionRepository
   ) {}
 
-  async execute(page: number, limit: number, status?: string): Promise<any> {
-    const filter: any = {};
+  async execute(page: number, limit: number, status?: string) {
+    const filter: MongoQuery = {};
     if (status) filter.status = status;
 
     const { commissions, total } = await this._commissionRepository.findAllFiltered(filter, page, limit);
 
-    // Collect all user IDs
     const userIds = new Set<string>();
-    commissions.forEach(c => {
+    commissions.forEach((c: Commission) => {
       if (c.requesterId) userIds.add(c.requesterId);
       if (c.artistId) userIds.add(c.artistId);
     });
 
-    // Fetch user details
     const users = await this._userService.getUsersByIds(Array.from(userIds));
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
+    const userMap = new Map<string, UserInfo>(users.map((u) => [u.id || '', u]));
 
-    // Enrich DTOs
-    const dtos = CommissionMapper.toCollectionDTO(commissions).map((dto: any) => ({
+    const dtos = CommissionMapper.toCollectionDTO(commissions).map((dto) => ({
       ...dto,
-      requester: userMap.get(dto.requesterId),
-      artist: userMap.get(dto.artistId)
+      requester: userMap.get(dto.requesterId || ''),
+      artist: userMap.get(dto.artistId || '')
     }));
 
     return {

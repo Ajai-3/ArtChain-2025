@@ -14,6 +14,8 @@ import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
 import { COMMISSION_MESSAGES } from '../../../constants/CommissionMessage';
+import type { UserPublicProfile } from '../../../types/user';
+import { CreateCommissionResponse } from '../../../types/usecase-response';
 
 @injectable()
 export class CreateCommissionUseCase implements ICreateCommissionUseCase {
@@ -27,7 +29,7 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
     private readonly _platformConfigRepository: IPlatformConfigRepository,
   ) {}
 
-  async execute(dto: CreateCommissionDto): Promise<any> {
+  async execute(dto: CreateCommissionDto): Promise<CreateCommissionResponse> {
     const {
       requesterId,
       artistId,
@@ -50,20 +52,17 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
       );
     }
 
-    const artist = await this._userService.getUserById(artistId);
+    const artist = await this._userService.getUserById(artistId) as UserPublicProfile | null;
     if (!artist) {
       console.error('Artist validation failed for ID:', artistId);
       throw new NotFoundError(COMMISSION_MESSAGES.ARTIST_NOT_FOUND);
     }
 
-    if ((artist as any).role !== 'artist') {
+    if (artist.role !== 'artist') {
       console.error('User is not an artist:', artistId);
       throw new BadRequestError(COMMISSION_MESSAGES.INVALID_ARTIST_ROLE);
     }
 
-    // User is now able to create multiple commissions instead of blocking if one exists
-
-    // 1. Create Conversation in Chat Service (Type: REQUEST)
     let conversationId: string;
     try {
       conversationId = await this._chatService.createRequestConversation(
@@ -85,7 +84,7 @@ export class CreateCommissionUseCase implements ICreateCommissionUseCase {
           return url.split('.cloudfront.net/')[1];
         }
         return url;
-      } catch (e) {
+      } catch {
         return url;
       }
     };

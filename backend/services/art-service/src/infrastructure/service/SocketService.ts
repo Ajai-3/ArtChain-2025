@@ -5,12 +5,18 @@ import { redisPub, redisSub } from '../config/redis';
 import { logger } from '../../utils/logger';
 import { registerAuctionEvents } from '../socket/auctionHandler';
 import { authMiddleware } from '../../presentation/middleware/authMiddleware';
+import type { Server as HttpServer } from 'http';
+import type {
+  SocketAuctionEndedPayload,
+  SocketAuctionUpdatePayload,
+  SocketBidPayload,
+} from '../../types/socket';
 
 @injectable()
 export class SocketService implements ISocketService {
     private io: Server | undefined;
 
-    initialize(server: any): void {
+    initialize(server: HttpServer): void {
         this.io = new Server(server, {
             path: '/socket.io/bidding',
             cors: {
@@ -48,7 +54,7 @@ export class SocketService implements ISocketService {
         }
     }
 
-    publishBid(bid: any): void {
+    publishBid(bid: SocketBidPayload): void {
         // Broadcast locally immediately
         if (this.io) {
             this.io.emit('bid_placed', bid);
@@ -57,14 +63,14 @@ export class SocketService implements ISocketService {
         if (redisPub) redisPub.publish('bid_placed', JSON.stringify(bid));
     }
 
-    publishAuctionUpdate(auction: any): void {
+    publishAuctionUpdate(auction: SocketAuctionUpdatePayload): void {
         if (this.io) {
             this.io.emit('auction_updated', auction);
         }
         if (redisPub) redisPub.publish('auction_updated', JSON.stringify(auction));
     }
 
-    publishAuctionEnded(data: any): void {
+    publishAuctionEnded(data: SocketAuctionEndedPayload): void {
         if (this.io) {
             this.io.emit('auction_ended', data);
         }

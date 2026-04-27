@@ -6,9 +6,10 @@ import { CommissionStatus } from '../../../domain/entities/Commission';
 import { IWalletService } from '../../../domain/interfaces/IWalletService';
 import { CommissionMapper } from '../../mapper/CommissionMapper';
 import { COMMISSION_MESSAGES } from '../../../constants/CommissionMessage';
+import { IResolveCommissionDisputeUseCase, ResolveDisputeResolution, CommissionDTO } from '../../interface/usecase/commission/IResolveCommissionDisputeUseCase';
 
 @injectable()
-export class ResolveCommissionDisputeUseCase {
+export class ResolveCommissionDisputeUseCase implements IResolveCommissionDisputeUseCase {
   constructor(
     @inject(TYPES.ICommissionRepository)
     private readonly _commissionRepository: ICommissionRepository,
@@ -16,7 +17,7 @@ export class ResolveCommissionDisputeUseCase {
     private readonly _walletService: IWalletService
   ) {}
 
-  async execute(id: string, resolution: 'REFUND' | 'RELEASE'): Promise<any> {
+  async execute(id: string, resolution: ResolveDisputeResolution): Promise<CommissionDTO> {
     const commission = await this._commissionRepository.getById(id);
     if (!commission) throw new NotFoundError(COMMISSION_MESSAGES.COMMISSION_NOT_FOUND);
 

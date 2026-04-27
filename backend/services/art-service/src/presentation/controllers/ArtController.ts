@@ -18,13 +18,13 @@ import { ICountArtWorkUseCase } from '../../application/interface/usecase/art/IC
 import { IDeleteArtPostUseCase } from '../../application/interface/usecase/art/IDeleteArtPostUseCase';
 import { IUpdateArtPostUseCase } from '../../application/interface/usecase/art/IUpdateArtPostUseCase';
 import { ICreateArtPostUseCase } from '../../application/interface/usecase/art/ICreateArtPostUseCase';
+import { IDeleteUserArtPostUseCase } from '../../application/interface/usecase/art/IDeleteUserArtPostUseCase';
 import { IGetSalesAnalyticsUseCase } from '../../application/interface/usecase/art/IGetSalesAnalyticsUseCase';
 import { ISaledArtworkOfuserUseCase } from '../../application/interface/usecase/art/ISaledArtworkOfuserUseCase';
 import { IArtToElasticSearchUseCase } from '../../application/interface/usecase/art/IArtToElasticSearchUseCase';
 import { IGetAllArtWithUserIdUseCase } from '../../application/interface/usecase/art/IGetAllArtWithUserIdUseCase';
 import { IGetPurchasedArtWorksUseCase } from '../../application/interface/usecase/art/IGetPurchasedArtWorksUseCase';
 import { IGetPurchaseAnalyticsUseCase } from '../../application/interface/usecase/art/IGetPurchaseAnalyticsUseCase';
-import { IDeleteUserArtPostUseCase } from '../../application/interface/usecase/art/IDeleteUserArtPostUseCase';
 
 @injectable()
 export class ArtController implements IArtController {
@@ -82,7 +82,9 @@ export class ArtController implements IArtController {
         currentUserId,
       );
 
-      logger.info(`${data.art.artName} fetched succefully.`);
+      if (data?.art) {
+        logger.info(`${(data.art as any).artName} fetched succefully.`);
+      }
 
       return res
         .status(HttpStatus.OK)
@@ -246,7 +248,7 @@ export class ArtController implements IArtController {
     try {
       const userId = req.headers['x-user-id'] as string;
 
-      const validatedData = validateWithZod(createArtPostSchema, req.body);
+      const validatedData = validateWithZod(createArtPostSchema, req.body) as CreateArtPostDTO;
 
       const dto: CreateArtPostDTO = { ...validatedData, userId };
       const createdArt = await this._createArtUseCase.execute(dto);
@@ -527,7 +529,7 @@ export class ArtController implements IArtController {
       );
 
       logger.info(
-        `✅ [PurchasedArtWorks] Fetched ${arts.length} purchased arts for userId=${userId}`,
+        `✅ [PurchasedArtWorks] Fetched ${arts.purchases.length} purchased arts for userId=${userId}`,
       );
 
       return res.status(HttpStatus.OK).json({

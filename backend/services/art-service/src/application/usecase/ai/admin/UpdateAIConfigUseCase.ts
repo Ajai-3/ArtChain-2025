@@ -2,6 +2,8 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../../infrastructure/Inversify/types';
 import { IAIConfigRepository } from '../../../../domain/repositories/IAIConfigRepository';
 import { IUpdateAIConfigUseCase } from '../../../interface/usecase/ai/admin/IUpdateAIConfigUseCase';
+import type { JsonObject } from '../../../../types/json';
+import type { AIConfig } from '../../../../domain/entities/AIConfig';
 
 @injectable()
 export class UpdateAIConfigUseCase implements IUpdateAIConfigUseCase {
@@ -10,43 +12,36 @@ export class UpdateAIConfigUseCase implements IUpdateAIConfigUseCase {
     private readonly _aiConfigRepo: IAIConfigRepository,
   ) {}
 
-  async execute(provider: string, updates: any) {
+  async execute(provider: string, updates: JsonObject): Promise<AIConfig> {
     try {
-      // Find existing config
       const existingConfig = await this._aiConfigRepo.findByProvider(provider);
 
       if (existingConfig) {
-        // Use the id field directly from the entity
         const updated = await this._aiConfigRepo.update(
           existingConfig.id,
-          updates,
+          updates as Partial<AIConfig>,
         );
         return updated;
       }
 
-      // Create new config
       const newConfig = await this._aiConfigRepo.create({
+        id: '',
         provider,
-        displayName: updates.displayName || provider,
-        enabled: updates.enabled !== undefined ? updates.enabled : false,
-        isFree: updates.isFree !== undefined ? updates.isFree : true,
-        dailyFreeLimit: updates.dailyFreeLimit || 5,
-        artcoinCostPerImage: updates.artcoinCostPerImage || 0,
-        defaultModel: updates.defaultModel || '',
-        availableModels: updates.availableModels || [],
-        maxPromptLength: updates.maxPromptLength || 500,
-        allowedResolutions: updates.allowedResolutions || [
-          '512x512',
-          '768x768',
-          '1024x1024',
-        ],
-        maxImageCount: updates.maxImageCount || 4,
-        defaultSteps: updates.defaultSteps || 30,
-        defaultGuidanceScale: updates.defaultGuidanceScale || 7.5,
-        priority: updates.priority || 99,
-        apiKey: updates.apiKey || '',
-        ...updates,
-      });
+        displayName: (updates.displayName as string) || provider,
+        enabled: updates.enabled !== undefined ? (updates.enabled as boolean) : false,
+        isFree: updates.isFree !== undefined ? (updates.isFree as boolean) : true,
+        dailyFreeLimit: (updates.dailyFreeLimit as number) || 5,
+        artcoinCostPerImage: (updates.artcoinCostPerImage as number) || 0,
+        defaultModel: (updates.defaultModel as string) || '',
+        availableModels: (updates.availableModels as string[]) || [],
+        maxPromptLength: (updates.maxPromptLength as number) || 500,
+        allowedResolutions: (updates.allowedResolutions as string[]) || ['512x512', '768x768', '1024x1024'],
+        maxImageCount: (updates.maxImageCount as number) || 4,
+        defaultSteps: (updates.defaultSteps as number) || 30,
+        defaultGuidanceScale: (updates.defaultGuidanceScale as number) || 7.5,
+        priority: (updates.priority as number) || 99,
+        apiKey: (updates.apiKey as string) || '',
+      } as AIConfig);
       return newConfig;
     } catch (error) {
       console.error('===== UpdateAIConfigUseCase ERROR =====');

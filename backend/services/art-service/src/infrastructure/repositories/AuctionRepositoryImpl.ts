@@ -3,6 +3,7 @@ import { BaseRepositoryImpl } from './BaseRepositoryImpl';
 import { Auction, AuctionStatus } from '../../domain/entities/Auction';
 import { AuctionModel } from '../models/AuctionModel';
 import { IAuctionRepository } from '../../domain/repositories/IAuctionRepository';
+import type { MongoQuery } from '../../types/mongo';
 
 @injectable()
 export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implements IAuctionRepository {
@@ -11,11 +12,11 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
   }
 
   async findByStatus(status: string): Promise<Auction[]> {
-    return AuctionModel.find({ status }).sort({ createdAt: -1 }).lean() as unknown as Auction[];
+    return AuctionModel.find({ status }).sort({ createdAt: -1 }).lean<Auction[]>();
   }
 
   async findByHostId(hostId: string): Promise<Auction[]> {
-    return AuctionModel.find({ hostId }).sort({ createdAt: -1 }).lean() as unknown as Auction[];
+    return AuctionModel.find({ hostId }).sort({ createdAt: -1 }).lean<Auction[]>();
   }
 
   async findUserBiddingHistory(
@@ -24,7 +25,7 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     limit = 10,
     status?: AuctionStatus
   ): Promise<Auction[]> {
-    const query: any = {};
+    const query: MongoQuery = {};
 
     if (status) {
       query.status = status;
@@ -56,7 +57,7 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     return AuctionModel.find({})
       .sort({ createdAt: -1 })
       .limit(limit)
-      .lean() as unknown as Auction[];
+      .lean<Auction[]>();
   }
 
   async findActiveAuctions(
@@ -68,7 +69,7 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     hostId?: string
   ): Promise<{ auctions: Auction[]; total: number }> {
 
-    const query: any = {};
+    const query: MongoQuery = {};
 
     if (hostId) {
       query.hostId = hostId;
@@ -95,7 +96,7 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
-        .lean() as unknown as Auction[],
+        .lean<Auction[]>(),
       AuctionModel.countDocuments(query)
     ]);
 
@@ -113,7 +114,7 @@ export class AuctionRepositoryImpl extends BaseRepositoryImpl<Auction> implement
     sold: number;
     unsold: number;
   }> {
-    const query: any = {};
+    const query: MongoQuery = {};
     if (startDate || endDate) {
       query.startTime = {};
       if (startDate) query.startTime.$gte = startDate;

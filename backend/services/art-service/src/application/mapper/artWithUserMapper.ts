@@ -1,27 +1,35 @@
 import { mapCdnUrl } from '../../utils/mapCdnUrl';
+import type {
+  ArtPostLike,
+  ArtWithUserResponse,
+  PurchaseLike,
+} from '../../types/art-mapper';
+import type { UserPublicProfile } from '../../types/user';
 
 export const toArtWithUserResponse = (
-  art: any,
-  userData?: any,
-  purchaser?: any,
-) => {
+  art: ArtPostLike,
+  userData?: UserPublicProfile,
+  purchaser?: UserPublicProfile,
+): ArtWithUserResponse => {
   return {
     user: {
-      id: userData?.id,
-      name: userData?.name,
-      username: userData?.username,
-      profileImage: userData?.profileImage,
-      bannerImage: userData?.bannerImage,
-      role: userData?.role,
-      status: userData?.status,
-      isVerified: userData?.isVerified,
-      plan: userData?.plan,
+      id: userData?.id ?? '',
+      name: userData?.name ?? '',
+      username: userData?.username ?? '',
+      profileImage: userData?.profileImage ?? '',
+      bannerImage: userData?.bannerImage ?? '',
+      role: userData?.role ?? '',
+      status: userData?.status ?? '',
+      isVerified: userData?.isVerified ?? false,
+      plan: userData?.plan ?? '',
       supportersCount: userData?.supportersCount ?? 0,
       supportingCount: userData?.supportingCount ?? 0,
       isSupporting: userData?.isSupporting ?? false,
     },
     art: {
-      id: art._id ?? art.id,
+      id: (typeof art._id === 'string'
+        ? art._id
+        : art._id?.toString()) ?? art.id ?? '',
       userId: art.userId,
       title: art.title,
       artName: art.artName,
@@ -41,8 +49,8 @@ export const toArtWithUserResponse = (
       updatedAt: art.updatedAt,
       imageUrl:
         art.isForSale || art.downloadingDisabled
-          ? mapCdnUrl(art.watermarkedUrl)
-          : mapCdnUrl(art.previewUrl),
+          ? mapCdnUrl(art.watermarkedUrl) ?? ''
+          : mapCdnUrl(art.previewUrl) ?? '',
     },
     ...(art.isForSale && {
       price: {
@@ -64,9 +72,12 @@ export const toArtWithUserResponse = (
   };
 };
 
-export const toShopItemResponse = (art: any, user: any) => {
+export const toShopItemResponse = (art: ArtPostLike, user: UserPublicProfile) => {
   return {
-    id: art._id ?? art.id,
+    id:
+      (typeof art._id === 'string' ? art._id : art._id?.toString()) ??
+      art.id ??
+      '',
     title: art.title,
     price: {
       artcoins: art.artcoins,
@@ -84,12 +95,15 @@ export const toShopItemResponse = (art: any, user: any) => {
 };
 
 export const toShopArtListResponse = (
-  art: any,
-  user: any,
+  art: ArtPostLike,
+  user: UserPublicProfile | null,
   favoriteCount: number,
 ) => {
   return {
-    id: art._id ?? art.id,
+    id:
+      (typeof art._id === 'string' ? art._id : art._id?.toString()) ??
+      art.id ??
+      '',
     title: art.title,
     artName: art.artName,
     previewUrl: mapCdnUrl(art.previewUrl),
@@ -110,10 +124,16 @@ export const toShopArtListResponse = (
   };
 };
 
-export const toArtWithUserForFavoriteResponse = (art: any, user: any) => {
+export const toArtWithUserForFavoriteResponse = (
+  art: ArtPostLike,
+  user: UserPublicProfile,
+) => {
   return {
     art: {
-      id: art?._id?.toString() || art?.id,
+      id:
+        (typeof art._id === 'string' ? art._id : art._id?.toString()) ||
+        art.id ||
+        '',
       userId: art.userId,
       title: art.title,
       artName: art.artName,
@@ -135,7 +155,7 @@ export const toArtWithUserForFavoriteResponse = (art: any, user: any) => {
       updatedAt: art.updatedAt,
     },
     user: {
-      id: user?.id || user?._id?.toString(),
+      id: user?.id,
       name: user?.name || 'Unknown Artist',
       username: user?.username || 'unknown',
       profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : '',
@@ -143,10 +163,16 @@ export const toArtWithUserForFavoriteResponse = (art: any, user: any) => {
   };
 };
 
-export const toArtWithUserForLikeResponse = (art: any, user: any) => {
+export const toArtWithUserForLikeResponse = (
+  art: ArtPostLike,
+  user: UserPublicProfile,
+) => {
   return {
     art: {
-      id: art?._id?.toString() || art?.id,
+      id:
+        (typeof art._id === 'string' ? art._id : art._id?.toString()) ||
+        art.id ||
+        '',
       userId: art.userId,
       title: art.title,
       artName: art.artName,
@@ -168,7 +194,7 @@ export const toArtWithUserForLikeResponse = (art: any, user: any) => {
       updatedAt: art.updatedAt,
     },
     user: {
-      id: user?.id || user?._id?.toString(),
+      id: user?.id,
       name: user?.name || 'Unknown Artist',
       username: user?.username || 'unknown',
       profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : '',
@@ -176,20 +202,27 @@ export const toArtWithUserForLikeResponse = (art: any, user: any) => {
   };
 };  
 
-export const toSaleHistoryResponse = (purchase: any, art: any, buyer: any) => {
+export const toSaleHistoryResponse = (
+  purchase: PurchaseLike,
+  art: ArtPostLike | null,
+  buyer: UserPublicProfile | null,
+) => {
   return {
     transactionId: purchase.transactionId,
     purchaseDate: purchase.purchaseDate,
     amount: purchase.amount,
     art: art ? {
-      id: art._id?.toString() || art.id,
+      id:
+        (typeof art._id === 'string' ? art._id : art._id?.toString()) ||
+        art.id ||
+        '',
       title: art.title,
       artName: art.artName,
       imageUrl: mapCdnUrl(art.previewUrl),
       category: art.category,
     } : null,
     buyer: buyer ? {
-      id: buyer.id || buyer._id?.toString(),
+      id: buyer.id,
       name: buyer.name,
       username: buyer.username,
       profileImage: buyer.profileImage ? mapCdnUrl(buyer.profileImage) : '',
@@ -197,13 +230,20 @@ export const toSaleHistoryResponse = (purchase: any, art: any, buyer: any) => {
   };
 };
 
-export const toPurchaseHistoryResponse = (purchase: any, art: any, seller: any) => {
+export const toPurchaseHistoryResponse = (
+  purchase: PurchaseLike,
+  art: ArtPostLike | null,
+  seller: UserPublicProfile | null,
+) => {
   return {
     transactionId: purchase.transactionId,
     purchaseDate: purchase.purchaseDate,
     amount: purchase.amount,
     art: art ? {
-      id: art._id?.toString() || art.id,
+      id:
+        (typeof art._id === 'string' ? art._id : art._id?.toString()) ||
+        art.id ||
+        '',
       title: art.title,
       artName: art.artName,
       imageUrl: mapCdnUrl(art.previewUrl),
@@ -211,10 +251,73 @@ export const toPurchaseHistoryResponse = (purchase: any, art: any, seller: any) 
       createdAt: art.createdAt,
     } : null,
     seller: seller ? {
-      id: seller.id || seller._id?.toString(),
+      id: seller.id,
       name: seller.name,
       username: seller.username,
       profileImage: seller.profileImage ? mapCdnUrl(seller.profileImage) : '',
     } : null,
+  };
+};
+
+export const toCreateArtPostResponse = (
+  art: { userId: string; title: string; artName?: string; description: string; artType: string; hashtags?: string[]; previewUrl: string; watermarkedUrl: string; aspectRatio?: string; isForSale?: boolean; priceType?: string; artcoins?: number; fiatPrice?: number | null; postType?: string; isSensitive?: boolean; isPrivate?: boolean; commentingDisabled?: boolean; downloadingDisabled?: boolean; status?: string; createdAt?: Date; updatedAt?: Date },
+  categoryId: string,
+  count: number
+) => {
+  return {
+    id: String(count),
+    userId: art.userId,
+    title: art.title,
+    artName: art.artName ?? '',
+    description: art.description,
+    artType: art.artType,
+    hashtags: art.hashtags ?? [],
+    previewUrl: art.previewUrl,
+    watermarkedUrl: art.watermarkedUrl,
+    aspectRatio: art.aspectRatio ?? '1:1',
+    isForSale: art.isForSale ?? false,
+    priceType: art.priceType,
+    artcoins: art.artcoins,
+    fiatPrice: art.fiatPrice,
+    postType: art.postType ?? 'original',
+    category: categoryId,
+    isSensitive: art.isSensitive ?? false,
+    isPrivate: art.isPrivate ?? false,
+    commentingDisabled: art.commentingDisabled ?? false,
+    downloadingDisabled: art.downloadingDisabled ?? false,
+    status: art.status ?? 'draft',
+    createdAt: art.createdAt,
+    updatedAt: art.updatedAt,
+  };
+};
+
+export const toUpdateArtPostResponse = (
+  updatedArt: { userId: string; title: string; artName?: string; description: string; artType: string; hashtags?: string[]; previewUrl: string; watermarkedUrl: string; aspectRatio?: string; isForSale?: boolean; priceType?: string; artcoins?: number; fiatPrice?: number | null; postType?: string; isSensitive?: boolean; isPrivate?: boolean; commentingDisabled?: boolean; downloadingDisabled?: boolean; status?: string; createdAt?: Date; updatedAt?: Date; categoryId?: string },
+  id: string
+) => {
+  return {
+    id: String(updatedArt.categoryId ?? id),
+    userId: updatedArt.userId,
+    title: updatedArt.title,
+    artName: updatedArt.artName ?? '',
+    description: updatedArt.description,
+    artType: updatedArt.artType,
+    hashtags: updatedArt.hashtags ?? [],
+    previewUrl: updatedArt.previewUrl,
+    watermarkedUrl: updatedArt.watermarkedUrl,
+    aspectRatio: updatedArt.aspectRatio ?? '1:1',
+    isForSale: updatedArt.isForSale ?? false,
+    priceType: updatedArt.priceType,
+    artcoins: updatedArt.artcoins,
+    fiatPrice: updatedArt.fiatPrice,
+    postType: updatedArt.postType ?? 'original',
+    category: updatedArt.categoryId ?? '',
+    isSensitive: updatedArt.isSensitive ?? false,
+    isPrivate: updatedArt.isPrivate ?? false,
+    commentingDisabled: updatedArt.commentingDisabled ?? false,
+    downloadingDisabled: updatedArt.downloadingDisabled ?? false,
+    status: updatedArt.status ?? 'draft',
+    createdAt: updatedArt.createdAt,
+    updatedAt: updatedArt.updatedAt,
   };
 };

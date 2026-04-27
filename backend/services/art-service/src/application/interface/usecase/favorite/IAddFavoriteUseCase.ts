@@ -1,3 +1,4 @@
+
 export interface IAddFavoriteUseCase {
-  execute(postId: string, userId: string): Promise<any>;
+  execute(postId: string, userId: string): Promise<void>;
 }

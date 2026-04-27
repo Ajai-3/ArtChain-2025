@@ -1,5 +1,5 @@
-import { Commission } from '../../../../domain/entities/Commission';
+import type { GetCommissionByConversationResponse } from '../../../../types/usecase-response';
 
 export interface IGetCommissionByConversationUseCase {
-  execute(conversationId: string): Promise<any>;
+  execute(conversationId: string): Promise<GetCommissionByConversationResponse>;
 }

@@ -1,7 +1,13 @@
-import { inject, injectable } from "inversify";
-import { TYPES } from "../../../infrastructure/Inversify/types";
-import { IPurchaseRepository } from "../../../domain/repositories/IPurchaseRepository";
-import { IGetPurchaseAnalyticsUseCase } from "../../interface/usecase/art/IGetPurchaseAnalyticsUseCase";
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../../../infrastructure/Inversify/types';
+import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepository';
+import { IGetPurchaseAnalyticsUseCase } from '../../interface/usecase/art/IGetPurchaseAnalyticsUseCase';
+
+interface TimelineItem {
+  _id: string;
+  count: number;
+  totalSpent: number;
+}
 
 @injectable()
 export class GetPurchaseAnalyticsUseCase implements IGetPurchaseAnalyticsUseCase {
@@ -29,12 +35,12 @@ export class GetPurchaseAnalyticsUseCase implements IGetPurchaseAnalyticsUseCase
         const result = rawData[0];
 
         const stats = result?.stats?.[0] || { totalSpent: 0, totalItems: 0 };
-        const timeline = result?.timeline || [];
+        const timeline = (result?.timeline || []) as TimelineItem[];
 
         return {
             totalPurchases: stats.totalItems,
             totalAmount: stats.totalSpent,
-            purchaseTrend: timeline.map((item: any) => ({
+            purchaseTrend: timeline.map((item) => ({
                 date: item._id,
                 count: item.count,
                 amount: item.totalSpent

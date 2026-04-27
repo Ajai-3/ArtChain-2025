@@ -50,7 +50,7 @@ export class FavoriteController implements IFavoriteController {
       return res
         .status(HttpStatus.CREATED)
         .json({ message: FAVORITE_MESSAGES.ADD_SUCCESS });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
   };

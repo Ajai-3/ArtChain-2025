@@ -271,7 +271,6 @@ container
 container
   .bind<IAIGenerationRepository>(TYPES.IAIGenerationRepository)
   .to(AIGenerationRepositoryImpl);
-
 container
   .bind<IAIConfigRepository>(TYPES.IAIConfigRepository)
   .to(AIConfigRepositoryImpl);

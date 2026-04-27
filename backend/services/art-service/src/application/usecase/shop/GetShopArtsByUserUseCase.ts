@@ -6,6 +6,8 @@ import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepos
 import { IGetShopArtsByUserUseCase } from '../../interface/usecase/art/IGetAllShopArtsUseCase';
 import { IUserService } from '../../interface/service/IUserService';
 import { mapCdnUrl } from '../../../utils/mapCdnUrl';
+import type { ArtPostLean } from '../../../types/art';
+import type { ShopArtByUserItem } from '../../../types/shop';
 
 @injectable()
 export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
@@ -18,7 +20,7 @@ export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
     private readonly _favoriteRepo: IFavoriteRepository,
   ) {}
 
-  async execute(userId: string, page = 1, limit = 10): Promise<any[]> {
+  async execute(userId: string, page = 1, limit = 10): Promise<ShopArtByUserItem[]> {
     const userRes = await this._userService.getUserById(userId);
     if (!userRes) {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
@@ -27,9 +29,9 @@ export class GetShopArtsByUserUseCase implements IGetShopArtsByUserUseCase {
     const arts = await this._artRepo.findAllByUser(userId, page, limit);
 
     const artsWithFavorites = await Promise.all(
-      arts.map(async (art: any) => {
+      arts.map(async (art: ArtPostLean) => {
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-          art._id.toString(),
+          (typeof art._id === 'string' ? art._id : art._id?.toString()) ?? '',
         );
         return {
           ...art,

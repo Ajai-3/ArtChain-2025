@@ -5,6 +5,13 @@ import { IArtPostRepository } from '../../../domain/repositories/IArtPostReposit
 import { IGetCommentByIdUseCase } from '../../interface/usecase/comment/IGetCommentByIdUseCase';
 import { IUserService } from '../../interface/service/IUserService';
 import { Comment } from '../../../domain/entities/Comment';
+import type { UserPublicProfile } from '../../../types/user';
+import type { ArtPostLean } from '../../../types/art';
+
+export type CommentWithDetails = Comment & {
+  user: UserPublicProfile | null;
+  art: (ArtPostLean & { user: UserPublicProfile | null }) | null;
+};
 
 @injectable()
 export class GetCommentByIdUseCase implements IGetCommentByIdUseCase {
@@ -17,18 +24,15 @@ export class GetCommentByIdUseCase implements IGetCommentByIdUseCase {
     private readonly _userService: IUserService
   ) {}
 
-  async execute(commentId: string): Promise<any> {
+  async execute(commentId: string): Promise<CommentWithDetails | null> {
     const comment = await this._commentRepository.getById(commentId);
     if (!comment) return null;
     
-    // Fetch comment owner
     const commentOwner = await this._userService.getUserById(comment.userId);
 
-    // Fetch associated artwork
     const art = await this._artRepo.getById(comment.postId);
     let artOwner = null;
     if (art) {
-        // Fetch art owner for navigation: /username/art/artname
         artOwner = await this._userService.getUserById(art.userId);
     }
 

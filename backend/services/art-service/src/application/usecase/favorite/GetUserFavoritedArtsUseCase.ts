@@ -9,6 +9,7 @@ import { IArtPostRepository } from '../../../domain/repositories/IArtPostReposit
 import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
 import { IGetUserFavoritedArtsUseCase } from '../../interface/usecase/favorite/IGetUserFavoritedArtsUseCase';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
 export class GetUserFavoritedArtsUseCase implements IGetUserFavoritedArtsUseCase {
@@ -34,21 +35,22 @@ export class GetUserFavoritedArtsUseCase implements IGetUserFavoritedArtsUseCase
 
     const userIds = [...new Set(rawArts.map(art => art.userId))];
     const users = await this._userService.getUsersByIds(userIds);
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
+    const userMap = new Map<string, UserPublicProfile>(users.map((u) => [u.id, u]));
 
     const enrichedArts = await Promise.all(
       rawArts.map(async (art) => {
         const user = userMap.get(art.userId);
+        const artId = String(art._id);
 
         const [likeCount, favoriteCount, commentCount, isLiked, isFavorited] = await Promise.all([
-          this._likeRepo.likeCountByPostId(art._id),
-          this._favoriteRepo.favoriteCountByPostId(art._id),
-          this._commentRepo.countByPostId(art._id),
-          currentUserId ? this._likeRepo.findLike(art._id, currentUserId) : null,
-          currentUserId ? this._favoriteRepo.findFavorite(art._id, currentUserId) : null,
+          this._likeRepo.likeCountByPostId(artId),
+          this._favoriteRepo.favoriteCountByPostId(artId),
+          this._commentRepo.countByPostId(artId),
+          currentUserId ? this._likeRepo.findLike(artId, currentUserId) : null,
+          currentUserId ? this._favoriteRepo.findFavorite(artId, currentUserId) : null,
         ]);
 
-        const baseArtWithUser = toArtWithUserForFavoriteResponse(art, user);
+        const baseArtWithUser = toArtWithUserForFavoriteResponse(art, user!);
 
         return {
           ...baseArtWithUser,

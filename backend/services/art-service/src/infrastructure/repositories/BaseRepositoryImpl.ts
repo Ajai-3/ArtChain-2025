@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose, { Model, Document, Query, HydratedDocument } from 'mongoose';
 import { injectable } from 'inversify';
 import { IBaseRepository } from '../../domain/repositories/IBaseRepository';
 
 @injectable()
 export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
-  private model: mongoose.Model<any>;
+  protected model: Model<any>;
 
-  constructor(model: mongoose.Model<any>) {
+  constructor(model: Model<any>) {
     this.model = model;
   }
 
@@ -14,8 +14,8 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
     return this.model.countDocuments();
   }
 
-  async create(entity: T): Promise<T> {
-    const created = await this.model.create(entity);
+  async create(entity: unknown): Promise<T> {
+    const created = await this.model.create(entity as mongoose.Document);
     return created.toObject() as T;
   }
 
@@ -34,7 +34,7 @@ export class BaseRepositoryImpl<T> implements IBaseRepository<T> {
     return docs as T[];
   }
 
-  async update(id: string, entity: Partial<T>): Promise<T> {
+  async update(id: string, entity: Record<string, unknown>): Promise<T> {
     const updated = await this.model
       .findOneAndUpdate({ _id: id }, entity, { new: true })
       .lean();

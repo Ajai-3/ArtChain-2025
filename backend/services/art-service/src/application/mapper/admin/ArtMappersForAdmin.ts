@@ -1,6 +1,14 @@
-import { mapCdnUrl } from "../../../utils/mapCdnUrl";
+import { mapCdnUrl } from '../../../utils/mapCdnUrl';
+import type {
+  AdminArtListItem,
+  AdminArtMapperInput,
+} from '../../../types/admin';
 
-export const toGetAllArtForAdmin = (art: any, user: any, counts: any) => {
+export const toGetAllArtForAdmin = (
+  art: AdminArtMapperInput['art'],
+  user: AdminArtMapperInput['user'],
+  counts: AdminArtMapperInput['counts'],
+): AdminArtListItem => {
   return {
     id: art?.id as string,
     artName: art?.artName,
@@ -9,21 +17,21 @@ export const toGetAllArtForAdmin = (art: any, user: any, counts: any) => {
     postType: art.postType,
     createdAt: art?.createdAt,
     updatedAt: art?.updatedAt,
-    status: art?.status, 
-    priceType: art?.priceType, 
+    status: art?.status,
+    priceType: art?.priceType,
     artcoins: art?.artcoins,
     fiatPrice: art?.fiatPrice,
-    previewUrl: mapCdnUrl(art.previewUrl),
+    previewUrl: mapCdnUrl(art.previewUrl) || '',
     user: {
-        name: user?.name || 'Unknown',
-        username: user?.username || 'unknown',
-        profileImage: user?.profileImage ? mapCdnUrl(user.profileImage) : '',
-      },
+      name: user?.name || 'Unknown',
+      username: user?.username || 'unknown',
+      profileImage: (user?.profileImage ? mapCdnUrl(user.profileImage) : '') ?? '',
+    },
     counts: {
-        likes: counts.likes || 0,
-        comments: counts.comments || 0,
-        favorites: counts.favorites || 0,
-        downloads: art.downloads || 0, 
-      },
+      likes: counts.likes || 0,
+      comments: counts.comments || 0,
+      favorites: counts.favorites || 0,
+      downloads: art.downloads || 0,
+    },
   };
-}
+};

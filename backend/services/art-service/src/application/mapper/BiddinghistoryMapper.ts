@@ -1,6 +1,11 @@
-import { mapCdnUrl } from "../../utils/mapCdnUrl";
+import { mapCdnUrl } from '../../utils/mapCdnUrl';
+import type { BiddingHistoryAuction, BiddingHistoryUser } from '../../types/bidding';
 
-export const toBiddingHistoryResponse = (auction: any, host: any, winner?: any) => {
+export const toBiddingHistoryResponse = (
+  auction: BiddingHistoryAuction,
+  host: BiddingHistoryUser | null,
+  winner?: BiddingHistoryUser | null,
+) => {
   return {
     auction: {
       id: auction.id || auction._id?.toString(),

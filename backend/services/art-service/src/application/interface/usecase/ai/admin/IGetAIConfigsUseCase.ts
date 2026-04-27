@@ -1,3 +1,5 @@
+import type { GetAIConfigsResponse } from '../../../../../types/usecase-response';
+
 export interface IGetAIConfigsUseCase {
-  execute(): Promise<any>;
+  execute(): Promise<GetAIConfigsResponse>;
 }

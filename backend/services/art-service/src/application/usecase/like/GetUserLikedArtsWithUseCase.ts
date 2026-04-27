@@ -1,8 +1,10 @@
 import { inject, injectable } from 'inversify';
 import { BadRequestError } from 'art-chain-shared';
+import type { UserPublicProfile } from '../../../types/user';
 import { ART_MESSAGES } from '../../../constants/ArtMessages';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { IUserService } from '../../interface/service/IUserService';
+import { GetUserLikedArtsResponse } from '../../../types/usecase-response';
 import { toArtWithUserForLikeResponse } from '../../mapper/artWithUserMapper';
 import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
@@ -23,7 +25,7 @@ export class GetUserLikedArtsWithUseCase implements IGetUserLikedArtsWithUseCase
     private readonly _artRepo: IArtPostRepository,
   ) { }
 
-  async execute(userId: string, page: number = 1, limit: number = 10) {
+  async execute(userId: string, page: number = 1, limit: number = 10): Promise<GetUserLikedArtsResponse> {
     if (!userId) {
       throw new BadRequestError(ART_MESSAGES.USER_ID_REQUIRED);
     }
@@ -33,28 +35,31 @@ export class GetUserLikedArtsWithUseCase implements IGetUserLikedArtsWithUseCase
       page,
       limit,
     );
-    if (!likes || !likes.length) return [];
+    if (!likes || !likes.length) {
+      return { arts: [], page, limit, total: 0, length: 0 };
+    }
 
     const artIds = likes.map(fav => fav.postId);
     const rawArts = await this._artRepo.findByIds(artIds);
 
     const userIds = [...new Set(rawArts.map(art => art.userId))];
     const users = await this._userService.getUsersByIds(userIds);
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
+    const userMap = new Map<string, UserPublicProfile>(users.map((u) => [u.id, u]));
 
     const enrichedArts = await Promise.all(
       rawArts.map(async (art) => {
         const user = userMap.get(art.userId);
+        const artId = (art._id)?.toString() || art.id || '';
 
         const [likeCount, favoriteCount, commentCount, isLiked, isFavorited] = await Promise.all([
-          this._likeRepo.likeCountByPostId(art._id),
-          this._favoriteRepo.favoriteCountByPostId(art._id),
-          this._commentRepo.countByPostId(art._id),
-          this._likeRepo.findLike(art._id, userId),
-          this._favoriteRepo.findFavorite(art._id, userId),
+          this._likeRepo.likeCountByPostId(artId),
+          this._favoriteRepo.favoriteCountByPostId(artId),
+          this._commentRepo.countByPostId(artId),
+          this._likeRepo.findLike(artId, userId),
+          this._favoriteRepo.findFavorite(artId, userId),
         ]);
 
-        const baseResponse = toArtWithUserForLikeResponse(art, user);
+        const baseResponse = toArtWithUserForLikeResponse(art, user!);
 
         return {
           ...baseResponse,
@@ -67,6 +72,12 @@ export class GetUserLikedArtsWithUseCase implements IGetUserLikedArtsWithUseCase
       })
     );
 
-    return enrichedArts.filter(Boolean);
+    return {
+      arts: enrichedArts,
+      page,
+      limit,
+      total: likes.length,
+      length: enrichedArts.length
+    };
   }
 }

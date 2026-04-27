@@ -1,55 +1,21 @@
 import { injectable } from 'inversify';
-import { AIGenerationModel } from '../models/AIGenerationModel';
+import { AIGenerationModel, AIGenerationDocument } from '../models/AIGenerationModel';
 import { AIGeneration } from '../../domain/entities/AIGeneration';
+import { BaseRepositoryImpl } from '../repositories/BaseRepositoryImpl';
 import { IAIGenerationRepository } from '../../domain/repositories/IAIGenerationRepository';
 
 @injectable()
-export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
-  async create(data: any): Promise<AIGeneration> {
-    const generation = new AIGenerationModel(data);
-    const saved = await generation.save();
-    return this.toEntity(saved);
-  }
-
-  async getById(id: string): Promise<AIGeneration | null> {
-    const generation = await AIGenerationModel.findById(id);
-    return generation ? this.toEntity(generation) : null;
-  }
-
-  async getAll(page: number = 1, limit: number = 20): Promise<AIGeneration[]> {
-    const skip = (page - 1) * limit;
-    const generations = await AIGenerationModel.find({
-      isDeleted: { $ne: true },
-    })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-    return generations.map((g: any) => this.toEntity(g));
-  }
-
-  async count(): Promise<number> {
-    return await AIGenerationModel.countDocuments();
-  }
-
-  async update(
-    id: string,
-    updates: Partial<AIGeneration>,
-  ): Promise<AIGeneration> {
-    const updated = await AIGenerationModel.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      { new: true },
-    );
-    if (!updated) throw new Error('Generation not found');
-    return this.toEntity(updated);
-  }
-
-  async delete(id: string): Promise<void> {
-    await AIGenerationModel.findByIdAndUpdate(id, { isDeleted: true });
+export class AIGenerationRepositoryImpl
+  extends BaseRepositoryImpl<AIGeneration>
+  implements IAIGenerationRepository
+{
+  constructor() {
+    super(AIGenerationModel);
   }
 
   async findById(id: string): Promise<AIGeneration | null> {
-    return this.getById(id);
+    const generation = await AIGenerationModel.findById(id).lean<AIGenerationDocument | null>();
+    return generation ? this.toEntity(generation) : null;
   }
 
   async findByUserId(
@@ -64,8 +30,9 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
     })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(limit);
-    return generations.map((g: any) => this.toEntity(g));
+      .limit(limit)
+      .lean<AIGenerationDocument[]>();
+    return generations.map((g) => this.toEntity(g));
   }
 
   async countTodayFreeGenerations(userId: string): Promise<number> {
@@ -79,7 +46,7 @@ export class AIGenerationRepositoryImpl implements IAIGenerationRepository {
     });
   }
 
-  private toEntity(doc: any): AIGeneration {
+  private toEntity(doc: AIGenerationDocument): AIGeneration {
     return new AIGeneration(
       doc._id.toString(),
       doc.userId,

@@ -2,6 +2,7 @@ import axios from 'axios';
 import { injectable } from 'inversify';
 import { config } from '../config/env';
 import { IS3Service } from '../../domain/interfaces/IS3Service';
+import { SERVICE_MESSAGES } from '../../constants/ServiceMessages';
 
 @injectable()
 export class S3Service implements IS3Service {
@@ -20,8 +21,7 @@ export class S3Service implements IS3Service {
 
       return response.data.data;
     } catch (error) {
-      console.error('Error creating signed URL:', error);
-      throw error;
+      throw new Error(SERVICE_MESSAGES.S3_GET_URL_ERROR);
     }
   }
 }

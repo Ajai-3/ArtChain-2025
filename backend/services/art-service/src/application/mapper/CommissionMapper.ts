@@ -1,8 +1,13 @@
 import { Commission } from '../../domain/entities/Commission';
 import { mapCdnUrl } from '../../utils/mapCdnUrl';
+import type { UserPublicProfile } from '../../types/user';
 
 export class CommissionMapper {
-  static toDTO(commission: Commission, requester?: any, artist?: any) {
+  static toDTO(
+    commission: Commission,
+    requester?: UserPublicProfile | null,
+    artist?: UserPublicProfile | null,
+  ) {
     return {
       id: commission._id,
       requesterId: commission.requesterId,
@@ -13,8 +18,8 @@ export class CommissionMapper {
       budget: commission.budget,
       deadline: commission.deadline,
       status: commission.status,
-      referenceImages: (commission.referenceImages || []).map(img => mapCdnUrl(img)),
-      finalArtwork: mapCdnUrl(commission.finalArtwork),
+      referenceImages: (commission.referenceImages || []).map((img): string => mapCdnUrl(img) ?? ''),
+      finalArtwork: mapCdnUrl(commission.finalArtwork) ?? undefined,
       finalImageUrl: commission.finalImageUrl,
       requesterAgreed: commission.requesterAgreed,
       artistAgreed: commission.artistAgreed,
@@ -29,16 +34,16 @@ export class CommissionMapper {
       createdAt: commission.createdAt,
       updatedAt: commission.updatedAt,
       requester: requester ? {
-        id: requester.id,
-        name: requester.name,
-        username: requester.username,
-        profileImage: requester.profileImage,
+        id: requester.id ?? '',
+        name: requester.name ?? '',
+        username: requester.username ?? '',
+        profileImage: requester.profileImage ?? '',
       } : null,
       artist: artist ? {
-        id: artist.id,
-        name: artist.name,
-        username: artist.username,
-        profileImage: artist.profileImage,
+        id: artist.id ?? '',
+        name: artist.name ?? '',
+        username: artist.username ?? '',
+        profileImage: artist.profileImage ?? '',
       } : null,
     };
   }

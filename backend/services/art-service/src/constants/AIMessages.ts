@@ -8,4 +8,10 @@ export enum AI_MESSAGES {
   ALL_CONFIGS_FETCHED_SUCCESS = 'Configs fetched successfully',
   PROVIDER_TESTED_SUCCESS = 'Provider connection tested',
   GENERATION_DELETED_SUCCESS = 'Generation deleted successfully',
+  NO_PROVIDERS_ENABLED = 'No AI providers are currently enabled',
+  GENERATION_NOT_FOUND = 'AI Generation not found',
+  NOT_AUTHORIZED_TO_DELETE = 'You are not authorized to delete this generation',
+  PROVIDER_NOT_ENABLED = 'Provider \'xxx\' is not enabled or does not exist',
+  INSUFFICIENT_ARTCOINS = 'Insufficient ArtCoins or payment failed',
+  ID_AND_USERID_REQUIRED = 'Generation ID and User ID are required',
 }

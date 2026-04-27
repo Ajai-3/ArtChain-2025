@@ -42,13 +42,13 @@ export class LikeController implements ILikeController {
       const userId = req.headers['x-user-id'] as string;
       const { postId } = req.body;
 
-      const savedLike = await this._likePostUseCase.execute(postId, userId);
+      await this._likePostUseCase.execute(postId, userId);
 
       logger.info(`💓 User ${userId} successfully liked post ${postId}`);
       return res
         .status(HttpStatus.CREATED)
         .json({ message: LIKE_MESSAGES.LIKE_SUCCESS });
-    } catch (error: any) {
+    } catch (error) {
       next(error);
     }
   };
@@ -168,7 +168,7 @@ export class LikeController implements ILikeController {
       );
 
       logger.info(
-        `✅ [GetUserLikedArts] Fetched ${arts.length} liked arts for userId=${userId}`,
+        `✅ [GetUserLikedArts] Fetched ${arts?.arts.length || 0} liked arts for userId=${userId}`,
       );
 
       return res.status(HttpStatus.OK).json({

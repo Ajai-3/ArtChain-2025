@@ -5,9 +5,7 @@ import { IArtPostRepository } from '../../../domain/repositories/IArtPostReposit
 import { IWalletService } from '../../../domain/interfaces/IWalletService';
 import { Purchase } from '../../../domain/entities/Purchase';
 import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepository';
-
 import { IPlatformConfigRepository } from '../../../domain/repositories/IPlatformConfigRepository';
-import { config } from '../../../infrastructure/config/env';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { ART_MESSAGES } from '../../../constants/ArtMessages';
 

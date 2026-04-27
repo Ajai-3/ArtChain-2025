@@ -9,6 +9,8 @@ import { NotFoundError } from 'art-chain-shared';
 import { AUCTION_MESSAGES } from '../../../constants/AuctionMessages';
 import { GetAuctionByIdDTO } from '../../interface/dto/auction/GetAuctionByIdDTO';
 import { IUserService } from '../../interface/service/IUserService';
+import type { AuctionDTO } from '../../../types/auction';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
 export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
@@ -19,7 +21,7 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
     @inject(TYPES.IUserService) private readonly _userService: IUserService
   ) {}
 
-  async execute(dto: GetAuctionByIdDTO): Promise<any | null> {
+  async execute(dto: GetAuctionByIdDTO): Promise<AuctionDTO | null> {
     const { id } = dto;
     const auction = await this._auctionRepo.getById(id);
     if (!auction) {
@@ -51,9 +53,9 @@ export class GetAuctionByIdUseCase implements IGetAuctionByIdUseCase {
     bids.forEach(bid => userIds.add(bid.bidderId));
 
     const users = await this._userService.getUsersByIds([...userIds]);
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
+    const userMap = new Map<string, UserPublicProfile>(users.map((u) => [u.id, u]));
 
-    const host = userMap.get(auction.hostId);
+    const host = userMap.get(auction.hostId) ?? null;
     
     return AuctionMapper.toDTO(updatedAuction, signedImageUrl, host, bids, userMap);
   }

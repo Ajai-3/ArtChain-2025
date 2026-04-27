@@ -14,6 +14,7 @@ import { publishNotification } from '../../../infrastructure/messaging/rabbitmq'
 import { ILikePostUseCase } from '../../interface/usecase/like/ILikePostUseCase';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
 import { IUserService } from '../../interface/service/IUserService';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
 export class LikePostUseCase implements ILikePostUseCase {
@@ -48,7 +49,7 @@ export class LikePostUseCase implements ILikePostUseCase {
     if (post.userId !== userId) {
       const userIds = [post.userId, userId];
       const users = await this._userService.getUsersByIds(userIds);
-      const userMap = new Map(users.map((u: any) => [u.id, u]));
+      const userMap = new Map<string, UserPublicProfile>(users.map((u) => [u.id, u]));
 
       const likedUser = userMap.get(post.userId);
       const likerUser = userMap.get(userId);

@@ -44,13 +44,6 @@ export class AIController implements IAIController {
     try {
       const userId = req.headers['x-user-id'] as string;
 
-      if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({
-          message: ERROR_MESSAGES.UNAUTHORIZED_MISSING_HEADER,
-        });
-        return;
-      }
-
       const validatedData = validateWithZod(generateAIImageSchema, req.body);
 
       const dto: GenerateAIImageDTO = {
@@ -86,13 +79,6 @@ export class AIController implements IAIController {
     try {
       const userId = req.headers['x-user-id'] as string;
 
-      if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({
-          message: ERROR_MESSAGES.UNAUTHORIZED_MISSING_HEADER,
-        });
-        return;
-      }
-
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 20;
 
@@ -125,13 +111,6 @@ export class AIController implements IAIController {
   ): Promise<void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-
-      if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({
-          message: ERROR_MESSAGES.UNAUTHORIZED_MISSING_HEADER,
-        });
-        return;
-      }
 
       const result = await this._checkAIQuotaUseCase.execute(userId);
 
@@ -182,21 +161,7 @@ export class AIController implements IAIController {
   ): Promise<void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
-
-      if (!userId) {
-        res.status(HttpStatus.UNAUTHORIZED).json({
-          message: ERROR_MESSAGES.UNAUTHORIZED_MISSING_HEADER,
-        });
-        return;
-      }
-
       const { id } = req.params;
-      if (!id) {
-        res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Generation ID is required',
-        });
-        return;
-      }
 
       await this._deleteAIGenerationUseCase.execute(id, userId);
 

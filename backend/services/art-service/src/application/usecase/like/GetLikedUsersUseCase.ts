@@ -33,10 +33,10 @@ export class GetLikedUsersUseCase implements IGetLikedUsersUseCase {
       const user = users.find((u) => u.id === like.userId);
       return {
         userId: like.userId,
-        name: user.name,
+        name: user?.name ?? '',
         username: user?.username,
         profileImage: user?.profileImage,
-        isSupporting: user.isSupporting,
+        isSupporting: user?.isSupporting ?? false,
         likedAt: like.createdAt,
       };
     });

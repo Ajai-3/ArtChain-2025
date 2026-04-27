@@ -8,6 +8,8 @@ import { IArtPostRepository } from '../../../domain/repositories/IArtPostReposit
 import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
 import { IUserService } from '../../interface/service/IUserService';
+import type { UserPublicProfile } from '../../../types/user';
+import type { ArtRecord, GetAllArtResponse } from '../../../types/usecase';
 
 @injectable()
 export class GetAllArtUseCase implements IGetAllArtUseCase {
@@ -30,7 +32,7 @@ export class GetAllArtUseCase implements IGetAllArtUseCase {
     limit: number,
     currentUserId: string,
     categoryId?: string
-  ): Promise<any[]> {
+  ): Promise<GetAllArtResponse> {
     const arts = categoryId
       ? await this._artRepo.getAllByCategory(categoryId, page, limit)
       : await this._artRepo.getAllArt(page, limit);
@@ -51,30 +53,35 @@ export class GetAllArtUseCase implements IGetAllArtUseCase {
     const users = await this._userService.getUsersByIds(userIds);
     const categories = await this._categoryRepo.getCategoriesByIds(categoryIds);
 
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
-    const categoryMap = new Map(categories.map((c: any) => [c.id, c]));
+    const userMap = new Map<string, UserPublicProfile>(users.map((u) => [u.id, u]));
+    const categoryMap = new Map<string, (typeof categories)[number]>(
+      categories.map((c) => [(c as unknown as { _id: string })._id, c]),
+    );
 
     return await Promise.all(
-      arts.map(async (art: any) => {
-        const userData = userMap.get(art.userId) || null;
-        const categoryData = categoryMap.get(art.categoryId) || null;
+      arts.map(async (art: ArtRecord) => {
+        const userData = userMap.get(art.userId) ?? null;
+        const categoryData = art.categoryId
+          ? categoryMap.get(art.categoryId) ?? null
+          : null;
 
-        const likeCount = await this._likeRepo.likeCountByPostId(art._id);
-        const commentCount = await this._commentRepo.countByPostId(art._id);
+        const artId = art._id?.toString() ?? '';
+        const likeCount = await this._likeRepo.likeCountByPostId(artId);
+        const commentCount = await this._commentRepo.countByPostId(artId);
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-          art._id
+          artId
         );
         const isLiked = !!(
           currentUserId &&
-          (await this._likeRepo.findLike(art._id, currentUserId))
+          (await this._likeRepo.findLike(artId, currentUserId))
         );
         const isFavorited = !!(
           currentUserId &&
-          (await this._favoriteRepo.findFavorite(art._id, currentUserId))
+          (await this._favoriteRepo.findFavorite(artId, currentUserId))
         );
 
         return {
-          ...toArtWithUserResponse(art, userData),
+          ...toArtWithUserResponse(art, userData ?? undefined),
           category: categoryData,
           isLiked,
           likeCount,

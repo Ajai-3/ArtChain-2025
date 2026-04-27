@@ -4,20 +4,21 @@ import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../infrastructure/Inversify/types';
 import { validateWithZod } from '../../utils/validateWithZod';
+import { AuctionStatus } from '../../domain/entities/Auction';
 import { createAuctionSchema } from '../validators/auction.schema';
 import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
 import { IAuctionController } from '../interface/IAuctionController';
 import { GetAuctionsDTO } from '../../application/interface/dto/auction/GetAuctionsDTO';
 import { CreateAuctionDTO } from '../../application/interface/dto/auction/CreateAuctionDTO';
 import { GetAuctionByIdDTO } from '../../application/interface/dto/auction/GetAuctionByIdDTO';
+import { IEndAuctionUseCase } from '../../application/interface/usecase/auction/IEndAuctionUseCase';
 import { IGetAuctionsUseCase } from '../../application/interface/usecase/auction/IGetAuctionsUseCase';
 import { ICreateAuctionUseCase } from '../../application/interface/usecase/auction/ICreateAuctionUseCase';
 import { ICancelAuctionUseCase } from '../../application/interface/usecase/auction/ICancelAuctionUseCase';
 import { IGetAuctionByIdUseCase } from '../../application/interface/usecase/auction/IGetAuctionByIdUseCase';
-import { IGetUserBiddingHistoryUseCase } from '../../application/interface/usecase/auction/IGetUserBiddingHistoryUseCase';
 import { IGetAuctionStatsUseCase } from '../../application/interface/usecase/auction/IGetAuctionStatsUseCase';
 import { IGetRecentAuctionsUseCase } from '../../application/interface/usecase/admin/IGetRecentAuctionsUseCase';
-import { IEndAuctionUseCase } from '../../application/interface/usecase/auction/IEndAuctionUseCase';
+import { IGetUserBiddingHistoryUseCase } from '../../application/interface/usecase/auction/IGetUserBiddingHistoryUseCase';
 
 
 @injectable()
@@ -318,7 +319,7 @@ export class AuctionController implements IAuctionController {
 
       logger.info(`Fetching bidding history for user id=${userId} with page=${page}, limit=${limit}, status=${status}`);
 
-      const auctions = await this._getUserBiddingHistoryUseCase.execute(userId, page, limit, status);
+      const auctions = await this._getUserBiddingHistoryUseCase.execute(userId, page, limit, status as AuctionStatus);
 
       logger.info(`Fetched ${auctions.length} won auctions for user id=${userId}`);
 

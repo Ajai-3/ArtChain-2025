@@ -8,6 +8,7 @@ import { container } from './infrastructure/Inversify/inversify.config';
 import { TYPES } from './infrastructure/Inversify/types';
 import { ISocketService } from './domain/interfaces/ISocketService';
 import { connectRedis } from './infrastructure/config/redis';
+import type { AuctionEndedConsumer } from './infrastructure/messaging/consumers/AuctionEndedConsumer';
 
 const PORT = config.port;
 
@@ -18,12 +19,12 @@ connectDB().then(async () => {
   const socketService = container.get<ISocketService>(TYPES.ISocketService);
   socketService.initialize(server);
 
-  const auctionEndedConsumer = container.get<any>(TYPES.AuctionEndedConsumer);
+  const auctionEndedConsumer = container.get<AuctionEndedConsumer>(
+    TYPES.AuctionEndedConsumer,
+  );
   auctionEndedConsumer
     .start()
-    .catch((err: any) =>
-      logger.error('Failed to start AuctionEndedConsumer', err),
-    );
+    .catch((err) => logger.error('Failed to start AuctionEndedConsumer', err));
 
   server.listen(PORT, () => {
     logger.info(`Art Service starts on port ${PORT}`);

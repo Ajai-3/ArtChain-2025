@@ -1,5 +1,6 @@
 import { ArtPost, PostStatus, PostType, PriceType } from '../../domain/entities/ArtPost';
-import { IBaseRepository } from './IBaseRepository';
+import type { MongoQuery, MongoSort } from '../../types/mongo';
+import type { ArtPostLean } from '../../types/art';
 
 export interface AdminArtFilters {
   status?: PostStatus;
@@ -7,16 +8,22 @@ export interface AdminArtFilters {
   priceType?: PriceType;
   search?: string;
   userId?: string;
-  artIds?: string[]; // For Elasticsearch integration
+  artIds?: string[];
 }
 
-export interface IArtPostRepository extends IBaseRepository<ArtPost> {
+export interface IArtPostRepository {
+  create(entity: unknown): Promise<ArtPost>;
+  getById(id: string): Promise<ArtPost | null>;
+  getAll(page?: number, limit?: number): Promise<ArtPost[]>;
+  update(id: string, entity: Record<string, unknown>): Promise<ArtPost>;
+  delete(id: string): Promise<void>;
+  count(): Promise<number>;
   // User-facing methods
-  getAllArt(page: number, limit: number): Promise<any>;
-  findById(postId: string): Promise<any>;
-  findByArtName(artName: string): Promise<any>;
+  getAllArt(page: number, limit: number): Promise<ArtPostLean[]>;
+  findById(postId: string): Promise<ArtPostLean | null>;
+  findByArtName(artName: string): Promise<ArtPostLean>;
   countByUser(userId: string): Promise<number>;
-  findByIds(artIds: string[]): Promise<any[]>;
+  findByIds(artIds: string[]): Promise<ArtPostLean[]>;
   getAllByUser(
     userId: string,
     page?: number,
@@ -26,12 +33,12 @@ export interface IArtPostRepository extends IBaseRepository<ArtPost> {
     categoryId: string,
     page: number,
     limit: number
-  ): Promise<any[]>;
+  ): Promise<ArtPostLean[]>;
   findAllWithFilters(
-    query: any,
+    query: MongoQuery,
     page: number,
     limit: number,
-    sort: any
+    sort: MongoSort
   ): Promise<ArtPost[]>;
   findAllByUser(
     userId: string,
@@ -44,7 +51,7 @@ export interface IArtPostRepository extends IBaseRepository<ArtPost> {
     page: number,
     limit: number,
     filters?: AdminArtFilters
-  ): Promise<{ arts: any[]; total: number }>;
+  ): Promise<{ arts: Array<ArtPostLean & { id: string }>; total: number }>;
   
   countStats(): Promise<{
     total: number;

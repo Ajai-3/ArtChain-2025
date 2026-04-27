@@ -21,7 +21,7 @@ export class AddFavoriteUseCase implements IAddFavoriteUseCase {
     private readonly _favoriteRepository: IFavoriteRepository
   ) {}
 
-  async execute(postId: string, userId: string) {
+  async execute(postId: string, userId: string): Promise<void> {
     if (!userId) {
       throw new BadRequestError(FAVORITE_MESSAGES.MISSING_USER_ID);
     }
@@ -45,8 +45,8 @@ export class AddFavoriteUseCase implements IAddFavoriteUseCase {
     }
 
     const favorite = new Favorite(postId, userId);
-    const savedFavorite = await this._favoriteRepository.create(favorite);
+    await this._favoriteRepository.create(favorite);
 
-    return savedFavorite;
+    return;
   }
 }
