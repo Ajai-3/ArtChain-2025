@@ -6,6 +6,7 @@ import { initSocketHandler } from './socketHandler';
 import { container } from '../inversify/inversify.config';
 import { authSocket } from '../../presentation/middlewares/authSocket';
 import { IGetUnreadCountUseCase } from '../../domain/usecases/IGetUnreadCountUseCase';
+import { AuthenticatedSocket } from '../../types';
 
 export const initSockets = (io: Server) => {
   initSocketHandler(io);
@@ -13,7 +14,7 @@ export const initSockets = (io: Server) => {
   io.use(authSocket);
 
   io.on('connection', async (socket) => {
-    const userId = (socket as any).userId;
+    const userId = (socket as AuthenticatedSocket).userId;
     socketStore.add(userId, socket.id);
 
        const getUnreadCountUseCase = container.get<IGetUnreadCountUseCase>(

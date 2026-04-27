@@ -33,7 +33,7 @@ export class NotificationController implements INotificationController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | any> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
 
@@ -63,7 +63,7 @@ export class NotificationController implements INotificationController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | any> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       const count = await this._getUnreadCountUseCase.execute(userId);
@@ -84,7 +84,7 @@ export class NotificationController implements INotificationController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | any> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       await this._markAsReadUseCase.execute(userId);
@@ -106,7 +106,7 @@ export class NotificationController implements INotificationController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | any> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       await this._markAllAsReadUseCase.execute(userId);

@@ -1,3 +1,5 @@
+import { LikeEventPayload } from '../../../types';
+
 export interface ILikeEventHandler {
-  handle(event: any): Promise<void>;
+  handle(event: LikeEventPayload): Promise<void>;
 }

@@ -6,6 +6,7 @@ import { NotificationType } from '../../domain/enums/NotificationType';
 import { emitToUser } from '../../infrastructure/sockets/socketHandler';
 import { logger } from '../../infrastructure/utils/logger';
 import { ISupportEventHandler } from '../interfaces/handlers/ISupportEventHandler';
+import { SupportEventPayload } from '../../types';
 
 @injectable()
 export class SupportEventHandler implements ISupportEventHandler {
@@ -13,19 +14,13 @@ export class SupportEventHandler implements ISupportEventHandler {
     @inject(TYPES.INotificationRepository) private readonly _notificationRepo: INotificationRepository
   ) {}
 
-  async handle(event: {
-    userId: string;
-    senderId: string;
-    senderName: string;
-    senderProfile: string | null;
-    createdAt: string;
-  }): Promise<void> {
+  async handle(event: SupportEventPayload): Promise<void> {
     const notification = new Notification(
       event.userId,
       event.senderId,
       NotificationType.SUPPORT,
       false,
-      new Date(event.createdAt)
+      { createdAt: event.createdAt }
     );
 
     try {

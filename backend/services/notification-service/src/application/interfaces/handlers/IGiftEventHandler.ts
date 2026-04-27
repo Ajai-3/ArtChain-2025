@@ -1,3 +1,5 @@
+import { GiftEventPayload } from '../../../types';
+
 export interface IGiftEventHandler {
-  handle(event: any): Promise<void>;
+  handle(event: GiftEventPayload): Promise<void>;
 }

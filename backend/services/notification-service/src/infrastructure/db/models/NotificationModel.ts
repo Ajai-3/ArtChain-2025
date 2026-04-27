@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { NotificationMetadata } from '../../../types';
 
 export interface NotificationDoc extends Document {
   _id: mongoose.Types.ObjectId;
@@ -6,7 +7,7 @@ export interface NotificationDoc extends Document {
   senderId: string;
   type: string;
   read: boolean;
-  metadata: any;
+  metadata: NotificationMetadata;
   createdAt: Date;
 }
 

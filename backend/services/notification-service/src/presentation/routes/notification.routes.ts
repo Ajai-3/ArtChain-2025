@@ -7,12 +7,24 @@ import { INotificationController } from '../interface/INotificationController';
 const router = express.Router();
 
 const notificationController = container.get<INotificationController>(
-  TYPES.INotificationController
+  TYPES.INotificationController,
 );
 
-router.get(ROUTES.NOTIFICATIONS.ROOT, notificationController.getUserNotifications);
-router.get(ROUTES.NOTIFICATIONS.UNREAD_COUNT, notificationController.getUnreadCount);
-router.patch(ROUTES.NOTIFICATIONS.MARK_AS_READ, notificationController.markAsRead);
-router.patch(ROUTES.NOTIFICATIONS.MARK_ALL_AS_READ, notificationController.markAllAsRead);
+router.get(
+  ROUTES.NOTIFICATIONS.ROOT,
+  notificationController.getUserNotifications as express.RequestHandler,
+);
+router.get(
+  ROUTES.NOTIFICATIONS.UNREAD_COUNT,
+  notificationController.getUnreadCount as express.RequestHandler,
+);
+router.patch(
+  ROUTES.NOTIFICATIONS.MARK_AS_READ,
+  notificationController.markAsRead as express.RequestHandler,
+);
+router.patch(
+  ROUTES.NOTIFICATIONS.MARK_ALL_AS_READ,
+  notificationController.markAllAsRead as express.RequestHandler,
+);
 
 export default router;

@@ -1,5 +1,6 @@
 import { Server } from 'socket.io';
 import { socketStore } from './socketStore';
+import { SocketPayload } from '../../types';
 
 let io: Server | null = null;
 
@@ -10,7 +11,7 @@ export function initSocketHandler(socketServer: Server) {
 export async function emitToUser(
   userId: string,
   event: string,
-  payload: any
+  payload: SocketPayload
 ) {
   if (!io) throw new Error('Socket.io not initialized.');
 

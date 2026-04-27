@@ -1,5 +1,5 @@
 import { injectable, unmanaged } from 'inversify';
-import { Model, Document } from 'mongoose';
+import { Model, Document, UpdateQuery } from 'mongoose';
 import { IBaseRepository } from '../../domain/repositories/IBaseRepository';
 
 @injectable()
@@ -10,7 +10,7 @@ export abstract class BaseRepository<T, TDoc extends Document> implements IBaseR
     this._model = model;
   }
 
-  async create(item: T | any): Promise<T> {
+  async create(item: T): Promise<T> {
     const createdItem = await this._model.create(item);
     return this.toDomain(createdItem);
   }
@@ -18,7 +18,7 @@ export abstract class BaseRepository<T, TDoc extends Document> implements IBaseR
   async update(id: string, item: Partial<T>): Promise<T | null> {
     const updatedItem = await this._model.findByIdAndUpdate(
       id,
-      item as any,
+      item as UpdateQuery<TDoc>,
       { new: true }
     ).exec();
     return updatedItem ? this.toDomain(updatedItem) : null;
