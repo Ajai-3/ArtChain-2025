@@ -32,7 +32,7 @@ export class UserElasticController implements IUserElasticController {
       res
         .status(HttpStatus.CREATED)
         .json({ message: ELASTIC_MESSAGES.INDEX_SUCCESS });
-    } catch (err: any) {
+    } catch (err: unknown) {
       next(err);
     }
   };
@@ -55,7 +55,7 @@ export class UserElasticController implements IUserElasticController {
       res
         .status(HttpStatus.CREATED)
         .json({ message: ELASTIC_MESSAGES.INDEX_UPDATED_SUCCESS });
-    } catch (err: any) {
+    } catch (err: unknown) {
       next(err);
     }
   };
@@ -84,7 +84,7 @@ export class UserElasticController implements IUserElasticController {
       const results = await this._userService.searchForUser(q);
       logger.info(`Search result: ${JSON.stringify(results)}`);
       res.json(results);
-    } catch (err: any) {
+    } catch (err: unknown) {
       next(err);
     }
   };
@@ -112,7 +112,7 @@ export class UserElasticController implements IUserElasticController {
       const ids = await this._userService.adminSearch(q);
       logger.info(`Admin Search result: ${JSON.stringify(ids)}`);
       res.json({ userIds: ids });
-    } catch (err: any) {
+    } catch (err: unknown) {
       next(err);
     }
   };

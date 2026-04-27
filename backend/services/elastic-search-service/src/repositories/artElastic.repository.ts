@@ -44,6 +44,6 @@ export class ArtElasticRepository implements IArtElasticRepository {
       },
     });
 
-    return result.hits.hits.map((hit: any) => hit._source as IndexedArt);
+    return result.hits.hits.map((hit) => hit._source as IndexedArt);
   }
 }

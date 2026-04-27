@@ -53,7 +53,7 @@ export class ElasticSearchController implements IElasticSearchController {
 
       logger.info(`Unified Search [type=${type}]: ${JSON.stringify(results)}`);
       res.json(results);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error('Unified search failed', err);
       next(err);
     }
