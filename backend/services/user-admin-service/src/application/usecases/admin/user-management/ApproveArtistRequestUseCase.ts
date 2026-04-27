@@ -7,6 +7,7 @@ import { ISupporterRepository } from '../../../../domain/repositories/user/ISupp
 import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
 import { ArtistAproveRejectRequestDto } from '../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
 import { IApproveArtistRequestUseCase } from '../../../interface/usecases/admin/user-management/IApproveArtistRequestUseCase';
+import { ApproveArtistResultResponse } from '../../../../types/responses/admin/ApproveArtistResultResponse';
 import {
   BadRequestError,
   ERROR_MESSAGES,
@@ -15,19 +16,19 @@ import {
 import { IArtService } from '../../../interface/http/IArtService';
 
 @injectable()
-export class ApproveArtistRequestUseCase
-  implements IApproveArtistRequestUseCase
-{
+export class ApproveArtistRequestUseCase implements IApproveArtistRequestUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.ISupporterRepository)
     private readonly _supporterRepo: ISupporterRepository,
     @inject(TYPES.IArtistRequestRepository)
     private readonly _artistRepo: IArtistRequestRepository,
-    @inject(TYPES.IArtService) private readonly _artService: IArtService
+    @inject(TYPES.IArtService) private readonly _artService: IArtService,
   ) {}
 
-  async execute(dto: ArtistAproveRejectRequestDto): Promise<any> {
+  async execute(
+    dto: ArtistAproveRejectRequestDto,
+  ): Promise<ApproveArtistResultResponse> {
     const { id } = dto;
 
     const artistRequest = await this._artistRepo.findById(id);
@@ -43,7 +44,6 @@ export class ApproveArtistRequestUseCase
     if (!user) {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
-
     // const accountAgeInDays =
     //   (Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24);
 
@@ -62,22 +62,19 @@ export class ApproveArtistRequestUseCase
     //     "User account must be at least 1 month old to become an artist."
     //   );
     // }
-
     const { supportersCount, supportingCount } =
       await this._supporterRepo.getUserSupportersAndSupportingCounts(userId);
 
     if (supportersCount < 20) {
-      throw new BadRequestError('User must have at least 20 supporters.');
+      throw new BadRequestError(ARTIST_MESSAGES.INSUFFICIENT_SUPPORTERS);
     }
     if (supportingCount < 20) {
-      throw new BadRequestError('User must be supporting at least 20 others.');
+      throw new BadRequestError(ARTIST_MESSAGES.INSUFFICIENT_SUPPORTING);
     }
 
     const artworkCount = await this._artService.getUserArtCount(userId);
     if (artworkCount < 10) {
-      throw new BadRequestError(
-        'User must have at least 10 artworks to become an artist.'
-      );
+      throw new BadRequestError(ARTIST_MESSAGES.INSUFFICIENT_ARTWORKS);
     }
 
     const updatedUser = await this._userRepo.update(userId, {

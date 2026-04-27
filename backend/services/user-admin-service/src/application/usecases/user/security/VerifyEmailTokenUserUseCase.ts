@@ -5,6 +5,8 @@ import { IUserRepository } from '../../../../domain/repositories/user/IUserRepos
 import { IEmailTokenVerifier } from '../../../interface/auth/IEmailTokenVerifier';
 import { VerifyEmailTokenRequestDto } from '../../../interface/dtos/user/security/VerifyEmailTokenRequestDto';
 import { IVerifyEmailTokenUserUseCase } from '../../../interface/usecases/user/security/IVerifyEmailTokenUserUseCase';
+import { ChangeEmailTokenPayload } from '../../../../types/token.types';
+import { SafeUser } from '../../../../domain/entities/User';
 import {
   BadRequestError,
   ERROR_MESSAGES,
@@ -19,7 +21,7 @@ export class VerifyEmailTokenUserUseCase implements IVerifyEmailTokenUserUseCase
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
   ) {}
 
-  async execute(data: VerifyEmailTokenRequestDto): Promise<any> {
+  async execute(data: VerifyEmailTokenRequestDto): Promise<SafeUser> {
     const { userId, token } = data;
 
     if (!token) {
@@ -31,7 +33,7 @@ export class VerifyEmailTokenUserUseCase implements IVerifyEmailTokenUserUseCase
       throw new BadRequestError(AUTH_MESSAGES.INVALID_CHANGE_EMAIL_TOKEN);
     }
 
-    const { newEmail } = decoded as { newEmail: string };
+    const { newEmail } = decoded as unknown as ChangeEmailTokenPayload;
 
     if (!newEmail) {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_CHANGE_EMAIL_TOKEN);

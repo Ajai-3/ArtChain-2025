@@ -1,4 +1,4 @@
-import { Role } from '@prisma/client';
+import { Role, Prisma } from '@prisma/client';
 import { injectable } from 'inversify';
 import { prisma } from '../../db/prisma';
 import { ArtUser } from '../../../types/ArtUser';
@@ -13,9 +13,9 @@ export class UserRepositoryImpl
 {
   protected model = prisma.user;
 
-  protected toSafe(user: User): SafeUser {
-    const { password, ...safe } = user;
-    return safe;
+  protected toSafe(user: unknown): SafeUser {
+    const { password, ...safe } = user as User;
+    return safe as SafeUser;
   }
 
   async findByEmail(email: string): Promise<SafeUser | null> {
@@ -28,16 +28,24 @@ export class UserRepositoryImpl
     return user ? this.toSafe(user) : null;
   }
 
-  async findByUsernameRaw(username: string): Promise<User | null> {
-    return this.model.findUnique({ where: { username } });
-  }
-
-  async findByEmailRaw(email: string): Promise<User | null> {
-    return this.model.findUnique({ where: { email } });
+  async findById(id: string): Promise<SafeUser | null> {
+    const user = await this.model.findUnique({ where: { id } });
+    return user ? this.toSafe(user) : null;
   }
 
   async findByIdRaw(id: string): Promise<User | null> {
-    return this.model.findUnique({ where: { id } });
+    const user = await this.model.findUnique({ where: { id } });
+    return user as User | null;
+  }
+
+  async findByEmailRaw(email: string): Promise<User | null> {
+    const user = await this.model.findUnique({ where: { email } });
+    return user as User | null;
+  }
+
+  async findByUsernameRaw(username: string): Promise<User | null> {
+    const user = await this.model.findUnique({ where: { username } });
+    return user as User | null;
   }
 
   async findAllUsers({
@@ -62,19 +70,19 @@ export class UserRepositoryImpl
       artists: number;
     }
   }> {
-    const baseWhere: any = {
+    const baseWhere: Prisma.UserWhereInput = {
       role: { in: [Role.user, Role.artist] },
     };
 
-    const where: any = { ...baseWhere };
+    const where: Prisma.UserWhereInput = { ...baseWhere };
 
     if (role && role !== 'all') {
       if (role === 'user') where.role = Role.user;
       else if (role === 'artist') where.role = Role.artist;
     }
 
-    if (status && status !== 'all') where.status = status;
-    if (plan && plan !== 'all') where.plan = plan;
+    if (status && status !== 'all') where.status = status as Prisma.EnumStatusFilter<'User'>;
+    if (plan && plan !== 'all') where.plan = plan as Prisma.EnumPlanFilter<'User'>;
 
     const skip = (page - 1) * limit;
 
@@ -96,7 +104,7 @@ export class UserRepositoryImpl
     };
   }
 
-  private async _getUserStats(baseWhere: any) {
+  private async _getUserStats(baseWhere: Prisma.UserWhereInput) {
     const [total, active, banned, artists] = await Promise.all([
       this.model.count({ where: baseWhere }),
       this.model.count({ where: { ...baseWhere, status: 'active' } }),
@@ -127,11 +135,11 @@ export class UserRepositoryImpl
       artists: number;
     }
   }> {
-    const baseWhere: any = {
+    const baseWhere: Prisma.UserWhereInput = {
       role: { in: [Role.user, Role.artist] },
     };
 
-    const where: any = {
+    const where: Prisma.UserWhereInput = {
       ...baseWhere,
       id: { in: ids },
     };
@@ -141,8 +149,8 @@ export class UserRepositoryImpl
       else if (filters.role === 'artist') where.role = Role.artist;
     }
 
-    if (filters?.status && filters.status !== 'all') where.status = filters.status;
-    if (filters?.plan && filters.plan !== 'all') where.plan = filters.plan;
+    if (filters?.status && filters.status !== 'all') where.status = filters.status as Prisma.EnumStatusFilter<'User'>;
+    if (filters?.plan && filters.plan !== 'all') where.plan = filters.plan as Prisma.EnumPlanFilter<'User'>;
 
     const skip = (page - 1) * limit;
 

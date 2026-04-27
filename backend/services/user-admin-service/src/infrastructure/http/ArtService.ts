@@ -6,6 +6,7 @@ import { IArtService } from '../../application/interface/http/IArtService';
 import { ROUTES } from '../../constants/routes';
 import { TYPES } from '../inversify/types';
 import { ILogger } from '../../application/interface/ILogger';
+import { ArtTopItem, CategoryStat, AuctionItem, CommissionItem, ArtworkCountStats, AuctionCountStats, CommissionCountStats, ArtComment } from '../../types/art.types';
 
 @injectable()
 export class ArtService implements IArtService {
@@ -32,7 +33,7 @@ export class ArtService implements IArtService {
     token: string,
     limit: number = 5,
     type: 'likes' | 'price' = 'likes',
-  ): Promise<any[]> {
+  ): Promise<ArtTopItem[]> {
     try {
       const res = await axios.get(`${this.baseUrl}${ROUTES.EXTERNAL.ART_TOP}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -45,7 +46,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getCategoryStats(token: string): Promise<any[]> {
+  async getCategoryStats(token: string): Promise<CategoryStat[]> {
     try {
       const res = await axios.get(
         `${this.baseUrl}${ROUTES.EXTERNAL.ART_CATEGORY}`,
@@ -60,7 +61,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getRecentAuctions(token: string, limit: number = 5): Promise<any[]> {
+  async getRecentAuctions(token: string, limit: number = 5): Promise<AuctionItem[]> {
     try {
       const res = await axios.get(
         `${this.baseUrl}${ROUTES.EXTERNAL.ART_AUCTION_RECENT}`,
@@ -76,7 +77,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getRecentCommissions(token: string, limit: number = 5): Promise<any[]> {
+  async getRecentCommissions(token: string, limit: number = 5): Promise<CommissionItem[]> {
     try {
       const res = await axios.get(
         `${this.baseUrl}${ROUTES.EXTERNAL.ART_COMMISSION_RECENT}`,
@@ -92,7 +93,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getArtworkCounts(token: string): Promise<any> {
+  async getArtworkCounts(token: string): Promise<ArtworkCountStats> {
     try {
       const res = await axios.get(
         `${this.baseUrl}/api/v1/art/admin/art/stats`,
@@ -107,7 +108,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getAuctionCounts(token: string, timeRange?: string): Promise<any> {
+  async getAuctionCounts(token: string, timeRange?: string): Promise<AuctionCountStats> {
     try {
       const res = await axios.get(
         `${this.baseUrl}/api/v1/art/admin/auctions/stats`,
@@ -123,7 +124,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getCommissionCounts(token: string, timeRange?: string): Promise<any> {
+  async getCommissionCounts(token: string, timeRange?: string): Promise<CommissionCountStats> {
     try {
       const res = await axios.get(
         `${this.baseUrl}/api/v1/art/admin/commissions/stats`,
@@ -143,7 +144,7 @@ export class ArtService implements IArtService {
     token: string,
     artId: string,
     status: string,
-  ): Promise<any> {
+  ): Promise<{ success: boolean }> {
     try {
       const res = await axios.patch(
         `${this.baseUrl}/api/v1/art/admin/art/${artId}/status`,
@@ -157,7 +158,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async deleteComment(token: string, commentId: string): Promise<any> {
+  async deleteComment(token: string, commentId: string): Promise<{ success: boolean }> {
     try {
       const res = await axios.delete(
         `${this.baseUrl}/api/v1/art/admin/art/comment/${commentId}`,
@@ -170,7 +171,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getArt(token: string, artId: string): Promise<any> {
+  async getArt(token: string, artId: string): Promise<Record<string, unknown>> {
     try {
       const res = await axios.get(`${this.baseUrl}/api/v1/art/${artId}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -182,7 +183,7 @@ export class ArtService implements IArtService {
     }
   }
 
-  async getComment(token: string, commentId: string): Promise<any> {
+  async getComment(token: string, commentId: string): Promise<ArtComment> {
     try {
       const res = await axios.get(
         `${this.baseUrl}/api/v1/art/comment/${commentId}`,

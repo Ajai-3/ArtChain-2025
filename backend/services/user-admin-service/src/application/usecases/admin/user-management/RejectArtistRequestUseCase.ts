@@ -10,16 +10,19 @@ import {
 import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
 import { ArtistAproveRejectRequestDto } from '../../../interface/dtos/admin/user-management/ArtistAproveRejectRequestDto';
 import { IRejectArtistRequestUseCase } from '../../../interface/usecases/admin/user-management/IRejectArtistRequestUseCase';
+import { RejectArtistResultResponse } from '../../../../types/responses/admin/RejectArtistResultResponse';
 
 @injectable()
 export class RejectArtistRequestUseCase implements IRejectArtistRequestUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.IArtistRequestRepository)
-    private readonly _artistRepo: IArtistRequestRepository
+    private readonly _artistRepo: IArtistRequestRepository,
   ) {}
 
-  async execute(dto: ArtistAproveRejectRequestDto): Promise<any> {
+  async execute(
+    dto: ArtistAproveRejectRequestDto,
+  ): Promise<RejectArtistResultResponse> {
     const { id, reason } = dto;
 
     const artistRequest = await this._artistRepo.findById(id);
@@ -38,10 +41,11 @@ export class RejectArtistRequestUseCase implements IRejectArtistRequestUseCase {
 
     if (!reason) {
       throw new BadRequestError(
-        ARTIST_MESSAGES.ARTIST_REQUEST_REJECT_REASON_NOT_FOUND
+        ARTIST_MESSAGES.ARTIST_REQUEST_REJECT_REASON_NOT_FOUND,
       );
     }
 
-    return this._artistRepo.reject(id, reason);
+    const rejectedRequest = await this._artistRepo.reject(id, reason);
+    return { request: rejectedRequest };
   }
 }

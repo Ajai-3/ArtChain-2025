@@ -7,8 +7,8 @@ import { IUpdateProfileUserUseCase } from '../../../application/interface/usecas
 const QUEUE = 'profile_update';
 
 export async function initProfileUpdateConsumer() {
-  const conn: any = await amqp.connect(config.rabbitmq_URL);
-  const ch: any = await conn.createChannel();
+  const conn = await amqp.connect(config.rabbitmq_URL);
+  const ch = await conn.createChannel();
 
   console.log(`👂 Listening on queue: ${QUEUE}`);
 
@@ -18,7 +18,7 @@ export async function initProfileUpdateConsumer() {
 
   ch.consume(
     QUEUE,
-    async (msg: any) => {
+    async (msg) => {
       if (!msg) return;
 
       try {

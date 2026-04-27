@@ -89,7 +89,7 @@ export class SupporterRepositoryImpl
       skip: skip,
     });
 
-    return supporters.map((s: any) => s.supporter);
+    return supporters.map((s) => s.supporter as UserPreview);
   }
 
   async getSupporting(
@@ -117,7 +117,7 @@ export class SupporterRepositoryImpl
       skip: skip,
     });
 
-    return supporting.map((s: any) => s.targetUser);
+    return supporting.map((s) => s.targetUser as UserPreview);
   }
 
   async getSupportingIds(userId: string): Promise<string[]> {

@@ -8,8 +8,8 @@ const DLQ_MAPPING = {
 const MAX_RETRIES = 3;
 
 export async function initDLQHandler(): Promise<void> {
-  let conn: any;
-  let ch: any;
+  let conn;
+  let ch;
 
   try {
     conn = await amqp.connect(config.rabbitmq_URL);
@@ -27,15 +27,15 @@ export async function initDLQHandler(): Promise<void> {
 }
 
 async function processDLQ(
-  ch: any, 
-  dlq: string, 
+  ch: amqp.Channel,
+  dlq: string,
   originalQueue: string
 ): Promise<void> {
   await ch.assertQueue(dlq, { durable: true });
 
   ch.consume(
     dlq,
-    async (msg: any) => {
+    async (msg) => {
       if (!msg) return;
 
       try {

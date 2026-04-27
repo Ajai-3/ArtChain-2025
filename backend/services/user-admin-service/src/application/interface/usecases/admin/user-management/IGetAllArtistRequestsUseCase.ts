@@ -1,4 +1,6 @@
-import { GetAllUsersQueryDto } from "../../../dtos/admin/GetAllUsersQueryDTO";
+import { GetAllUsersQueryDto } from '../../../dtos/admin/GetAllUsersQueryDTO';
+import { GetAllArtistRequestsResponse } from '../../../../../types/responses/admin/GetAllArtistRequestsResponse';
+
 export interface IGetAllArtistRequestsUseCase {
-  execute(query: GetAllUsersQueryDto): Promise<any>;
+  execute(query: GetAllUsersQueryDto): Promise<GetAllArtistRequestsResponse>;
 }

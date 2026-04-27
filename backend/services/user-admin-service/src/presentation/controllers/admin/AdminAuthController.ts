@@ -14,7 +14,7 @@ import { LoginRequestDto } from '../../../application/interface/dtos/user/auth/L
 export class AdminAuthController implements IAdminAuthController {
   constructor(
     @inject(TYPES.ILoginAdminUseCase)
-    private readonly _loginAdminUseCase: LoginAdminUseCase
+    private readonly _loginAdminUseCase: LoginAdminUseCase,
   ) {}
 
   //# ================================================================================================================
@@ -27,8 +27,8 @@ export class AdminAuthController implements IAdminAuthController {
   adminLogin = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<any> => {
+    next: NextFunction,
+  ): Promise<Response | void> => {
     try {
       const result = validateWithZod(loginUserSchema, req.body);
 
@@ -67,8 +67,8 @@ export class AdminAuthController implements IAdminAuthController {
   adminLogout = async (
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<any> => {
+    next: NextFunction,
+  ): Promise<Response | void> => {
     try {
       const refreshToken = req.cookies.adminRefreshToken;
 

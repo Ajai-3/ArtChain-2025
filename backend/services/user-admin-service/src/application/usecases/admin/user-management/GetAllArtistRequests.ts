@@ -4,6 +4,8 @@ import { TYPES } from '../../../../infrastructure/inversify/types';
 import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQueryDTO';
 import { IArtistRequestRepository } from '../../../../domain/repositories/user/IArtistRequestRepository';
 import { IGetAllArtistRequestsUseCase } from '../../../interface/usecases/admin/user-management/IGetAllArtistRequestsUseCase';
+import { ArtistRequestWithUser } from '../../../../types';
+import { GetAllArtistRequestsResponse } from '../../../../types/responses/admin/GetAllArtistRequestsResponse';
 
 @injectable()
 export class GetAllArtistRequestsUseCase
@@ -14,13 +16,13 @@ export class GetAllArtistRequestsUseCase
     private readonly _artistRepo: IArtistRequestRepository
   ) {}
 
-  async execute(query: GetAllUsersQueryDto): Promise<any> {
+  async execute(query: GetAllUsersQueryDto): Promise<GetAllArtistRequestsResponse> {
     const { page = 1, limit = 8 } = query;
     const result = await this._artistRepo.getArtistRequests(page, limit);
 
     return {
       ...result,
-      data: result.data.map((request: any) => ({
+      data: result.data.map((request: ArtistRequestWithUser) => ({
         ...request,
         user: {
           ...request.user,

@@ -11,5 +11,9 @@ export const ARTIST_MESSAGES = {
   ARTIST_REQUEST_REJECTED: 'Artist request rejected',
   ARTIST_REQUEST_REJECT_REASON_NOT_FOUND: 'Artist request reject reason not found',
   ARTISRT_REQUEST_NOT_FOUND: 'Artist request not found',
-  REQUEST_ALREADY_EXISTS: 'Request already exist'
+  REQUEST_ALREADY_EXISTS: 'Request already exist',
+
+  INSUFFICIENT_SUPPORTERS: 'User must have at least 20 supporters.',
+  INSUFFICIENT_SUPPORTING: 'User must be supporting at least 20 others.',
+  INSUFFICIENT_ARTWORKS: 'User must have at least 10 artworks to become an artist.',
 } as const;
