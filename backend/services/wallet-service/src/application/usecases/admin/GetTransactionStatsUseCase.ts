@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { ITransactionRepository } from '../../../domain/repository/ITransactionRepository';
 import { IGetTransactionStatsUseCase } from '../../interface/usecase/admin/IGetTransactionStatsUseCase';
+import { AdminTransactionStatsResponse } from '../../../types/TransactionStats';
 
 @injectable()
 export class GetTransactionStatsUseCase implements IGetTransactionStatsUseCase {
@@ -10,7 +11,7 @@ export class GetTransactionStatsUseCase implements IGetTransactionStatsUseCase {
     private readonly _transactionRepository: ITransactionRepository
   ) {}
 
-  async execute(timeRange: string): Promise<any> {
+  async execute(timeRange: string): Promise<AdminTransactionStatsResponse> {
     const endDate = new Date();
     let startDate = new Date();
 

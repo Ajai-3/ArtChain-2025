@@ -7,6 +7,7 @@ import { IGetStripeSessionUseCase } from '../../application/interface/usecase/st
 import { IHandleStripeWebhookUseCase } from '../../application/interface/usecase/stripe/IHandleStripeWebhookUseCase';
 import { ICreateStripeCheckoutSessionUseCase } from '../../application/interface/usecase/stripe/ICreateStripeCheckoutSessionUseCase';
 import { STRIPE_MESSAGES } from '../../constants/StripeMessages';
+import { RequestWithRawBody } from '../../types/Express';
 
 @injectable()
 export class StripeController implements IStripeController {
@@ -54,8 +55,12 @@ export class StripeController implements IStripeController {
   //# ================================================================================================================
   handleWebhook = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const payload = (req as any).rawBody; 
+    const payload = (req as RequestWithRawBody).rawBody;
     const signature = req.headers['stripe-signature'] as string;
+
+    if (!payload) {
+      return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Missing payload' });
+    }
 
     await this._handleWebhookUseCase.execute(payload, signature);
 

@@ -11,7 +11,22 @@ import {
   TransactionStatus,
   TransactionType,
 } from '../../domain/entities/Transaction';
-import { IWalletRepository } from '../../domain/repository/IWalletRepository';
+import {
+  IWalletRepository,
+  TransactionFilters,
+  WalletFilters,
+  RecentTransaction,
+  AdminTransaction,
+} from '../../domain/repository/IWalletRepository';
+import { Prisma } from '@prisma/client';
+import {
+  RevenueStatsResponse,
+  RevenueBreakdown,
+  RevenueTrendItem,
+} from '../../types/Revenue';
+import { DailyTransactionStat } from '../../types/TransactionStats';
+import { QuickStats, TransactionSummary } from '../../types/Wallet';
+import { BadRequestError, NotFoundError } from 'art-chain-shared';
 
 @injectable()
 export class WalletRepositoryImpl
@@ -20,8 +35,9 @@ export class WalletRepositoryImpl
 {
   protected model = prisma.wallet;
 
-  getByUserId(userId: string) {
-    return this.model.findUnique({ where: { userId } });
+  async getByUserId(userId: string): Promise<Wallet | null> {
+    const result = await this.model.findUnique({ where: { userId } });
+    return result as Wallet | null;
   }
 
   async transferFunds(
@@ -38,18 +54,21 @@ export class WalletRepositoryImpl
           where: { userId: fromId },
         });
 
-        if (!sender) throw new Error('Sender wallet not found');
-        if (sender.balance < amount) throw new Error('Insufficient funds');
+        if (!sender) throw new BadRequestError('Sender wallet not found');
+        if (sender.balance < amount)
+          throw new BadRequestError('Insufficient funds');
 
-        const senderQuickStats = (sender.quickStats as any) || {
-          earned: 0,
-          spent: 0,
-        };
-        const senderTxSummary = (sender.transactionSummary as any) || {
-          earned: 0,
-          spent: 0,
-          netGain: 0,
-        };
+        const senderQuickStats =
+          (sender.quickStats as unknown as QuickStats) || {
+            earned: 0,
+            spent: 0,
+          };
+        const senderTxSummary =
+          (sender.transactionSummary as unknown as TransactionSummary) || {
+            earned: 0,
+            spent: 0,
+            netGain: 0,
+          };
         senderQuickStats.spent += amount;
         senderTxSummary.spent += amount;
         senderTxSummary.netGain -= amount;
@@ -58,8 +77,8 @@ export class WalletRepositoryImpl
           where: { userId: fromId },
           data: {
             balance: { decrement: amount },
-            quickStats: senderQuickStats,
-            transactionSummary: senderTxSummary,
+            quickStats: senderQuickStats as unknown as Prisma.InputJsonValue,
+            transactionSummary: senderTxSummary as unknown as Prisma.InputJsonValue,
           },
         });
 
@@ -69,15 +88,17 @@ export class WalletRepositoryImpl
           update: { balance: { increment: amount } },
         });
 
-        const receiverQuickStats = (receiver.quickStats as any) || {
-          earned: 0,
-          spent: 0,
-        };
-        const receiverTxSummary = (receiver.transactionSummary as any) || {
-          earned: 0,
-          spent: 0,
-          netGain: 0,
-        };
+        const receiverQuickStats =
+          (receiver.quickStats as unknown as QuickStats) || {
+            earned: 0,
+            spent: 0,
+          };
+        const receiverTxSummary =
+          (receiver.transactionSummary as unknown as TransactionSummary) || {
+            earned: 0,
+            spent: 0,
+            netGain: 0,
+          };
         receiverQuickStats.earned += amount;
         receiverTxSummary.earned += amount;
         receiverTxSummary.netGain += amount;
@@ -85,13 +106,13 @@ export class WalletRepositoryImpl
         await tx.wallet.update({
           where: { id: receiver.id },
           data: {
-            quickStats: receiverQuickStats,
-            transactionSummary: receiverTxSummary,
+            quickStats: receiverQuickStats as unknown as Prisma.InputJsonValue,
+            transactionSummary: receiverTxSummary as unknown as Prisma.InputJsonValue,
           },
         });
 
         const resolvedCategory = Object.values(TransactionCategory).includes(
-          category as any,
+          category as TransactionCategory,
         )
           ? (category as TransactionCategory)
           : TransactionCategory.OTHER;
@@ -136,8 +157,8 @@ export class WalletRepositoryImpl
     adminId: string,
     startDate?: Date,
     endDate?: Date,
-  ): Promise<any> {
-    const baseWhere: any = {
+  ): Promise<RevenueStatsResponse> {
+    const baseWhere: Prisma.TransactionWhereInput = {
       wallet: { userId: adminId },
       type: 'credited',
       category: {
@@ -215,15 +236,15 @@ export class WalletRepositoryImpl
     }
 
     const chartData = Array.from(chartDataMap.entries())
-      .map(([date, revenue]) => ({ date, revenue }))
+      .map(([date, amount]) => ({ date, amount }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     return {
-      totalRevenue: overallTotalRevenue,
-      breakdown: overallBreakdown,
-      trendRevenue: trendTotalRevenue,
+      overallTotalRevenue,
+      overallBreakdown,
+      trendTotalRevenue: trendTotalRevenue,
       trendBreakdown,
-      chartData,
+      trendData: chartData,
     };
   }
 
@@ -301,7 +322,7 @@ export class WalletRepositoryImpl
       startDate.setMonth(now.getMonth() - 1);
     }
 
-    const whereClause: any = { walletId };
+    const whereClause: Prisma.TransactionWhereInput = { walletId };
     if (startDate) {
       whereClause.createdAt = { gte: startDate };
     }
@@ -354,8 +375,8 @@ export class WalletRepositoryImpl
     }));
   }
 
-  async getCategoryStats(walletId: string, startDate?: Date): Promise<any[]> {
-    const where: any = { walletId };
+  async getCategoryStats(walletId: string, startDate?: Date): Promise<{ type: string; category: string; _sum: { amount: number } }[]> {
+    const where: Prisma.TransactionWhereInput = { walletId };
     if (startDate) {
       where.createdAt = { gte: startDate };
     }
@@ -368,7 +389,11 @@ export class WalletRepositoryImpl
       },
     });
 
-    return stats;
+    return stats.map((s) => ({
+      type: s.type as string,
+      category: s.category as string,
+      _sum: { amount: s._sum.amount ?? 0 },
+    }));
   }
   async lockAmount(userId: string, amount: number): Promise<boolean> {
     const result = await this.model.updateMany({
@@ -413,121 +438,130 @@ export class WalletRepositoryImpl
         `[WalletRepository] Starting settlement transaction for auction ${auctionId}. Total: ${totalAmount}, SellerAmt: ${sellerAmount}, AdminAmt: ${commissionAmount}`,
       );
 
-      await prisma.$transaction(async (tx) => {
-        // First verify winner wallet exists to avoid Prisma error on update
-        const winnerWalletCheck = await tx.wallet.findUnique({
-          where: { userId: winnerId },
-        });
+      await prisma.$transaction(
+        async (tx) => {
+          // First verify winner wallet exists to avoid Prisma error on update
+          const winnerWalletCheck = await tx.wallet.findUnique({
+            where: { userId: winnerId },
+          });
 
-        if (!winnerWalletCheck) {
-          throw new Error(`Winner wallet not found for user: ${winnerId}`);
-        }
+          if (!winnerWalletCheck) {
+            throw new NotFoundError(
+              `Winner wallet not found for user: ${winnerId}`,
+            );
+          }
 
-        let lockedDecrement = totalAmount;
-        let balanceDecrement = 0;
+          let lockedDecrement = totalAmount;
+          let balanceDecrement = 0;
 
-        if (winnerWalletCheck.lockedAmount < totalAmount) {
-          logger.warn(`[WalletRepository] Winner wallet lockedAmount (${winnerWalletCheck.lockedAmount}) is less than totalAmount (${totalAmount}). Taking remainder from balance.`);
-          lockedDecrement = winnerWalletCheck.lockedAmount;
-          balanceDecrement = totalAmount - winnerWalletCheck.lockedAmount;
-        } else {
-          logger.info(`[WalletRepository] Updating winner wallet ${winnerId}. Current lockedAmount: ${winnerWalletCheck.lockedAmount}. Decrementing by ${totalAmount}`);
-        }
+          if (winnerWalletCheck.lockedAmount < totalAmount) {
+            logger.warn(
+              `[WalletRepository] Winner wallet lockedAmount (${winnerWalletCheck.lockedAmount}) is less than totalAmount (${totalAmount}). Taking remainder from balance.`,
+            );
+            lockedDecrement = winnerWalletCheck.lockedAmount;
+            balanceDecrement = totalAmount - winnerWalletCheck.lockedAmount;
+          } else {
+            logger.info(
+              `[WalletRepository] Updating winner wallet ${winnerId}. Current lockedAmount: ${winnerWalletCheck.lockedAmount}. Decrementing by ${totalAmount}`,
+            );
+          }
 
-        const updateData: any = {};
-        if (lockedDecrement > 0) {
-          updateData.lockedAmount = { decrement: lockedDecrement };
-        }
-        if (balanceDecrement > 0) {
-          updateData.balance = { decrement: balanceDecrement };
-        }
+          const updateData: Prisma.WalletUpdateInput = {};
+          if (lockedDecrement > 0) {
+            updateData.lockedAmount = { decrement: lockedDecrement };
+          }
+          if (balanceDecrement > 0) {
+            updateData.balance = { decrement: balanceDecrement };
+          }
 
-        const winnerWallet = await tx.wallet.update({
-          where: { userId: winnerId },
-          data: updateData,
-        });
-        logger.info(
-          `[WalletRepository] Winner wallet updated. New lockedAmount: ${winnerWallet.lockedAmount}, New balance: ${winnerWallet.balance}`,
-        );
+          const winnerWallet = await tx.wallet.update({
+            where: { userId: winnerId },
+            data: updateData,
+          });
+          logger.info(
+            `[WalletRepository] Winner wallet updated. New lockedAmount: ${winnerWallet.lockedAmount}, New balance: ${winnerWallet.balance}`,
+          );
 
-        logger.info(
-          `[WalletRepository] Upserting seller wallet ${sellerId}. Incrementing balance by ${sellerAmount}`,
-        );
-        const sellerWallet = await tx.wallet.upsert({
-          where: { userId: sellerId },
-          create: { userId: sellerId, balance: sellerAmount },
-          update: { balance: { increment: sellerAmount } },
-        });
-        logger.info(
-          `[WalletRepository] Seller wallet updated. New balance: ${sellerWallet.balance}`,
-        );
+          logger.info(
+            `[WalletRepository] Upserting seller wallet ${sellerId}. Incrementing balance by ${sellerAmount}`,
+          );
+          const sellerWallet = await tx.wallet.upsert({
+            where: { userId: sellerId },
+            create: { userId: sellerId, balance: sellerAmount },
+            update: { balance: { increment: sellerAmount } },
+          });
+          logger.info(
+            `[WalletRepository] Seller wallet updated. New balance: ${sellerWallet.balance}`,
+          );
 
-        logger.info(
-          `[WalletRepository] Upserting admin wallet ${adminId}. Incrementing balance by ${commissionAmount}`,
-        );
-        const adminWallet = await tx.wallet.upsert({
-          where: { userId: adminId },
-          create: { userId: adminId, balance: commissionAmount },
-          update: { balance: { increment: commissionAmount } },
-        });
-        logger.info(
-          `[WalletRepository] Admin wallet updated. New balance: ${adminWallet.balance}`,
-        );
+          logger.info(
+            `[WalletRepository] Upserting admin wallet ${adminId}. Incrementing balance by ${commissionAmount}`,
+          );
+          const adminWallet = await tx.wallet.upsert({
+            where: { userId: adminId },
+            create: { userId: adminId, balance: commissionAmount },
+            update: { balance: { increment: commissionAmount } },
+          });
+          logger.info(
+            `[WalletRepository] Admin wallet updated. New balance: ${adminWallet.balance}`,
+          );
 
-        logger.info(
-          '[WalletRepository] Creating debit transaction record for winner',
-        );
-        await tx.transaction.create({
-          data: {
-            walletId: winnerWallet.id,
-            type: 'debited',
-            amount: totalAmount,
-            category: 'PURCHASE',
-            method: 'art_coin',
-            status: 'success',
-            description: `Payment for auction ${auctionId}`,
-            externalId: `${auctionId}-auction-winner`,
-            meta: { sellerId, adminId, commissionAmount },
-          },
-        });
-
-        logger.info(
-          '[WalletRepository] Creating credit transaction record for seller',
-        );
-        await tx.transaction.create({
-          data: {
-            walletId: sellerWallet.id,
-            type: 'credited',
-            amount: sellerAmount,
-            category: 'SALE',
-            method: 'art_coin',
-            status: 'success',
-            description: `Sale proceeds from auction ${auctionId}`,
-            externalId: `${auctionId}-sold`,
-            meta: { buyerId: winnerId },
-          },
-        });
-
-        if (commissionAmount > 0) {
+          logger.info(
+            '[WalletRepository] Creating debit transaction record for winner',
+          );
           await tx.transaction.create({
             data: {
-              walletId: adminWallet.id,
-              type: 'credited',
-              amount: commissionAmount,
-              category: 'AUCTION_FEE',
+              walletId: winnerWallet.id,
+              type: 'debited',
+              amount: totalAmount,
+              category: 'PURCHASE',
               method: 'art_coin',
               status: 'success',
-              description: `Commission from auction ${auctionId}`,
-              externalId: `${auctionId}-commission`,
-              meta: { buyerId: winnerId, sellerId },
+              description: `Payment for auction ${auctionId}`,
+              externalId: `${auctionId}-auction-winner`,
+              meta: { sellerId, adminId, commissionAmount },
             },
           });
-        }
-        logger.info(
-          '[WalletRepository] Settlement transaction committed successfully for',
-          auctionId,
-        );
-      }, { timeout: 30000 });
+
+          logger.info(
+            '[WalletRepository] Creating credit transaction record for seller',
+          );
+          await tx.transaction.create({
+            data: {
+              walletId: sellerWallet.id,
+              type: 'credited',
+              amount: sellerAmount,
+              category: 'SALE',
+              method: 'art_coin',
+              status: 'success',
+              description: `Sale proceeds from auction ${auctionId}`,
+              externalId: `${auctionId}-sold`,
+              meta: { buyerId: winnerId },
+            },
+          });
+
+          if (commissionAmount > 0) {
+            await tx.transaction.create({
+              data: {
+                walletId: adminWallet.id,
+                type: 'credited',
+                amount: commissionAmount,
+                category: 'AUCTION_FEE',
+                method: 'art_coin',
+                status: 'success',
+                description: `Commission from auction ${auctionId}`,
+                externalId: `${auctionId}-commission`,
+                meta: { buyerId: winnerId, sellerId },
+              },
+            });
+          }
+          logger.info(
+            '[WalletRepository] Settlement transaction committed successfully for',
+            auctionId,
+          );
+        },
+        { timeout: 30000 },
+      );
       return true;
     } catch (error) {
       logger.error(
@@ -557,8 +591,8 @@ export class WalletRepositoryImpl
           where: { userId: sellerId },
         });
 
-        if (!buyerWallet) throw new Error('Buyer wallet not found');
-        if (!sellerWallet) throw new Error('Seller wallet not found');
+        if (!buyerWallet) throw new NotFoundError('Buyer wallet not found');
+        if (!sellerWallet) throw new NotFoundError('Seller wallet not found');
 
         const existingTx = await tx.transaction.findUnique({
           where: { externalId: `${artId}-purchase` },
@@ -575,14 +609,11 @@ export class WalletRepositoryImpl
           throw new Error('Insufficient funds');
         }
 
-        const buyerQuickStats = (buyerWallet.quickStats as any) || {
+        const buyerQuickStats = (buyerWallet.quickStats as unknown as QuickStats) || {
           earned: 0,
           spent: 0,
-          avgTransaction: 0,
-          roi: 0,
-          grade: 'B',
         };
-        const buyerTxSummary = (buyerWallet.transactionSummary as any) || {
+        const buyerTxSummary = (buyerWallet.transactionSummary as unknown as TransactionSummary) || {
           earned: 0,
           spent: 0,
           netGain: 0,
@@ -591,14 +622,11 @@ export class WalletRepositoryImpl
         buyerTxSummary.spent += totalAmount;
         buyerTxSummary.netGain -= totalAmount;
 
-        const sellerQuickStats = (sellerWallet.quickStats as any) || {
+        const sellerQuickStats = (sellerWallet.quickStats as unknown as QuickStats) || {
           earned: 0,
           spent: 0,
-          avgTransaction: 0,
-          roi: 0,
-          grade: 'B',
         };
-        const sellerTxSummary = (sellerWallet.transactionSummary as any) || {
+        const sellerTxSummary = (sellerWallet.transactionSummary as unknown as TransactionSummary) || {
           earned: 0,
           spent: 0,
           netGain: 0,
@@ -611,8 +639,8 @@ export class WalletRepositoryImpl
           where: { userId: buyerId },
           data: {
             balance: { decrement: totalAmount },
-            quickStats: buyerQuickStats,
-            transactionSummary: buyerTxSummary,
+            quickStats: buyerQuickStats as unknown as Prisma.InputJsonValue,
+            transactionSummary: buyerTxSummary as unknown as Prisma.InputJsonValue,
           },
         });
 
@@ -620,8 +648,8 @@ export class WalletRepositoryImpl
           where: { userId: sellerId },
           data: {
             balance: { increment: sellerAmount },
-            quickStats: sellerQuickStats,
-            transactionSummary: sellerTxSummary,
+            quickStats: sellerQuickStats as unknown as Prisma.InputJsonValue,
+            transactionSummary: sellerTxSummary as unknown as Prisma.InputJsonValue,
           },
         });
 
@@ -691,8 +719,8 @@ export class WalletRepositoryImpl
     adminId: string,
     startDate?: Date,
     endDate?: Date,
-  ): Promise<any[]> {
-    const whereClause: any = {
+  ): Promise<AdminTransaction[]> {
+    const whereClause: Prisma.TransactionWhereInput = {
       wallet: { userId: adminId },
       type: 'credited',
       category: {
@@ -715,24 +743,31 @@ export class WalletRepositoryImpl
 
     const transactions = await prisma.transaction.findMany({
       where: whereClause,
-      select: {
-        amount: true,
-        category: true,
-        description: true,
-        createdAt: true,
-      },
       orderBy: { createdAt: 'desc' },
     });
 
-    return transactions;
+    return transactions.map((tx) => ({
+      id: tx.id,
+      walletId: tx.walletId,
+      type: tx.type,
+      category: tx.category,
+      amount: tx.amount,
+      method: tx.method,
+      status: tx.status,
+      externalId: tx.externalId,
+      description: tx.description,
+      meta: (tx.meta ?? null) as Record<string, unknown> | null,
+      createdAt: tx.createdAt,
+      updatedAt: tx.updatedAt,
+    }));
   }
 
   async getAdminCommissionTransactions(
     walletId: string,
     startDate?: Date,
     endDate?: Date,
-  ): Promise<any[]> {
-    const whereClause: any = {
+  ): Promise<AdminTransaction[]> {
+    const whereClause: Prisma.TransactionWhereInput = {
       walletId,
       type: 'credited',
       category: {
@@ -752,19 +787,26 @@ export class WalletRepositoryImpl
 
     const transactions = await prisma.transaction.findMany({
       where: whereClause,
-      select: {
-        amount: true,
-        category: true,
-        description: true,
-        createdAt: true,
-      },
       orderBy: { createdAt: 'desc' },
     });
 
-    return transactions;
+    return transactions.map((tx) => ({
+      id: tx.id,
+      walletId: tx.walletId,
+      type: tx.type,
+      category: tx.category,
+      amount: tx.amount,
+      method: tx.method,
+      status: tx.status,
+      externalId: tx.externalId,
+      description: tx.description,
+      meta: (tx.meta ?? null) as Record<string, unknown> | null,
+      createdAt: tx.createdAt,
+      updatedAt: tx.updatedAt,
+    }));
   }
 
-  async getAllRecentTransactions(limit: number): Promise<any[]> {
+  async getAllRecentTransactions(limit: number): Promise<RecentTransaction[]> {
     const txs = await prisma.transaction.findMany({
       orderBy: { createdAt: 'desc' },
       take: limit,
@@ -777,7 +819,7 @@ export class WalletRepositoryImpl
       },
     });
 
-    return txs.map((tx: any) => ({
+    return txs.map((tx) => ({
       id: tx.id,
       userId: tx.wallet?.userId,
       date: tx.createdAt.toISOString(),
@@ -814,15 +856,17 @@ export class WalletRepositoryImpl
           where: { userId: artistId },
         });
 
-        if (!userWallet) throw new Error('User wallet not found');
-        if (!artistWallet) throw new Error('Artist wallet not found');
+        if (!userWallet) throw new NotFoundError('User wallet not found');
+        if (!artistWallet) throw new NotFoundError('Artist wallet not found');
 
         // Identify which wallet has the locked funds (support both old and new flow)
         let sourceWalletForLockedFunds = userWallet;
         if (artistWallet.lockedAmount >= totalAmount) {
           sourceWalletForLockedFunds = artistWallet;
         } else if (userWallet.lockedAmount < totalAmount) {
-          throw new Error('Insufficient locked funds in both user and artist wallets');
+          throw new BadRequestError(
+            'Insufficient locked funds in both user and artist wallets',
+          );
         }
 
         // 1. Update Source Wallet (Deduct from lockedAmount)
@@ -846,8 +890,8 @@ export class WalletRepositoryImpl
                 },
                 set: { earned: artistAmount, netGain: artistAmount, spent: 0 },
               },
-            } as any,
-          },
+            },
+          } as unknown as Record<string, unknown>,
         });
 
         // 3. Create Transactions
@@ -861,7 +905,14 @@ export class WalletRepositoryImpl
             method: 'art_coin',
             status: 'success',
             description: `Commission payment received for ${commissionId}`,
-            meta: { commissionId, type: 'RELEASE', from: sourceWalletForLockedFunds.id === userWallet.id ? 'USER_LOCKED' : 'ARTIST_LOCKED' },
+            meta: {
+              commissionId,
+              type: 'RELEASE',
+              from:
+                sourceWalletForLockedFunds.id === userWallet.id
+                  ? 'USER_LOCKED'
+                  : 'ARTIST_LOCKED',
+            },
           },
         });
 
@@ -962,17 +1013,21 @@ export class WalletRepositoryImpl
     try {
       await prisma.$transaction(async (tx) => {
         const userWallet = await tx.wallet.findUnique({ where: { userId } });
-        const artistWallet = await tx.wallet.findUnique({ where: { userId: artistId } });
+        const artistWallet = await tx.wallet.findUnique({
+          where: { userId: artistId },
+        });
 
-        if (!userWallet) throw new Error('User wallet not found');
-        if (!artistWallet) throw new Error('Artist wallet not found');
+        if (!userWallet) throw new NotFoundError('User wallet not found');
+        if (!artistWallet) throw new NotFoundError('Artist wallet not found');
 
         // Identify where the locked funds are
         let sourceWalletForRefund = userWallet;
         if (artistWallet.lockedAmount >= amount) {
           sourceWalletForRefund = artistWallet;
         } else if (userWallet.lockedAmount < amount) {
-          throw new Error('Insufficient locked funds for refund in both user and artist wallets');
+          throw new BadRequestError(
+            'Insufficient locked funds for refund in both user and artist wallets',
+          );
         }
 
         // 1. Deduct from wherever it was locked
@@ -1001,7 +1056,14 @@ export class WalletRepositoryImpl
             method: 'art_coin',
             status: 'success',
             description: `Refund for commission dispute ${commissionId}`,
-            meta: { commissionId, type: 'REFUND', from: sourceWalletForRefund.id === userWallet.id ? 'USER_LOCKED' : 'ARTIST_LOCKED' },
+            meta: {
+              commissionId,
+              type: 'REFUND',
+              from:
+                sourceWalletForRefund.id === userWallet.id
+                  ? 'USER_LOCKED'
+                  : 'ARTIST_LOCKED',
+            },
           },
         });
       });
@@ -1019,9 +1081,9 @@ export class WalletRepositoryImpl
   async findAllWallets(
     page: number,
     limit: number,
-    filters?: import('../../domain/repository/IWalletRepository').WalletFilters,
+    filters?: WalletFilters,
   ): Promise<{
-    data: any[];
+    data: Wallet[];
     meta: { total: number; page: number; limit: number };
     stats?: {
       total: number;
@@ -1032,20 +1094,20 @@ export class WalletRepositoryImpl
   }> {
     const skip = (page - 1) * limit;
 
-    const baseWhere: any = {
+    const baseWhere: Prisma.WalletWhereInput = {
       userId: { not: config.platform_admin_id },
     };
 
-    const where: any = { ...baseWhere };
+    const where: Prisma.WalletWhereInput = { ...baseWhere };
 
     if (filters?.status) {
       where.status = filters.status;
     }
     if (filters?.minBalance !== undefined) {
-      where.balance = { ...where.balance, gte: filters.minBalance };
+      where.balance = { ...(where.balance as object), gte: filters.minBalance };
     }
     if (filters?.maxBalance !== undefined) {
-      where.balance = { ...where.balance, lte: filters.maxBalance };
+      where.balance = { ...(where.balance as object), lte: filters.maxBalance };
     }
 
     const total = await prisma.wallet.count({ where });
@@ -1055,12 +1117,6 @@ export class WalletRepositoryImpl
       skip,
       take: limit,
       orderBy: { updatedAt: 'desc' },
-      include: {
-        transactions: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
-      },
     });
 
     // Calculate global stats (ignoring view filters but excluding admins)
@@ -1078,19 +1134,8 @@ export class WalletRepositoryImpl
       locked,
     };
 
-    const data = wallets.map((wallet) => ({
-      id: wallet.id,
-      userId: wallet.userId,
-      balance: wallet.balance,
-      lockedAmount: wallet.lockedAmount,
-      status: wallet.status,
-      createdAt: wallet.createdAt,
-      updatedAt: wallet.updatedAt,
-      lastTransaction: wallet.transactions[0] || null,
-    }));
-
     return {
-      data,
+      data: wallets as Wallet[],
       stats,
       meta: { total, page, limit },
     };
@@ -1100,9 +1145,9 @@ export class WalletRepositoryImpl
     userIds: string[],
     page: number,
     limit: number,
-    filters?: import('../../domain/repository/IWalletRepository').WalletFilters,
+    filters?: WalletFilters,
   ): Promise<{
-    data: any[];
+    data: Wallet[];
     meta: { total: number; page: number; limit: number };
     stats?: {
       total: number;
@@ -1114,38 +1159,32 @@ export class WalletRepositoryImpl
     const skip = (page - 1) * limit;
 
     // Build where clause
-    const where: any = {
+    const where: Prisma.WalletWhereInput = {
       userId: { in: userIds },
     };
     if (filters?.status) {
       where.status = filters.status;
     }
     if (filters?.minBalance !== undefined) {
-      where.balance = { ...where.balance, gte: filters.minBalance };
+      where.balance = { ...(where.balance as object), gte: filters.minBalance };
     }
     if (filters?.maxBalance !== undefined) {
-      where.balance = { ...where.balance, lte: filters.maxBalance };
+      where.balance = { ...(where.balance as object), lte: filters.maxBalance };
     }
 
     // Get total count
     const total = await prisma.wallet.count({ where });
 
-    // Get wallets with last transaction
+    // Get wallets
     const wallets = await prisma.wallet.findMany({
       where,
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
-      include: {
-        transactions: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
-      },
     });
 
     // Calculate global stats (ignoring view filters but excluding admin)
-    const baseWhere: any = {
+    const baseWhere: Prisma.WalletWhereInput = {
       userId: { not: config.platform_admin_id },
     };
 
@@ -1163,48 +1202,29 @@ export class WalletRepositoryImpl
       locked,
     };
 
-    // Format data
-    const data = wallets.map((wallet) => ({
-      id: wallet.id,
-      userId: wallet.userId,
-      balance: wallet.balance,
-      lockedAmount: wallet.lockedAmount,
-      status: wallet.status,
-      createdAt: wallet.createdAt,
-      updatedAt: wallet.updatedAt,
-      lastTransaction: wallet.transactions[0] || null,
-    }));
-
     return {
-      data,
+      data: wallets as Wallet[],
       stats,
       meta: { total, page, limit },
     };
   }
 
-  async findWalletByUserId(userId: string): Promise<any | null> {
+  async findWalletByUserId(userId: string): Promise<Wallet | null> {
     const wallet = await prisma.wallet.findUnique({
       where: { userId },
-      include: {
-        transactions: {
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
-      },
     });
 
     if (!wallet) return null;
 
-    return {
-      id: wallet.id,
-      userId: wallet.userId,
-      balance: wallet.balance,
-      lockedAmount: wallet.lockedAmount,
-      status: wallet.status,
-      createdAt: wallet.createdAt,
-      updatedAt: wallet.updatedAt,
-      lastTransaction: wallet.transactions[0] || null,
-    };
+    return new Wallet(
+      wallet.id,
+      wallet.userId,
+      wallet.balance,
+      wallet.lockedAmount,
+      wallet.status as 'active' | 'locked' | 'suspended',
+      wallet.quickStats as Record<string, number> | null,
+      wallet.transactionSummary as Record<string, number> | null,
+    );
   }
 
   async updateWalletStatus(
@@ -1222,8 +1242,8 @@ export class WalletRepositoryImpl
       updated.balance,
       updated.lockedAmount,
       updated.status as 'active' | 'locked' | 'suspended',
-      updated.createdAt,
-      updated.updatedAt,
+      updated.quickStats as Record<string, number> | null,
+      updated.transactionSummary as Record<string, number> | null,
     );
   }
 
@@ -1231,7 +1251,7 @@ export class WalletRepositoryImpl
     walletId: string,
     page: number,
     limit: number,
-    filters?: import('../../domain/repository/IWalletRepository').TransactionFilters,
+    filters?: TransactionFilters,
   ): Promise<{
     data: Transaction[];
     meta: { total: number; page: number; limit: number };
@@ -1239,7 +1259,7 @@ export class WalletRepositoryImpl
     const skip = (page - 1) * limit;
 
     // Build where clause
-    const where: any = { walletId };
+    const where: Prisma.TransactionWhereInput = { walletId };
     if (filters?.type) {
       where.type = filters.type;
     }
@@ -1277,13 +1297,13 @@ export class WalletRepositoryImpl
           tx.id,
           tx.walletId,
           tx.type as 'credited' | 'debited',
-          tx.category as any,
+          tx.category as TransactionCategory,
           tx.amount,
           tx.method as 'stripe' | 'razorpay',
           tx.status as 'pending' | 'success' | 'failed',
           tx.externalId,
           tx.description,
-          tx.meta as any,
+          tx.meta as Record<string, unknown>,
           tx.createdAt,
           tx.updatedAt,
         ),
@@ -1303,12 +1323,17 @@ export class WalletRepositoryImpl
     const { fromUserId, toUserId, commissionId, amount } = params;
     try {
       await prisma.$transaction(async (tx) => {
-        const fromWallet = await tx.wallet.findUnique({ where: { userId: fromUserId } });
-        const toWallet = await tx.wallet.findUnique({ where: { userId: toUserId } });
+        const fromWallet = await tx.wallet.findUnique({
+          where: { userId: fromUserId },
+        });
+        const toWallet = await tx.wallet.findUnique({
+          where: { userId: toUserId },
+        });
 
-        if (!fromWallet) throw new Error('From wallet not found');
-        if (!toWallet) throw new Error('To wallet not found');
-        if (fromWallet.lockedAmount < amount) throw new Error('Insufficient locked funds for transfer');
+        if (!fromWallet) throw new NotFoundError('From wallet not found');
+        if (!toWallet) throw new NotFoundError('To wallet not found');
+        if (fromWallet.lockedAmount < amount)
+          throw new BadRequestError('Insufficient locked funds for transfer');
 
         // 1. Update From Wallet (Deduct from lockedAmount)
         await tx.wallet.update({
@@ -1336,7 +1361,11 @@ export class WalletRepositoryImpl
             method: 'art_coin',
             status: 'success',
             description: `Locked funds transferred to artist for delivery of commission ${commissionId}`,
-            meta: { commissionId, type: 'TRANSFER_LOCKED', recipientId: toUserId },
+            meta: {
+              commissionId,
+              type: 'TRANSFER_LOCKED',
+              recipientId: toUserId,
+            },
           },
         });
 
@@ -1349,7 +1378,11 @@ export class WalletRepositoryImpl
             method: 'art_coin',
             status: 'success',
             description: `Locked funds received for delivery of commission ${commissionId}`,
-            meta: { commissionId, type: 'RECEIVE_LOCKED', senderId: fromUserId },
+            meta: {
+              commissionId,
+              type: 'RECEIVE_LOCKED',
+              senderId: fromUserId,
+            },
           },
         });
       });

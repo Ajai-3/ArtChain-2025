@@ -14,6 +14,7 @@ import { IGetTransactionStatsUseCase } from '../../application/interface/usecase
 import { IGetAdminTransactionsUseCase } from '../../application/interface/usecase/admin/IGetAdminTransactionsUseCase';
 import { config } from '../../infrastructure/config/env';
 import { WALLET_MESSAGES } from '../../constants/WalletMessages';
+import { TransactionFilters } from '../../domain/repository/IWalletRepository';
 
 @injectable()
 export class AdminWalletController implements IAdminWalletController {
@@ -114,10 +115,10 @@ export class AdminWalletController implements IAdminWalletController {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       
-      const filters: any = {};
-      if (req.query.type) filters.type = req.query.type;
-      if (req.query.category) filters.category = req.query.category;
-      if (req.query.status) filters.status = req.query.status;
+      const filters: TransactionFilters = {};
+      if (req.query.type) filters.type = req.query.type as TransactionFilters['type'];
+      if (req.query.category) filters.category = req.query.category as TransactionFilters['category'];
+      if (req.query.status) filters.status = req.query.status as TransactionFilters['status'];
       if (req.query.startDate) filters.startDate = new Date(req.query.startDate as string);
       if (req.query.endDate) filters.endDate = new Date(req.query.endDate as string);
 

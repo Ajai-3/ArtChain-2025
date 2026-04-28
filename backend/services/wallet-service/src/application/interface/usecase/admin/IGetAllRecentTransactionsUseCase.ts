@@ -1,3 +1,5 @@
+import { RecentTransaction } from '../../../../domain/repository/IWalletRepository';
+
 export interface IGetAllRecentTransactionsUseCase {
-  execute(limit: number): Promise<any[]>;
+  execute(limit: number): Promise<RecentTransaction[]>;
 }

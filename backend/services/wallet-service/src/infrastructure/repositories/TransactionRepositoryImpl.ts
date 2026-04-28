@@ -3,6 +3,8 @@ import { injectable } from 'inversify';
 import { BaseRepositoryImpl } from './BaseRepositoryImpl';
 import { ITransactionRepository } from '../../domain/repository/ITransactionRepository';
 import { Transaction, TransactionCategory, TransactionMethod, TransactionStatus, TransactionType } from '../../domain/entities/Transaction';
+import { AdminTransactionStatsResponse } from '../../types/TransactionStats';
+import { Prisma } from '@prisma/client';
 
 @injectable()
 export class TransactionRepositoryImpl
@@ -12,11 +14,12 @@ export class TransactionRepositoryImpl
   protected model = prisma.transaction;
 
   async findByExternalId(externalId: string): Promise<Transaction | null> {
-    return this.model.findUnique({
+    const result = await this.model.findUnique({
       where: {
         externalId: externalId,
       },
     });
+    return result as Transaction | null;
   }
 
 async getByWalletId(
@@ -30,7 +33,7 @@ async getByWalletId(
 ): Promise<{ transactions: Transaction[]; total: number }> {
   const skip = (page - 1) * limit;
 
-  const whereClause: any = { walletId };
+  const whereClause: Prisma.TransactionWhereInput = { walletId };
   if (method) whereClause.method = method;
   if (type) whereClause.type = type;
   if (category) whereClause.category = category;
@@ -46,11 +49,11 @@ async getByWalletId(
     this.model.count({ where: whereClause }),
   ]);
 
-  return { transactions, total };
+  return { transactions: transactions as Transaction[], total };
 }
 
 
-async getStats(startDate: Date, endDate: Date): Promise<any[]> {
+async getStats(startDate: Date, endDate: Date): Promise<AdminTransactionStatsResponse> {
     const transactions = await this.model.findMany({
       where: {
         createdAt: { gte: startDate, lte: endDate },

@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/inversify/types';
 import { WALLET_MESSAGES } from '../../../constants/WalletMessages';
 import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
 import { IGetWalletUseCase } from '../../interface/usecase/wallet/IGetWalletUseCase';
+import { WalletSummaryResponse } from '../../../types/Wallet';
 
 @injectable()
 export class GetWalletUseCase implements IGetWalletUseCase {
@@ -12,7 +13,7 @@ export class GetWalletUseCase implements IGetWalletUseCase {
     private readonly _walletRepo: IWalletRepository
   ) {}
 
-  async execute(userId: string) {
+  async execute(userId: string): Promise<WalletSummaryResponse> {
     if (!userId) throw new BadRequestError(WALLET_MESSAGES.USER_ID_MISSING);
 
     let wallet = await this._walletRepo.getByUserId(userId);

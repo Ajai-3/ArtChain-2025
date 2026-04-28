@@ -1,3 +1,5 @@
+import { GetAllWalletsResponse } from '../../../../types/WalletAdmin';
+
 export interface IGetAllWalletsUseCase {
   execute(
     page: number,
@@ -9,14 +11,5 @@ export interface IGetAllWalletsUseCase {
     },
     query?: string,
     token?: string
-  ): Promise<{
-    data: any[];
-    meta: { total: number; page: number; limit: number };
-    stats?: {
-      totalWallets: number;
-      activeWallets: number;
-      suspendedWallets: number;
-      lockedWallets: number;
-    };
-  }>;
+  ): Promise<GetAllWalletsResponse>;
 }

@@ -2,9 +2,9 @@ import { injectable } from 'inversify';
 import { prisma } from '../db/prisma';
 import { BaseRepositoryImpl } from './BaseRepositoryImpl';
 import { IWithdrawalRepository } from '../../domain/repository/IWithdrawalRepository';
-import { WithdrawalRequest } from '../../domain/entities/WithdrawalRequest';
-import { WithdrawalStatus } from '../../domain/entities/WithdrawalRequest';
+import { WithdrawalRequest, WithdrawalMethod, WithdrawalStatus } from '../../domain/entities/WithdrawalRequest';
 import { TransactionType, TransactionCategory, TransactionMethod, TransactionStatus } from '../../domain/entities/Transaction';
+import { Prisma } from '@prisma/client';
 
 @injectable()
 export class WithdrawalRepositoryImpl
@@ -22,14 +22,14 @@ export class WithdrawalRepositoryImpl
 
   async getWithdrawalRequestsByUserId(userId: string, page: number, limit: number, status?: string, method?: string): Promise<{ requests: WithdrawalRequest[]; total: number }> {
      const skip = (page - 1) * limit;
-     const where: any = { userId };
-     
+     const where: Prisma.WithdrawalRequestWhereInput = { userId };
+
      if (status && status !== 'all') {
-        where.status = status;
+        where.status = status as WithdrawalStatus;
      }
 
      if (method && method !== 'all') {
-        where.method = method;
+        where.method = method as WithdrawalMethod;
      }
 
      const [requests, total] = await Promise.all([
@@ -42,7 +42,7 @@ export class WithdrawalRepositoryImpl
         this.model.count({ where })
      ]);
 
-     return { requests: requests as any, total };
+     return { requests: requests as WithdrawalRequest[], total };
   }
 
   async getWithdrawalRequestsByWalletId(walletId: string): Promise<WithdrawalRequest[]> {
@@ -54,27 +54,26 @@ export class WithdrawalRepositoryImpl
 
   async updateWithdrawalRequestStatus(
     id: string,
-    status: string,
+    status: WithdrawalStatus,
     transactionId?: string,
     rejectionReason?: string
   ): Promise<WithdrawalRequest> {
-    // Use base repository update method
-    return this.update(
-      { id },
-      {
-        status: status as any,
+    return this.model.update({
+      where: { id },
+      data: {
+        status,
         transactionId,
         rejectionReason,
         processedAt: new Date(),
-      } as any
-    );
+      },
+    }) as Promise<WithdrawalRequest>;
   }
 
   async findAll(page: number, limit: number, status?: string, method?: string): Promise<{ requests: WithdrawalRequest[]; total: number }> {
     const skip = (page - 1) * limit;
-    const where: any = {};
+    const where: Prisma.WithdrawalRequestWhereInput = {};
     if (status && status !== 'ALL') {
-        where.status = status;
+        where.status = status as WithdrawalStatus;
     }
 
     const [requests, total] = await Promise.all([
@@ -86,22 +85,22 @@ export class WithdrawalRepositoryImpl
       }),
       this.model.count({ where }),
     ]);
-    return { requests: requests as any, total };
+    return { requests: requests as WithdrawalRequest[], total };
   }
 
   async updateStatus(
     id: string,
-    status: string,
+    status: WithdrawalStatus,
     rejectionReason?: string
   ): Promise<WithdrawalRequest> {
     return this.model.update({
       where: { id },
       data: {
-        status: status as any,
+        status,
         rejectionReason,
         processedAt: new Date(),
       },
-    });
+    }) as Promise<WithdrawalRequest>;
   }
 
   async getStatusCounts(): Promise<Record<string, number>> {
@@ -122,7 +121,7 @@ export class WithdrawalRepositoryImpl
 
   async processWithdrawal(params: {
     withdrawalId: string;
-    status: string;
+    status: WithdrawalStatus;
     amount: number;
     walletId: string;
     rejectionReason?: string;
@@ -133,7 +132,7 @@ export class WithdrawalRepositoryImpl
       const updatedWithdrawal = await tx.withdrawalRequest.update({
         where: { id: params.withdrawalId },
         data: {
-          status: params.status as any,
+          status: params.status,
           rejectionReason: params.rejectionReason,
           processedAt: new Date(),
         },

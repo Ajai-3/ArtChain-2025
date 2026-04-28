@@ -12,8 +12,8 @@ export class Wallet {
     public readonly balance: number = 0,
     public readonly lockedAmount: number = 0,
     public readonly status: WalletStatus,
-    public readonly quickStats: any = {},
-    public readonly transactionSummary: any = {},
+    public readonly quickStats: Record<string, number> | null = {},
+    public readonly transactionSummary: Record<string, number> | null = {},
     public readonly createdAt: Date = new Date(),
     public readonly updatedAt: Date = new Date()
   ) {}

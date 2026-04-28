@@ -6,6 +6,7 @@ import { IWalletRepository } from '../../../domain/repository/IWalletRepository'
 import { GetTransactionsDto } from '../../interface/dto/transaction/GetTransactionsDto';
 import { ITransactionRepository } from '../../../domain/repository/ITransactionRepository';
 import { IGetTransactionsUseCase } from '../../interface/usecase/transaction/IGetTransactionsUseCase';
+import { TransactionResponse } from '../../../types/Transaction';
 
 @injectable()
 export class GetTransactionsUseCase implements IGetTransactionsUseCase {
@@ -16,7 +17,7 @@ export class GetTransactionsUseCase implements IGetTransactionsUseCase {
     private readonly _transactionRepo: ITransactionRepository
   ) {}
 
-  async execute(data: GetTransactionsDto) {
+  async execute(data: GetTransactionsDto): Promise<TransactionResponse> {
     const { userId, page, limit, method, type, status, category } = data;
 
     if (!userId) {
