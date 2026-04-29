@@ -36,8 +36,9 @@ export const useUpdateArtPost = () => {
       queryClient.invalidateQueries({ queryKey: ['userFavorites'] });
       toast.success('Art post updated successfully');
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update art post');
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || 'Failed to update art post');
     },
   });
 };

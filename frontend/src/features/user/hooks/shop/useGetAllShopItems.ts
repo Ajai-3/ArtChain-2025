@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import type { ShopItem } from "../../../../types/apiResponses";
 
 export interface ShopFilters {
   category?: string[];
@@ -9,7 +10,7 @@ export interface ShopFilters {
   maxPrice?: number;
 }
 
-export interface PaginatedResponse<T = any> {
+export interface PaginatedResponse<T = ShopItem> {
   success: boolean;
   data: T[];
   page: number;
@@ -20,7 +21,7 @@ export const useGetAllShopItems = (filters?: ShopFilters) => {
   return useInfiniteQuery<PaginatedResponse, Error>({
     queryKey: ["shopItems", filters],
     queryFn: async ({ pageParam = 1 }) => {
-      const params: any = { page: pageParam, limit: 15 };
+      const params: Record<string, string | number | string[]> = { page: pageParam, limit: 15 };
 
       if (filters) {
         if (filters.category && filters.category.length > 0) {

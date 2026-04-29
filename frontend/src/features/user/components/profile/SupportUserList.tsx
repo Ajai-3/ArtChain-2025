@@ -61,7 +61,7 @@ export const SupportUserList: React.FC<SupportUserListProps> = ({
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
 
-  const handleSupportClick = (user: any) => {
+  const handleSupportClick = (user: { id: string; username?: string; name?: string; profileImage?: string; isSupporting?: boolean }) => {
     if (loadingUserId) return;
     setLoadingUserId(user.id);
 

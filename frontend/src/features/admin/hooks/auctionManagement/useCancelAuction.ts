@@ -11,14 +11,14 @@ export const useCancelAuction = () => {
       return response.data;
     },
     onSuccess: (_, id) => {
-      queryClient.setQueriesData({ queryKey: ["admin-auctions"] }, (oldData: any) => {
+      queryClient.setQueriesData({ queryKey: ["admin-auctions"] }, (oldData: { data?: { auctions?: Array<{ _id?: string; id: string; status: string }> } } | undefined) => {
         if (!oldData || !oldData.data || !oldData.data.auctions) return oldData;
         
         return {
           ...oldData,
           data: {
             ...oldData.data,
-            auctions: oldData.data.auctions.map((auction: any) => {
+            auctions: oldData.data.auctions.map((auction) => {
               if (auction._id === id || auction.id === id) {
                 return { ...auction, status: "CANCELLED" };
               }
@@ -29,9 +29,10 @@ export const useCancelAuction = () => {
       });
       toast.success("Auction cancelled successfully");
     },
-    onError: (error: any) => {
-      console.error("Failed to cancel auction:", error);
-      toast.error(error.response?.data?.message || "Failed to cancel auction");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      console.error("Failed to cancel auction:", err);
+      toast.error(err?.response?.data?.message || "Failed to cancel auction");
     },
   });
 };

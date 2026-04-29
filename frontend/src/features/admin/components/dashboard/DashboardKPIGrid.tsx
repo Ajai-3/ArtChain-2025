@@ -3,10 +3,19 @@ import { Users, Palette, Coins, Gavel } from 'lucide-react';
 import DashboardStatsCard from './DashboardStatsCard';
 import type { DashboardStats } from '../../hooks/dashboard/useDashboardStats';
 
+interface RevenueStats {
+  totalRevenue?: number;
+  revenueBySource?: {
+    auctions?: { amount: number };
+    artSales?: { amount: number };
+    commissions?: { amount: number };
+  };
+}
+
 interface DashboardKPIGridProps {
     stats: DashboardStats;
     artCoinRate: number;
-    revenueStats: any;
+    revenueStats: RevenueStats;
 }
 
 const DashboardKPIGrid: React.FC<DashboardKPIGridProps> = ({ stats, artCoinRate, revenueStats }) => {

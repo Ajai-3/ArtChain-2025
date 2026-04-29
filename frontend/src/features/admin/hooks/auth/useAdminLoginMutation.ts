@@ -24,14 +24,15 @@ export const useAdminLoginMutation = () => {
 
       navigate(ROUTES.ADMIN_DASHBOARD);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { error?: { message?: string }; message?: string; status?: number };
       const errorMessage =
-        error.error?.message || error.message || "Login failed";
+        err.error?.message || err.message || "Login failed";
 
       console.error("Login failed:", {
-        status: error.status,
+        status: err.status,
         message: errorMessage,
-        fullError: error,
+        fullError: err,
       });
     },
   });

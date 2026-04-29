@@ -16,19 +16,20 @@ import {
   DialogTitle,
 } from "../../../../components/ui/dialog";
 import { Switch } from "../../../../components/ui/switch";
+import type { AIModelConfig } from "../../../../types/ai";
 
 interface AIConfigListProps {
-  configs: any[];
+  configs: AIModelConfig[];
 }
 
 const AIConfigList: React.FC<AIConfigListProps> = ({ configs }) => {
   const { mutate: updateConfig, isPending: isUpdating } = useUpdateAIConfig();
   const { mutate: testProvider, isPending: isTesting } = useTestAIProvider();
   
-  const [editingConfig, setEditingConfig] = useState<any>(null);
-  const [formData, setFormData] = useState<any>({});
+  const [editingConfig, setEditingConfig] = useState<AIModelConfig | null>(null);
+  const [formData, setFormData] = useState<Partial<AIModelConfig>>({});
 
-  const handleOpenEdit = (config: any) => {
+  const handleOpenEdit = (config: AIModelConfig) => {
     setEditingConfig(config);
     setFormData({
       enabled: config.enabled,
@@ -52,7 +53,7 @@ const AIConfigList: React.FC<AIConfigListProps> = ({ configs }) => {
       console.log('Form Data:', formData);
       
       // Only send changed fields
-      const updates: any = {};
+      const updates: Partial<AIModelConfig> = {};
       if (formData.enabled !== editingConfig.enabled) updates.enabled = formData.enabled;
       if (formData.dailyFreeLimit !== editingConfig.dailyFreeLimit) updates.dailyFreeLimit = formData.dailyFreeLimit;
       if (formData.artcoinCostPerImage !== editingConfig.artcoinCostPerImage) updates.artcoinCostPerImage = formData.artcoinCostPerImage;
@@ -73,7 +74,7 @@ const AIConfigList: React.FC<AIConfigListProps> = ({ configs }) => {
     }
   };
 
-  const handleToggleEnabled = (config: any) => {
+  const handleToggleEnabled = (config: AIModelConfig) => {
     console.log('=== TOGGLING ENABLED ===');
     console.log('Provider:', config.provider);
     console.log('New state:', !config.enabled);

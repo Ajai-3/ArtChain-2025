@@ -32,7 +32,7 @@ interface WithdrawalRequest {
 interface CreateWithdrawalResponse {
   message: string;
   withdrawalRequest: WithdrawalRequest;
-  wallet: any;
+  wallet: WalletData;
 }
 
 export const useCreateWithdrawalRequest = () => {
@@ -50,7 +50,7 @@ export const useCreateWithdrawalRequest = () => {
     },
     onSuccess: (data) => {
       // Update React Query cache - only update balance and lockedAmount
-      queryClient.setQueryData(["wallet"], (oldData: any) => {
+      queryClient.setQueryData(["wallet"], (oldData: { wallet?: WalletData } | undefined) => {
         if (!oldData) return oldData;
         return {
           ...oldData,
@@ -74,15 +74,16 @@ export const useCreateWithdrawalRequest = () => {
       
       toast.success(data.message);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
       const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
+        err.response?.data?.message ||
+        err.message ||
         "Failed to create withdrawal request";
       
       toast.error(errorMessage);
       
-      console.error("Withdrawal request error:", error);
+      console.error("Withdrawal request error:", err);
     },
   });
 };

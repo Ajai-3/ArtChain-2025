@@ -16,8 +16,9 @@ export const useUploadCommissionImageMutation = () => {
         },
       });
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Image upload failed!");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Image upload failed!");
     },
   });
 };

@@ -31,7 +31,7 @@ const LikedItems: React.FC = () => {
   );
 
   const arts = useMemo(
-    () => data?.pages.flatMap((page: any) => page.data) ?? [],
+    () => data?.pages.flatMap((page: { data: ArtItem[] }) => page.data) ?? [],
     [data]
   );
 

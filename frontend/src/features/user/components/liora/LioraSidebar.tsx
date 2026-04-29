@@ -12,17 +12,31 @@ import {
   SelectValue,
 } from "../../../../components/ui/select";
 import { Sparkles, Settings, AlertCircle } from "lucide-react";
+import type { User } from "../../../../types/users/user/user";
+
+interface QuotaData {
+  data: {
+    remaining: number;
+    limit: number;
+  };
+}
+
+interface ModelConfig {
+  id: string;
+  name?: string;
+  resolutions?: string[];
+}
 
 interface LioraSidebarProps {
-  user: any;
-  quota: any;
+  user: User | null;
+  quota: QuotaData | null;
   model: string;
   setModel: (value: string) => void;
   modelsLoading: boolean;
-  availableModels: any[];
+  availableModels: ModelConfig[];
   resolution: string;
   setResolution: (value: string) => void;
-  currentConfig: any;
+  currentConfig: ModelConfig | null;
   seed: number | "";
   setSeed: (value: number | "") => void;
   negativePrompt: string;
@@ -123,7 +137,7 @@ export const LioraSidebar: React.FC<LioraSidebarProps> = ({
                     Loading...
                   </SelectItem>
                 ) : availableModels?.length > 0 ? (
-                  availableModels.flatMap((config: any) =>
+                  availableModels.flatMap((config: ModelConfig) =>
                     config.availableModels.map((modelName: string) => (
                       <SelectItem
                         key={`desktop-${config.provider}-${modelName}`}

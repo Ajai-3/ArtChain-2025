@@ -19,7 +19,7 @@ export const useCreateCategory = () => {
 
       toast.success(data.message || "Category created successfully");
     },
-    onError: (err: any) => {
+    onError: (err: { message?: string }) => {
       toast.error(
         err?.message || "Failed to create category. Try again."
       );

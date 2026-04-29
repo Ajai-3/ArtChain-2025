@@ -12,10 +12,11 @@ import { Button } from "../../../../components/ui/button";
 import { Eye } from "lucide-react";
 import { formatNumber } from "../../../../libs/formatNumber";
 import WithdrawalTableSkeleton from "../skeletons/WithdrawalTableSkeleton";
+import type { WithdrawalData } from "../../../../types/withdrawal";
 
 interface WithdrawalTableProps {
-  withdrawals: any[];
-  onViewDetails: (withdrawal: any) => void;
+  withdrawals: WithdrawalData[];
+  onViewDetails: (withdrawal: WithdrawalData) => void;
   isLoading: boolean;
   selectedIds: string[];
   onToggleSelect: (id: string) => void;
@@ -94,7 +95,7 @@ const WithdrawalTable: React.FC<WithdrawalTableProps> = ({
           {isLoading ? (
             <WithdrawalTableSkeleton rows={6} />
           ) : withdrawals && withdrawals.length > 0 ? (
-            withdrawals.map((withdrawal: any) => {
+            withdrawals.map((withdrawal) => {
               const isSelected = selectedIds.includes(withdrawal.id);
               return (
                 <TableRow

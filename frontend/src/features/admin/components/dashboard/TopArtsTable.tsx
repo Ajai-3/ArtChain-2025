@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../..
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../components/ui/table';
 import type { TopArt } from '../../hooks/dashboard/useDashboardStats';
 import { Gem } from 'lucide-react';
+import type { ArtItem } from '../../../../types/apiResponses';
 
 interface TopArtsTableProps {
-  arts: TopArt[];
+  arts: ArtItem[];
 }
 
 const TopArtsTable: React.FC<TopArtsTableProps> = ({ arts }) => {
@@ -36,19 +37,19 @@ const TopArtsTable: React.FC<TopArtsTableProps> = ({ arts }) => {
               <TableRow key={art.id}>
                 <TableCell className="font-medium text-muted-foreground text-xs">{index + 1}</TableCell>
                 <TableCell>
-                  <img src={(art as any).previewUrl} alt={art.title} className="h-10 w-10 rounded-md object-cover" />
+                  <img src={art.previewUrl} alt={art.title} className="h-10 w-10 rounded-md object-cover" />
                 </TableCell>
                 <TableCell className="font-medium">{art.title}</TableCell>
                 <TableCell>
                     <div className="flex items-center gap-2">
                         <div className="h-6 w-6 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center overflow-hidden">
-                           {(art as any).artist?.profileImage ? (
-                               <img src={(art as any).artist.profileImage} alt={(art as any).artist.username} className="h-full w-full object-cover" />
+                           {art.artist?.profileImage ? (
+                               <img src={art.artist.profileImage} alt={art.artist.username} className="h-full w-full object-cover" />
                            ) : (
-                               <span className="text-xs font-bold text-muted-foreground">{(art as any).artist?.name?.[0] || 'U'}</span>
+                               <span className="text-xs font-bold text-muted-foreground">{art.artist?.name?.[0] || 'U'}</span>
                            )}
                         </div>
-                        <span className="text-sm">{(art as any).artist?.name || 'Unknown'}</span>
+                        <span className="text-sm">{art.artist?.name || 'Unknown'}</span>
                     </div>
                 </TableCell>
                 <TableCell>

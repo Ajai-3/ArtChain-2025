@@ -5,9 +5,10 @@ import type { RecentAuction } from '../../hooks/dashboard/useDashboardStats';
 import { Timer, Download, Loader2 } from 'lucide-react';
 import { useDownloadFileMutation } from '../../../user/hooks/art/useDownloadFileMutation';
 import { Button } from '../../../../components/ui/button';
+import type { AuctionItem } from '../../../../types/apiResponses';
 
 interface RecentAuctionsTableProps {
-  auctions: RecentAuction[];
+  auctions: AuctionItem[];
 }
 
 const statusStyles: Record<string, { text: string; border: string; bg: string; label: string }> = {
@@ -77,33 +78,33 @@ const RecentAuctionsTable: React.FC<RecentAuctionsTableProps> = ({ auctions }) =
                   <div className="flex flex-col gap-1">
                     <span className="font-medium text-sm">{auction.title}</span>
                     <div className="flex items-center gap-2">
-                      {(auction as any).host ? (
+                      {auction.host ? (
                         <div className="flex items-center gap-1.5">
                           <div className="h-4 w-4 rounded-full overflow-hidden bg-zinc-200">
                             <img
                               src={
-                                (auction as any).host.profileImage ||
-                                `https://ui-avatars.com/api/?name=${(auction as any).host.name}&background=random`
+                                auction.host.profileImage ||
+                                `https://ui-avatars.com/api/?name=${auction.host.name}&background=random`
                               }
                               alt=""
                               className="h-full w-full object-cover"
                             />
                           </div>
                           <span className="text-xs text-muted-foreground">
-                            {(auction as any).host.name}
+                            {auction.host.name}
                           </span>
                         </div>
                       ) : (
                         <span className="text-xs text-muted-foreground">Unknown Host</span>
                       )}
-                      {(auction as any).description && (
+                      {auction.description && (
                         <>
                           <span className="text-xs text-muted-foreground/50">•</span>
                           <span
                             className="text-xs text-muted-foreground truncate max-w-[150px]"
-                            title={(auction as any).description}
+                            title={auction.description}
                           >
-                            {(auction as any).description}
+                            {auction.description}
                           </span>
                         </>
                       )}

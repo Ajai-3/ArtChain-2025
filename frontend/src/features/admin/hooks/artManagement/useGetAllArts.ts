@@ -1,9 +1,14 @@
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import type { AdminArtData } from "../../../../types/artAdmin";
 
 interface ArtResponse {
-  data: any[];
-  meta: any;
+  data: AdminArtData[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
   stats?: {
     total: number;
     free: number;
@@ -28,7 +33,7 @@ export const useGetAllArts = (
   return useQuery<ArtResponse>({
     queryKey: ["admin-arts", page, limit, filters],
     queryFn: async () => {
-      const params: any = {
+      const params: Record<string, string | number | undefined> = {
         page,
         limit,
         ...filters,

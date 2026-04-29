@@ -13,9 +13,10 @@ import WalletTableSkeleton from '../skeletons/WalletTableSkeleton';
 import WalletStatusActions from './WalletStatusActions';
 import TransactionDetailsModal from './TransactionDetailsModal';
 import { format } from 'date-fns';
+import type { WalletData } from '../../../../types/wallet';
 
 interface WalletTableProps {
-  wallets: any[];
+  wallets: WalletData[];
   isLoading: boolean;
   page: number;
   totalPages: number;
@@ -31,12 +32,12 @@ const WalletTable: React.FC<WalletTableProps> = ({
   limit,
   onPageChange,
 }) => {
-  const [selectedWallet, setSelectedWallet] = useState<any>(null);
+  const [selectedWallet, setSelectedWallet] = useState<WalletData | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
   console.log('Wallets data in WalletTable:', wallets);
 
-  const openDetails = (wallet: any) => {
+  const openDetails = (wallet: WalletData) => {
     setSelectedWallet(wallet);
     setIsDetailsOpen(true);
   };
@@ -129,7 +130,7 @@ const WalletTable: React.FC<WalletTableProps> = ({
             {isLoading ? (
               <WalletTableSkeleton rows={limit} />
             ) : wallets && wallets.length > 0 ? (
-              wallets.map((wallet: any, idx: number) => (
+              wallets.map((wallet, idx: number) => (
                 <TableRow
                   key={wallet.id}
                   className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors"

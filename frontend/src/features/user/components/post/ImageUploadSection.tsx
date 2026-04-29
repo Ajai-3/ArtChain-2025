@@ -61,7 +61,7 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
     reader.readAsDataURL(croppedFile);
 
     uploadMutation.mutate(croppedFile, {
-      onSuccess: (res: any) => {
+      onSuccess: (res: UploadResponse) => {
         const urls = {
           originalUrl: res.data.data.originalUrl,
           previewUrl: res.data.data.previewUrl,
@@ -70,7 +70,7 @@ const ImageUploadSection: React.FC<ImageUploadSectionProps> = ({
         setError(null);
         onSubmitImage(croppedFile, urls, aspectRatio);
       },
-      onError: (err: any) => {
+      onError: (err: unknown) => {
         console.error(err);
         setError(err?.response?.data?.message || "Upload failed!");
         setPreviewSrc(null);

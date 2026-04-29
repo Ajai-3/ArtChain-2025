@@ -15,9 +15,10 @@ interface GenerateAIImageParams {
 export const useGenerateAIImage = () => {
   return useMutation({
     mutationFn: (data: GenerateAIImageParams) => apiClient.post("/api/v1/art/ai/generate", data),
-    onError: (err: any) => {
+    onError: (err: unknown) => {
+      const error = err as { response?: { data?: { message?: string } } };
       console.error(err);
-      toast.error(err?.response?.data?.message || "Failed to generate image");
+      toast.error(error?.response?.data?.message || "Failed to generate image");
     },
   });
 };

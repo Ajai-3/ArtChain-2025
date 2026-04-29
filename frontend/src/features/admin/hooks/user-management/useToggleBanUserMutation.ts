@@ -1,5 +1,6 @@
 import apiClient from '../../../../api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { User } from '../../../../types/users/user/user';
 
 export const useToggleBanUserMutation = () => {
   const queryClient = useQueryClient();
@@ -10,14 +11,14 @@ export const useToggleBanUserMutation = () => {
 
     onMutate: async ({ userId }) => {
       await queryClient.cancelQueries({ queryKey: ['admin-users'] });
-      const prevData = queryClient.getQueryData<any>(['admin-users']);
+      const prevData = queryClient.getQueryData<{ data?: User[] }>(['admin-users']);
 
-      queryClient.setQueryData(['admin-users'], (old: any) => {
+      queryClient.setQueryData(['admin-users'], (old: { data?: User[] } | undefined) => {
         if (!old || !old.data) return old;
 
         return {
           ...old,
-          data: old.data.map((user: any) =>
+          data: old.data.map((user) =>
             user.id === userId
               ? {
                   ...user,
@@ -31,7 +32,7 @@ export const useToggleBanUserMutation = () => {
       return { prevData };
     },
 
-    onError: (err, _, context: any) => {
+    onError: (err: Error, _, context: { prevData?: { data?: User[] } }) => {
       console.error('Toggle failed:', err);
       if (context?.prevData) {
         queryClient.setQueryData(['admin-users'], context.prevData);

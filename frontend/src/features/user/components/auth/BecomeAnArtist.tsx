@@ -79,7 +79,7 @@ const BecomeArtistModal = ({ isOpen, onClose }: ModalProps) => {
         .pick({ [field]: true } as { bio?: true; phone?: true; country?: true })
         .parse({ [field]: value });
       setErrors((prev) => ({ ...prev, [field]: undefined }));
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrors((prev) => ({ ...prev, [field]: err.errors[0].message }));
     }
   };

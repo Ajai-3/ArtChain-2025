@@ -15,6 +15,7 @@ import ConfirmModal from '../../../../components/modals/ConfirmModal';
 import { useCommissionsQuery } from '../../hooks/commissionManagement/useCommissionsQuery';
 import { useResolveDisputeMutation } from '../../hooks/commissionManagement/useResolveDisputeMutation'; 
 import CommissionDetailModal from './CommissionDetailModal';
+import type { CommissionItem } from '../../../../types/apiResponses';
 
 interface CommissionTableProps {
   statusFilter: string;
@@ -29,7 +30,7 @@ const CommissionTable: React.FC<CommissionTableProps> = ({
   onPageChange,
   limit 
 }) => {
-  const [selectedCommission, setSelectedCommission] = useState<any>(null);
+  const [selectedCommission, setSelectedCommission] = useState<CommissionItem | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [pendingResolution, setPendingResolution] = useState<{id: string, resolution: 'REFUND' | 'RELEASE'} | null>(null);
   
@@ -103,7 +104,7 @@ const CommissionTable: React.FC<CommissionTableProps> = ({
                 </TableCell>
               </TableRow>
             ) : (
-              commissions.map((c: any, index: number) => (
+              commissions.map((c: CommissionItem, index: number) => (
                 <TableRow key={c.id} className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors">
                   <TableCell className="px-4 py-2 font-mono text-zinc-500">
                     {(page - 1) * limit + index + 1}

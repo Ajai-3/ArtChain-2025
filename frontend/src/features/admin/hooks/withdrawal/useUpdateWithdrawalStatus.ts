@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import type { WithdrawalData } from "../../../../types/withdrawal";
 
 interface UpdateWithdrawalStatusParams {
   withdrawalId: string;
@@ -27,18 +28,18 @@ export const useUpdateWithdrawalStatus = () => {
       await queryClient.cancelQueries({ queryKey: ["admin", "withdrawalRequests"] });
 
       // Snapshot all previous queries
-      const previousQueries: any[] = [];
+      const previousQueries: Array<{ queryKey: string[]; data: unknown }> = [];
       queryClient.getQueriesData({ queryKey: ["admin", "withdrawalRequests"] }).forEach(([queryKey, data]) => {
-        previousQueries.push({ queryKey, data });
+        previousQueries.push({ queryKey: queryKey as string[], data });
       });
 
       // Optimistically update all matching queries
       queryClient.setQueriesData(
         { queryKey: ["admin", "withdrawalRequests"] },
-        (old: any) => {
+        (old: { withdrawalRequests?: Array<WithdrawalData & { processedAt?: string }> } | undefined) => {
           if (!old || !old.withdrawalRequests) return old;
 
-          const updatedRequests = old.withdrawalRequests.map((withdrawal: any) =>
+          const updatedRequests = old.withdrawalRequests.map((withdrawal) =>
             withdrawal.id === newWithdrawal.withdrawalId
               ? { 
                   ...withdrawal, 
@@ -58,10 +59,10 @@ export const useUpdateWithdrawalStatus = () => {
 
       return { previousQueries };
     },
-    onError: (err: any, _newWithdrawal, context) => {
+    onError: (err: unknown, _newWithdrawal, context: { previousQueries?: Array<{ queryKey: string[]; data: unknown }> }) => {
       // Restore all previous queries on error
       if (context?.previousQueries) {
-        context.previousQueries.forEach(({ queryKey, data }: any) => {
+        context.previousQueries.forEach(({ queryKey, data }) => {
           queryClient.setQueryData(queryKey, data);
         });
       }

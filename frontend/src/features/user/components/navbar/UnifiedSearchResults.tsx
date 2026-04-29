@@ -21,9 +21,25 @@ const UnifiedSearchResults: React.FC<UnifiedSearchResultsProps> = ({
 
   // **Important:** Extract actual array from Axios response
   const results = Array.isArray(res) ? res : res?.data ?? [];
-
-  const users = tab === "user" ? results.filter((u: any) => u.id !== currentUserId) : [];
-  const arts = tab === "art" ? results : [];
+  
+  interface SearchUser {
+    id: string;
+    name: string;
+    username: string;
+    profileImage?: string;
+  }
+  
+  interface SearchArt {
+    id: string;
+    artName?: string;
+    title?: string;
+    imageUrl?: string;
+    username?: string;
+    createdAt?: string;
+  }
+  
+  const users = tab === "user" ? results.filter((u: SearchUser) => u.id !== currentUserId) : [];
+  const arts = tab === "art" ? results as SearchArt[] : [];
 
   if (!query.trim()) return null;
 
@@ -58,9 +74,9 @@ const UnifiedSearchResults: React.FC<UnifiedSearchResultsProps> = ({
       )}
 
       {/* Users */}
-      {!isLoading && tab === "user" && users.length > 0 && (
-        <ul className="p-2">
-          {users.map((user: any) => (
+        {!isLoading && tab === "user" && users.length > 0 && (
+          <ul className="p-2">
+            {users.map((user: SearchUser) => (
             <li
               key={user.id}
               onClick={() => onSelectUser(user.username)}
@@ -87,9 +103,9 @@ const UnifiedSearchResults: React.FC<UnifiedSearchResultsProps> = ({
       )}
 
       {/* Arts */}
-      {!isLoading && tab === "art" && arts.length > 0 && (
-        <ul className="p-2 grid grid-cols-1 gap-2">
-          {arts.map((art: any) => (
+        {!isLoading && tab === "art" && arts.length > 0 && (
+          <ul className="p-2 grid grid-cols-1 gap-2">
+            {arts.map((art: SearchArt) => (
             <li
               key={art.artNmae}
               onClick={() => onSelectArt(art.artname, art.username)}

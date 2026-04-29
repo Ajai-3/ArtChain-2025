@@ -17,8 +17,9 @@ export const useUpdateArtStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-art-stats"] });
       toast.success("Art status updated successfully");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to update status");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to update status");
     },
   });
 };

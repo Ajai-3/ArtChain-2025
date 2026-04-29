@@ -22,9 +22,10 @@ import { format } from 'date-fns';
 import ConfirmModal from '../../../../components/modals/ConfirmModal';
 import { useUpdateArtStatus } from '../../hooks/artManagement/useUpdateArtStatus';
 import { useNavigate } from 'react-router-dom';
+import type { AdminArtData } from '../../../../types/artAdmin';
 
 interface ArtTableProps {
-  arts: any[];
+  arts: AdminArtData[];
   isLoading: boolean;
   page: number;
   totalPages: number;

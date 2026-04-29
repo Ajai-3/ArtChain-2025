@@ -1,10 +1,27 @@
 import { useRef, useState, useCallback } from 'react';
 import { getChatSocket } from '../socket/socketManager';
 
+interface CallControlSignal {
+  type: "camera-toggle" | "mic-toggle";
+  enabled: boolean;
+}
+
+interface RTCSignalWithType {
+  type: RTCSdpType;
+  sdp?: string;
+}
+
+interface RTCIceSignal {
+  type: 'candidate';
+  candidate?: RTCIceCandidateInit;
+}
+
+export type RTCSignal = RTCSignalWithType | RTCIceSignal;
+
 export const useWebRTC = () => {
   const peerConnection = useRef<RTCPeerConnection | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-  const candidateQueue = useRef<any[]>([]);
+  const candidateQueue = useRef<RTCIceCandidateInit[]>([]);
   const socket = getChatSocket();
 
   const createPeerConnection = useCallback((targetUserId: string) => {
@@ -83,9 +100,9 @@ export const useWebRTC = () => {
     }
   }, []);
 
-  const handleSignal = useCallback(async (signal: any, fromUserId: string) => {
+  const handleSignal = useCallback(async (signal: RTCSignal, fromUserId: string) => {
     if (!peerConnection.current) {
-      if (signal.type === 'candidate') {
+      if (signal.type === 'candidate' && signal.candidate) {
           candidateQueue.current.push(signal.candidate);
       }
       return;
@@ -95,7 +112,7 @@ export const useWebRTC = () => {
 
     try {
       if (signal.type === 'offer') {
-        await pc.setRemoteDescription(new RTCSessionDescription(signal));
+        await pc.setRemoteDescription(new RTCSessionDescription(signal as RTCSessionDescriptionInit));
         await processCandidateQueue();
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
@@ -104,12 +121,12 @@ export const useWebRTC = () => {
           signal: answer
         });
       } else if (signal.type === 'answer') {
-        await pc.setRemoteDescription(new RTCSessionDescription(signal));
+        await pc.setRemoteDescription(new RTCSessionDescription(signal as RTCSessionDescriptionInit));
         await processCandidateQueue();
       } else if (signal.type === 'candidate') {
-        if (pc.remoteDescription && pc.remoteDescription.type) {
+        if (signal.candidate && pc.remoteDescription && pc.remoteDescription.type) {
           await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-        } else {
+        } else if (signal.candidate) {
           candidateQueue.current.push(signal.candidate);
         }
       }

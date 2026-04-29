@@ -12,7 +12,12 @@ interface RevenueSourceChartProps {
 
 const COLORS = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B'];
 
-const CustomTooltip = ({ active, payload }: any) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{ payload: { name: string; value: number; count: number }; fill: string }>;
+}
+
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (active && payload && payload.length) {
         const data = payload[0].payload;
         return (

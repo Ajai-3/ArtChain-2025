@@ -6,9 +6,10 @@ import {
 } from '../../../../../components/ui/avatar';
 import { Share2, Clock, Calendar } from 'lucide-react';
 import { VerifiedArtistBadge } from '../../../../../components/shared/VerifiedArtistBadge';
+import type { AuctionItem } from '../../../../../types/apiResponses';
 
 interface AuctionInfoPanelProps {
-  auction: any;
+  auction: AuctionItem;
   navigate: (path: string) => void;
 }
 

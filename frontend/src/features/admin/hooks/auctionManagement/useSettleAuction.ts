@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import { toast } from "react-hot-toast";
+import type { AuctionListResponse, AdminAuctionData } from "../../../../types/auctionAdmin";
 
 export const useSettleAuction = () => {
   const queryClient = useQueryClient();
@@ -12,14 +13,14 @@ export const useSettleAuction = () => {
     },
     onSuccess: (_, id) => {
       // 1. Manually update the cache for all matching "admin-auctions" queries for instant feedback
-      queryClient.setQueriesData({ queryKey: ["admin-auctions"] }, (oldData: any) => {
+      queryClient.setQueriesData({ queryKey: ["admin-auctions"] }, (oldData: AuctionListResponse | undefined) => {
         if (!oldData || !oldData.data || !oldData.data.auctions) return oldData;
         
         return {
           ...oldData,
           data: {
             ...oldData.data,
-            auctions: oldData.data.auctions.map((auction: any) => {
+            auctions: oldData.data.auctions.map((auction: AdminAuctionData) => {
               if (auction._id === id || auction.id === id) {
                 return { 
                   ...auction, 
@@ -38,9 +39,10 @@ export const useSettleAuction = () => {
       
       toast.success("Auction funds settled successfully");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to settle auction:", error);
-      toast.error(error.response?.data?.message || "Failed to settle auction");
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || "Failed to settle auction");
     },
   });
 };

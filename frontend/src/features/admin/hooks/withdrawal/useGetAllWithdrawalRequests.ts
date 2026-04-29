@@ -15,7 +15,7 @@ export const useGetAllWithdrawalRequests = ({
   return useQuery({
     queryKey: ['admin', 'withdrawalRequests', page, limit, status],
     queryFn: async () => {
-      const params: any = { page, limit };
+      const params: Record<string, string | number> = { page, limit };
 
       // Only add status if it's not "ALL"
       if (status && status !== 'ALL') {
@@ -34,6 +34,6 @@ export const useGetAllWithdrawalRequests = ({
     enabled: true,
     refetchOnMount: true,
     refetchOnWindowFocus: false,
-    staleTime: 0, // Always fetch fresh data when filter changes
+    staleTime: 0 // Always fetch fresh data when filter changes
   });
 };

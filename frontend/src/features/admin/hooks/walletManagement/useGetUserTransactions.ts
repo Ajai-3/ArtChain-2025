@@ -26,7 +26,7 @@ export const useGetUserTransactions = ({
   return useQuery({
     queryKey: ["admin-user-transactions", walletId, page, limit, filters],
     queryFn: async () => {
-      const params: any = {
+      const params: Record<string, string | number | Date | undefined> = {
         page,
         limit,
         ...filters,

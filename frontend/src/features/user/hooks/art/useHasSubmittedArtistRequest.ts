@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 
+import type { ArtistRequest } from "../../../../types/artist";
+
 type ArtistRequestStatusResponse = {
   alreadySubmitted: boolean;
-  latestRequest: any;
+  latestRequest: ArtistRequest | null;
 };
 
 export const useHasSubmittedArtistRequest = (enabled: boolean) => {

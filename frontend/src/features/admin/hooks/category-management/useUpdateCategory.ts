@@ -22,12 +22,12 @@ export const useUpdateCategory = () => {
 
       const allCategoryQueries = queryClient.getQueriesData({ queryKey: ["categories"] });
 
-      allCategoryQueries.forEach(([key]: any) => {
-        queryClient.setQueryData(key, (old: any) => {
+      allCategoryQueries.forEach(([key]: [string[], unknown]) => {
+        queryClient.setQueryData(key, (old: { data?: Array<{ _id: string }> } | undefined) => {
           if (!old) return old;
           return {
             ...old,
-            data: old.data.map((cat: any) =>
+            data: old.data?.map((cat) =>
               cat._id === updatedCategory._id ? updatedCategory : cat
             ),
           };
@@ -36,7 +36,7 @@ export const useUpdateCategory = () => {
 
       toast.success(data.message || "Category updated successfully");
     },
-    onError: (err: any) => {
+    onError: (err: Error) => {
       toast.error(err?.message || "Failed to update category");
     },
   });

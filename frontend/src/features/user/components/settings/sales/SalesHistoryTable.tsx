@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../../../components/ui/table";
 import type { RootState } from '../../../../../redux/store';
 import { useSelector } from 'react-redux';
+import type { SalesData } from '../../../../../types/apiResponses';
 
 interface TableProps {
-    sales: any[];
+    sales: SalesData[];
     isTableLoading: boolean;
     page: number;
     setPage: React.Dispatch<React.SetStateAction<number>>;
@@ -35,7 +36,7 @@ const SalesHistoryTable: React.FC<TableProps> = ({ sales, isTableLoading, page, 
                             </TableRow>
                         ))
                     ) : sales.length > 0 ? (
-                        sales.map((sale: any) => (
+                        sales.map((sale: SalesData) => (
                             <TableRow key={sale.transactionId} className="group border-white/5 hover:bg-white/[0.03] transition-all">
                                 <TableCell className="p-5">
                                     <div 

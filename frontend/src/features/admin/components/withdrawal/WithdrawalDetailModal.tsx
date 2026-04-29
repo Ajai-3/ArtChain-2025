@@ -22,9 +22,10 @@ import {
 } from 'lucide-react';
 import { useUpdateWithdrawalStatus } from '../../hooks/withdrawal/useUpdateWithdrawalStatus';
 import { formatNumber } from '../../../../libs/formatNumber';
+import type { WithdrawalData } from '../../../../types/withdrawal';
 
 interface WithdrawalDetailModalProps {
-  withdrawal: any;
+  withdrawal: WithdrawalData;
   isOpen: boolean;
   onClose: () => void;
 }

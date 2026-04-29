@@ -16,8 +16,9 @@ export const useReport = () => {
       await apiClient.post("/api/v1/user/report", data);
       return { success: true };
     },
-    onError: (error: any) => {
-      toast.error(error.fullError.data.body.error.message || "Something went wrong");
+    onError: (error: unknown) => {
+      const err = error as { fullError?: { data?: { body?: { error?: { message?: string } } } } };
+      toast.error(err?.fullError?.data?.body?.error?.message || "Something went wrong");
     },
   })
 };

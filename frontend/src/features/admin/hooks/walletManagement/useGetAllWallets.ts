@@ -21,7 +21,7 @@ export const useGetAllWallets = ({
   return useQuery({
     queryKey: ["admin-wallets", page, limit, search, filters],
     queryFn: async () => {
-      const params: any = {
+      const params: Record<string, string | number | undefined> = {
         page,
         limit,
         ...filters,

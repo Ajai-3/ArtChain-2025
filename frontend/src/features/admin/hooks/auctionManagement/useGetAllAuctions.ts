@@ -3,7 +3,13 @@ import apiClient from "../../../../api/axios";
 
 interface AuctionResponse {
   data: {
-      auctions: any[];
+      auctions: Array<{
+        id: string;
+        title: string;
+        status: string;
+        currentBid: number;
+        host?: { username: string };
+      }>;
       total: number;
       stats?: {
         active: number;
@@ -30,14 +36,14 @@ export const useGetAllAuctions = (
   return useQuery<AuctionResponse>({
     queryKey: ["admin-auctions", page, limit, filters],
     queryFn: async () => {
-      const params: any = {
+      const params: Record<string, string | number | undefined> = {
         page,
         limit,
         ...filters,
       };
 
       // If status is 'all', we send 'ALL' to backend to bypass default filtering
-      if (params.status && params.status.toLowerCase() === "all") {
+      if (typeof params.status === "string" && params.status.toLowerCase() === "all") {
           params.status = "ALL";
       }
 

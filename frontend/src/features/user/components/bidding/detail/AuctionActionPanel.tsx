@@ -2,8 +2,10 @@ import { Button } from '../../../../../components/ui/button';
 import { CheckCircle2, Clock, XCircle, Gavel, AlertCircle } from 'lucide-react';
 import { CountdownTimer } from '../CountdownTimer';
 
+import type { AuctionItem } from '../../../../../types/apiResponses';
+
 interface AuctionActionPanelProps {
-  auction: any;
+  auction: AuctionItem;
   isLive: boolean;
   isEnded: boolean;
   isUnsold: boolean;

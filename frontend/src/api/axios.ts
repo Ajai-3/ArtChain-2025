@@ -1,20 +1,22 @@
 import axios from "axios";
 import { store } from "../redux/store";
-import type { ApiError } from "../types/apiError";
+import type { QueueItem } from "../types/common";
 import { logout, setAccessToken } from "../redux/slices/userSlice";
 import type { RefreshTokenResponse } from "../types/refreshTokenResponse";
 import { adminLogout, setAdminAccessToken } from "../redux/slices/adminSlice";
 import toast from "react-hot-toast";
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: QueueItem<string>[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: Error | null, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
-    } else {
+    } else if (token) {
       prom.resolve(token);
+    } else {
+      prom.reject(new Error("No token available"));
     }
   });
   failedQueue = [];
@@ -137,11 +139,11 @@ apiClient.interceptors.response.use(
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
-      } catch (refreshError: any) {
-        const refreshStatus = refreshError.response?.status;
+      } catch (refreshError: unknown) {
+        const refreshStatus = (refreshError as { response?: { status: number } })?.response?.status;
         console.error(`[Axios Interceptor] Token refresh failed with status ${refreshStatus}:`, refreshError);
         
-        processQueue(refreshError, null);
+        processQueue(refreshError as Error, null);
         isRefreshing = false;
 
         const isAdmin = originalRequest.url?.includes("/api/v1/admin");

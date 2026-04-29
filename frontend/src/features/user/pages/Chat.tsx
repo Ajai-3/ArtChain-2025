@@ -18,6 +18,7 @@ import { useConvoOpen } from "../hooks/chat/socket/useConvoOpen";
 import { useDeleteMessage } from "../hooks/chat/socket/useDeleteMessage";
 import { useSocketMessages } from "../hooks/chat/socket/useSocketMessages";
 import { ROUTES } from "../../../constants/routes";
+import type { User } from "../../../types/users/user/user";
 
 const Chat: React.FC = () => {
   const dispatch = useDispatch();
@@ -39,7 +40,7 @@ const Chat: React.FC = () => {
     if (!data?.pages) return;
     const serverConversations = data.pages.flatMap((p) => p.conversations);
 
-    const usersToCache: any[] = [];
+    const usersToCache: User[] = [];
     serverConversations.forEach((c) => {
       if (c.partner && c.partner.id) {
         usersToCache.push(c.partner);

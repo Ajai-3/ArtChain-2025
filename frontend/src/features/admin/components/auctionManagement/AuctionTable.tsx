@@ -14,15 +14,16 @@ import ConfirmModal from '../../../../components/modals/ConfirmModal';
 import { useCancelAuction } from '../../hooks/auctionManagement/useCancelAuction';
 import { useSettleAuction } from '../../hooks/auctionManagement/useSettleAuction';
 import { CheckCircle2, AlertCircle, Clock } from 'lucide-react';
+import type { AdminAuctionData } from '../../../../types/auctionAdmin';
 
 interface AuctionTableProps {
-  auctions: any[];
+  auctions: AdminAuctionData[];
   isLoading: boolean;
   page: number;
   totalPages: number;
   limit: number;
   onPageChange: (page: number) => void;
-  onViewDetails: (auction: any) => void;
+  onViewDetails: (auction: AdminAuctionData) => void;
 }
 
 const AuctionTable: React.FC<AuctionTableProps> = ({

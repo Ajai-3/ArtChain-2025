@@ -1,5 +1,11 @@
 import { NotificationType } from './NotificationType';
 
+export interface NotificationMetadata {
+  amount?: number;
+  message?: string;
+  [key: string]: string | number | boolean | undefined;
+}
+
 export interface Notification {
   id: string;
   userId: string;
@@ -9,9 +15,5 @@ export interface Notification {
   createdAt: string;
   senderName?: string;
   senderImage?: string;
-  metadata?: {
-    amount?: number;
-    message?: string;
-    [key: string]: any;
-  };
+  metadata?: NotificationMetadata;
 }

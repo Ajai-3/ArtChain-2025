@@ -13,13 +13,14 @@ export const useUpdateProfileMutation = () => {
       bio?: string;
       country?: string;
     }) => apiClient.patch('/api/v1/user/profile', credentials),
-    onSuccess: (data: any) => {
+      onSuccess: (data: { data: { user: import("../../../../types/users/user/user").User } }) => {
       toast.success('Profile updated sucessfully');
       dispatch(updateProfile({ user: data.data.user }));
     },
-    onError: (error: any) => {
-      console.error('Profile update failed:', error);
-      toast.error(error.message);
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      console.error('Profile update failed:', err);
+      toast.error(err.message || "Something went wrong");
     },
   });
 };

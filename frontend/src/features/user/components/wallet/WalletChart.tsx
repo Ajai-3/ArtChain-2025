@@ -8,7 +8,7 @@ import SimpleBarChart from "./charts/SimpleBarChart";
 interface WalletChartProps {
   mode: "trend" | "breakdown" | "stats" | "line-breakdown" | "composed"; 
   activeSubTab?: "earned" | "spent" | "overview"; 
-  data: any[]; 
+  data: Record<string, unknown>[]; 
 }
 
 const COLORS = {

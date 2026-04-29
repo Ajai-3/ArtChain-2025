@@ -23,9 +23,10 @@ export const useUpdateWalletStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["admin-wallets"] });
       toast.success(`Wallet status updated to ${variables.status}`);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
       toast.error(
-        error.response?.data?.message || "Failed to update wallet status"
+        err?.response?.data?.message || "Failed to update wallet status"
       );
     },
   });

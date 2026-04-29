@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Auction, Bid } from "../../types/auction";
+import type { AuctionStatus } from "../../types/common";
 
 interface BiddingState {
   activeAuctionId: string | null;
@@ -75,9 +76,9 @@ const biddingSlice = createSlice({
         state.bids = [];
         state.currentHighestBid = 0;
     },
-    auctionEnded: (state, action: PayloadAction<{ auctionId: string, status: string, winnerId?: string, winningBidAmount?: number }>) => {
+    auctionEnded: (state, action: PayloadAction<{ auctionId: string, status: AuctionStatus, winnerId?: string, winningBidAmount?: number }>) => {
         if (state.activeAuction && state.activeAuction.id === action.payload.auctionId) {
-            state.activeAuction.status = action.payload.status as any;
+            state.activeAuction.status = action.payload.status;
             if (action.payload.winnerId) {
                 state.activeAuction.winnerId = action.payload.winnerId;
             }
@@ -89,7 +90,7 @@ const biddingSlice = createSlice({
         // Update in list if present
         const auctionInList = state.auctions.find(a => a.id === action.payload.auctionId);
         if (auctionInList) {
-             auctionInList.status = action.payload.status as any;
+             auctionInList.status = action.payload.status;
              if (action.payload.winnerId) {
                 auctionInList.winnerId = action.payload.winnerId;
              }

@@ -19,9 +19,10 @@ export const useRequestCommissionMutation = () => {
     onSuccess: () => {
       toast.success("Commission requested successfully!");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
       toast.error(
-        error?.response?.data?.message || "Failed to request commission"
+        err?.response?.data?.message || "Failed to request commission"
       );
     },
   });

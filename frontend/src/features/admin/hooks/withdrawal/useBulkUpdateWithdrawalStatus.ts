@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import type { WithdrawalData } from "../../../../types/withdrawal";
 
 interface BulkUpdateParams {
   withdrawalIds: string[];
@@ -28,19 +29,19 @@ export const useBulkUpdateWithdrawalStatus = () => {
       await queryClient.cancelQueries({ queryKey: ["admin", "withdrawalRequests"] });
 
       // Snapshot all previous queries
-      const previousQueries: any[] = [];
+      const previousQueries: Array<{ queryKey: string[]; data: unknown }> = [];
       queryClient.getQueriesData({ queryKey: ["admin", "withdrawalRequests"] }).forEach(([queryKey, data]) => {
-        previousQueries.push({ queryKey, data });
+        previousQueries.push({ queryKey: queryKey as string[], data });
       });
 
       // Optimistically update all matching queries
       queryClient.setQueriesData(
         { queryKey: ["admin", "withdrawalRequests"] },
-        (old: any) => {
+        (old: { withdrawalRequests?: WithdrawalData[]; statusCounts?: Record<string, number> } | undefined) => {
           if (!old || !old.withdrawalRequests) return old;
 
           // Update the withdrawal requests
-          const updatedRequests = old.withdrawalRequests.map((withdrawal: any) =>
+          const updatedRequests = old.withdrawalRequests.map((withdrawal) =>
             withdrawalIds.includes(withdrawal.id)
               ? { 
                   ...withdrawal, 
@@ -72,16 +73,16 @@ export const useBulkUpdateWithdrawalStatus = () => {
 
       return { previousQueries };
     },
-    onError: (_err, _variables, context) => {
+    onError: (_err: Error, _variables: BulkUpdateParams, context: { previousQueries?: Array<{ queryKey: string[]; data: unknown }> } | undefined) => {
       // Restore all previous queries on error
       if (context?.previousQueries) {
-        context.previousQueries.forEach(({ queryKey, data }: any) => {
+        context.previousQueries.forEach(({ queryKey, data }) => {
           queryClient.setQueryData(queryKey, data);
         });
       }
       toast.error("Failed to process some withdrawal requests.");
     },
-    onSuccess: (_data, { status }) => {
+    onSuccess: (_data: unknown, { status }: BulkUpdateParams) => {
       toast.success(`Selected requests marked as ${status}`);
       // Invalidate to refetch with correct data from server
       queryClient.invalidateQueries({ queryKey: ["admin", "withdrawalRequests"] });

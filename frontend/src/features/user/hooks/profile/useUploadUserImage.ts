@@ -54,7 +54,7 @@ export const useUploadUserImage = () => {
 
       queryClient.setQueryData(
         ["userProfile", user?.username],
-        (oldData: any) => {
+        (oldData: { data: { user: User } } | undefined) => {
           if (!oldData) return oldData;
 
           return {

@@ -18,8 +18,9 @@ export const useGoogleAuthMutation = () => {
       dispatch(setUser({ user, accessToken }));
       navigate(ROUTES.HOME);
     },
-    onError: (error: any) => {
-      console.error("Login failed:", error);
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      console.error("Login failed:", err);
     },
   });
 };

@@ -38,11 +38,14 @@ import {
 } from "../../../../../components/ui/popover";
 import CustomLoader from "../../../../../components/CustomLoader";
 import toast from "react-hot-toast";
+import type { CommissionRequestFormValues } from "../../../schemas/CommissionRequestSchema";
+
+import type { Commission } from '../../../types/commission';
 
 interface CommissionEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  commission: any;
+  commission: Commission;
   isRequester: boolean;
 }
 
@@ -178,7 +181,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
             <FormField
               control={form.control}
               name="title"
-              render={({ field }: { field: any }) => (
+              render={({ field }: { field: CommissionRequestFormValues['title'] extends string ? { onChange: (value: string) => void; value: string; } : never }) => (
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
@@ -192,7 +195,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
             <FormField
               control={form.control}
               name="description"
-              render={({ field }: { field: any }) => (
+              render={({ field }: { field: CommissionRequestFormValues['description'] extends string ? { onChange: (value: string) => void; value: string; } : never }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
@@ -207,7 +210,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
               <FormField
                 control={form.control}
                 name="budget"
-                render={({ field }: { field: any }) => (
+                render={({ field }: { field: CommissionRequestFormValues['budget'] extends number ? { onChange: (value: number) => void; value: number; } : never }) => (
                   <FormItem>
                     <FormLabel>Budget (Art Coin)</FormLabel>
                     <FormControl>
@@ -228,7 +231,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
               <FormField
                 control={form.control}
                 name="deadline"
-                render={({ field }: { field: any }) => (
+                render={({ field }: { field: CommissionRequestFormValues['deadline'] extends Date ? { onChange: (value: Date) => void; value: Date; } : never }) => (
                   <FormItem className="flex flex-col mt-2">
                     <FormLabel className="mb-1">Deadline</FormLabel>
                     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen} modal={true}>
@@ -251,12 +254,12 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
-                  </FormItem>
+              </FormItem>
                 )}
-              />
-            </div>
+               />
+             </div>
 
-            <div className="space-y-3">
+             <div className="space-y-3">
               <FormLabel>Reference Images</FormLabel>
               <div className="flex flex-wrap gap-3">
                 {uploadedImageUrls.map((url, index) => (

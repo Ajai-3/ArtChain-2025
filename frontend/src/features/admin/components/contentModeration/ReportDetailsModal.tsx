@@ -130,7 +130,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
               {groupedReport.reporters.map((reporter) => {
                 // Find this reporter's reports
                 const reporterReports = groupedReport.reports.filter(
-                  (r: any) => r.reporterId === reporter.id
+                  (r: { reporterId: string }) => r.reporterId === reporter.id
                 );
 
                 return (
@@ -154,7 +154,7 @@ export const ReportDetailsModal: React.FC<ReportDetailsModalProps> = ({
                         <p className="text-sm text-muted-foreground truncate">
                           {reporter.email}
                         </p>
-                        {reporterReports.map((report: any) => (
+                        {reporterReports.map((report: { id: string; reason: string; description?: string; createdAt: string }) => (
                           <div key={report.id} className="mt-2 space-y-1">
                             <div className="flex items-center gap-2">
                               <Badge variant="outline" className="text-xs">

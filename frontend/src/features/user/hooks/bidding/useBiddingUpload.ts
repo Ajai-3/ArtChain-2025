@@ -25,7 +25,7 @@ export const useBiddingUpload = () => {
         return response.data.data;
       }
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Upload failed', error);
       toast.error('Failed to upload bidding image');
       return null;

@@ -10,11 +10,12 @@ import { Badge } from "../../../../components/ui/badge";
 import { Button } from "../../../../components/ui/button";
 import { ExternalLink, Coins, User, Clock, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
+import type { CommissionItem } from '../../../../types/apiResponses';
 
 interface CommissionDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
-    commission: any;
+    commission: CommissionItem;
     onResolveDispute?: (id: string, resolution: 'REFUND' | 'RELEASE') => void;
     isResolving?: boolean;
 }
@@ -243,7 +244,7 @@ const CommissionDetailModal: React.FC<CommissionDetailModalProps> = ({
                                         <Clock className="w-3 h-3" /> History
                                     </h4>
                                     <div className="space-y-3 pl-1">
-                                        {[...commission.history].reverse().map((event: any, i: number) => (
+                                        {[...commission.history].reverse().map((event: { status: string; createdAt: string; note?: string }, i: number) => (
                                             <div key={i} className="relative pl-4 border-l border-zinc-800">
                                                 <div className="absolute -left-[5px] top-1.5 w-2.5 h-2.5 rounded-full bg-zinc-800 border border-zinc-700" />
                                                 <div className="flex flex-col gap-0.5">

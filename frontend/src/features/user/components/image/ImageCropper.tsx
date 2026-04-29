@@ -16,7 +16,7 @@ type ImageCropperProps = {
   imageSrc: string;
   aspect: number;
   cropShape: "round" | "rect";
-  onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void;
+  onCropComplete: (croppedArea: { width: number; height: number; x: number; y: number }, croppedAreaPixels: { width: number; height: number; x: number; y: number }) => void;
   onSave: () => void;
   isLoading?: boolean;
 };

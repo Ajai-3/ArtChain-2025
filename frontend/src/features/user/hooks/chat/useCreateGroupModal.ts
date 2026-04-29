@@ -3,11 +3,12 @@ import { useUnifiedSearch } from "../search/useUnifiedSearch";
 import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../../../redux/selectors/userSelectors";
 import apiClient from "../../../../api/axios";
+import type { ChatUser } from "../../../../types/chat/chat";
 
 export const useCreateGroupModal = () => {
   const [groupName, setGroupName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<ChatUser[]>([]);
   const [isCreating, setIsCreating] = useState(false);
   const currentUser = useSelector(selectCurrentUser);
 
@@ -16,7 +17,7 @@ export const useCreateGroupModal = () => {
     "user"
   );
 
-  const handleUserSelect = useCallback((user: any) => {
+  const handleUserSelect = useCallback((user: ChatUser) => {
     setSelectedUsers((prev) => {
       if (prev.find((u) => u.id === user.id)) return prev;
       return [...prev, user];

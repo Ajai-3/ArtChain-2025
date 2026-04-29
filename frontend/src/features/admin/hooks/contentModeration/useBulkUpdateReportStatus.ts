@@ -28,9 +28,10 @@ export const useBulkUpdateReportStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-reports'] });
       toast.success(data.message || 'Reports updated successfully');
     },
-    onError: (error: any) => {
-      console.error('[Frontend] Bulk update error:', error);
-      toast.error(error?.response?.data?.message || 'Failed to update reports');
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      console.error('[Frontend] Bulk update error:', err);
+      toast.error(err?.response?.data?.message || 'Failed to update reports');
     },
   });
 };

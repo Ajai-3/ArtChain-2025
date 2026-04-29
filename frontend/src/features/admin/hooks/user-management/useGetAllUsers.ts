@@ -1,8 +1,9 @@
 import apiClient from "../../../../api/axios";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import type { User } from "../../../../types/users/user/user";
 
 export interface GetAllUsersResponse {
-  data: any[];
+  data: User[];
   meta: {
     page: number;
     limit: number;

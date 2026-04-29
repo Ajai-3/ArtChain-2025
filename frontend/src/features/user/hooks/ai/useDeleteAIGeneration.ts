@@ -13,9 +13,10 @@ export const useDeleteAIGeneration = () => {
       queryClient.invalidateQueries({ queryKey: ["my-ai-generations"] });
       toast.success("Image generated deleted successfully");
     },
-    onError: (error: any) => {
-      console.error("Delete error:", error);
-      toast.error(error.response?.data?.message || "Failed to delete generation");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      console.error("Delete error:", err);
+      toast.error(err?.response?.data?.message || "Failed to delete generation");
     },
   });
 };

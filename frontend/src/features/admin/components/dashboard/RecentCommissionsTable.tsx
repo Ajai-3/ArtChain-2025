@@ -32,6 +32,7 @@ const RecentCommissionsTable: React.FC<RecentCommissionsTableProps> = ({ commiss
   const handleDownload = (id: string) => {
     downloadMutation.mutate({ id, category: 'commission' });
   };
+
   return (
     <Card className="col-span-3">
       <CardHeader>
@@ -63,7 +64,7 @@ const RecentCommissionsTable: React.FC<RecentCommissionsTableProps> = ({ commiss
                       {/* Artist */}
                       <div className="flex items-center gap-2">
                         <div className="h-6 w-6 rounded-full overflow-hidden bg-zinc-200 flex-shrink-0">
-                          <img src={(comm as any).artistProfileImage || `https://ui-avatars.com/api/?name=${comm.artistName}&background=random`} alt="" className="h-full w-full object-cover" />
+                          <img src={comm.artistProfileImage || `https://ui-avatars.com/api/?name=${comm.artistName}&background=random`} alt="" className="h-full w-full object-cover" />
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[10px] uppercase text-muted-foreground leading-none mb-0.5">Artist</span>
@@ -75,7 +76,7 @@ const RecentCommissionsTable: React.FC<RecentCommissionsTableProps> = ({ commiss
                       <div className="pl-8 flex flex-col gap-1">
                         <div className="flex items-center gap-1.5">
                           <div className="h-6 w-6 rounded-full overflow-hidden bg-zinc-200 flex-shrink-0">
-                            <img src={(comm as any).clientProfileImage || `https://ui-avatars.com/api/?name=${comm.clientName}&background=random`} alt="" className="h-full w-full object-cover" />
+                            <img src={comm.clientProfileImage || `https://ui-avatars.com/api/?name=${comm.clientName}&background=random`} alt="" className="h-full w-full object-cover" />
                           </div>
                           <div className="flex flex-col">
                             <span className="text-[10px] uppercase text-muted-foreground">Client:</span>
@@ -98,20 +99,20 @@ const RecentCommissionsTable: React.FC<RecentCommissionsTableProps> = ({ commiss
                   </TableCell>
                   <TableCell className="text-right">
                      {comm.status.toUpperCase() === 'COMPLETED' && (
-                       <Button 
+                        <Button 
                           variant="ghost" 
                           size="icon" 
                           className="h-8 w-8 text-muted-foreground hover:text-emerald-500 transition-colors"
                           onClick={() => handleDownload(comm.id)}
                           disabled={downloadMutation.isPending && downloadMutation.variables?.id === comm.id}
                           title="Download Final Artwork"
-                       >
+                        >
                           {downloadMutation.isPending && downloadMutation.variables?.id === comm.id ? (
                              <Loader2 className="h-4 w-4 animate-spin" />
                           ) : (
                              <Download className="h-4 w-4" />
                           )}
-                       </Button>
+                        </Button>
                      )}
                   </TableCell>
                 </TableRow>

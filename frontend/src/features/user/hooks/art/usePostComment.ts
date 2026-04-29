@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ArtWithUserResponse } from "./useGetArtByName";
+import type { ArtWithUser } from "./useGetAllArt";
+import type { PaginationPage } from "../../../../types/apiResponses";
 
 interface CommentInput {
   postId: string;
@@ -35,13 +37,13 @@ export const usePostComment = () => {
         });
       }
 
-      queryClient.getQueriesData<any>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
+      queryClient.getQueriesData<{ pages: PaginationPage<ArtWithUser>[] }>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
         if (!prevAllArt) return;
         const newAllArt = {
           ...prevAllArt,
-          pages: prevAllArt.pages.map((page: any) => ({
+          pages: prevAllArt.pages.map((page) => ({
             ...page,
-            data: page.data.map((art: any) =>
+            data: page.data.map((art) =>
               art.art.id === postId
                 ? { ...art, commentCount: art.commentCount + 1 }
                 : art

@@ -34,8 +34,9 @@ export const useGiftArtCoinMutation = () => {
             queryClient.invalidateQueries({ queryKey: ["wallet"] });
         }
       },
-      onError: (error: any) => {
-        toast.error(error.response?.data?.message || "Failed to gift Art Coins");
+      onError: (error: unknown) => {
+        const err = error as { response?: { data?: { message?: string } } };
+        toast.error(err?.response?.data?.message || "Failed to gift Art Coins");
       },
     });
   };

@@ -10,10 +10,12 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import { AlertCircle, Wallet } from "lucide-react";
 
+import type { AuctionItem } from '../../../../types/apiResponses';
+
 interface PlaceBidModalProps {
   isOpen: boolean;
   onClose: () => void;
-  auction: any;
+  auction: AuctionItem;
   onBidPlaced: () => void;
 }
 
@@ -24,7 +26,7 @@ export const PlaceBidModal = ({ isOpen, onClose, auction, onBidPlaced }: PlaceBi
   const user = useSelector((state: RootState) => state.user.user);
   
   // Get fresh highest bid from Redux (updated via socket)
-  const reduxHighestBid = useSelector((state: any) => state.bidding.currentHighestBid);
+  const reduxHighestBid = useSelector((state: RootState) => state.bidding.currentHighestBid);
   const currentHighestBid = reduxHighestBid > 0 ? reduxHighestBid : auction.currentBid;
 
   // Refetch wallet on mount to ensure freshness, but rely on Redux for display
@@ -40,8 +42,8 @@ export const PlaceBidModal = ({ isOpen, onClose, auction, onBidPlaced }: PlaceBi
   // Determine user's previous bid amount on this auction
   const myHighestBid = auction.bids && auction.bids.length > 0 
     ? auction.bids
-        .filter((bid: any) => bid.bidderId === user?.id)
-        .reduce((max: any, bid: any) => bid.amount > max.amount ? bid : max, { amount: 0 })
+        .filter((bid) => bid.bidderId === user?.id)
+        .reduce((max, bid) => bid.amount > max.amount ? bid : max, { amount: 0 })
     : { amount: 0 };
     
   // Check if I am the current highest bidder (global)

@@ -14,7 +14,12 @@ export interface GroupedReport {
     email: string;
     profileImage: string | null;
   }>;
-  reports: any[];
+  reports: Array<{
+    id: string;
+    reason: string;
+    status: string;
+    reporter?: { id: string; username: string };
+  }>;
 }
 
 interface UseGetGroupedReportsParams {

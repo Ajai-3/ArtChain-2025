@@ -9,14 +9,15 @@ import {
   TableRow,
 } from "../../../../components/ui/table";
 import { Button } from "../../../../components/ui/button";
-import { User } from "lucide-react";
+import { User as UserIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ConfirmModal from "../../../../components/modals/ConfirmModal";
 import CustomLoader from "../../../../components/CustomLoader";
 import UserTableSkeleton from "../skeletons/UserTableSkeleton";
+import type { User } from "../../../../types/users/user/user";
 
 interface UserTableProps {
-  users: any[];
+  users: User[];
   isLoading: boolean;
   page: number;
   totalPages: number;
@@ -38,10 +39,10 @@ const UserTable: React.FC<UserTableProps> = ({
 }) => {
   const navigate = useNavigate();
   const [isConfirmOpen, setIsConfirmOpen] = React.useState(false);
-  const [selectedUser, setSelectedUser] = React.useState<any>(null);
+  const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [actionType, setActionType] = React.useState<"ban" | "unban">("ban");
 
-  const openConfirmModal = (user: any) => {
+  const openConfirmModal = (user: User) => {
     setSelectedUser(user);
     setActionType(user.status === "banned" ? "unban" : "ban");
     setIsConfirmOpen(true);
@@ -133,7 +134,7 @@ const UserTable: React.FC<UserTableProps> = ({
           {isLoading ? (
             <UserTableSkeleton rows={limit} />
           ) : users && users.length > 0 ? (
-            users.map((user: any, idx: number) => (
+            users.map((user, idx: number) => (
               <TableRow
                 key={user.id}
                 className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors"
@@ -146,9 +147,9 @@ const UserTable: React.FC<UserTableProps> = ({
                       alt=""
                       className="w-14 h-14 rounded-sm"
                     />
-                  ) : (
-                    <User className="w-14 h-14 p-2 bg-zinc-800 rounded-sm" />
-                  )}
+                   ) : (
+                     <UserIcon className="w-14 h-14 p-2 bg-zinc-800 rounded-sm" />
+                   )}
                   <div className="">
                     <p>{user.name || "-"} </p>
                     <p className="text-zinc-400">{user.username || "-"}</p>
@@ -253,18 +254,20 @@ const UserTable: React.FC<UserTableProps> = ({
         isOpen={isConfirmOpen}
         onClose={() => setIsConfirmOpen(false)}
         title={`Confirm ${actionType}`}
-        description={
+         description={
           actionType === "ban"
-            ? `Are you sure you want to ban ${selectedUser?.name}? This will temporarily restrict their access to the platform. You can unban them later if needed.`
-            : `Are you sure you want to unban ${selectedUser?.name}? This will restore their access to the platform.`
+            ? `Are you sure you want to ban ${selectedUser?.name || 'this user'}? This will temporarily restrict their access to the platform. You can unban them later if needed.`
+            : `Are you sure you want to unban ${selectedUser?.name || 'this user'}? This will restore their access to the platform.`
         }
         confirmText={actionType === "ban" ? "Ban" : "Unban"}
         confirmVariant={actionType === "ban" ? "destructive" : "default"}
         onConfirm={() => {
-          toggleBan(selectedUser.id);
-          setIsConfirmOpen(false);
+          if (selectedUser) {
+            toggleBan(selectedUser.id);
+            setIsConfirmOpen(false);
+          }
         }}
-        isLoading={isToggling(selectedUser?.id)}
+         isLoading={isToggling(selectedUser?.id || '')}
       />
 
     </div>

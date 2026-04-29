@@ -8,9 +8,10 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import CustomTooltip from './CustomTooltip';
+import type { ChartDataPoint } from '../../../../types/apiResponses';
 
 interface BreakdownPieChartProps {
-  data: any[];
+  data: ChartDataPoint[];
   colors: string[];
 }
 
@@ -26,14 +27,15 @@ const BreakdownPieChart: React.FC<BreakdownPieChartProps> = ({
     );
   }
 
-  const total = data.reduce((acc: number, curr: any) => acc + curr.value, 0);
+  const total = data.reduce((acc, curr) => acc + curr.value, 0);
 
-  const renderLegend = (props: any) => {
-    const { payload } = props;
+  const renderLegend = (props: unknown) => {
+    const legendProps = props as { payload?: Array<{ value: string; color: string }> };
+    const { payload } = legendProps;
     return (
       <ul className='flex flex-col gap-1 mt-2 text-xs text-muted-foreground w-full max-h-[100px] overflow-y-auto'>
-        {payload.map((entry: any, index: number) => {
-          const val = data.find((d: any) => d.name === entry.value)?.value || 0;
+        {payload?.map((entry, index) => {
+          const val = data.find((d) => d.name === entry.value)?.value || 0;
           const percent = total > 0 ? ((val / total) * 100).toFixed(1) : '0';
           return (
             <li
@@ -70,12 +72,12 @@ const BreakdownPieChart: React.FC<BreakdownPieChartProps> = ({
           dataKey='value'
           stroke='none'
         >
-          {data.map((index: number) => (
+          {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
         <Tooltip content={<CustomTooltip />} />
-        <Legend content={renderLegend} verticalAlign='bottom' height={80} />
+        <Legend content={renderLegend as never} verticalAlign='bottom' height={80} />
       </PieChart>
     </ResponsiveContainer>
   );

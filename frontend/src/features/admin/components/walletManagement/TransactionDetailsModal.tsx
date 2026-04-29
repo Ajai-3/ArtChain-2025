@@ -173,7 +173,7 @@ const TransactionDetailsModal: React.FC<TransactionDetailsModalProps> = ({
               {isLoading ? (
                 <TransactionTableSkeleton rows={limit} />
               ) : data?.data && data.data.length > 0 ? (
-                data.data.map((tx: any) => (
+                data.data.map((tx: { id: string; type: string; category: string; amount: number; method?: string; status: string; description?: string; createdAt: string }) => (
                   <TableRow
                     key={tx.id}
                     className="hover:bg-gray-100 dark:hover:bg-zinc-900 transition-colors"

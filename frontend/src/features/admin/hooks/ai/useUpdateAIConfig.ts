@@ -6,14 +6,15 @@ export const useUpdateAIConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: any) => apiClient.put("/api/v1/art/admin/ai/config", data),
+    mutationFn: (data: { provider: string } & Record<string, unknown>) => apiClient.put("/api/v1/art/admin/ai/config", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-ai-configs"] });
       queryClient.invalidateQueries({ queryKey: ["admin-ai-analytics"] });
       toast.success("AI configuration updated successfully");
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || "Failed to update configuration");
+    onError: (err: unknown) => {
+      const error = err as { response?: { data?: { message?: string } } };
+      toast.error(error?.response?.data?.message || "Failed to update configuration");
     },
   });
 };

@@ -15,6 +15,7 @@ import toast from 'react-hot-toast';
 
 import { useCreateStripeSession } from '../../hooks/wallet/useCreateStripeSession';
 import { useCreateRazorpayOrder } from '../../hooks/wallet/useCreateRazorpayOrder';
+import type { RazorpayResponse } from '../../../../types/wallet/index';
 
 interface TopUpModalProps {
   trigger: React.ReactNode;
@@ -118,29 +119,32 @@ const TopUpModal: React.FC<TopUpModalProps> = ({ trigger }) => {
         currency,
       } = await razorpayMutation.mutateAsync({ amount: Number(amount) });
 
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: orderAmount,
-        currency,
-        name: 'ArtCoin Topup',
-        description: 'Add ArtCoin balance',
-        order_id: orderId,
-        handler: (response: any) => {
-          toast.success('Razorpay payment successful!');
-          resetState();
-        },
-        prefill: {
-          email: 'test@example.com',
-          contact: '9876543210',
-        },
-        theme: {
-          color: '#3399cc',
-        },
-      };
+       const options = {
+         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+         amount: orderAmount,
+         currency,
+         name: 'ArtCoin Topup',
+         description: 'Add ArtCoin balance',
+         order_id: orderId,
+         handler: (response: RazorpayResponse) => {
+           toast.success('Razorpay payment successful!');
+           resetState();
+         },
+         prefill: {
+           email: 'test@example.com',
+           contact: '9876543210',
+         },
+         theme: {
+           color: '#3399cc',
+         },
+       };
 
-      const razor = new (window as any).Razorpay(options);
-      razor.open();
-    } catch (err) {
+       const RazorpayConstructor = (window as { Razorpay?: new (options: Record<string, unknown>) => { open: () => void } }).Razorpay;
+       if (RazorpayConstructor) {
+         const razor = new RazorpayConstructor(options);
+         razor.open();
+       }
+     } catch (err) {
       console.error(err);
       toast.error('Razorpay checkout failed. Try again.');
     }

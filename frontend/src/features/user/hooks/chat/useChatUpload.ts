@@ -20,7 +20,7 @@ export const useChatUpload = () => {
         },
       });
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Upload failed', error);
       toast.error('Failed to upload image');
       return null;
