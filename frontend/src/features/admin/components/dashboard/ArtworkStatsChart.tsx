@@ -7,11 +7,11 @@ interface ArtworkStatsChartProps {
   stats: ArtworkCounts;
 }
 
-const COLORS = ['#8b5cf6', '#ec4899', '#06b6d4']; // Violet, Pink, Cyan
+const COLORS = ['#8b5cf6', '#ec4899', '#06b6d4']; 
 
 const ArtworkStatsChart: React.FC<ArtworkStatsChartProps> = ({ stats }) => {
   const data = [
-    { name: 'Standard', value: stats.free }, // Assuming 'free' is standard/uploaded
+    { name: 'Standard', value: stats.free }, 
     { name: 'Premium', value: stats.premium },
     { name: 'AI Gen', value: stats.aiGenerated },
   ];

@@ -1,22 +1,32 @@
 export interface WithdrawalData {
-  _id: string;
   id: string;
   userId: string;
+  walletId: string;
   amount: number;
-  status: "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
-  paymentMethod?: string;
-  paymentDetails?: {
-    upiId?: string;
-    bankAccount?: string;
-    ifscCode?: string;
-  };
+  status:
+    | 'PENDING'
+    | 'APPROVED'
+    | 'PROCESSING'
+    | 'COMPLETED'
+    | 'REJECTED'
+    | 'FAILED';
+  method: 'BANK_TRANSFER' | 'UPI';
+
+  accountHolderName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+
+  upiId?: string;
+
+  rejectionReason?: string;
+
   createdAt: string;
-  processedAt?: string;
+  updatedAt: string;
   user?: {
-    id: string;
-    username: string;
     name?: string;
-    profileImage?: string;
+    username?: string;
+    email?: string;
+    profileImage?: string | null;
   };
 }
 

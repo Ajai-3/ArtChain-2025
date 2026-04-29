@@ -1,4 +1,18 @@
+import type { User } from '../users/user/user';
+
+export interface Transaction {
+  id: string;
+  amount: number;
+  type: 'credited' | 'debited';
+  category: string;
+  status: string;
+  createdAt: string;
+}
 export interface WalletData {
+  id: string;
+  user: User;
+  lastTransaction?: Transaction;
+  status: 'active' | 'locked' | 'suspended';
   balance: number;
   lockedAmount: number;
   updatedAt: string;

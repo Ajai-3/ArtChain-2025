@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../../redux/store';
+import type { User } from '../../../../types/users/user/user';
 
 export interface TopArt {
   id: string;
@@ -40,6 +41,8 @@ export interface RecentCommission {
   clientName: string;
   amount: number;
   status: string;
+  artistProfileImage: string | null;
+  clientProfileImage: string | null;
   createdAt: string;
 }
 
@@ -50,6 +53,7 @@ export interface RecentTransaction {
   amount: number;
   date: string;
   description: string;
+  user: User;
 }
 
 export interface UserCounts {
@@ -94,24 +98,30 @@ export interface CommissionCounts {
 }
 
 export interface TransactionVolume {
-    date: string;
-    earned: number;
-    spent: number;
+  date: string;
+  earned: number;
+  spent: number;
 }
 
 export const useDashboardStats = () => {
   const { admin } = useSelector((state: RootState) => state.admin);
 
-  const { data: stats, isLoading: loading, error, refetch } = useQuery<DashboardStats>({
+  const {
+    data: stats,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery<DashboardStats>({
     queryKey: ['admin', 'dashboard-stats'],
     queryFn: async () => {
-      const response = await apiClient.get<{ success: boolean; data: DashboardStats }>(
-        '/api/v1/admin/dashboard-stats'
-      );
+      const response = await apiClient.get<{
+        success: boolean;
+        data: DashboardStats;
+      }>('/api/v1/admin/dashboard-stats');
       return response.data.data;
     },
     enabled: !!admin,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
   return {

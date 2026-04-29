@@ -30,7 +30,6 @@ export const useBulkUpdateReportStatus = () => {
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };
-      console.error('[Frontend] Bulk update error:', err);
       toast.error(err?.response?.data?.message || 'Failed to update reports');
     },
   });

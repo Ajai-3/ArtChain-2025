@@ -277,7 +277,7 @@ const ArtTable: React.FC<ArtTableProps> = ({
                         variant='ghost'
                         size='sm'
                         onClick={() =>
-                          handleViewClick(art.user?.username, art.artName)
+                          handleViewClick(art.user?.username ?? '', art.artName)
                         }
                         title='View Art'
                       >

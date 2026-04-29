@@ -1,12 +1,12 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import apiClient from "../../../../api/axios";
-import toast from "react-hot-toast";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import apiClient from '../../../../api/axios';
+import toast from 'react-hot-toast';
 
 interface UpdateCategoryData {
   _id: string;
   name?: string;
   count?: number;
-  status?: "active" | "inactive";
+  status?: 'active' | 'inactive';
 }
 
 export const useUpdateCategory = () => {
@@ -14,30 +14,38 @@ export const useUpdateCategory = () => {
 
   return useMutation({
     mutationFn: async (data: UpdateCategoryData) => {
-      const res = await apiClient.patch(`/api/v1/art/category/${data._id}`, data);
+      const res = await apiClient.patch(
+        `/api/v1/art/category/${data._id}`,
+        data,
+      );
       return res.data;
     },
     onSuccess: (data) => {
       const updatedCategory = data.category;
 
-      const allCategoryQueries = queryClient.getQueriesData({ queryKey: ["categories"] });
-
-      allCategoryQueries.forEach(([key]: [string[], unknown]) => {
-        queryClient.setQueryData(key, (old: { data?: Array<{ _id: string }> } | undefined) => {
-          if (!old) return old;
-          return {
-            ...old,
-            data: old.data?.map((cat) =>
-              cat._id === updatedCategory._id ? updatedCategory : cat
-            ),
-          };
-        });
+      const allCategoryQueries = queryClient.getQueriesData({
+        queryKey: ['categories'],
       });
 
-      toast.success(data.message || "Category updated successfully");
+      allCategoryQueries.forEach(([key]) => {
+        queryClient.setQueryData(
+          key,
+          (old: { data?: Array<{ _id: string }> } | undefined) => {
+            if (!old) return old;
+            return {
+              ...old,
+              data: old.data?.map((cat) =>
+                cat._id === updatedCategory._id ? updatedCategory : cat,
+              ),
+            };
+          },
+        );
+      });
+
+      toast.success(data.message || 'Category updated successfully');
     },
     onError: (err: Error) => {
-      toast.error(err?.message || "Failed to update category");
+      toast.error(err?.message || 'Failed to update category');
     },
   });
 };

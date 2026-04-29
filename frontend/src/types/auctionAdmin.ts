@@ -1,4 +1,4 @@
-import type { Auction, Bid } from "./auction";
+import type { Auction, Bid } from './auction';
 
 export interface AuctionListResponse {
   data: {
@@ -33,9 +33,9 @@ export interface AdminAuctionData {
   endTime: string;
   createdAt?: string;
   updatedAt?: string;
-  status: "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED" | "UNSOLD";
+  status: 'SCHEDULED' | 'ACTIVE' | 'ENDED' | 'CANCELLED' | 'UNSOLD';
   winnerId?: string;
-  paymentStatus?: "PENDING" | "SUCCESS" | "FAILED" | "NONE";
+  paymentStatus?: 'PENDING' | 'SUCCESS' | 'FAILED' | 'NONE';
   bids?: Bid[];
   host?: {
     id: string;

@@ -7,6 +7,7 @@ export interface ShopItem {
   artType: string;
   priceType: 'artcoin' | 'fiat' | 'free';
   artcoins: number;
+  price: number;
   fiatPrice?: number;
   status: string;
   favoriteCount: number;
@@ -42,7 +43,15 @@ export interface ArtItem {
   priceType?: 'artcoin' | 'fiat' | 'free';
   artcoins?: number;
   fiatPrice?: number;
-  postType?: string;
+  price: number;
+  likes: number;
+  artist?: {
+    id: string;
+    name: string;
+    username: string;
+    profileImage?: string;
+    isVerified?: boolean;
+  };
   status: string;
   liked?: boolean;
   likeCount: number;
@@ -186,23 +195,32 @@ export interface PurchasedArt {
 export interface CommissionItem {
   id: string;
   title: string;
-  description?: string;
+  description: string;
   status: string;
-  budget?: number;
-  deadline?: string;
-  creator?: {
+  budget: number;
+  deadline: string;
+  createdAt: string;
+  requesterId?: string;
+  artistId?: string;
+  referenceImages?: string[];
+  finalArtwork?: string;
+  finalImageUrl?: string;
+  disputeReason?: string;
+  requester?: {
     id: string;
-    name?: string;
-    username?: string;
+    username: string;
     profileImage?: string;
   };
   artist?: {
     id: string;
-    name?: string;
-    username?: string;
+    username: string;
     profileImage?: string;
   };
-  createdAt?: string;
+  history?: {
+    action: string;
+    timestamp: string;
+    details?: string;
+  }[];
 }
 
 export interface ChatMessage {
