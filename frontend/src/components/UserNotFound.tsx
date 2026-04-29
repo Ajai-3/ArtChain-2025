@@ -10,12 +10,10 @@ const UserNotFound: React.FC = () => {
   return (
     <div className="min-h-[70vh] w-full flex items-center justify-center relative overflow-hidden bg-background text-foreground p-6">
       
-      {/* --- ARTISTIC BACKGROUND ELEMENTS --- */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -right-10 top-1/4 w-64 h-64 bg-primary/5 rounded-full blur-[100px] animate-pulse-slow" />
         <div className="absolute left-10 bottom-1/4 w-48 h-48 bg-primary/10 rounded-full blur-[80px] animate-pulse-slower" />
         
-        {/* Floating geometric icons */}
         <div className="hidden lg:block absolute left-1/4 top-20 w-12 h-12 opacity-10 animate-float">
           <div className="w-full h-full border border-primary rounded-sm rotate-12" />
         </div>
@@ -23,7 +21,6 @@ const UserNotFound: React.FC = () => {
 
       <div className="relative z-10 max-w-sm w-full flex flex-col items-center space-y-6 animate-in fade-in zoom-in-95 duration-500">
         
-        {/* Empty User Avatar State */}
         <div className="relative">
           <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center border-2 border-dashed border-muted-foreground/30">
             <UserX className="w-10 h-10 text-muted-foreground/60" />
@@ -61,7 +58,6 @@ const UserNotFound: React.FC = () => {
         </div>
       </div>
 
-      {/* --- ANIMATION STYLES --- */}
       <style>{`
         @keyframes pulseSlow {
           0%, 100% { opacity: 0.1; transform: scale(1); }

@@ -1,22 +1,24 @@
 import { useRef, useState, useCallback } from 'react';
 import { getChatSocket } from '../socket/socketManager';
 
-interface CallControlSignal {
-  type: "camera-toggle" | "mic-toggle";
-  enabled: boolean;
-}
-
-interface RTCSignalWithType {
+export interface RTCSignalWithType {
   type: RTCSdpType;
   sdp?: string;
 }
 
-interface RTCIceSignal {
+export interface RTCIceSignal {
   type: 'candidate';
   candidate?: RTCIceCandidateInit;
 }
 
-export type RTCSignal = RTCSignalWithType | RTCIceSignal;
+export interface CallControlSignal {
+  type: 'camera-toggle' | 'mic-toggle';
+  enabled: boolean;
+}
+
+export type RTCSignal = RTCSignalWithType | RTCIceSignal | CallControlSignal;
+
+export type RTCDirectSignal = RTCSignalWithType | RTCIceSignal;
 
 export const useWebRTC = () => {
   const peerConnection = useRef<RTCPeerConnection | null>(null);
@@ -49,19 +51,15 @@ export const useWebRTC = () => {
     };
 
     pc.ontrack = (event) => {
-      // Preferred way: use the stream provided by the browser (Unified Plan)
       if (event.streams && event.streams[0]) {
-        // We only update if the stream reference is actually different
         setRemoteStream(prev => (prev?.id === event.streams[0].id ? prev : event.streams[0]));
       } else {
-        // Fallback for older browsers or specific cases: build stream manually
         console.warn("[useWebRTC] No stream in event, adding track to manual stream.");
         setRemoteStream(prev => {
           const stream = prev || new MediaStream();
           const existingTracks = stream.getTracks();
           if (!existingTracks.some(t => t.id === event.track.id)) {
             stream.addTrack(event.track);
-            // We MUST return a new reference for React, but using same tracks
             return new MediaStream(stream.getTracks());
           }
           return prev;
@@ -96,6 +94,7 @@ export const useWebRTC = () => {
       try {
         await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (err) {
+        console.log(err)
       }
     }
   }, []);
@@ -131,6 +130,7 @@ export const useWebRTC = () => {
         }
       }
     } catch (err) {
+      console.log(err)
     }
   }, [socket, processCandidateQueue]);
 

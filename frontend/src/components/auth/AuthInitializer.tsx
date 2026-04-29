@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import apiClient from '../../api/axios';
+import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { setUser } from '../../redux/slices/userSlice';
 import { setAdmin } from '../../redux/slices/adminSlice';
 import { useGetPlatformConfig } from '../../features/user/hooks/platform/useGetPlatformConfig';
@@ -35,7 +35,6 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({
         });
 
         if (accessToken && user) {
-          // Check if user is an admin
           if (user.role === 'admin') {
             dispatch(
               setAdmin({
@@ -43,7 +42,6 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({
                 admin: user,
               }),
             );
-            // Also set user state so user-side UI links (Sidebar/Navbar) work correctly
             dispatch(
               setUser({
                 accessToken,

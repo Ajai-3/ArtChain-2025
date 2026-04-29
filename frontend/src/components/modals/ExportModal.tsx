@@ -1,15 +1,21 @@
-"use client";
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
+import { Button } from '../../components/ui/button';
+import { Calendar } from '../../components/ui/calendar';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "../../components/ui/dialog";
-import { Button } from "../../components/ui/button";
-import { Calendar } from "../../components/ui/calendar";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../../components/ui/select";
+} from '../../components/ui/dialog';
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '../../components/ui/select';
 
 interface ExportModalProps {
   open: boolean;
@@ -18,10 +24,15 @@ interface ExportModalProps {
   onExport: (data: { startDate: Date; endDate: Date; format: string }) => void;
 }
 
-const ExportModal: React.FC<ExportModalProps> = ({ open, onClose, title, onExport }) => {
+const ExportModal: React.FC<ExportModalProps> = ({
+  open,
+  onClose,
+  title,
+  onExport,
+}) => {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [fileFormat, setFileFormat] = useState<string>("xlsx");
+  const [fileFormat, setFileFormat] = useState<string>('xlsx');
 
   const handleExport = () => {
     if (!startDate || !endDate) return;

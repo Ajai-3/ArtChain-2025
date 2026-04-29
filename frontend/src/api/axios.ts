@@ -80,7 +80,6 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
     const status = error.response.status;
 
-    // MANDATORY: Handle 404s IMMEDIATELY to prevent downstream auth logic
     if (status === 404) {
       console.log(`[Axios Interceptor] 404 detected for ${originalRequest.url}. Blocking logout logic.`);
       return Promise.reject({
@@ -94,7 +93,6 @@ apiClient.interceptors.response.use(
       originalRequest.url?.startsWith(url)
     );
 
-    // Only attempt refresh for 401s that aren't on auth endpoints and haven't been tried
     if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       console.log(`[Axios Interceptor] 401 detected for ${originalRequest.url}. Attempting token refresh.`);
       
@@ -148,7 +146,6 @@ apiClient.interceptors.response.use(
 
         const isAdmin = originalRequest.url?.includes("/api/v1/admin");
         
-        // Only log out if the refresh token itself is actually invalid (401 or 403)
         if (refreshStatus === 401 || refreshStatus === 403) {
           console.warn(`[Axios Interceptor] Refresh token invalid. Dispatching logout.`);
           store.dispatch(isAdmin ? adminLogout() : logout());
