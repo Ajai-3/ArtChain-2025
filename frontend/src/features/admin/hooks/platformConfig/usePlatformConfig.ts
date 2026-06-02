@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import apiClient from "../../../../api/axios";
 import { toast } from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface PlatformConfig {
   auctionCommissionPercentage: number;
@@ -20,7 +21,7 @@ export const usePlatformConfig = () => {
   const fetchConfig = async () => {
     setLoading(true);
     try {
-      const response = await apiClient.get<{ data: PlatformConfig }>("/api/v1/art/admin/platform-config");
+      const response = await apiClient.get<{ data: PlatformConfig }>(API_ENDPOINTS.ART_ADMIN_PLATFORMCONFIG);
       setConfig(response.data.data);
     } catch (err: unknown) {
       const error = err as { message?: string };
@@ -33,7 +34,7 @@ export const usePlatformConfig = () => {
   const updateConfig = async (data: Partial<PlatformConfig>) => {
     setUpdating(true);
     try {
-      const response = await apiClient.patch<{ data: PlatformConfig }>("/api/v1/art/admin/platform-config", data);
+      const response = await apiClient.patch<{ data: PlatformConfig }>(API_ENDPOINTS.ART_ADMIN_PLATFORMCONFIG, data);
       setConfig(response.data.data);
       toast.success("Platform configuration updated successfully");
       return true;

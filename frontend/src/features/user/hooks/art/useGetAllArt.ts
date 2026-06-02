@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface ArtUser {
   id: string;
@@ -56,7 +57,7 @@ export const useGetAllArt = (categoryId?: string) => {
   return useInfiniteQuery<PaginatedResponse, Error>({
     queryKey: ["allArt", categoryId],
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await apiClient.get("/api/v1/art", {
+      const res = await apiClient.get(API_ENDPOINTS.ART_1, {
         params: { page: pageParam, limit: 15, categoryId },
       });
       return res.data as PaginatedResponse;

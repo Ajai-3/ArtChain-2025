@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface UpdateReportStatusParams {
   reportId: string;
@@ -12,7 +13,7 @@ export const useUpdateReportStatus = () => {
 
   return useMutation({
     mutationFn: async ({ reportId, status }: UpdateReportStatusParams) => {
-      const response = await apiClient.patch(`/api/v1/admin/reports/${reportId}/status`, {
+      const response = await apiClient.patch(API_ENDPOINTS.ADMIN_REPORTS_1(reportId), {
         status,
       });
       return response.data;

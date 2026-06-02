@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
 import type { WithdrawalData } from "../../../../types/withdrawal";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface UpdateWithdrawalStatusParams {
   withdrawalId: string;
@@ -15,7 +16,7 @@ export const useUpdateWithdrawalStatus = () => {
   return useMutation({
     mutationFn: async (params: UpdateWithdrawalStatusParams) => {
       const response = await apiClient.patch(
-        `/api/v1/wallet/admin/withdrawal/requests/${params.withdrawalId}/status`,
+        API_ENDPOINTS.WALLET_ADMIN_WITHDRAWAL_REQUESTS_2(params.withdrawalId),
         {
           status: params.status,
           rejectionReason: params.rejectionReason,

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useUploadArtImageMutation = () => {
   return useMutation({
@@ -10,7 +11,7 @@ export const useUploadArtImageMutation = () => {
 
       console.log("Uploading file inside mutation:", file);
 
-      return apiClient.post("/api/v1/upload/art", formData, {
+      return apiClient.post(API_ENDPOINTS.UPLOAD_ART, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
-
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface StripeSessionResponse {
   sessionId: string;
@@ -21,7 +21,7 @@ export const useStripeSession = (sessionId: string | null) => {
     queryFn: async (): Promise<StripeSessionResponse> => {
       if (!sessionId) throw new Error("No session ID provided");
       const { data } = await apiClient.get<{ message: string; sessionData: StripeSessionResponse }>(
-        `/api/v1/wallet/stripe/session/${sessionId}`
+        API_ENDPOINTS.WALLET_STRIPE_SESSION(sessionId)
       );
       return data.sessionData;
     },

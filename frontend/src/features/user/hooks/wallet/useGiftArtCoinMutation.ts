@@ -3,6 +3,7 @@ import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { updateBalanceAndLocked } from "../../../../redux/slices/walletSlice";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface GiftArtCoinData {
   receiverId: string;
@@ -18,7 +19,7 @@ export const useGiftArtCoinMutation = () => {
   
     return useMutation({
       mutationFn: async (data: GiftArtCoinData) => {
-        const response = await apiClient.post("/api/v1/wallet/gift", data);
+        const response = await apiClient.post(API_ENDPOINTS.WALLET_GIFT, data);
         return response.data;
       },
       onSuccess: (data) => {

@@ -5,12 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { adminLogout } from '../../../../redux/slices/adminSlice';
 import { ROUTES } from '../../../../constants/routes';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useAdminLogoutMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: () => apiClient.post('/api/v1/admin/logout'),
+    mutationFn: () => apiClient.post(API_ENDPOINTS.ADMIN_LOGOUT),
     onSuccess: () => {
       toast.success('Logout successful');
       dispatch(adminLogout());

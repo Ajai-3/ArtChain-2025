@@ -1,13 +1,14 @@
 import apiClient from '../../../../api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { User } from '../../../../types/users/user/user';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useToggleBanUserMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ userId }: { userId: string }) =>
-      apiClient.patch(`/api/v1/admin/users/${userId}/ban-toggle`),
+      apiClient.patch(API_ENDPOINTS.ADMIN_USERS_1(userId)),
 
     onMutate: async ({ userId }) => {
       await queryClient.cancelQueries({ queryKey: ['admin-users'] });

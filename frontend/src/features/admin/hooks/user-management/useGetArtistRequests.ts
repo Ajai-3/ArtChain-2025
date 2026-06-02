@@ -1,6 +1,7 @@
 import apiClient from "../../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
 import type { UseQueryOptions } from "@tanstack/react-query";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface ArtistRequest {
   id: string;
@@ -31,7 +32,7 @@ export const useGetArtistRequests = (
     queryKey: ["artistRequests", page, limit],
       queryFn: async () => {
         const { data } = await apiClient.get(
-          `/api/v1/admin/get-artist-requests?page=${page}&limit=${limit}`
+          API_ENDPOINTS.ADMIN_GETARTISTREQUESTSPAGE(page, limit)
         );
         return {
           requests: data.result.data.map((req: { id: string; user: { name: string; email: string; username: string; profileImage: string }; status: string; createdAt: string }) => ({

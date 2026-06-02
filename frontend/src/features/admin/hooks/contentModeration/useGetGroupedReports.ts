@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface GroupedReport {
   targetId: string;
@@ -49,7 +50,7 @@ export const useGetGroupedReports = ({
         params.append('targetType', targetType);
 
       const response = await apiClient.get(
-        `/api/v1/admin/reports/grouped?${params.toString()}`,
+        API_ENDPOINTS.ADMIN_REPORTS_GROUPED(params.toString()),
       );
       return response.data;
     },

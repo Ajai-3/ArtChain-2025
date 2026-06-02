@@ -6,13 +6,14 @@ import { useMutation } from '@tanstack/react-query';
 import { setAdmin } from '../../../../redux/slices/adminSlice';
 import { logout } from '../../../../redux/slices/userSlice';
 import { ROUTES } from '../../../../constants/routes';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useAdminLoginMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { identifier: string; password: string }) =>
-      apiClient.post('/api/v1/admin/login', credentials),
+      apiClient.post(API_ENDPOINTS.ADMIN_LOGIN, credentials),
     onSuccess: (response) => {
       const { user, accessToken } = response.data;
       console.log('Login successful:', response);

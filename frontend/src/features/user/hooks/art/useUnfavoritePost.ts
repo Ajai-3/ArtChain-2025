@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ArtWithUser } from "./useGetAllArt";
 import type { PaginationPage } from "../../../../types/apiResponses";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface FavoriteVariables {
   postId: string;
@@ -17,7 +18,7 @@ export const useUnfavoritePost = () => {
 
   return useMutation({
     mutationFn: async ({ postId }: FavoriteVariables) => {
-      const { data } = await apiClient.delete("/api/v1/art/unfavorite", {
+      const { data } = await apiClient.delete(API_ENDPOINTS.ART_UNFAVORITE, {
         data: { postId },
       });
       return data;

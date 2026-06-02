@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface RemoveSupporterPayload {
   supporterId: string;
@@ -19,7 +20,7 @@ export const useRemoveSupporter = () => {
     RemoveSupporterPayload
   >({
     mutationFn: async ({ supporterId, supporterUsername }) => {
-      await apiClient.delete(`/api/v1/user/remove/${supporterId}`);
+      await apiClient.delete(API_ENDPOINTS.USER_REMOVE(supporterId));
       return { supporterId, supporterUsername };
     },
 

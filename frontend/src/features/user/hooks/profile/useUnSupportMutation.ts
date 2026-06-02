@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { RootState } from "../../../../redux/store";
 import { useSelector } from "react-redux";
 import type { UserProfileApiResponse } from "../../../../types/users/user/userProfileApiResponse";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface SupportPayload {
   userId: string;
@@ -16,7 +17,7 @@ export const useUnSupportMutation = () => {
 
   return useMutation<AxiosResponse, Error, SupportPayload>({
     mutationFn: ({ userId }: { userId: string }) =>
-      apiClient.delete(`/api/v1/user/un-support/${userId}`),
+      apiClient.delete(API_ENDPOINTS.USER_UNSUPPORT(userId)),
 
     onSuccess: (_, { username }) => {
       queryClient.setQueryData(["userProfile", username], (old: UserProfileApiResponse | undefined) => {

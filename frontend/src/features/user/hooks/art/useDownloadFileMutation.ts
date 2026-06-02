@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import { toast } from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface DownloadParams {
   id: string;
@@ -10,7 +11,7 @@ interface DownloadParams {
 export const useDownloadFileMutation = () => {
   return useMutation({
     mutationFn: ({ id, category }: DownloadParams) =>
-      apiClient.get(`/api/v1/art/download/${id}`, {
+      apiClient.get(API_ENDPOINTS.ART_DOWNLOAD(id), {
         params: { type: category },
       }),
 

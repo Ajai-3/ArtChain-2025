@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface CategoryData {
   name: string;
@@ -11,7 +12,7 @@ export const useCreateCategory = () => {
 
   return useMutation({
     mutationFn: async (data: CategoryData) => {
-      const res = await apiClient.post("/api/v1/art/category", data);
+      const res = await apiClient.post(API_ENDPOINTS.ART_CATEGORY, data);
       return res.data;
     },
     onSuccess: (data) => {

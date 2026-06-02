@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface FavoritedUser {
   userId: string;
@@ -22,7 +23,7 @@ export const useGetFavoritedUsers = (postId: string, enabled = true) => {
     queryKey: ["favoritedUsers", postId],
     queryFn: async ({ pageParam = 1 }) => {
       const res = await apiClient.get<FavoritedUsersResponse>(
-        `/api/v1/art/favorites/${postId}?page=${pageParam}&limit=5`
+        API_ENDPOINTS.ART_FAVORITES(postId, pageParam)
       );
       return res.data;
     },

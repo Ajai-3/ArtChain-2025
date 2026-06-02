@@ -3,6 +3,7 @@ import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
 import { updateBalanceAndLocked } from "../../../../redux/slices/walletSlice";
 import { useDispatch } from "react-redux";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface CreateWithdrawalRequestParams {
   amount: number;
@@ -43,7 +44,7 @@ export const useCreateWithdrawalRequest = () => {
   return useMutation({
     mutationFn: async (params: CreateWithdrawalRequestParams) => {
       const response = await apiClient.post<CreateWithdrawalResponse>(
-        "/api/v1/wallet/withdrawal/create",
+        API_ENDPOINTS.WALLET_WITHDRAWAL_CREATE,
         params
       );
       return response.data;

@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ShopItem } from "../../../../types/apiResponses";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface ShopFilters {
   category?: string[];
@@ -33,7 +34,7 @@ export const useGetAllShopItems = (filters?: ShopFilters) => {
         if (filters.maxPrice != null) params.maxPrice = filters.maxPrice;
       }
 
-      const res = await apiClient.get(`/api/v1/art/shop`, { params });
+      const res = await apiClient.get(API_ENDPOINTS.ART_SHOP, { params });
       return res.data as PaginatedResponse;
     },
     getNextPageParam: (lastPage) =>

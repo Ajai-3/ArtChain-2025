@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import { toast } from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useCancelAuction = () => {
   const queryClient = useQueryClient();
@@ -8,7 +9,7 @@ export const useCancelAuction = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await apiClient.patch(
-        `/api/v1/art/admin/auctions/${id}/cancel`,
+        API_ENDPOINTS.ART_ADMIN_AUCTIONS(id),
       );
       return response.data;
     },

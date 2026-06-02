@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { selectCurrentUser } from "../../../../redux/selectors/userSelectors";
 import apiClient from "../../../../api/axios";
 import type { ChatUser } from "../../../../types/chat/chat";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useCreateGroupModal = () => {
   const [groupName, setGroupName] = useState("");
@@ -34,7 +35,7 @@ export const useCreateGroupModal = () => {
 
     setIsCreating(true);
     try {
-      await apiClient.post("/api/v1/chat/conversation/group", {
+      await apiClient.post(API_ENDPOINTS.CHAT_CONVERSATION_GROUP, {
         name: groupName,
         memberIds: selectedUsers.map((u) => u.id),
       });

@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface TransactionFilters {
   type?: string;
@@ -39,7 +40,7 @@ export const useGetUserTransactions = ({
       if (params.method === "all") delete params.method;
 
       const res = await apiClient.get(
-        `/api/v1/wallet/admin/wallets/${walletId}/transactions`,
+        API_ENDPOINTS.WALLET_ADMIN_WALLETS_1(walletId),
         { params }
       );
       return res.data;

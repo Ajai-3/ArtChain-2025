@@ -5,6 +5,7 @@ import type {
   AuctionListResponse,
   AdminAuctionData,
 } from '../../../../types/auctionAdmin';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useSettleAuction = () => {
   const queryClient = useQueryClient();
@@ -12,7 +13,7 @@ export const useSettleAuction = () => {
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await apiClient.post(
-        `/api/v1/art/admin/auctions/${id}/settle`,
+        API_ENDPOINTS.ART_ADMIN_AUCTIONS_3(id),
       );
       return response.data;
     },

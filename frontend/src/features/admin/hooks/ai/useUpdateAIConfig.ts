@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useUpdateAIConfig = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { provider: string } & Record<string, unknown>) => apiClient.put("/api/v1/art/admin/ai/config", data),
+    mutationFn: (data: { provider: string } & Record<string, unknown>) => apiClient.put(API_ENDPOINTS.ART_ADMIN_AI_CONFIG, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-ai-configs"] });
       queryClient.invalidateQueries({ queryKey: ["admin-ai-analytics"] });

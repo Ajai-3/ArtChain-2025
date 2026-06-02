@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ArtWithUser } from "./useGetAllArt";
 import type { PaginationPage } from "../../../../types/apiResponses";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface LikeVariables {
   postId: string;
@@ -17,7 +18,7 @@ export const useLikePost = () => {
 
   return useMutation({
     mutationFn: async ({ postId }: LikeVariables) => {
-      const { data } = await apiClient.post("/api/v1/art/like", { postId });
+      const { data } = await apiClient.post(API_ENDPOINTS.ART_LIKE, { postId });
       return data;
     },
 

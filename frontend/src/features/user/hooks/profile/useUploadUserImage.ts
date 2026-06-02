@@ -5,6 +5,7 @@ import type { RootState } from "../../../../redux/store";
 import type { User } from "../../../../types/users/user/user";
 import { updateProfile } from "../../../../redux/slices/userSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 type ImageType = "profileImage" | "bannerImage" | "backgroundImage";
 
@@ -36,7 +37,7 @@ export const useUploadUserImage = () => {
       formData.append("type", type);
 
       const { data } = await apiClient.post<UploadResponse>(
-        "/api/v1/upload/",
+        API_ENDPOINTS.UPLOAD_1,
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

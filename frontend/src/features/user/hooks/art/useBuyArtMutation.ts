@@ -3,11 +3,12 @@ import apiClient from '../../../../api/axios';
 import { toast } from 'react-hot-toast';
 import type { AxiosError } from 'axios';
 import type { ApiError } from '../../../../types/apiError';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useBuyArtMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (artId: string) => apiClient.post(`/api/v1/art/buy/${artId}`),
+    mutationFn: (artId: string) => apiClient.post(API_ENDPOINTS.ART_BUY(artId)),
     onSuccess: () => {
       toast.success('Art purchased successfully!');
       // Invalidate all related queries to ensure UI updates

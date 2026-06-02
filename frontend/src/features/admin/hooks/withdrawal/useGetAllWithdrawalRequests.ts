@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface GetAllWithdrawalRequestsParams {
   page: number;
@@ -23,7 +24,7 @@ export const useGetAllWithdrawalRequests = ({
       }
 
       const response = await apiClient.get(
-        '/api/v1/wallet/admin/withdrawal/requests',
+        API_ENDPOINTS.WALLET_ADMIN_WITHDRAWAL_REQUESTS_1,
         {
           params,
         },

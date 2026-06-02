@@ -1,5 +1,6 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface AuctionResponse {
   data: {
@@ -49,7 +50,7 @@ export const useGetAllAuctions = (
         params.status = 'ALL';
       }
 
-      const response = await apiClient.get('/api/v1/art/admin/auctions', {
+      const response = await apiClient.get(API_ENDPOINTS.ART_ADMIN_AUCTIONS_1, {
         params,
       });
       return response.data;

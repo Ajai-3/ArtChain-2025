@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface GenerateAIImageParams {
   prompt: string;
@@ -14,7 +15,7 @@ interface GenerateAIImageParams {
 
 export const useGenerateAIImage = () => {
   return useMutation({
-    mutationFn: (data: GenerateAIImageParams) => apiClient.post("/api/v1/art/ai/generate", data),
+    mutationFn: (data: GenerateAIImageParams) => apiClient.post(API_ENDPOINTS.ART_AI_GENERATE, data),
     onError: (err: unknown) => {
       const error = err as { response?: { data?: { message?: string } } };
       console.error(err);

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import toast from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface UpdateCategoryData {
   _id: string;
@@ -15,7 +16,7 @@ export const useUpdateCategory = () => {
   return useMutation({
     mutationFn: async (data: UpdateCategoryData) => {
       const res = await apiClient.patch(
-        `/api/v1/art/category/${data._id}`,
+        API_ENDPOINTS.ART_CATEGORY_1(data._id),
         data,
       );
       return res.data;

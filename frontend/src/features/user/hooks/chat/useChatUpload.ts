@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import apiClient from '../../../../api/axios';
 import { toast } from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useChatUpload = () => {
   const [uploading, setUploading] = useState(false);
@@ -14,7 +15,7 @@ export const useChatUpload = () => {
     formData.append('type', 'chatImage');
 
     try {
-      const response = await apiClient.post('/api/v1/upload', formData, {
+      const response = await apiClient.post(API_ENDPOINTS.UPLOAD, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

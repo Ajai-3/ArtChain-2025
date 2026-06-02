@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../../redux/store';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface RevenueStats {
   totalRevenue: number;
@@ -27,7 +28,7 @@ export const useRevenueStats = (timeRange: string = '7d') => {
       const response = await apiClient.get<{
         success: boolean;
         data: RevenueStats;
-      }>(`/api/v1/admin/revenue-stats?timeRange=${timeRange}`);
+      }>(API_ENDPOINTS.ADMIN_REVENUESTATSTIMERANGE(timeRange));
       return response.data.data;
     },
     enabled: !!admin,

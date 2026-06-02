@@ -1,6 +1,7 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import type { AdminArtData } from '../../../../types/artAdmin';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface ArtResponse {
   data: AdminArtData[];
@@ -43,7 +44,7 @@ export const useGetAllArts = (
       if (params.postType === 'all') delete params.postType;
       if (params.priceType === 'all') delete params.priceType;
 
-      const response = await apiClient.get('/api/v1/art/admin/art', { params });
+      const response = await apiClient.get(API_ENDPOINTS.ART_ADMIN_ART, { params });
       return response.data;
     },
     placeholderData: keepPreviousData,

@@ -6,6 +6,7 @@ import type { ApiError } from '../../../../types/apiError';
 import { updateProfile } from '../../../../redux/slices/userSlice';
 import { useDispatch } from 'react-redux';
 import type { User } from '../../../../types/users/user/user';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface VerifyEmailTokenFormData {
   token: string;
@@ -31,7 +32,7 @@ export const useVerifyEmailTokenMutation = (
   >({
     mutationFn: async (data: VerifyEmailTokenFormData) => {
       const res = await apiClient.post<VerifyEmailTokenResponse>(
-        '/api/v1/user/verify-email-token',
+        API_ENDPOINTS.USER_VERIFYEMAILTOKEN,
         { token: data.token },
       );
       return res.data;

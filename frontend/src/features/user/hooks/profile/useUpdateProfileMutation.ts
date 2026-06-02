@@ -3,6 +3,7 @@ import apiClient from '../../../../api/axios';
 import { useMutation } from '@tanstack/react-query';
 import { updateProfile } from '../../../../redux/slices/userSlice';
 import toast from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useUpdateProfileMutation = () => {
   const dispatch = useDispatch();
@@ -12,7 +13,7 @@ export const useUpdateProfileMutation = () => {
       username?: string;
       bio?: string;
       country?: string;
-    }) => apiClient.patch('/api/v1/user/profile', credentials),
+    }) => apiClient.patch(API_ENDPOINTS.USER_PROFILE_1, credentials),
       onSuccess: (data: { data: { user: import("../../../../types/users/user/user").User } }) => {
       toast.success('Profile updated sucessfully');
       dispatch(updateProfile({ user: data.data.user }));

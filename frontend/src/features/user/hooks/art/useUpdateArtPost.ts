@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import toast from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface UpdateArtPostPayload {
   id: string;
@@ -23,7 +24,7 @@ export const useUpdateArtPost = () => {
   return useMutation({
     mutationFn: async (payload: UpdateArtPostPayload) => {
       const { id, ...data } = payload;
-      const response = await apiClient.patch(`/api/v1/art/${id}`, data);
+      const response = await apiClient.patch(API_ENDPOINTS.ART_3(id), data);
       return response.data;
     },
     onSuccess: () => {

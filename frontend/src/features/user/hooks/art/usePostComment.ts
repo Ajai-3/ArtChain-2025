@@ -3,6 +3,7 @@ import apiClient from "../../../../api/axios";
 import type { ArtWithUserResponse } from "./useGetArtByName";
 import type { ArtWithUser } from "./useGetAllArt";
 import type { PaginationPage } from "../../../../types/apiResponses";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface CommentInput {
   postId: string;
@@ -20,7 +21,7 @@ export const usePostComment = () => {
 
   return useMutation<ArtWithUserResponse, Error, CommentInput, OnMutateContext>({
     mutationFn: ({ postId, content, replyToId }: CommentInput) =>
-      apiClient.post(`/api/v1/art/comment/`, { postId, content, replyToId }),
+      apiClient.post(API_ENDPOINTS.ART_COMMENT_1, { postId, content, replyToId }),
 
     onMutate: async ({ postId, artname }) => {
       await queryClient.cancelQueries({ queryKey: ["art", artname] });

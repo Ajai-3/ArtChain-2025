@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback } from 'react';
+import 'webrtc-adapter';
 import { getChatSocket } from '../socket/socketManager';
 
 export interface RTCSignalWithType {

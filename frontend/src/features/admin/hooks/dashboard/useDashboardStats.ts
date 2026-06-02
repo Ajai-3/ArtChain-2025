@@ -3,6 +3,7 @@ import apiClient from '../../../../api/axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../../redux/store';
 import type { User } from '../../../../types/users/user/user';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface TopArt {
   id: string;
@@ -117,7 +118,7 @@ export const useDashboardStats = () => {
       const response = await apiClient.get<{
         success: boolean;
         data: DashboardStats;
-      }>('/api/v1/admin/dashboard-stats');
+      }>(API_ENDPOINTS.ADMIN_DASHBOARDSTATS);
       return response.data.data;
     },
     enabled: !!admin,

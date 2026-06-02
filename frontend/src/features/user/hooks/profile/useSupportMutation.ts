@@ -4,6 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import type { UserProfileApiResponse } from "../../../../types/users/user/userProfileApiResponse";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface SupportPayload {
   userId: string;
@@ -16,7 +17,7 @@ export const useSupportMutation = () => {
 
   return useMutation<AxiosResponse, Error, SupportPayload>({
     mutationFn: ({ userId }: { userId: string }) =>
-      apiClient.post(`/api/v1/user/support/${userId}`),
+      apiClient.post(API_ENDPOINTS.USER_SUPPORT(userId)),
     onSuccess: (_, { username }) => {
       queryClient.setQueryData(["userProfile", username], (old: UserProfileApiResponse | undefined) => {
         if (!old) return old;

@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import toast from "react-hot-toast";
 import type { WithdrawalData } from "../../../../types/withdrawal";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface BulkUpdateParams {
   withdrawalIds: string[];
@@ -16,7 +17,7 @@ export const useBulkUpdateWithdrawalStatus = () => {
     mutationFn: async ({ withdrawalIds, status, rejectionReason }: BulkUpdateParams) => {
       // Execute all updates in parallel
       const updatePromises = withdrawalIds.map((id) =>
-        apiClient.patch(`/api/v1/wallet/admin/withdrawal/requests/${id}/status`, {
+        apiClient.patch(API_ENDPOINTS.WALLET_ADMIN_WITHDRAWAL_REQUESTS(id), {
           status,
           ...(rejectionReason && { rejectionReason }),
         })

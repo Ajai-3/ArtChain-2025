@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import { toast } from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useUpdateWalletStatus = () => {
   const queryClient = useQueryClient();
@@ -14,7 +15,7 @@ export const useUpdateWalletStatus = () => {
       status: "active" | "locked" | "suspended";
     }) => {
       const res = await apiClient.patch(
-        `/api/v1/wallet/admin/wallets/${walletId}/status`,
+        API_ENDPOINTS.WALLET_ADMIN_WALLETS_2(walletId),
         { status }
       );
       return res.data;

@@ -6,6 +6,7 @@ import { setUser } from '../redux/slices/userSlice';
 import { setAdmin } from '../redux/slices/adminSlice';
 import { type AuthInitializeResponse } from '../types/AuthInitializeResponse';
 import { useGetPlatformConfig } from '../features/user/hooks/platform/useGetPlatformConfig';
+import { API_ENDPOINTS } from "../constants/apiEndpoints";
 
 export const useAuthInitialization = () => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ export const useAuthInitialization = () => {
   const { data, isLoading, isFetching } = useQuery<AuthInitializeResponse>({
     queryKey: ['auth', 'initialize'],
     queryFn: async () => {
-      const response = await apiClient.get('/api/v1/auth/initialize', {
+      const response = await apiClient.get(API_ENDPOINTS.AUTH_INITIALIZE, {
         _noRetry: true,
       });
       return response.data;
@@ -22,6 +23,7 @@ export const useAuthInitialization = () => {
     staleTime: Infinity,
     gcTime: Infinity,
     retry: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {
