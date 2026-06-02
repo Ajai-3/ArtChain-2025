@@ -31,8 +31,11 @@ export class EndAuctionUseCase implements IEndAuctionUseCase {
     const auction = await this._auctionRepository.getById(auctionId);
 
     if (!auction) {
-      this._logger.error(`Auction ${auctionId} not found.`);
-      return false;
+      // Permanent failure — do not retry (auction was deleted or invalid id)
+      this._logger.error(
+        `Auction ${auctionId} not found. Discarding end event.`,
+      );
+      return true;
     }
 
     // Nothing to do — ack and discard

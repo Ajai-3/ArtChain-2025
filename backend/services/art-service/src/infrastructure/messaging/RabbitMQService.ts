@@ -20,6 +20,10 @@ export class RabbitMQService {
   private readonly DELAYED_QUEUE = 'delayed_queue';
   private readonly ENDED_QUEUE = 'ended_queue';
   private readonly RETRY_QUEUE = 'auction_retry_queue';
+  private readonly DEAD_LETTER_QUEUE = 'auction_ended_dlq';
+
+  /** Max times a failed end-event is retried (60s apart via retry queue TTL). */
+  private readonly MAX_AUCTION_END_RETRIES = 5;
 
   public readonly AUCTION_ENDED_KEY = 'auction.ended';
 
@@ -146,6 +150,31 @@ export class RabbitMQService {
       this.RETRY_EXCHANGE,
       'auction.retry',
     );
+
+    // 5. Dead-letter queue — messages that exceeded max retries
+    await this.channel.assertQueue(this.DEAD_LETTER_QUEUE, { durable: true });
+  }
+
+  private getMessageRetryCount(msg: ConsumeMessage): number {
+    const xDeath = msg.properties.headers?.['x-death'];
+    if (!Array.isArray(xDeath)) return 0;
+
+    return xDeath.reduce((sum: number, entry: { queue?: string; count?: number }) => {
+      if (entry.queue === this.RETRY_QUEUE) {
+        return sum + (entry.count ?? 0);
+      }
+      return sum;
+    }, 0);
+  }
+
+  private publishToDeadLetterQueue(content: JsonObject, reason: string) {
+    if (!this.channel) return;
+    const payload = { ...content, failedAt: new Date().toISOString(), reason };
+    this.channel.sendToQueue(
+      this.DEAD_LETTER_QUEUE,
+      Buffer.from(JSON.stringify(payload)),
+      { persistent: true },
+    );
   }
 
   async publishDelayedAuctionEnd(auctionId: string, durationMs: number) {
@@ -196,17 +225,49 @@ export class RabbitMQService {
               if (!msg) return;
               try {
                 const content = JSON.parse(msg.content.toString()) as JsonObject;
+                const retryCount = this.getMessageRetryCount(msg);
                 const success = await handler(content);
-      
+
                 if (success) {
+                  this.channel.ack(msg);
+                  return;
+                }
+
+                if (retryCount >= this.MAX_AUCTION_END_RETRIES) {
+                  logger.error(
+                    `Auction end event exceeded max retries (${this.MAX_AUCTION_END_RETRIES}). ` +
+                      `Moving to DLQ. Payload: ${JSON.stringify(content)}`,
+                  );
+                  this.publishToDeadLetterQueue(
+                    content,
+                    'max_retries_exceeded',
+                  );
+                  this.channel.ack(msg);
+                  return;
+                }
+
+                logger.warn(
+                  `Auction end event failed (retry ${retryCount + 1}/${this.MAX_AUCTION_END_RETRIES}). ` +
+                    `Will retry after TTL.`,
+                );
+                this.channel.nack(msg, false, false);
+              } catch (error) {
+                logger.error('Consumer Processing Error', error);
+                if (!this.channel) return;
+
+                let content: JsonObject = {};
+                try {
+                  content = JSON.parse(msg.content.toString()) as JsonObject;
+                } catch {
+                  /* use empty payload for DLQ */
+                }
+
+                const retryCount = this.getMessageRetryCount(msg);
+                if (retryCount >= this.MAX_AUCTION_END_RETRIES) {
+                  this.publishToDeadLetterQueue(content, 'processing_error');
                   this.channel.ack(msg);
                 } else {
                   this.channel.nack(msg, false, false);
-                }
-              } catch (error) {
-                logger.error('Consumer Processing Error', error);
-                if (this.channel) {
-                    this.channel.nack(msg, false, false);
                 }
               }
             },

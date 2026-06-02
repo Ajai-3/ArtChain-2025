@@ -1,5 +1,5 @@
-import mongoose, { Model, Document, Query, HydratedDocument } from 'mongoose';
 import { injectable } from 'inversify';
+import mongoose, { Model } from 'mongoose';
 import { IBaseRepository } from '../../domain/repositories/IBaseRepository';
 
 @injectable()
