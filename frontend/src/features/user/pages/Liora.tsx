@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "../../../components/ui/button";
-import { Sparkles, Settings } from "lucide-react";
+import { Settings, ExternalLink } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
 import { useGenerateAIImage } from "../hooks/ai/useGenerateAIImage";
@@ -222,8 +222,19 @@ const Liora: React.FC = () => {
         <div className="lg:hidden bg-background border-b border-border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6 text-primary" />
-              <h1 className="text-lg font-bold">Liora</h1>
+              <img src="/liora.png" alt="Liora" className="w-8 h-8 rounded-xl object-cover" />
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold">Liora</h1>
+                <a 
+                  href={import.meta.env.VITE_LIORA_AI_URL || "https://liora-ai-2025.vercel.app/"} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  title="Visit Liora AI"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)}>

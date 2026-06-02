@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 
 export const useMyBids = (status?: string) => {
@@ -10,5 +10,6 @@ export const useMyBids = (status?: string) => {
       });
       return Array.isArray(res.data.data) ? res.data.data : [];
     },
+    placeholderData: keepPreviousData,
   });
 };

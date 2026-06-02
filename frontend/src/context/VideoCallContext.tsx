@@ -15,6 +15,8 @@ import type {
 } from '../types/socket';
 import { VideoCallContext } from '../hooks/useVideoCall';
 
+export { useVideoCall } from '../hooks/useVideoCall';
+
 interface CallerInfo {
   id: string;
   name?: string;
@@ -207,10 +209,14 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
       ) {
         setIsRemoteCameraOn(signal.enabled);
         setIsRemoteMicOn(signal.enabled);
+      } else if ((signal as any).type === 'offer') {
+        if (callState.status === 'ACTIVE') {
+          handleSignal(signal as RTCDirectSignal, data.from);
+        } else {
+          setIncomingOffer(data);
+        }
       } else if ('sdp' in signal || 'candidate' in signal) {
         handleSignal(signal as RTCDirectSignal, data.from);
-      } else {
-        setIncomingOffer(data);
       }
     });
 

@@ -25,6 +25,7 @@ export const ROUTES = {
   TEST: '/test',
   SUCCESS: '/success',
   CONTACT: '/contact',
+  PRODUCTS: '/products',
 
   // Admin Routes
   ADMIN_LOGIN: '/admin/login',

@@ -19,6 +19,7 @@ const SignupPassword = lazy(
 );
 const Chat = lazy(() => import('../../features/user/pages/Chat'));
 const Liora = lazy(() => import('../../features/user/pages/Liora'));
+const Products = lazy(() => import('../../features/user/pages/Products'));
 
 const Shop = lazy(() => import('../../features/user/pages/Shop'));
 const Wallet = lazy(() => import('../../features/user/pages/Wallet'));
@@ -103,12 +104,6 @@ const UserRoutes = (
       <Route path={ROUTES.VERIFY} element={<SignupPassword />} />
     </Route>
 
-    <Route path="bidding" element={<BiddingPage />}>
-      <Route index element={<BiddingListPage />} />
-      <Route path="my-bids" element={<MyBidsPage />} />
-      <Route path=":id" element={<BiddingDetailPage />} />
-    </Route>
-
     <Route path={ROUTES.HOME} element={<UserLayout />}>
       <Route index element={<Home />} />
 
@@ -117,13 +112,6 @@ const UserRoutes = (
         <Route path="liora.ai" element={<Liora />} />
         <Route path="wallet" element={<Wallet />} />
         <Route path="success" element={<SuccessPage />} />
-
-        <Route path="bidding" element={<BiddingPage />}>
-          <Route index element={<BiddingListPage />} />
-          <Route path="my-bids" element={<MyBidsPage />} />
-          <Route path="my-auctions" element={<MyAuctionsPage />} />
-          <Route path=":id" element={<BiddingDetailPage />} />
-        </Route>
 
         <Route path="chat" element={<Chat />} />
         <Route path={ROUTE_PATTERNS.CHAT_CONVERSATION} element={<Chat />} />
@@ -144,7 +132,14 @@ const UserRoutes = (
       </Route>
 
       {/* Public Pages but with feature-level auth (e.g. creating) */}
+      <Route path="bidding" element={<BiddingPage />}>
+        <Route index element={<BiddingListPage />} />
+        <Route path="my-bids" element={<MyBidsPage />} />
+        <Route path="my-auctions" element={<MyAuctionsPage />} />
+        <Route path=":id" element={<BiddingDetailPage />} />
+      </Route>
       <Route path="shop" element={<Shop />} />
+      <Route path="products" element={<Products />} />
       <Route path={ROUTE_PATTERNS.ART_PAGE} element={<ArtPage />} />
 
       {/* Profile Routes - Partially public */}

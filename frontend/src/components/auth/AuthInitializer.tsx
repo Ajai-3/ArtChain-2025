@@ -21,7 +21,7 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({
           <div className='text-xs text-muted-foreground tracking-[0.2em] font-medium text-gray-400'>
             from
           </div>
-          <div className='flex items-center gap-2 font-semibold text-foreground tracking-widest text-lg'>
+          <div className='flex items-center gap-2 font-semibold tracking-widest text-lg bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent'>
             Liora.ai
           </div>
         </div>

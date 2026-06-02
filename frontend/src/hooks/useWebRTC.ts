@@ -52,7 +52,7 @@ export const useWebRTC = () => {
 
     pc.ontrack = (event) => {
       if (event.streams && event.streams[0]) {
-        setRemoteStream(prev => (prev?.id === event.streams[0].id ? prev : event.streams[0]));
+        setRemoteStream(new MediaStream(event.streams[0].getTracks()));
       } else {
         console.warn("[useWebRTC] No stream in event, adding track to manual stream.");
         setRemoteStream(prev => {
@@ -92,7 +92,9 @@ export const useWebRTC = () => {
     while (candidateQueue.current.length > 0) {
       const candidate = candidateQueue.current.shift();
       try {
-        await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+        if (candidate) {
+          await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+        }
       } catch (err) {
         console.log(err)
       }
@@ -101,8 +103,8 @@ export const useWebRTC = () => {
 
   const handleSignal = useCallback(async (signal: RTCSignal, fromUserId: string) => {
     if (!peerConnection.current) {
-      if (signal.type === 'candidate' && signal.candidate) {
-          candidateQueue.current.push(signal.candidate);
+      if (signal.type === 'candidate' && (signal as RTCIceSignal).candidate) {
+          candidateQueue.current.push((signal as RTCIceSignal).candidate!);
       }
       return;
     }
@@ -123,10 +125,11 @@ export const useWebRTC = () => {
         await pc.setRemoteDescription(new RTCSessionDescription(signal as RTCSessionDescriptionInit));
         await processCandidateQueue();
       } else if (signal.type === 'candidate') {
-        if (signal.candidate && pc.remoteDescription && pc.remoteDescription.type) {
-          await pc.addIceCandidate(new RTCIceCandidate(signal.candidate));
-        } else if (signal.candidate) {
-          candidateQueue.current.push(signal.candidate);
+        const candidate = (signal as RTCIceSignal).candidate;
+        if (candidate && pc.remoteDescription && pc.remoteDescription.type) {
+          await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } else if (candidate) {
+          candidateQueue.current.push(candidate);
         }
       }
     } catch (err) {
