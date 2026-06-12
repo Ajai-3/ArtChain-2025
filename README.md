@@ -27,6 +27,9 @@ The entire backend ecosystem is composed of highly decoupled **Microservices**, 
 
 ---
 
+## Architecture Diagram
+![Architecture Diagram](docs/images/architecture.png)
+
 ## 📦 Microservices Breakdown
 
 Each service maps exclusively to its domain boundary, ensuring no tight-coupling between disparate features:
