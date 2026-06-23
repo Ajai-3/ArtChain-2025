@@ -35,6 +35,15 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Create dummy .env.docker for Prisma
+        run: |
+          mkdir -p backend/services/${{ matrix.service }}
+          echo 'DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy"' > backend/services/${{ matrix.service }}/.env.docker
+          # Also for api-gateway if needed
+          mkdir -p backend/api-gateway
+          echo 'DATABASE_URL="postgresql://dummy:dummy@dummy:5432/dummy"' > backend/api-gateway/.env.docker
+
+
       - name: Build and Push
         uses: docker/build-push-action@v6
         with:
