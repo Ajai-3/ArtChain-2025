@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import { useDispatch } from "react-redux";
 import { setWalletData } from "../../../../redux/slices/walletSlice";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface Transaction {
   id: string | number;
@@ -36,7 +37,7 @@ export const useGetWallet = () => {
   return useQuery<Wallet>({
     queryKey: ["wallet"],
     queryFn: async () => {
-      const { data } = await apiClient.get("/api/v1/wallet/details");
+      const { data } = await apiClient.get(API_ENDPOINTS.WALLET_DETAILS);
       dispatch(setWalletData(data.wallet));
       return data.wallet;
     },

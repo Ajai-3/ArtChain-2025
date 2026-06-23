@@ -5,6 +5,7 @@ import { config } from '../config/env';
 import { TYPES } from '../inversify/types';
 import { ILogger } from '../../application/interface/ILogger';
 import { ROUTES } from '../../constants/routes';
+import { TransactionItem, TransactionStats } from '../../types/wallet.types';
 
 @injectable()
 export class WalletService implements IWalletService {
@@ -20,15 +21,10 @@ export class WalletService implements IWalletService {
     startDate?: Date,
     endDate?: Date,
   ): Promise<{
-    transactions: Array<{
-      amount: number;
-      category: string;
-      description: string;
-      createdAt: Date;
-    }>;
+    transactions: TransactionItem[];
   }> {
     try {
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (startDate) params.startDate = startDate.toISOString();
       if (endDate) params.endDate = endDate.toISOString();
 
@@ -55,7 +51,7 @@ export class WalletService implements IWalletService {
   async getRecentTransactions(
     token: string,
     limit: number = 5,
-  ): Promise<any[]> {
+  ): Promise<TransactionItem[]> {
     try {
       const res = await axios.get(
         `${this.baseUrl}${ROUTES.EXTERNAL.WALLET_TRANSACTIONS_RECENT}`,
@@ -71,7 +67,7 @@ export class WalletService implements IWalletService {
     }
   }
 
-  async getTransactionStats(token: string): Promise<any[]> {
+  async getTransactionStats(token: string): Promise<TransactionStats> {
     try {
       const res = await axios.get(
         `${this.baseUrl}${ROUTES.EXTERNAL.WALLET_TRANSACTIONS_STATS}`,
@@ -82,7 +78,7 @@ export class WalletService implements IWalletService {
       return res.data.data;
     } catch (err) {
       this._logger.error('Error getting transaction stats:', err);
-      return [];
+      return { totalAmount: 0, transactionCount: 0, byCategory: {} };
     }
   }
 
@@ -91,9 +87,9 @@ export class WalletService implements IWalletService {
     token: string,
     startDate?: Date,
     endDate?: Date,
-  ): Promise<any> {
+  ): Promise<Record<string, unknown> | null> {
     try {
-      const params: any = {};
+      const params: Record<string, string> = {};
       if (startDate) params.startDate = startDate.toISOString();
       if (endDate) params.endDate = endDate.toISOString();
 

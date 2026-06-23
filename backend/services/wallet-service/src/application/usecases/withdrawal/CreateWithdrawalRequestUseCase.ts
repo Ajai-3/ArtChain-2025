@@ -10,6 +10,7 @@ import { prisma } from '../../../infrastructure/db/prisma';
 import { CreateWithdrawalRequestDTO } from '../../interface/dto/withdrawal/CreateWithdrawalRequestDTO';
 import { WALLET_MESSAGES } from '../../../constants/WalletMessages';
 import { Wallet, WalletStatus } from '../../../domain/entities/Wallet';
+import { CreateWithdrawalResponse } from '../../../types/Withdrawal';
 
 @injectable()
 export class CreateWithdrawalRequestUseCase implements ICreateWithdrawalRequestUseCase {
@@ -20,7 +21,7 @@ export class CreateWithdrawalRequestUseCase implements ICreateWithdrawalRequestU
     private readonly _walletRepository: IWalletRepository
   ) {}
 
-  async execute(dto: CreateWithdrawalRequestDTO): Promise<{ withdrawalRequest: WithdrawalRequest; wallet: Wallet }> {
+  async execute(dto: CreateWithdrawalRequestDTO): Promise<CreateWithdrawalResponse> {
     // Validate amount
     if (dto.amount < 100) {
       throw new BadRequestError(WALLET_MESSAGES.MINIMUM_WITHDRAWAL_NOT_MET);
@@ -97,7 +98,7 @@ export class CreateWithdrawalRequestUseCase implements ICreateWithdrawalRequestU
           userId: dto.userId,
           walletId: wallet.id,
           amount: dto.amount,
-          method: dto.method as any,
+          method: dto.method as WithdrawalMethod,
           accountHolderName: dto.accountHolderName,
           accountNumber: dto.accountNumber,
           ifscCode: dto.ifscCode,

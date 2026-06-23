@@ -13,6 +13,7 @@ import { BidMapper } from '../../mapper/BidMapper';
 import { NotFoundError, BadRequestError } from 'art-chain-shared';
 import { AUCTION_MESSAGES } from '../../../constants/AuctionMessages';
 import { IUserService } from '../../interface/service/IUserService';
+import type { JsonObject } from '../../../types/json';
 
 @injectable()
 export class PlaceBidUseCase implements IPlaceBidUseCase {
@@ -108,21 +109,13 @@ export class PlaceBidUseCase implements IPlaceBidUseCase {
         }
 
         // 7. Socket Broadcast
-        let bidder = bidderUserInfo || null;
-        
-        if (!bidder) {
-            try {
-                bidder = await this._userService.getUserById(bidderId);
-            } catch (error) {
-                logger.error('Failed to fetch user details for bid socket event', error);
-            }
-        }
+        let bidder = await this._userService.getUserById(bidderId);
 
 
         const bidDTO = BidMapper.toDTO(bid, bidder);
 
         
-        this._socketService.publishBid(bidDTO);
+        this._socketService.publishBid(bidDTO as unknown as JsonObject);
 
         return bidDTO;
 

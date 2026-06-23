@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useBiddingAlerts = () => {
   return useQuery({
     queryKey: ["biddingAlerts"],
     queryFn: async () => {
-      const { data } = await apiClient.get("/api/v1/art/auctions/counts");
+      const { data } = await apiClient.get(API_ENDPOINTS.ART_AUCTIONS_COUNTS);
       
       const activeCount = data.data.active || 0;
       const scheduledCount = data.data.scheduled || 0;

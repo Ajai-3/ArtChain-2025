@@ -4,11 +4,12 @@ import toast from 'react-hot-toast';
 import type { CreatePostInput } from '../../../../types/art/CreatePostInput';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../../constants/routes';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useCreatePostMutation = (onClose: () => void) => {
   const navigate = useNavigate();
   return useMutation({
-    mutationFn: (data: CreatePostInput) => apiClient.post('/api/v1/art', data),
+    mutationFn: (data: CreatePostInput) => apiClient.post(API_ENDPOINTS.ART_1, data),
     onSuccess: (res) => {
       toast.success('Post created successfully!');
       onClose();

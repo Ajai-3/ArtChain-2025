@@ -106,7 +106,7 @@ export const CreateAuctionModal = ({
     if (!imageFile) return;
     try {
       const result = await uploadBiddingImage(imageFile);
-      const key = result?.key || (result as any)?.data?.key;
+          const key = result?.key || (result as { data?: { key?: string } })?.data?.key;
       if (key) {
         setUploadedImageKey(key);
         toast.success('Image saved successfully!');
@@ -151,9 +151,10 @@ export const CreateAuctionModal = ({
       });
       onAuctionCreated();
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Submission error:', error);
-      toast.error(error?.response?.data?.message || 'Something went wrong.');
+       const err = error as { response?: { data?: { message?: string } } };
+       toast.error(err?.response?.data?.message || 'Something went wrong.');
     }
   };
 
@@ -174,7 +175,7 @@ export const CreateAuctionModal = ({
     return combined;
   }
 
-  const onInvalid = (errors: any) => {
+  const onInvalid = (errors: { [key: string]: { message?: string } }) => {
     console.warn('Validation failed:', errors);
     toast.error('Please fill all required fields correctly.');
   };

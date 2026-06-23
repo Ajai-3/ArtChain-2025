@@ -1,6 +1,6 @@
 import { VerifyEmailTokenRequestDto } from '../../../dtos/user/security/VerifyEmailTokenRequestDto';
-import { SafeUser } from '../../../../../domain/entities/User';
+import { VerifyEmailTokenResponse } from '../../../../../types/responses/user/VerifyEmailTokenResponse';
 
 export interface IVerifyEmailTokenUserUseCase {
-    execute(data: VerifyEmailTokenRequestDto): Promise<any>;
+    execute(data: VerifyEmailTokenRequestDto): Promise<VerifyEmailTokenResponse>;
 }

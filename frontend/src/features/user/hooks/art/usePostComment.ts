@@ -1,11 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ArtWithUserResponse } from "./useGetArtByName";
+import type { ArtWithUser } from "./useGetAllArt";
+import type { PaginationPage } from "../../../../types/apiResponses";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface CommentInput {
   postId: string;
   artname: string; // must pass this
   content: string;
+  replyToId?: string;
 }
 
 interface OnMutateContext {
@@ -16,8 +20,8 @@ export const usePostComment = () => {
   const queryClient = useQueryClient();
 
   return useMutation<ArtWithUserResponse, Error, CommentInput, OnMutateContext>({
-    mutationFn: ({ postId, content }: CommentInput) =>
-      apiClient.post(`/api/v1/art/comment/`, { postId, content }),
+    mutationFn: ({ postId, content, replyToId }: CommentInput) =>
+      apiClient.post(API_ENDPOINTS.ART_COMMENT_1, { postId, content, replyToId }),
 
     onMutate: async ({ postId, artname }) => {
       await queryClient.cancelQueries({ queryKey: ["art", artname] });
@@ -34,13 +38,13 @@ export const usePostComment = () => {
         });
       }
 
-      queryClient.getQueriesData<any>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
+      queryClient.getQueriesData<{ pages: PaginationPage<ArtWithUser>[] }>({ queryKey: ["allArt"] }).forEach(([key, prevAllArt]) => {
         if (!prevAllArt) return;
         const newAllArt = {
           ...prevAllArt,
-          pages: prevAllArt.pages.map((page: any) => ({
+          pages: prevAllArt.pages.map((page) => ({
             ...page,
-            data: page.data.map((art: any) =>
+            data: page.data.map((art) =>
               art.art.id === postId
                 ? { ...art, commentCount: art.commentCount + 1 }
                 : art

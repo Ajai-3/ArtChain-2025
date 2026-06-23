@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import toast from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface BulkUpdateParams {
   targetId: string;
@@ -14,7 +15,7 @@ export const useBulkUpdateReportStatus = () => {
   return useMutation({
     mutationFn: async ({ targetId, targetType, status }: BulkUpdateParams) => {
       const response = await apiClient.patch(
-        `/api/v1/admin/reports/bulk-status`,
+        API_ENDPOINTS.ADMIN_REPORTS_BULKSTATUS,
         {
           targetId,
           targetType,
@@ -28,9 +29,9 @@ export const useBulkUpdateReportStatus = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-reports'] });
       toast.success(data.message || 'Reports updated successfully');
     },
-    onError: (error: any) => {
-      console.error('[Frontend] Bulk update error:', error);
-      toast.error(error?.response?.data?.message || 'Failed to update reports');
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || 'Failed to update reports');
     },
   });
 };

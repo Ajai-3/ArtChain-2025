@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface LikedUser {
   userId: string;
@@ -22,7 +23,7 @@ export const useGetLikedUsers = (postId: string, enabled = true) => {
     queryKey: ["likedUsers", postId],
     queryFn: async ({ pageParam = 1 }) => {
       const res = await apiClient.get<LikedUsersResponse>(
-        `/api/v1/art/likes/${postId}?page=${pageParam}&limit=5`
+        API_ENDPOINTS.ART_LIKES(postId, pageParam)
       );
       return res.data;
     },

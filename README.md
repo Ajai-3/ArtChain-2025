@@ -1,6 +1,6 @@
 # ArtChain-2025
 
-Welcome to **ArtChain-2025**, a comprehensive, enterprise-grade decentralized platform designed to bridge the gap between digital artists and art enthusiasts. Through a robust microservices ecosystem, ArtChain facilitates secure art commissions, peer-to-peer live interactions, real-time bidding, and dynamic portfolios. 
+Welcome to **ArtChain-2025**, a comprehensive, enterprise-grade decentralized social media platform designed to bridge the gap between digital artists and art enthusiasts. Through a robust microservices ecosystem, ArtChain facilitates secure art commissions, peer-to-peer live interactions, real-time bidding, and dynamic portfolios. 
 
 The application has been meticulously engineered using **Clean Architecture** patterns, ensuring exceptional scalability, separation of concerns, and long-term maintainability.
 
@@ -26,6 +26,9 @@ The entire backend ecosystem is composed of highly decoupled **Microservices**, 
 * **Loki & Grafana**: Deployed as the observability platform for centralized, aggregated microservice logging and beautiful metrics tracking.
 
 ---
+
+## Architecture Diagram
+![Architecture Diagram](docs/images/architecture.png)
 
 ## 📦 Microservices Breakdown
 

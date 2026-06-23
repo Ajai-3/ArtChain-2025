@@ -1,10 +1,11 @@
-import { rateLimit } from 'express-rate-limit';
+import { rateLimit, Store } from 'express-rate-limit';
 import { RedisStore } from 'rate-limit-redis';
 import { createClient } from 'redis';
 import { config } from '../config/env';
 import { logger } from '../utils/logger';
+import { RATE_LIMIT_MESSAGES } from '../constants/messages';
 
-let store;
+let store: Store | undefined;
 
 if (config.redis_url) {
   const client = createClient({
@@ -14,8 +15,8 @@ if (config.redis_url) {
     },
   });
 
-  client.on('error', (err) => logger.error('Redis Client Error in Rate Limiter', err));
-  client.on('connect', () => logger.info('Connected to Redis for Rate Limiting'));
+  client.on('error', (err) => logger.error(RATE_LIMIT_MESSAGES.REDIS_ERROR, err));
+  client.on('connect', () => logger.info(RATE_LIMIT_MESSAGES.REDIS_CONNECTED));
 
   try {
     await client.connect();
@@ -24,7 +25,8 @@ if (config.redis_url) {
       sendCommand: (...args: string[]) => client.sendCommand(args),
     });
   } catch (err) {
-    logger.error('Failed to connect to Redis for Rate Limiting, falling back to memory store', err);
+    const error = err as Error;
+    logger.error(RATE_LIMIT_MESSAGES.REDIS_FALLBACK, error);
   }
 }
 
@@ -36,10 +38,10 @@ export const globalRateLimiter = rateLimit({
   store: store,
   message: {
     success: false,
-    message: 'Too many requests from this IP, please try again after 15 minutes',
+    message: RATE_LIMIT_MESSAGES.TOO_MANY_REQUESTS,
   },
   handler: (req, res, next, options) => {
-    logger.warn(`Rate limit exceeded for IP: ${req.ip}`);
+    logger.warn(RATE_LIMIT_MESSAGES.LIMIT_EXCEEDED(req.ip || 'unknown'));
     res.status(options.statusCode).json(options.message);
   },
 });

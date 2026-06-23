@@ -1,6 +1,6 @@
 import { injectable } from 'inversify';
 import { prisma } from '../../db/prisma';
-import { Report } from '../../../domain/entities/Report';
+import { Report, ReportTargetType } from '../../../domain/entities/Report';
 import { IReportRepository } from '../../../domain/repositories/user/IReportRepository';
 import { config } from '../../config/env';
 import { Prisma, ReportStatus } from '@prisma/client';
@@ -9,7 +9,7 @@ import { Prisma, ReportStatus } from '@prisma/client';
 export class ReportRepository implements IReportRepository {
   protected model = prisma.report;
 
-  protected toSafe(entity: any): Report {
+  protected toSafe(entity: Record<string, unknown>): Report {
     return entity as unknown as Report;
   }
 
@@ -52,7 +52,7 @@ export class ReportRepository implements IReportRepository {
       where: {
         reporterId,
         targetId,
-        targetType: targetType.toUpperCase() as any,
+        targetType: targetType.toUpperCase() as ReportTargetType,
       },
     });
     return report ? this.toSafe(report) : null;
@@ -66,7 +66,7 @@ export class ReportRepository implements IReportRepository {
     const result = await this.model.updateMany({
       where: {
         targetId,
-        targetType: targetType.toUpperCase() as any,
+        targetType: targetType.toUpperCase() as ReportTargetType,
       },
       data: {
         status: status as ReportStatus,
@@ -82,12 +82,12 @@ export class ReportRepository implements IReportRepository {
     limit: number,
     filters?: { status?: string; targetType?: string }
   ): Promise<{ data: Report[]; meta: { total: number; page: number; limit: number } }> {
-    const where: any = {};
+    const where: Prisma.ReportWhereInput = {};
     if (filters?.status && filters.status !== 'ALL') {
       where.status = filters.status as ReportStatus;
     }
     if (filters?.targetType && filters.targetType !== 'ALL') {
-      where.targetType = filters.targetType.toUpperCase();
+      where.targetType = filters.targetType.toUpperCase() as ReportTargetType;
     }
 
     const skip = (page - 1) * limit;
@@ -115,7 +115,7 @@ export class ReportRepository implements IReportRepository {
     ]);
 
     const CDN = config.aws_cdn_domain;
-    const transformedReports = reports.map((report: any) => ({
+    const transformedReports = reports.map((report) => ({
       ...report,
       reporter: report.reporter ? {
         ...report.reporter,

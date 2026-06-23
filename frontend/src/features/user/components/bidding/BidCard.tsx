@@ -38,7 +38,9 @@ const STATUS_CONFIG: Record<
   },
 };
 
-export const BidCard = ({ item }: { item: any }) => {
+import type { AuctionItem } from '../../../../types/apiResponses';
+
+export const BidCard = ({ item }: { item: AuctionItem }) => {
   const navigate = useNavigate();
   const cfg = STATUS_CONFIG[item.auction.status] ?? STATUS_CONFIG.UNSOLD;
   const isEnded = item.auction.status === 'ENDED';

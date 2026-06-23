@@ -1,5 +1,5 @@
 import React from 'react';
-import { User } from 'lucide-react';
+import { User, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface ArtInfoProps {
@@ -13,12 +13,16 @@ interface ArtInfoProps {
     username: string;
     name: string;
     profileImage?: string;
+    role?: string;
+    isVerified?: boolean;
   };
   formattedDate: string;
   purchaser?: {
     name: string;
     username: string;
     profileImage?: string;
+    role?: string;
+    isVerified?: boolean;
   } | null;
 }
 
@@ -50,15 +54,24 @@ const ArtInfo: React.FC<ArtInfoProps> = ({
           )}
           <div>
             <h1 className='text-lg font-bold text-zinc-100'>{art.title}</h1>
-            <p className='text-sm font-medium text-zinc-400'>
-              by{' '}
-              <span
-                className='text-zinc-300 font-semibold cursor-pointer hover:text-main-color transition-colors'
-                onClick={() => navigate(`/${artist?.username}`)}
-              >
-                {artist?.username}
-              </span>
-            </p>
+            <div className='flex items-center gap-1 mt-1'>
+              <p className='text-sm font-medium text-zinc-400'>
+                by{' '}
+                <span
+                  className='text-zinc-300 font-semibold cursor-pointer hover:text-main-color transition-colors'
+                  onClick={() => navigate(`/${artist?.username}`)}
+                >
+                  {artist?.username}
+                </span>
+              </p>
+              {artist?.isVerified && artist?.role === 'artist' && (
+                <Shield
+                  className='w-[1em] h-[1em] text-main-color-dark flex-shrink-0 text-sm'
+                  strokeWidth={2}
+                  fill='currentColor'
+                />
+              )}
+            </div>
           </div>
         </div>
 
@@ -93,12 +106,21 @@ const ArtInfo: React.FC<ArtInfoProps> = ({
                 Sold to
               </span>
               <span className='w-1 h-1 rounded-full bg-zinc-700' />
-              <span
-                className='text-xs font-semibold text-zinc-200 cursor-pointer hover:text-white'
-                onClick={() => navigate(`/${purchaser.username}`)}
-              >
-                {purchaser.name}
-              </span>
+              <div className="flex items-center gap-1">
+                <span
+                  className='text-xs font-semibold text-zinc-200 cursor-pointer hover:text-white'
+                  onClick={() => navigate(`/${purchaser.username}`)}
+                >
+                  {purchaser.name}
+                </span>
+                {purchaser.isVerified && purchaser.role === 'artist' && (
+                  <Shield
+                    className='w-[1em] h-[1em] text-main-color-dark flex-shrink-0 text-xs'
+                    strokeWidth={2}
+                    fill='currentColor'
+                  />
+                )}
+              </div>
             </div>
             <span className='text-[10px] text-zinc-500 font-medium'>
               @{purchaser.username}

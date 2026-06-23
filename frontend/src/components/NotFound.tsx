@@ -4,9 +4,7 @@ import { ArrowLeft } from "lucide-react";
 const NotFound: React.FC = () => {
   return (
     <div className="h-screen w-screen flex items-center justify-center px-4 sm:px-8 md:px-12 bg-background text-foreground relative overflow-hidden">
-      {/* Background patterns */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Left side geometric pattern */}
         <div className="absolute left-4 sm:left-10 top-1/4 w-32 sm:w-48 h-32 sm:h-48 opacity-10">
           <svg viewBox="0 0 200 200" className="w-full h-full text-main-color">
             <path
@@ -16,7 +14,6 @@ const NotFound: React.FC = () => {
           </svg>
         </div>
 
-        {/* Right side geometric pattern */}
         <div className="absolute right-4 sm:right-20 bottom-1/4 w-48 sm:w-64 h-48 sm:h-64 opacity-10 rotate-45">
           <svg viewBox="0 0 200 200" className="w-full h-full text-main-color">
             <circle cx="50" cy="50" r="20" fill="currentColor" />
@@ -26,7 +23,6 @@ const NotFound: React.FC = () => {
           </svg>
         </div>
 
-        {/* Floating shapes - left side */}
         <div className="hidden md:block absolute left-32 top-1/3 w-24 h-24 opacity-15 animate-float">
           <div className="w-full h-full border-2 border-main-color rounded-full" />
         </div>
@@ -34,28 +30,22 @@ const NotFound: React.FC = () => {
           <div className="w-full h-full bg-main-color rotate-45" />
         </div>
 
-        {/* Gradient orbs */}
         <div className="absolute -left-40 top-1/4 w-96 h-96 bg-gradient-to-br from-main-color/25 to-main-color/5 rounded-full blur-3xl animate-pulse-slow" />
         <div className="absolute -right-40 bottom-1/4 w-80 h-80 bg-gradient-to-tr from-main-color/20 to-main-color/5 rounded-full blur-3xl animate-pulse-slower" />
       </div>
 
-      {/* Main content container - horizontal layout */}
       <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center relative z-10">
-        {/* Left side - Text content */}
         <div className="text-center lg:text-left space-y-8 lg:space-y-12">
-          {/* Large 404 */}
           <div className="space-y-4 lg:space-y-6">
             <div className="relative">
               <h1 className="text-7xl sm:text-8xl lg:text-9xl xl:text-[10rem] font-bold tracking-tighter bg-gradient-to-br from-main-color via-main-color/80 to-main-color/60 bg-clip-text text-transparent animate-fade-in">
                 404
-                {/* Glow effect */}
                 <div className="absolute inset-0 text-7xl sm:text-8xl lg:text-9xl xl:text-[10rem] bg-gradient-to-br from-main-color/30 to-main-color/10 blur-xl -z-10 animate-pulse-glow" />
               </h1>
             </div>
             <div className="h-1.5 w-32 sm:w-48 bg-gradient-to-r from-main-color to-main-color/70 rounded-full animate-scale-in shadow-lg shadow-main-color/30 mx-auto lg:mx-0" />
           </div>
 
-          {/* Message section */}
           <div className="space-y-4 lg:space-y-6 animate-slide-up">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-6xl font-light tracking-wide text-foreground/95 leading-tight">
               This masterpiece doesn't exist... yet.
@@ -66,7 +56,6 @@ const NotFound: React.FC = () => {
             </p>
           </div>
 
-          {/* Action buttons */}
           <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 animate-slide-up-delay justify-center lg:justify-start">
             <a
               href="/"
@@ -85,7 +74,6 @@ const NotFound: React.FC = () => {
           </div>
         </div>
 
-        {/* Right side - Enhanced decorative flower element */}
         <div className="flex justify-center lg:justify-end items-center mt-8 lg:mt-0">
           <div className="relative opacity-40 sm:opacity-50 dark:opacity-30 dark:sm:opacity-35">
             <svg
@@ -95,7 +83,6 @@ const NotFound: React.FC = () => {
               viewBox="0 0 200 200"
               xmlns="http://www.w3.org/2000/svg"
             >
-              {/* Enhanced petals with better visibility */}
               <g className="animate-rotate-slow">
                 <path
                   d="M100 35 Q 85 15, 100 5 Q 115 15, 100 35"
@@ -139,7 +126,6 @@ const NotFound: React.FC = () => {
                 />
               </g>
 
-              {/* Enhanced center */}
               <circle
                 cx="100"
                 cy="90"
@@ -148,7 +134,6 @@ const NotFound: React.FC = () => {
                 className="animate-pulse-center fill-main-color/10"
               />
 
-              {/* Enhanced stem */}
               <path
                 d="M100 110 Q 92 160, 100 190"
                 strokeWidth="3"
@@ -156,7 +141,6 @@ const NotFound: React.FC = () => {
                 className="animate-draw-stem"
               />
 
-              {/* Enhanced leaves */}
               <path
                 d="M92 135 Q 60 140, 55 155 Q 70 145, 92 135"
                 strokeWidth="2"

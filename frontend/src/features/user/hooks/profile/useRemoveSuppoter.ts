@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface RemoveSupporterPayload {
   supporterId: string;
@@ -19,7 +20,7 @@ export const useRemoveSupporter = () => {
     RemoveSupporterPayload
   >({
     mutationFn: async ({ supporterId, supporterUsername }) => {
-      await apiClient.delete(`/api/v1/user/remove/${supporterId}`);
+      await apiClient.delete(API_ENDPOINTS.USER_REMOVE(supporterId));
       return { supporterId, supporterUsername };
     },
 
@@ -28,7 +29,7 @@ export const useRemoveSupporter = () => {
       if (!myUsername) return;
 
       // 1) Update my profile (decrement supportersCount)
-      queryClient.setQueryData(["userProfile", myUsername], (old: any) => {
+      queryClient.setQueryData(["userProfile", myUsername], (old: { data: { supportersCount?: number } } | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -42,7 +43,7 @@ export const useRemoveSupporter = () => {
       // 2) Update removed user's profile (decrement supportingCount, reset isSupporting)
       queryClient.setQueryData(
         ["userProfile", supporterUsername],
-        (old: any) => {
+        (old: { data: { isSupporting?: boolean; supportingCount?: number } } | undefined) => {
           if (!old) return old;
           return {
             ...old,

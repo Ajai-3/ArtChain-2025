@@ -33,10 +33,17 @@ const WithdrawalRequestModal: React.FC<WithdrawalRequestModalProps> = ({
 
   const { mutate: createRequest, isPending } = useCreateWithdrawalRequest();
 
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const payload: any = {
+    const payload: {
+      amount: number;
+      method: "BANK_TRANSFER" | "UPI";
+      accountHolderName?: string;
+      accountNumber?: string;
+      ifscCode?: string;
+      upiId?: string;
+    } = {
       amount: parseFloat(amount),
       method,
     };

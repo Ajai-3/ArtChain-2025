@@ -65,7 +65,17 @@ export class GetAllResendConversationUseCase
     const partnersMap = new Map(partnerList.map((u) => [u.id, u]));
 
     const enriched = mapConversations(
-      conversations,
+      conversations.map(c => ({
+        id: c.id,
+        type: c.type,
+        name: c.name,
+        ownerId: c.ownerId,
+        memberIds: c.memberIds,
+        adminIds: c.adminIds,
+        locked: c.locked,
+        createdAt: c.createdAt,
+        updatedAt: c.updatedAt,
+      })),
       userId,
       lastMap,
       unreadMap,

@@ -16,7 +16,7 @@ const ASPECT_RATIOS = [
   { label: "16:9", value: 16 / 9 },
 ];
 
-function getCroppedImg(imageSrc: string, crop: any, fileType: string): Promise<File> {
+function getCroppedImg(imageSrc: string, crop: { width: number; height: number; x: number; y: number }, fileType: string): Promise<File> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.src = imageSrc;
@@ -49,9 +49,9 @@ const CropperComponent: React.FC<CropperComponentProps> = ({ imageSrc, originalF
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [aspect, setAspect] = useState(ASPECT_RATIOS[0].value);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ width: number; height: number; x: number; y: number } | null>(null);
 
-  const onCropComplete = useCallback((_: any, croppedPixels: any) => {
+  const onCropComplete = useCallback((_: { width: number; height: number; x: number; y: number }, croppedPixels: { width: number; height: number; x: number; y: number }) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
 

@@ -1,15 +1,6 @@
 import { GetPlatformRevenueStatsDTO } from '../../dtos/admin/GetPlatformRevenueStatsDTO';
-
-export interface PlatformRevenueStats {
-  totalRevenue: number;
-  revenueBySource: {
-    auctions: { amount: number; count: number };
-    artSales: { amount: number; count: number };
-    commissions: { amount: number; count: number };
-  };
-  revenueByDate: Record<string, number>;
-}
+import { RevenueStatsResponse } from '../../../../types/responses/admin/RevenueStatsResponse';
 
 export interface IGetPlatformRevenueStatsUseCase {
-  execute(dto: GetPlatformRevenueStatsDTO): Promise<PlatformRevenueStats>;
+  execute(dto: GetPlatformRevenueStatsDTO): Promise<RevenueStatsResponse>;
 }

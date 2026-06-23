@@ -8,6 +8,7 @@ import {
 } from "../../../../components/ui/radio-group";
 import { Label } from "../../../../components/ui/label";
 import { Filter, X } from "lucide-react";
+import type { Category } from "../../../../types/category/Category";
 
 type FilterType = {
   category?: string[];
@@ -21,7 +22,7 @@ interface ShopFiltersProps {
   filters: FilterType;
   draftFilters: FilterType;
   setDraftFilters: React.Dispatch<React.SetStateAction<FilterType>>;
-  categories: any[];
+  categories: Category[];
   isMobileFilterOpen: boolean;
   setIsMobileFilterOpen: (open: boolean) => void;
   onApplyFilters: () => void;
@@ -49,7 +50,7 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
 
   const toggleAllCategories = () => {
     if (!categories) return;
-    const allCategoryIds = categories.map((c: any) => c._id);
+    const allCategoryIds = categories.map((c: Category) => c._id);
     setDraftFilters((prev: FilterType) => ({
       ...prev,
       category:
@@ -101,9 +102,9 @@ const ShopFilters: React.FC<ShopFiltersProps> = ({
               All Categories
             </Label>
           </div>
-          {categories
-            ?.filter((cat: any) => cat.count > 0)
-            .map((cat: any) => (
+           {categories
+            ?.filter((cat: Category) => cat.count > 0)
+            .map((cat: Category) => (
               <div
                 key={cat._id}
                 className="flex items-center gap-3 cursor-pointer group"

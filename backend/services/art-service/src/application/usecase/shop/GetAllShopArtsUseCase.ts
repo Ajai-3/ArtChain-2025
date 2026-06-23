@@ -5,9 +5,13 @@ import { IArtPostRepository } from '../../../domain/repositories/IArtPostReposit
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
 import { IUserService } from '../../interface/service/IUserService';
 import { toShopArtListResponse } from '../../mapper/artWithUserMapper';
+import { IGetAllShopArtsUseCase } from '../../interface/usecase/art/IGetShopArtsByUserUseCase';
+import type { MongoQuery, MongoSort } from '../../../types/mongo';
+import type { ArtPostLean } from '../../../types/art';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
-export class GetAllShopArtsUseCase {
+export class GetAllShopArtsUseCase implements IGetAllShopArtsUseCase {
   constructor(
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
@@ -27,8 +31,8 @@ export class GetAllShopArtsUseCase {
       minPrice?: number;
       maxPrice?: number;
     },
-  ): Promise<any[]> {
-    const query: any = { isForSale: true, status: 'active' };
+  ): Promise<ReturnType<typeof toShopArtListResponse>[]> {
+    const query: MongoQuery = { isForSale: true, status: 'active' };
     // Multi-category filter
     if (filters?.category && filters.category.length > 0) {
       query.artType = { $in: filters.category };
@@ -44,7 +48,7 @@ export class GetAllShopArtsUseCase {
     }
 
     // Sorting
-    const sort: any = {};
+    const sort: MongoSort = {};
     if (filters?.priceOrder)
       sort.artcoins = filters.priceOrder === 'asc' ? 1 : -1;
     if (filters?.titleOrder) sort.title = filters.titleOrder === 'asc' ? 1 : -1;
@@ -66,11 +70,11 @@ export class GetAllShopArtsUseCase {
     }
 
     const mapped = await Promise.all(
-      arts.map(async (art: any) => {
+      arts.map(async (art: ArtPostLean) => {
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-          art._id,
+          art._id as string,
         );
-        const user = userRes.find((u: any) => u.id === art.userId);
+        const user = userRes.find((u: UserPublicProfile) => u.id === art.userId) ?? null;
 
         return toShopArtListResponse(art, user, favoriteCount);
       }),

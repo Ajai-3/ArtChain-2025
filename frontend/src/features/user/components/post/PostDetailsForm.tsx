@@ -5,9 +5,23 @@ import StepTwoForm from "./StepTwoForm";
 import { Button } from "../../../../components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
+interface PostDetails {
+  title: string;
+  description: string;
+  artType: string;
+  hashtags: string[];
+  commentingDisabled: boolean;
+  downloadingDisabled: boolean;
+  isPrivate: boolean;
+  isForSale: boolean;
+  priceType?: string;
+  artcoins?: number;
+  fiatPrice?: number;
+}
+
 interface PostDetailsFormProps {
-  postDetails: any;
-  setPostDetails: (val: any) => void;
+  postDetails: PostDetails;
+  setPostDetails: (val: PostDetails) => void;
   onSubmit: () => void;
   isLoading?: boolean;
 }

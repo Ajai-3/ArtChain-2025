@@ -6,13 +6,16 @@ import {
   setBids,
 } from '../../../../redux/slices/biddingSlice';
 import { getBiddingSocket } from '../../../../socket/socketManager';
+import type { Bid } from '../../../../types/auction';
+import type { RootState } from '../../../../redux/store';
+import type { AuctionEndedPayload, BidPlacedPayload } from '../../../../types/socket';
 
 export const useBiddingSocket = (
   auctionId: string | undefined,
-  initialBids: any[] = [],
+  initialBids: Bid[] = [],
 ) => {
   const dispatch = useDispatch();
-  const bids = useSelector((state: any) => state.bidding.bids);
+  const bids = useSelector((state: RootState) => state.bidding.bids);
   const [activeUsers, setActiveUsers] = useState<number>(0);
 
   useEffect(() => {
@@ -47,11 +50,11 @@ export const useBiddingSocket = (
     }
 
     // Listeners
-    const handleNewBid = (newBid: any) => {
+    const handleNewBid = (newBid: BidPlacedPayload) => {
       dispatch(addBid(newBid));
     };
 
-    const handleAuctionEnded = (_data: any) => {
+    const handleAuctionEnded = (_data: AuctionEndedPayload) => {
       // Could dispatch an action to update status
       // For now, just invalidate queries to fetch final state
       // But optimally: dispatch(updateAuctionStatus('ENDED'));

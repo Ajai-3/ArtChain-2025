@@ -12,10 +12,11 @@ const app = express();
 app.use(cookieParser());
 app.use(
   express.json({
-    verify: (req: any, res, buf) => {
-      if (req.originalUrl.includes(ROUTES.STRIPE.WEBHOOK)) {
+    verify: (req: unknown, _res: unknown, buf: Buffer) => {
+      const reqUrl = (req as { originalUrl?: string }).originalUrl;
+      if (reqUrl && reqUrl.includes(ROUTES.STRIPE.WEBHOOK)) {
         logger.info('Attaching raw body for Stripe webhook');
-        req.rawBody = buf; 
+        (req as { rawBody?: Buffer }).rawBody = buf;
       }
     },
   }),

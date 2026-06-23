@@ -13,8 +13,14 @@ import {
 } from "recharts";
 import CustomTooltip from "./CustomTooltip";
 
+interface TransactionDataPoint {
+  date: string;
+  income: number;
+  expense: number;
+}
+
 interface TransactionComposedChartProps {
-  data: any[];
+  data: TransactionDataPoint[];
 }
 
 const TransactionComposedChart: React.FC<TransactionComposedChartProps> = ({ data }) => {

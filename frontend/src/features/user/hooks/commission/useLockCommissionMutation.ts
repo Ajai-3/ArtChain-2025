@@ -3,6 +3,7 @@ import apiClient from '../../../../api/axios';
 import toast from 'react-hot-toast';
 import type { ApiError } from '../../../../types/apiError';
 import type { AxiosError } from 'axios';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useLockCommissionMutation = () => {
   const queryClient = useQueryClient();
@@ -18,7 +19,7 @@ export const useLockCommissionMutation = () => {
       amount: number;
     }) => {
       const response = await apiClient.post(
-        `/api/v1/wallet/transaction/commission/lock`,
+        API_ENDPOINTS.WALLET_TRANSACTION_COMMISSION_LOCK,
         {
           userId,
           commissionId,

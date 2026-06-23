@@ -3,6 +3,7 @@ import { BaseRepositoryImpl } from './BaseRepositoryImpl';
 import { Commission } from '../../domain/entities/Commission';
 import { CommissionModel } from '../models/CommissionModel';
 import { ICommissionRepository } from '../../domain/repositories/ICommissionRepository';
+import type { MongoQuery } from '../../types/mongo';
 
 @injectable()
 export class CommissionRepositoryImpl
@@ -14,54 +15,70 @@ export class CommissionRepositoryImpl
   }
 
   async findByConversationId(conversationId: string): Promise<Commission | null> {
-    const doc = await CommissionModel.findOne({ conversationId }).sort({ createdAt: -1 }).lean();
-    return (doc as unknown) as Commission | null;
+    const doc = await CommissionModel.findOne({ conversationId })
+      .sort({ createdAt: -1 })
+      .lean<Commission | null>();
+    return doc ?? null;
   }
 
   async findAllByConversationId(conversationId: string): Promise<Commission[]> {
-    const docs = await CommissionModel.find({ conversationId }).sort({ createdAt: -1 }).lean();
-    return (docs as unknown) as Commission[];
+    const docs = await CommissionModel.find({ conversationId })
+      .sort({ createdAt: -1 })
+      .lean<Commission[]>();
+    return docs;
   }
 
   async findByRequesterId(requesterId: string): Promise<Commission[]> {
-    const docs = await CommissionModel.find({ requesterId }).sort({ createdAt: -1 }).lean();
-    return (docs as unknown) as Commission[];
+    const docs = await CommissionModel.find({ requesterId })
+      .sort({ createdAt: -1 })
+      .lean<Commission[]>();
+    return docs;
   }
 
   async findByArtistId(artistId: string): Promise<Commission[]> {
-    const docs = await CommissionModel.find({ artistId }).sort({ createdAt: -1 }).lean();
-    return (docs as unknown) as Commission[];
+    const docs = await CommissionModel.find({ artistId })
+      .sort({ createdAt: -1 })
+      .lean<Commission[]>();
+    return docs;
   }
 
   async findByStatus(status: string): Promise<Commission[]> {
-    const docs = await CommissionModel.find({ status }).sort({ createdAt: -1 }).lean();
-    return (docs as unknown) as Commission[];
+    const docs = await CommissionModel.find({ status })
+      .sort({ createdAt: -1 })
+      .lean<Commission[]>();
+    return docs;
   }
 
   async findRecent(limit: number): Promise<Commission[]> {
     const docs = await CommissionModel.find({})
       .sort({ createdAt: -1 })
       .limit(limit)
-      .lean();
-    return (docs as unknown) as Commission[];
+      .lean<Commission[]>();
+    return docs;
   }
 
   async findByRequesterIdAndArtistId(requesterId: string, artistId: string): Promise<Commission[]> {
-    const docs = await CommissionModel.find({ requesterId, artistId }).sort({ createdAt: -1 }).lean();
-    return (docs as unknown) as Commission[];
+    const docs = await CommissionModel.find({ requesterId, artistId })
+      .sort({ createdAt: -1 })
+      .lean<Commission[]>();
+    return docs;
   }
 
-  async findAllFiltered(filter: any, page: number, limit: number): Promise<{ commissions: Commission[], total: number }> {
+  async findAllFiltered(
+    filter: MongoQuery,
+    page: number,
+    limit: number,
+  ): Promise<{ commissions: Commission[]; total: number }> {
     const query = CommissionModel.find(filter);
     const total = await CommissionModel.countDocuments(filter);
     const docs = await query
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit)
-        .lean();
+        .lean<Commission[]>();
     
     return {
-        commissions: (docs as unknown) as Commission[],
+        commissions: docs,
         total
     };
   }
@@ -76,7 +93,7 @@ export class CommissionRepositoryImpl
     totalRevenue: number;
     activeDisputes: number;
   }> {
-    const query: any = {};
+    const query: MongoQuery = {};
     if (startDate || endDate) {
         query.createdAt = {};
         if (startDate) query.createdAt.$gte = startDate;

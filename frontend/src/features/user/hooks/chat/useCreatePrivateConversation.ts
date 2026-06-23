@@ -9,6 +9,7 @@ import {
   addConversation,
   updateConversation,
 } from '../../../../redux/slices/chatSlice';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface CreateConversationResponse {
   isNewConvo: boolean;
@@ -25,7 +26,7 @@ export const useCreatePrivateConversation = () => {
       otherUserId: string;
     }) => {
       const res = await apiClient.post(
-        '/api/v1/chat/conversation/private',
+        API_ENDPOINTS.CHAT_CONVERSATION_PRIVATE,
         credentials,
       );
       return res.data.data;

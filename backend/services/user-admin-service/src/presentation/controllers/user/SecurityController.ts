@@ -106,15 +106,15 @@ export class SecurityController implements ISecurityController {
 
       this._logger.info(`Verifying email token for user: ${userId}`);
 
-      const user = await this._verifyEmailTokenUserUseCase.execute({
+      const result = await this._verifyEmailTokenUserUseCase.execute({
         userId,
         token,
       });
 
-      this._logger.debug(`Email token verified for user: ${user.id}`);
+      this._logger.debug(`Email token verified for user: ${userId}`);
 
       res.status(HttpStatus.OK).json({
-        data: user,
+        data: result,
         message: USER_MESSAGES.EMAIL_UPDATED_SUCCESSFULLY,
       });
     } catch (err) {

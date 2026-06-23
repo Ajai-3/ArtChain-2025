@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../../api/axios";
 import type { PaginatedResponse } from "../../art/useGetAllArt";
+import { API_ENDPOINTS } from "../../../../../constants/apiEndpoints";
 
 export const useGetUserArt = (userId: string) => {
   return useInfiniteQuery<PaginatedResponse, Error>({
@@ -8,7 +9,7 @@ export const useGetUserArt = (userId: string) => {
     queryFn: async ({ pageParam = 1 }) => {
       if (!userId) throw new Error("User ID is required");
 
-      const res = await apiClient.get(`/api/v1/art/user/${userId}`, {
+      const res = await apiClient.get(API_ENDPOINTS.ART_USER_1(userId), {
         params: { page: pageParam, limit: 15 },
       });
 

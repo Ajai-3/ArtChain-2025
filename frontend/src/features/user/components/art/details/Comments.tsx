@@ -15,7 +15,7 @@ const Comments: React.FC<CommentsProps> = ({ artId, artName, commentingDisabled 
       {!commentingDisabled ? (
         <>
           <CommentInputSection postId={artId} artname={artName} />
-          <CommentList postId={artId} />
+          <CommentList postId={artId} artName={artName} />
         </>
       ) : (
         <div className="text-center py-6 text-zinc-500">

@@ -1,5 +1,15 @@
+import type { UserPublicProfile } from '../../../types/user';
+
 export interface IUserService {
-  getUserById(userId: string, currentUserId?: string): Promise<any>;
-  getUsersByIds(userIds: string[], currentUserId?: string): Promise<any[]>;
-  getUserByUsername(username: string): Promise<any>;
+  getUserById(
+    userId: string,
+    currentUserId?: string,
+  ): Promise<UserPublicProfile | null>;
+  getUsersByIds(
+    userIds: string[],
+    currentUserId?: string,
+  ): Promise<UserPublicProfile[]>;
+  getUserByUsername(
+    username: string,
+  ): Promise<UserPublicProfile | null>;
 }

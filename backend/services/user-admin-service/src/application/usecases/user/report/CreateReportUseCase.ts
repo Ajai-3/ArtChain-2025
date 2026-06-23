@@ -28,14 +28,14 @@ export class CreateReportUseCase implements ICreateReportUseCase {
         throw new BadRequestError(USER_MESSAGES.YOU_CANNOT_REPORT_YOURSELF);
       }
     } else if (targetType === 'ART' && token) {
-      const artData = await this.artService.getArt(token, dto.targetId);
+      const artData = await this.artService.getArt(token, dto.targetId) as { art?: { userId?: string } } | null;
       if (artData && artData.art && artData.art.userId === dto.reporterId) {
         throw new BadRequestError(
           USER_MESSAGES.YOU_CANNOT_REPORT_YOUR_OWN_ARTWORK,
         );
       }
     } else if (targetType === 'COMMENT' && token) {
-      const commentData = await this.artService.getComment(token, dto.targetId);
+      const commentData = await this.artService.getComment(token, dto.targetId) as { userId?: string } | null;
       if (commentData && commentData.userId === dto.reporterId) {
         throw new BadRequestError(
           USER_MESSAGES.YOU_CANNOT_REPORT_YOUR_OWN_COMMENT,

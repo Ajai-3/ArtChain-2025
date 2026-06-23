@@ -50,7 +50,7 @@ export class ReportController implements IReportController {
         message: USER_MESSAGES.REPORTED_SUCCESSFULLY,
         data: report,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };

@@ -7,6 +7,7 @@ import { logger } from '../../infrastructure/utils/logger';
 import { Notification } from '../../domain/entities/Notification';
 import { NotificationType } from '../../domain/enums/NotificationType';
 import { IGiftEventHandler } from '../interfaces/handlers/IGiftEventHandler';
+import { GiftEventPayload } from '../../types';
 
 @injectable()
 export class GiftEventHandler implements IGiftEventHandler {
@@ -15,14 +16,7 @@ export class GiftEventHandler implements IGiftEventHandler {
     @inject(TYPES.IUserServiceClient) private readonly _userServiceClient: IUserServiceClient
   ) {}
 
-  async handle(event: {
-    receiverId: string;
-    senderId: string;
-    amount: number;
-    message?: string;
-    senderName?: string;
-    senderImage?: string;
-  }): Promise<void> {
+  async handle(event: GiftEventPayload): Promise<void> {
     try {
        const notification = new Notification(
         event.receiverId,

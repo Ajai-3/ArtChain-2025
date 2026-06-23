@@ -12,16 +12,17 @@ import { IUpdateProfileUserUseCase } from '../../../interface/usecases/user/prof
 import { IEventBus } from '../../../interface/events/IEventBus';
 import { UserUpdatedEvent } from '../../../../domain/events/UserUpdatedEvent';
 import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
+import { SafeUser } from '../../../../domain/entities/User';
 
 @injectable()
 export class UpdateProfileUserUseCase implements IUpdateProfileUserUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly _userRepo: IUserRepository,
     @inject(TYPES.IEventBus)
-    private readonly _eventBus: IEventBus
+    private readonly _eventBus: IEventBus,
   ) {}
 
-  async execute(dto: UpdateUserProfileDto): Promise<any> {
+  async execute(dto: UpdateUserProfileDto): Promise<SafeUser> {
     const { userId, username, ...updateData } = dto;
 
     const user = await this._userRepo.findById(userId);
@@ -40,7 +41,6 @@ export class UpdateProfileUserUseCase implements IUpdateProfileUserUseCase {
       ...updateData,
       ...(username && username !== user.username ? { username } : {}),
       profileImage: mapCdnUrl(updateData.profileImage),
-      
     });
 
     if (!updatedUser) {

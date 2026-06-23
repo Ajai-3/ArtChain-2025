@@ -27,6 +27,8 @@ interface ShopTabProps {
   profileUser: { id: string; username: string };
 }
 
+import type { ShopItem } from '../../../../types/apiResponses';
+
 const ShopUser: React.FC = () => {
   const { profileUser } = useOutletContext<ShopTabProps>();
   const targetUserId = profileUser.id;
@@ -34,7 +36,7 @@ const ShopUser: React.FC = () => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useGetShopItemsByUser(targetUserId);
 
-  const allArts = data?.pages?.flatMap((page: any) => page.data) || [];
+  const allArts = data?.pages?.flatMap((page) => page.data as ShopItem[]) || [];
 
   // Infinite scroll
   useEffect(() => {
@@ -67,8 +69,8 @@ const ShopUser: React.FC = () => {
         </div>
       )}
 
-      {!isLoading &&
-        allArts.map((item: any) => (
+       {!isLoading &&
+        allArts.map((item: ShopItem) => (
           <div key={item.id} className='h-full'>
             <ShopItemCard item={item} />
           </div>

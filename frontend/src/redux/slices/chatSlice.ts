@@ -182,7 +182,6 @@ const chatSlice = createSlice({
         };
         state.messages[m.conversationId][idx] = updatedMessage;
 
-        // Update lastMessage if it matches
         const convIdx = state.conversations.findIndex(
           (c) => c.id === m.conversationId,
         );
@@ -227,17 +226,6 @@ const chatSlice = createSlice({
           }
         });
       }
-
-      // Update conversation unread count if read by current user
-      // We don't have currentUserId here easily, but we can assume if this action is dispatched
-      // for the current user's view, we might want to update.
-      // However, usually unreadCount is for the *current* user.
-      // If *I* read messages, my unreadCount for this convo goes to 0.
-      // If *Partner* reads my messages, my unreadCount doesn't change, but I see blue ticks.
-
-      // Let's just update the messages for now. The unread count logic might be handled separately
-      // or we can set it to 0 if we know it's the current user.
-      // Actually, if we are in the conversation, unread count should be 0.
 
       const conv = state.conversations.find((c) => c.id === conversationId);
       if (conv) {

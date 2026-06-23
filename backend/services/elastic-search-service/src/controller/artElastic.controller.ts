@@ -32,7 +32,7 @@ export class ArtElasticController implements IArtElasticController {
       res
         .status(HttpStatus.CREATED)
         .json({ message: ELASTIC_MESSAGES.ART_INDEX_SUCCESS });
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error(ELASTIC_MESSAGES.ART_INDEX_FAILURE, err);
       next(err);
     }
@@ -56,7 +56,7 @@ export class ArtElasticController implements IArtElasticController {
       res
         .status(HttpStatus.OK)
         .json({ message: ELASTIC_MESSAGES.ART_INDEX_UPDATED_SUCCESS });
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error(ELASTIC_MESSAGES.ART_INDEX_UPDATED_FAILURE, err);
       next(err);
     }
@@ -88,7 +88,7 @@ export class ArtElasticController implements IArtElasticController {
         `${ELASTIC_MESSAGES.SEARCH_SUCCESS}: ${JSON.stringify(results)}`
       );
       res.json(results);
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error(ELASTIC_MESSAGES.SEARCH_FAILURE, err);
       next(err);
     }
@@ -119,7 +119,7 @@ export class ArtElasticController implements IArtElasticController {
         `${ELASTIC_MESSAGES.ADMIN_SEARCH_SUCCESS}: ${JSON.stringify(ids)}`
       );
       res.json({ artIds: ids });
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error(ELASTIC_MESSAGES.ADMIN_SEARCH_FAILURE, err);
       next(err);
     }

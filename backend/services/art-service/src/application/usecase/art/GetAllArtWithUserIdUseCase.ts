@@ -1,16 +1,18 @@
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { ERROR_MESSAGES, NotFoundError } from 'art-chain-shared';
-import { UserService } from '../../../infrastructure/service/UserService';
 import { ILikeRepository } from '../../../domain/repositories/ILikeRepository';
 import { toArtWithUserResponse } from '../../mapper/artWithUserMapper';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
 import { ICommentRepository } from '../../../domain/repositories/ICommentRepository';
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
 import { IUserService } from '../../interface/service/IUserService';
+import type { ArtPostLean } from '../../../types/art';
+import type { GetAllArtItem } from '../../../types/usecase';
+import { IGetAllArtWithUserIdUseCase } from '../../interface/usecase/art/IGetAllArtWithUserIdUseCase';
 
 @injectable()
-export class GetAllArtWithUserIdUseCase {
+export class GetAllArtWithUserIdUseCase implements IGetAllArtWithUserIdUseCase {
   constructor(
     @inject(TYPES.IArtPostRepository)
     private readonly _artRepo: IArtPostRepository,
@@ -27,7 +29,7 @@ export class GetAllArtWithUserIdUseCase {
     limit: number,
     userId: string,
     currentUserId: string
-  ): Promise<any[]> {
+  ): Promise<Array<Omit<GetAllArtItem, 'category'>>> {
     const arts = await this._artRepo.getAllByUser(userId, page, limit);
     if (!arts.length) return [];
 
@@ -38,23 +40,24 @@ export class GetAllArtWithUserIdUseCase {
     }
 
     return await Promise.all(
-      arts.map(async (art: any) => {
-        const likeCount = await this._likeRepo.likeCountByPostId(art._id);
+      arts.map(async (art: ArtPostLean) => {
+        const artId = art._id?.toString() ?? '';
+        const likeCount = await this._likeRepo.likeCountByPostId(artId);
         const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-          art._id
+          artId
         );
-        const commentCount = await this._commentRepo.countByPostId(art._id);
+        const commentCount = await this._commentRepo.countByPostId(artId);
         const isLiked = !!(
           currentUserId &&
-          (await this._likeRepo.findLike(art._id, currentUserId))
+          (await this._likeRepo.findLike(artId, currentUserId))
         );
         const isFavorited = !!(
           currentUserId &&
-          (await this._favoriteRepo.findFavorite(art._id, currentUserId))
+          (await this._favoriteRepo.findFavorite(artId, currentUserId))
         );
 
         return {
-          ...toArtWithUserResponse(art, userRes),
+          ...toArtWithUserResponse(art, userRes ?? undefined),
           likeCount,
           favoriteCount,
           commentCount,

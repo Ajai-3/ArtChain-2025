@@ -1,6 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/inversify/types';
-import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { IWalletRepository, RecentTransaction } from '../../../domain/repository/IWalletRepository';
 import { IGetAllRecentTransactionsUseCase } from '../../interface/usecase/admin/IGetAllRecentTransactionsUseCase';
 
 @injectable()
@@ -10,7 +10,7 @@ export class GetAllRecentTransactionsUseCase implements IGetAllRecentTransaction
     private readonly _walletRepository: IWalletRepository
   ) {}
 
-  async execute(limit: number): Promise<any[]> {
+  async execute(limit: number): Promise<RecentTransaction[]> {
     return this._walletRepository.getAllRecentTransactions(limit);
   }
 }

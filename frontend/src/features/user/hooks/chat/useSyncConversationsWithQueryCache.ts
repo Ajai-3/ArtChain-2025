@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
 import type { RootState } from '../../../../redux/store';
+import type { Conversation } from '../../../../types/chat/chat';
 
 export const useSyncConversationsWithQueryCache = () => {
   const queryClient = useQueryClient();
@@ -12,7 +13,7 @@ export const useSyncConversationsWithQueryCache = () => {
   useEffect(() => {
     if (conversations.length === 0) return;
 
-    queryClient.setQueryData(['recentConversations'], (oldData: any) => {
+    queryClient.setQueryData(['recentConversations'], (oldData: { pages: { conversations: Conversation[]; nextPage: null }[]; pageParams: number[] } | undefined) => {
       if (!oldData?.pages) {
         return {
           pages: [{ conversations, nextPage: null }],

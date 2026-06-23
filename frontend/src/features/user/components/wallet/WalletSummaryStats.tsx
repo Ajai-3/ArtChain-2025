@@ -22,9 +22,9 @@ interface WalletSummaryStatsProps {
   timeRange: "7d" | "1m" | "all";
   setTimeRange: (range: "7d" | "1m" | "all") => void;
   chartData: {
-    overview: any[];
-    businessEarned: any[];
-    businessSpent: any[];
+    overview: Array<{ name: string; income: number; expense: number }>;
+    businessEarned: Array<{ name: string; value: number }>;
+    businessSpent: Array<{ name: string; value: number }>;
   };
   className?: string;
 }

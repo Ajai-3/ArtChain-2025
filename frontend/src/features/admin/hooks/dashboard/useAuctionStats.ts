@@ -3,6 +3,7 @@ import apiClient from '../../../../api/axios';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../../redux/store';
 import type { AuctionCounts } from './useDashboardStats';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useAuctionStats = (timeRange: string = '7d') => {
   const { admin } = useSelector((state: RootState) => state.admin);
@@ -11,7 +12,7 @@ export const useAuctionStats = (timeRange: string = '7d') => {
     queryKey: ['admin', 'auction-stats', timeRange],
     queryFn: async () => {
       const { data } = await apiClient.get<{ success: boolean; data: AuctionCounts }>(
-        '/api/v1/art/admin/auctions/stats',
+        API_ENDPOINTS.ART_ADMIN_AUCTIONS_STATS,
         { params: { timeRange } }
       );
       return data.data;

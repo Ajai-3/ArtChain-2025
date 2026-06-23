@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface WalletChartData {
   trend: { date: string; amount: number; value: number; income: number; expense: number }[];
@@ -15,7 +16,7 @@ export const useGetWalletChartData = (timeRange: "7d" | "1m" | "all") => {
     queryKey: ["walletChartData", timeRange],
     queryFn: async () => {
       const response = await apiClient.get<{ message: string; data: WalletChartData }>(
-        `/api/v1/wallet/stats/chart?timeRange=${timeRange}`
+        API_ENDPOINTS.WALLET_STATS_CHARTTIMERANGE(timeRange)
       );
       return response.data.data;
     },

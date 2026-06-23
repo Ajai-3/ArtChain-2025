@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface ShopItem {
   id: string;
@@ -37,7 +38,7 @@ export const useGetShopItemsByUser = (userId?: string) => {
     enabled: !!userId,
     queryFn: async ({ pageParam = 1, signal }) => {
       const res = await apiClient.get<PaginatedResponse<ShopItem>>(
-        `/api/v1/art/shop/${userId}`,
+        API_ENDPOINTS.ART_SHOP_1(userId),
         {
           params: { page: pageParam as number, limit: 12 },
           signal,

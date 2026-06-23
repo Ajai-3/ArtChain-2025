@@ -1,5 +1,6 @@
 import { GetUserProfileRequestDto } from '../../../dtos/user/profile/GetUserProfileRequestDto';
+import { UserProfile } from '../../../../../types';
 
 export interface IGetUserWithIdUserUseCase {
-  execute(data: GetUserProfileRequestDto): Promise<any>;
+  execute(data: GetUserProfileRequestDto): Promise<UserProfile>;
 }

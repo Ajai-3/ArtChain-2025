@@ -254,6 +254,8 @@ const ArtPage: React.FC = () => {
             username: actualUser?.username || '',
             name: actualUser?.name || '',
             profileImage: actualUser?.profileImage,
+            role: actualUser?.role,
+            isVerified: actualUser?.isVerified,
           }}
           formattedDate={formattedDate}
           purchaser={purchaser}

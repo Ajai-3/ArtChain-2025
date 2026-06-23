@@ -3,6 +3,7 @@ import { prisma } from '../../db/prisma';
 import { BaseRepositoryImpl } from '../BaseRepositoryImpl';
 import { ArtistRequest } from '../../../domain/entities/ArtistRequest';
 import { IArtistRequestRepository } from '../../../domain/repositories/user/IArtistRequestRepository';
+import { ArtistRequestCreateInput } from '../../../types';
 
 @injectable()
 export class ArtistRequestRepositoryImpl
@@ -12,26 +13,31 @@ export class ArtistRequestRepositoryImpl
   protected model = prisma.artistRequest;
 
   async findById(id: string): Promise<ArtistRequest | null> {
-    return await this.model.findUnique({ where: { id } });
+    const result = await this.model.findUnique({ where: { id } });
+    return result as ArtistRequest | null;
   }
 
-  // Create a new artist request
-  async createArtistRequest(data: any): Promise<ArtistRequest> {
-    const record = await this.model.create({ data });
-    return record;
+  async createArtistRequest(
+    data: Omit<ArtistRequest, 'id' | 'createdAt' | 'reviewedAt'>,
+  ): Promise<ArtistRequest> {
+    const record = await this.model.create({
+      data: data as ArtistRequestCreateInput,
+    });
+    return record as ArtistRequest;
   }
 
   // Approve a request
-  async approve(requestId: string): Promise<void> {
-    await this.model.update({
+  async approve(requestId: string): Promise<ArtistRequest> {
+    const result = await this.model.update({
       where: { id: requestId },
       data: { status: 'approved', reviewedAt: new Date() },
     });
+    return result as ArtistRequest;
   }
 
   // Reject a request with reason
-  async reject(requestId: string, reason: string): Promise<void> {
-    await this.model.update({
+  async reject(requestId: string, reason: string): Promise<ArtistRequest> {
+    const result = await this.model.update({
       where: { id: requestId },
       data: {
         status: 'rejected',
@@ -39,6 +45,7 @@ export class ArtistRequestRepositoryImpl
         reviewedAt: new Date(),
       },
     });
+    return result as ArtistRequest;
   }
 
   // Get all pending requests

@@ -1,5 +1,6 @@
-import React, { Component } from "react";
 import type { ReactNode } from "react";
+import React, { Component } from "react";
+
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -33,7 +34,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     console.error("Error caught by ErrorBoundary:", error, errorInfo);
     this.setState({ errorInfo });
 
-    // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
@@ -55,7 +55,6 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     const { hasError, error, errorInfo, showDetails } = this.state;
     const { children, fallback } = this.props;
 
-    // If a custom fallback is provided, use it
     if (hasError && fallback) {
       return fallback;
     }
@@ -108,7 +107,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
               >
                 Go Back
               </button>
-              {process.env.NODE_ENV === "development" && (
+              {import.meta.env.DEV && (
                 <button
                   onClick={this.toggleDetails}
                   className="px-5 py-2.5 bg-transparent border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75"

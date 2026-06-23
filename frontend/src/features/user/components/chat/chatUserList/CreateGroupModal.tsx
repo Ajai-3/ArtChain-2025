@@ -111,7 +111,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                 {isSearching ? (
                   <div className="p-2 text-center text-sm text-muted-foreground">Searching...</div>
                 ) : searchResults?.length > 0 ? (
-                  searchResults.map((user: any) => (
+                  searchResults.map((user: ChatUser) => (
                     <button
                       key={user.id}
                       onClick={() => handleUserSelect(user)}
@@ -141,12 +141,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
             )}
           </div>
 
-          {/* Selected Users List */}
-          {selectedUsers.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium mb-2">Selected Members ({selectedUsers.length})</label>
-              <div className="flex flex-wrap gap-2">
-                {selectedUsers.map((user) => (
+            {/* Selected Users List */}
+            {selectedUsers.length > 0 && (
+              <div>
+                <label className="block text-sm font-medium mb-2">Selected Members ({selectedUsers.length})</label>
+                <div className="flex flex-wrap gap-2">
+                  {selectedUsers.map((user: ChatUser) => (
                   <div
                     key={user.id}
                     className="flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-full text-xs"

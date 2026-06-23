@@ -1,30 +1,47 @@
-import React from "react";
-import { Label } from "../../../../components/ui/label";
-import { Separator } from "../../../../components/ui/separator";
-import { Badge } from "../../../../components/ui/badge";
-import { Textarea } from "../../../../components/ui/textarea";
-import { Input } from "../../../../components/ui/input";
+import React from 'react';
+import { Label } from '../../../../components/ui/label';
+import { Separator } from '../../../../components/ui/separator';
+import { Badge } from '../../../../components/ui/badge';
+import { Textarea } from '../../../../components/ui/textarea';
+import { Input } from '../../../../components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/ui/select";
-import { Sparkles, Settings, AlertCircle } from "lucide-react";
+} from '../../../../components/ui/select';
+import { Settings, AlertCircle, ExternalLink } from 'lucide-react';
+import type { User } from '../../../../types/users/user/user';
+
+interface QuotaData {
+  data: {
+    remaining: number;
+    limit: number;
+  };
+}
+
+interface ModelConfig {
+  id: string;
+  name?: string;
+  resolutions?: string[];
+  provider?: string;
+  availableModels: string[];
+  allowedResolutions?: string[];
+}
 
 interface LioraSidebarProps {
-  user: any;
-  quota: any;
+  user: User | null;
+  quota: QuotaData | null;
   model: string;
   setModel: (value: string) => void;
   modelsLoading: boolean;
-  availableModels: any[];
+  availableModels: ModelConfig[];
   resolution: string;
   setResolution: (value: string) => void;
-  currentConfig: any;
-  seed: number | "";
-  setSeed: (value: number | "") => void;
+  currentConfig: ModelConfig | null;
+  seed: number | '';
+  setSeed: (value: number | '') => void;
   negativePrompt: string;
   setNegativePrompt: (value: string) => void;
 }
@@ -50,12 +67,32 @@ export const LioraSidebar: React.FC<LioraSidebarProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-primary/10 rounded-2xl">
-              <Sparkles className="w-8 h-8 text-primary" />
-            </div>
+            <img
+              src="/liora.png"
+              alt="Liora"
+              className="w-14 h-14 rounded-2xl object-cover"
+            />
             <div>
-              <h1 className="text-2xl font-bold">Liora</h1>
-              <p className="text-xs text-muted-foreground">AI Image Generator</p>
+              <div className="flex items-center gap-2">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent">
+                  Liora
+                </h1>
+                <a
+                  href={
+                    import.meta.env.VITE_LIORA_AI_URL ||
+                    'https://liora-ai-2025.vercel.app/'
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  title="Visit Liora AI"
+                >
+                  <ExternalLink className="w-5 h-5" />
+                </a>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                AI Image Generator
+              </p>
             </div>
           </div>
           {user && <Badge variant="secondary">{user.username}</Badge>}
@@ -71,8 +108,8 @@ export const LioraSidebar: React.FC<LioraSidebarProps> = ({
               <span
                 className={
                   quota.data.remaining === 0
-                    ? "text-destructive"
-                    : "text-primary"
+                    ? 'text-destructive'
+                    : 'text-primary'
                 }
               >
                 {quota.data.remaining}/{quota.data.limit}
@@ -113,7 +150,7 @@ export const LioraSidebar: React.FC<LioraSidebarProps> = ({
               <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={
-                    modelsLoading ? "Loading models..." : "Select model"
+                    modelsLoading ? 'Loading models...' : 'Select model'
                   }
                 />
               </SelectTrigger>
@@ -123,21 +160,21 @@ export const LioraSidebar: React.FC<LioraSidebarProps> = ({
                     Loading...
                   </SelectItem>
                 ) : availableModels?.length > 0 ? (
-                  availableModels.flatMap((config: any) =>
+                  availableModels.flatMap((config: ModelConfig) =>
                     config.availableModels.map((modelName: string) => (
                       <SelectItem
                         key={`desktop-${config.provider}-${modelName}`}
                         value={modelName}
                       >
-                        {config.provider === "gemini"
-                          ? "Google Gemini 2.5 (Paid)"
-                          : modelName === "flux"
-                          ? "Flux.1 Pro (Best Quality)"
-                          : modelName === "sdxl"
-                          ? "SDXL Turbo (Fast)"
-                          : modelName}
+                        {config.provider === 'gemini'
+                          ? 'Google Gemini 2.5 (Paid)'
+                          : modelName === 'flux'
+                            ? 'Flux.1 Pro (Best Quality)'
+                            : modelName === 'sdxl'
+                              ? 'SDXL Turbo (Fast)'
+                              : modelName}
                       </SelectItem>
-                    ))
+                    )),
                   )
                 ) : (
                   <SelectItem value="flux" disabled>
@@ -163,15 +200,15 @@ export const LioraSidebar: React.FC<LioraSidebarProps> = ({
               <SelectContent>
                 {currentConfig?.allowedResolutions?.map((res: string) => (
                   <SelectItem key={`desktop-res-${res}`} value={res}>
-                    {res === "1024x1024"
-                      ? "1024×1024 (Square)"
-                      : res === "1152x896"
-                      ? "1152×896 (Landscape)"
-                      : res === "896x1152"
-                      ? "896×1152 (Portrait)"
-                      : res === "1360x768"
-                      ? "1360×768 (Ultra Wide)"
-                      : res}
+                    {res === '1024x1024'
+                      ? '1024×1024 (Square)'
+                      : res === '1152x896'
+                        ? '1152×896 (Landscape)'
+                        : res === '896x1152'
+                          ? '896×1152 (Portrait)'
+                          : res === '1360x768'
+                            ? '1360×768 (Ultra Wide)'
+                            : res}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -181,14 +218,14 @@ export const LioraSidebar: React.FC<LioraSidebarProps> = ({
           <div className="grid grid-cols-1 gap-4">
             <div className="space-y-2">
               <Label className="text-xs">
-                Seed {seed === "" && "(Random)"}
+                Seed {seed === '' && '(Random)'}
               </Label>
               <Input
                 type="number"
                 placeholder="Random"
                 value={seed}
                 onChange={(e) =>
-                  setSeed(e.target.value === "" ? "" : Number(e.target.value))
+                  setSeed(e.target.value === '' ? '' : Number(e.target.value))
                 }
               />
             </div>

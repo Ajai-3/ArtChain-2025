@@ -1,16 +1,17 @@
 import { injectable } from 'inversify';
 import { IEventBus } from '../interface/events/IEventBus';
 import { DomainEvent } from '../../domain/events/DomainEvent';
-
 import { IEventHandler } from '../interface/events/handlers/IEventHandler';
+
+type AnyEventHandler = IEventHandler<DomainEvent>;
 
 @injectable()
 export class EventBus implements IEventBus {
-  private handlers = new Map<string, IEventHandler<any>[]>();
+  private handlers = new Map<string, AnyEventHandler[]>();
 
   register<T extends DomainEvent>(eventType: string, handler: IEventHandler<T>): void {
     const list = this.handlers.get(eventType) || [];
-    this.handlers.set(eventType, [...list, handler]);
+    this.handlers.set(eventType, [...list, handler as AnyEventHandler]);
   }
 
   async publish(event: DomainEvent): Promise<void> {

@@ -1,5 +1,5 @@
 import { ChangeEmailDto } from '../../../dtos/user/security/ChangeEmailDto';
 
 export interface IChangeEmailUserUseCase {
-    execute(data: ChangeEmailDto): Promise<any>
+    execute(data: ChangeEmailDto): Promise<string>
 }

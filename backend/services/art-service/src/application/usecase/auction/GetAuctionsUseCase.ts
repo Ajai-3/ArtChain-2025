@@ -7,6 +7,7 @@ import { IS3Service } from '../../../domain/interfaces/IS3Service';
 import { AuctionMapper } from '../../mapper/AuctionMapper';
 import { GetAuctionsDTO } from '../../interface/dto/auction/GetAuctionsDTO';
 import { IUserService } from '../../interface/service/IUserService';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
 export class GetAuctionsUseCase implements IGetAuctionsUseCase {
@@ -19,7 +20,7 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
 
   async execute(
     dto: GetAuctionsDTO,
-  ): Promise<{ auctions: any[]; total: number }> {
+  ): Promise<{ auctions: ReturnType<typeof AuctionMapper.toDTO>[]; total: number }> {
     const {
       page = 1,
       limit = 10,
@@ -73,11 +74,11 @@ export class GetAuctionsUseCase implements IGetAuctionsUseCase {
     );
 
     const users = await this._userService.getUsersByIds([...allUserIds]);
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
+    const userMap = new Map<string, UserPublicProfile>(users.map((u) => [u.id, u]));
 
     const mappedAuctions = auctionsData.map(
       ({ auction, bids, signedImageUrl }) => {
-        const host = userMap.get(auction.hostId);
+        const host = userMap.get(auction.hostId) ?? null;
         return AuctionMapper.toDTO(
           auction,
           signedImageUrl,

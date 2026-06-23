@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { ArtPost } from '../../../domain/entities/ArtPost';
+import { Category } from '../../../domain/entities/Category';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { ERROR_MESSAGES } from '../../../constants/ErrorMessages';
@@ -8,6 +9,12 @@ import { CreateArtPostDTO } from '../../interface/dto/art/CreateArtPostDTO';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
 import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
 import { ICreateArtPostUseCase } from '../../interface/usecase/art/ICreateArtPostUseCase';
+import { CreateArtPostResponse } from '../../../types/usecase-response';
+import { toCreateArtPostResponse } from '../../mapper/artWithUserMapper';
+
+interface CategoryWithId extends Category {
+  _id: string;
+}
 
 @injectable()
 export class CreateArtPostUseCase implements ICreateArtPostUseCase {
@@ -18,12 +25,12 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
     private readonly _categoryRepo: ICategoryRepository
   ) {}
 
-  async execute(dto: CreateArtPostDTO): Promise<any> {
+  async execute(dto: CreateArtPostDTO): Promise<CreateArtPostResponse> {
     if (!dto.userId) {
       throw new BadRequestError(ERROR_MESSAGES.USER_ID_MISSING);
     }
 
-    const category = await this._categoryRepo.getById(dto.artType);
+    const category = await this._categoryRepo.getById(dto.artType) as CategoryWithId | null;
     if (!category) {
       throw new NotFoundError(CATEGORY_MESSAGES.NOT_FOUND);
     }
@@ -64,9 +71,10 @@ export class CreateArtPostUseCase implements ICreateArtPostUseCase {
     );
 
     const created = await this._artRepo.create(art);
-    await this._categoryRepo.update((category as any)._id, {
+    await this._categoryRepo.update(category._id, {
       count: category.count + 1,
     });
-    return created;
+
+    return toCreateArtPostResponse(created, category._id, count);
   }
 }

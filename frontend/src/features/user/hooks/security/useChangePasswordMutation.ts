@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import type { ApiError } from "../../../../types/apiError";
 import type { ChangePasswordFormData } from "../../schemas/changePasswordSchema";
 import type { AxiosResponse } from "axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface ChangePasswordResponse {
   message: string;
@@ -20,7 +21,7 @@ export const useChangePasswordMutation = (
   return useMutation<ChangePasswordResponse, ApiError, ChangePasswordFormData>({
     mutationFn: async (data: ChangePasswordFormData) => {
       const res: AxiosResponse<ChangePasswordResponse> = await apiClient.post(
-        "/api/v1/user/change-password",
+        API_ENDPOINTS.USER_CHANGEPASSWORD,
         {
           currentPassword: data.currentPassword,
           newPassword: data.newPassword,

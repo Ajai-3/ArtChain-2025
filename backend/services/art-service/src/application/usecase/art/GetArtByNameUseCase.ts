@@ -11,6 +11,8 @@ import { ICommentRepository } from '../../../domain/repositories/ICommentReposit
 import { IFavoriteRepository } from '../../../domain/repositories/IFavoriteRepository';
 import { IGetArtByNameUseCase } from '../../interface/usecase/art/IGetArtByNameUseCase';
 import { IUserService } from '../../interface/service/IUserService';
+import { ICategoryRepository } from '../../../domain/repositories/ICategoryRepository';
+import type { GetArtByNameResponse } from '../../../types/usecase-response';
 
 @injectable()
 export class GetArtByNameUseCase implements IGetArtByNameUseCase {
@@ -26,13 +28,17 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
     private readonly _purchaseRepo: IPurchaseRepository,
     @inject(TYPES.IUserService)
     private readonly _userService: IUserService,
+    @inject(TYPES.ICategoryRepository)
+    private readonly _categoryRepo: ICategoryRepository,
   ) {}
 
-  async execute(artName: string, currentUserId: string) {
+  async execute(artName: string, currentUserId: string): Promise<GetArtByNameResponse> {
     const artFull = await this._artRepo.findByArtName(artName);
     if (!artFull) {
       throw new NotFoundError(ART_MESSAGES.ART_NOT_FOUND);
     }
+
+    const artId = artFull._id?.toString() ?? '';
 
     const userRes = await this._userService.getUserById(
       artFull.userId,
@@ -42,39 +48,48 @@ export class GetArtByNameUseCase implements IGetArtByNameUseCase {
       throw new NotFoundError(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    const likeCount = await this._likeRepo.likeCountByPostId(artFull._id);
-    const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(
-      artFull._id,
-    );
-    const commentCount = await this._commentRepo.countByPostId(artFull._id);
+    const likeCount = await this._likeRepo.likeCountByPostId(artId);
+    const favoriteCount = await this._favoriteRepo.favoriteCountByPostId(artId);
+    const commentCount = await this._commentRepo.countByPostId(artId);
 
     const isLiked = !!(
       currentUserId &&
-      (await this._likeRepo.findLike(artFull._id, currentUserId))
+      (await this._likeRepo.findLike(artId, currentUserId))
     );
     const isFavorited = !!(
       currentUserId &&
-      (await this._favoriteRepo.findFavorite(artFull._id, currentUserId))
+      (await this._favoriteRepo.findFavorite(artId, currentUserId))
     );
 
     let purchaser = null;
+    let isPurchased = false;
     if (!artFull.isForSale && artFull.isSold) {
-      const purchase = await this._purchaseRepo.findByArtId(artFull._id);
+      const purchase = await this._purchaseRepo.findByArtId(artId);
       if (purchase) {
         purchaser = await this._userService.getUserById(
           purchase.userId,
           currentUserId,
         );
+        isPurchased = true;
       }
     }
 
+    let category = null;
+    if (artFull.categoryId) {
+      const categories = await this._categoryRepo.getCategoriesByIds([artFull.categoryId]);
+      category = categories[0] ?? null;
+    }
+
+    const artWithUser = toArtWithUserResponse(artFull, userRes ?? undefined, purchaser ?? undefined);
     return {
-      ...toArtWithUserResponse(artFull, userRes, purchaser),
+      ...artWithUser,
       isLiked,
       likeCount,
       isFavorited,
       commentCount,
       favoriteCount,
-    };
+      category,
+      isPurchased,
+    } as GetArtByNameResponse;
   }
 }

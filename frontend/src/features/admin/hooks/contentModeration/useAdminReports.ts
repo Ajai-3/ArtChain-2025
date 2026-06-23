@@ -1,5 +1,6 @@
 import apiClient from "../../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface Report {
   id: string;
@@ -54,7 +55,7 @@ export const useAdminReports = (params: UseAdminReportsParams) => {
       }
 
       const { data } = await apiClient.get<PaginatedReportsResponse>(
-        `/api/v1/admin/reports?${queryParams.toString()}`
+        API_ENDPOINTS.ADMIN_REPORTS(queryParams.toString())
       );
       return data;
     },

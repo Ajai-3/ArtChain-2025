@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ArtWithUser } from "./useGetAllArt";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface RecommendedArtResponse {
   message: string;
@@ -19,7 +20,7 @@ export const useRelatedArtworks = (
   const categoryQuery = useInfiniteQuery<RecommendedArtResponse, Error>({
     queryKey: ["relatedArt", "category", categoryId],
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await apiClient.get("/api/v1/art/recommended", {
+      const res = await apiClient.get(API_ENDPOINTS.ART_RECOMMENDED, {
         params: { page: pageParam, limit, categoryId },
       });
       return res.data;
@@ -35,7 +36,7 @@ export const useRelatedArtworks = (
   const generalQuery = useInfiniteQuery<RecommendedArtResponse, Error>({
     queryKey: ["relatedArt", "general"],
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await apiClient.get("/api/v1/art/recommended", {
+      const res = await apiClient.get(API_ENDPOINTS.ART_RECOMMENDED, {
         params: { page: pageParam, limit },
       });
       return res.data;

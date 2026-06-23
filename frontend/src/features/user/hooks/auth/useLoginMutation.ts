@@ -6,6 +6,7 @@ import { setUser } from "../../../../redux/slices/userSlice";
 import apiClient from "../../../../api/axios";
 import type { ApiError } from "../../../../types/apiError";
 import { ROUTES } from "../../../../constants/routes";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useLoginMutation = (
   setFormError: (msg: string | null) => void
@@ -15,7 +16,7 @@ export const useLoginMutation = (
 
   return useMutation({
     mutationFn: (credentials: { identifier: string; password: string }) =>
-      apiClient.post("/api/v1/auth/login", credentials),
+      apiClient.post(API_ENDPOINTS.AUTH_LOGIN, credentials),
     onSuccess: (res) => {
       const { user, accessToken } = res.data;
       toast.success("Login successful");

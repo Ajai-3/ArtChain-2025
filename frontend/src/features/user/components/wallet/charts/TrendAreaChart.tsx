@@ -10,8 +10,13 @@ import {
 } from "recharts";
 import CustomTooltip from "./CustomTooltip";
 
+interface TransactionDataPoint {
+  date: string;
+  amount: number;
+}
+
 interface TrendAreaChartProps {
-  data: any[];
+  data: TransactionDataPoint[];
 }
 
 const TrendAreaChart: React.FC<TrendAreaChartProps> = ({ data }) => {

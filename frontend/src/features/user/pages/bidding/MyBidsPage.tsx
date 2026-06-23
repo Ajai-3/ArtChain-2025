@@ -1,20 +1,23 @@
 import { useState } from "react";
 import { useMyBids } from "../../hooks/bidding/useMyBids";
-import PageFallback from "../../../../components/PageFallback";
+import { AuctionCardSkeleton } from "../../components/bidding/AuctionCardSkeleton";
 import { Button } from "../../../../components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "../../../../components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Gavel } from "lucide-react";
 import { BidCard } from "../../components/bidding/BidCard";
+import type { BidItem } from "../../../../types/auction";
+import type { AuctionItem } from "../../../../types/apiResponses";
 
 
 
 export default function MyBidsPage() {
     const [filter, setFilter] = useState("ALL");
-    const { data: bids = [], isLoading, error } = useMyBids(filter);
+    const { data: bids = [], isLoading, isFetching, error } = useMyBids(filter);
     const navigate = useNavigate();
 
-    if (isLoading) return <PageFallback />;
+    const showInitialLoader = isLoading && bids.length === 0;
+
     if (error) return <div className="p-10 text-center text-destructive font-semibold">Failed to load history.</div>;
 
     return (
@@ -32,7 +35,7 @@ export default function MyBidsPage() {
                     </div>
                 </div>
                 <Tabs value={filter} onValueChange={setFilter} className="w-full md:w-auto">
-                    <TabsList className="grid grid-cols-3 md:flex w-full">
+                    <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:flex w-full">
                         <TabsTrigger value="ALL">All</TabsTrigger>
                         <TabsTrigger value="ACTIVE">Live</TabsTrigger>
                         <TabsTrigger value="ENDED">Ended</TabsTrigger>
@@ -41,8 +44,13 @@ export default function MyBidsPage() {
                 </Tabs>
             </div>
 
-            {/* Empty */}
-            {bids.length === 0 ? (
+            {showInitialLoader ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-6">
+                    {[...Array(4)].map((_, i) => (
+                        <AuctionCardSkeleton key={i} />
+                    ))}
+                </div>
+            ) : bids.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 rounded-3xl bg-muted/10 border-2 border-dashed border-border/50">
                     <Gavel className="h-12 w-12 text-muted-foreground/30 mb-4" />
                     <h3 className="text-lg font-medium">No auctions found</h3>
@@ -50,8 +58,8 @@ export default function MyBidsPage() {
                     <Button variant="main" onClick={() => navigate("/bidding")}>Browse Auctions</Button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {bids.map((item: any) => (
+                <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 mt-6 ${isFetching ? "opacity-60 pointer-events-none" : ""}`}>
+                    {bids.map((item: { auction: AuctionItem }) => (
                         <BidCard key={item.auction.id} item={item} />
                     ))}
                 </div>

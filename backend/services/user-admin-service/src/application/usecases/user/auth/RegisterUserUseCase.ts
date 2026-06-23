@@ -26,15 +26,13 @@ export class RegisterUserUseCase implements IRegisterUserUseCase {
 
   async execute(data: RegisterRequestDto): Promise<AuthResultDto> {
     const { token, password } = data;
-    let decodedPayload: any;
 
     if (!token) {
       throw new BadRequestError(AUTH_MESSAGES.TOKEN_REQUIRED);
     }
 
-    try {
-      decodedPayload = this._emailTokenVerifier.verifyEmail(token);
-    } catch (err) {
+    const decodedPayload = this._emailTokenVerifier.verifyEmail(token);
+    if (!decodedPayload) {
       throw new BadRequestError(AUTH_MESSAGES.INVALID_EMAIL_TOKEN);
     }
 

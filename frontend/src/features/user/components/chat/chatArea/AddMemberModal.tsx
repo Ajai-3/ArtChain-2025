@@ -87,7 +87,7 @@ const AddMemberModal: React.FC<AddMemberModalProps> = ({
                 {isSearching ? (
                   <div className="p-2 text-center text-sm text-muted-foreground">Searching...</div>
                 ) : searchResults?.length > 0 ? (
-                  searchResults.map((user: any) => {
+                  searchResults.map((user: { id: string; username: string; name?: string; profileImage?: string }) => {
                     const isMember = existingMemberIds.includes(user.id);
                     const isSelf = user.id === currentUser?.id;
                     const isDisabled = isMember || isSelf;

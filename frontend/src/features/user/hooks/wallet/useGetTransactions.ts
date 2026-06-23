@@ -1,6 +1,7 @@
 // useGetTransactions.ts
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export type Transaction = {
   id: string;
@@ -46,7 +47,7 @@ export const useGetTransactions = (
   return useQuery<TransactionsResponse>({
     queryKey: ["transactions", page, limit, filters],
     queryFn: async () => {
-      const { data } = await apiClient.get("/api/v1/wallet/get-transactions", {
+      const { data } = await apiClient.get(API_ENDPOINTS.WALLET_GETTRANSACTIONS, {
         params: { page, limit, ...filters },
       });
 

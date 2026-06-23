@@ -1,3 +1,5 @@
+import { SupportEventPayload } from '../../../types';
+
 export interface ISupportEventHandler {
-  handle(event: any): Promise<void>;
+  handle(event: SupportEventPayload): Promise<void>;
 }

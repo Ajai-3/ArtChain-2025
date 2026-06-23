@@ -3,6 +3,7 @@ import apiClient from "../../../../api/axios";
 import { useDispatch, useSelector } from "react-redux";
 import { cacheUsers } from "../../../../redux/slices/chatSlice";
 import { type RootState } from "../../../../redux/store";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useUserResolver = (userIds: string[]) => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ export const useUserResolver = (userIds: string[]) => {
 
       if (missingUserIds.length > 0) {
         try {
-          const response = await apiClient.post("/api/v1/user/batch", {
+          const response = await apiClient.post(API_ENDPOINTS.USER_BATCH, {
             ids: missingUserIds,
           });
 

@@ -33,6 +33,7 @@ import {
 import { Textarea } from "../../../../../components/ui/textarea";
 import CustomLoader from "../../../../../components/CustomLoader";
 import { useNavigate } from "react-router-dom";
+import type { CommissionResponse, Commission } from "../../../types/commission";
 
 interface CommissionChatCardProps {
   conversationId: string;
@@ -43,7 +44,7 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
   conversationId,
   currentUserId,
 }) => {
-  const { data: res, isLoading } = useGetCommissionByConversation(conversationId);
+  const { data: res, isLoading } = useGetCommissionByConversation(conversationId) as { data: CommissionResponse | undefined; isLoading: boolean };
   const [isExpanded, setIsExpanded] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeliverModalOpen, setIsDeliverModalOpen] = useState(false);
@@ -57,11 +58,11 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
 
   const { balance } = useSelector((state: RootState) => state.wallet);
 
-  const commission = res?.active;
+  const commission: Commission | undefined = res?.active;
   const history = res?.history || [];
 
 
-  const handleStatusUpdate = (status: string, extraData: any = {}) => {
+  const handleStatusUpdate = (status: string, extraData: Record<string, unknown> = {}) => {
     if (!commission) return;
     updateMutation.mutate({
       id: commission.id,
@@ -97,18 +98,16 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
 
   if (isLoading || !commission) return null;
 
-  const isRequester = commission.requesterId === currentUserId;
-  const isArtist = commission.artistId === currentUserId;
-  const isNegotiating = commission.status === "REQUESTED" || commission.status === "NEGOTIATING" || commission.status === "AGREED";
-  const isCompletedOrCancelled = commission.status === "COMPLETED" || commission.status === "CANCELLED";
+  const isRequester = commission?.requesterId === currentUserId;
+  const isArtist = commission?.artistId === currentUserId;
+  const isNegotiating = commission?.status === "REQUESTED" || commission?.status === "NEGOTIATING" || commission?.status === "AGREED";
+  const isCompletedOrCancelled = commission?.status === "COMPLETED" || commission?.status === "CANCELLED";
 
-
-  const hasIAgreed = isRequester ? commission.requesterAgreed : commission.artistAgreed;
-  const hasOtherAgreed = isRequester ? commission.artistAgreed : commission.requesterAgreed;
+  const hasIAgreed = isRequester ? commission?.requesterAgreed : commission?.artistAgreed;
+  const hasOtherAgreed = isRequester ? commission?.artistAgreed : commission?.requesterAgreed;
 
   const canAccept = isNegotiating && !hasIAgreed;
-  const canEdit = isNegotiating && commission.status !== "AGREED";  
-
+  const canEdit = isNegotiating && commission?.status !== "AGREED";  
 
   const handleRequestNew = () => {
     if (commission?.artist?.username) {
@@ -133,10 +132,10 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
     }
   };
 
-  const isPastDeadline = new Date() > new Date(commission.deadline);
+  const isPastDeadline = commission?.deadline ? new Date() > new Date(commission.deadline) : false;
   const canRaiseDispute = isRequester && (
-    commission.status === "DELIVERED" ||
-    ((commission.status === "IN_PROGRESS" || commission.status === "LOCKED") && isPastDeadline)
+    commission?.status === "DELIVERED" ||
+    ((commission?.status === "IN_PROGRESS" || commission?.status === "LOCKED") && isPastDeadline)
   );
 
   return (
@@ -362,7 +361,7 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
 
             <div className="mt-4 pt-3 border-t border-zinc-800/50 flex justify-between items-center">
               <div className="flex gap-2">
-                {showHistory && history.map((prev: any, idx: number) => (
+                {showHistory && history.map((prev: { title: string; status: string }, idx: number) => (
                   <Badge key={idx} variant="outline" className="text-[9px] opacity-60">
                     {prev.title} ({prev.status})
                   </Badge>
@@ -405,7 +404,7 @@ export const CommissionChatCard: React.FC<CommissionChatCardProps> = ({
                   <History className="w-3 h-3" /> Previous Commissions
                 </h5>
                 <div className="space-y-2">
-                  {history.map((prev: any, idx: number) => (
+                  {history.map((prev: { title: string; status: string; createdAt: string }, idx: number) => (
                     <div key={idx} className="bg-white/5 rounded-lg p-2.5 flex items-center justify-between border border-transparent hover:border-zinc-700 transition-colors">
                       <div>
                         <p className="text-xs font-medium text-white">{prev.title}</p>
@@ -491,7 +490,7 @@ const DeliverArtworkModal = ({ isOpen, onClose, onDeliver }: { isOpen: boolean; 
         toast.error("Upload responded with no URL");
         console.error("No URL found in response:", response);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Upload error:", error);
       toast.error("Upload failed");
     }

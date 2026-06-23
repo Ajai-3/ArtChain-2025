@@ -3,5 +3,5 @@ export interface ApiError {
   statusCode?: number;
   message: string;
   isNetworkError?: boolean;
-  fullError?: any;
+  fullError?: unknown;
 }

@@ -1,10 +1,12 @@
+import { NotificationMetadataInput } from '../../types';
+
 export class Notification {
   constructor(
     public userId: string,
     public senderId: string,
     public type: string,
     public read = false,
-    public metadata: any = {},
+    public metadata: NotificationMetadataInput = {},
     public createdAt = new Date(),
     public id?: string
   ) {}

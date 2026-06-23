@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 // ------------------ Types ------------------
 export interface Price {
@@ -67,7 +68,7 @@ export const useGetArtByName = (artname: string) => {
     queryKey: ["art", artname],
     queryFn: async () => {
       const { data } = await apiClient.get<ArtWithUserResponse>(
-        `/api/v1/art/by-name/${artname}`
+        API_ENDPOINTS.ART_BYNAME(artname)
       );
       return data;
     },

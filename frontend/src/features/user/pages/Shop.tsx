@@ -86,7 +86,7 @@ const Shop: React.FC = () => {
   };
 
   const allArts: ShopItem[] =
-    data?.pages.flatMap((page: any) => page.data) || [];
+    data?.pages.flatMap((page: { data: ShopItem[] }) => page.data) || [];
 
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden relative">

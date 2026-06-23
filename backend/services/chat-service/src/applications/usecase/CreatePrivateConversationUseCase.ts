@@ -101,7 +101,17 @@ export class CreatePrivateConversationUseCase
     partnersMap.set(otherUserId, partnerUser);
 
     const enrichedConversation = mapConversation({
-      conversation: conversation,
+      conversation: {
+        id: conversation.id,
+        type: conversation.type,
+        name: conversation.name,
+        ownerId: conversation.ownerId,
+        memberIds: conversation.memberIds,
+        adminIds: conversation.adminIds,
+        locked: conversation.locked,
+        createdAt: conversation.createdAt,
+        updatedAt: conversation.updatedAt,
+      },
       userId: userId,
       lastMap: lastMap,
       unreadMap: new Map<string, number>(),

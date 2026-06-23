@@ -14,6 +14,7 @@ const CommentSchema = new Schema<CommentDocument>(
       enum: ['original', 'edited'] as CommentStatus[],
       default: 'original',
     },
+    replyToId: { type: String, required: false },
   },
   { timestamps: true }
 );

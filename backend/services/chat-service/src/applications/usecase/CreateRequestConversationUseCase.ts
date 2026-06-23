@@ -39,8 +39,6 @@ export class CreateRequestConversationUseCase {
     if (userId === artistId) {
       throw new BadRequestError(ERROR_MESSAGES.CANNOT_CREATE_CONVERSATION_WITH_SELF);
     }
-
-    console.log(userId, artistId);
     
     let isNewConvo = false;
     let conversation = await this._conversationRepo.findRequestConversation(
@@ -61,7 +59,7 @@ export class CreateRequestConversationUseCase {
       await this._conversationRepo.touch(conversation.id);
     }
 
-    console.log(conversation);
+    logger.info(`Creating request conversation for user ${userId} with artist ${artistId}`);
 
     const partnerUser = await this._userService.getUserById(artistId);
 
@@ -85,7 +83,17 @@ export class CreateRequestConversationUseCase {
     partnersMap.set(artistId, partnerUser);
 
     const enrichedConversation = mapConversation({
-      conversation: conversation,
+      conversation: {
+        id: conversation.id,
+        type: conversation.type,
+        name: conversation.name,
+        ownerId: conversation.ownerId,
+        memberIds: conversation.memberIds,
+        adminIds: conversation.adminIds,
+        locked: conversation.locked,
+        createdAt: conversation.createdAt,
+        updatedAt: conversation.updatedAt,
+      },
       userId: userId,
       lastMap: lastMap,
       unreadMap: new Map<string, number>(),
@@ -100,7 +108,17 @@ export class CreateRequestConversationUseCase {
     if (requesterUser) artistEnrichedMap.set(userId, requesterUser);
 
     const enrichedForArtist = mapConversation({
-      conversation: conversation,
+      conversation: {
+        id: conversation.id,
+        type: conversation.type,
+        name: conversation.name,
+        ownerId: conversation.ownerId,
+        memberIds: conversation.memberIds,
+        adminIds: conversation.adminIds,
+        locked: conversation.locked,
+        createdAt: conversation.createdAt,
+        updatedAt: conversation.updatedAt,
+      },
       userId: artistId, // Artist perspective
       lastMap: lastMap,
       unreadMap: new Map<string, number>(),

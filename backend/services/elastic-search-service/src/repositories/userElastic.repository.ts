@@ -44,6 +44,6 @@ export class UserElasticRepository implements IUserElasticRepository {
       },
     });
 
-    return result.hits.hits.map((hit: any) => hit._source as IndexedUser);
+    return result.hits.hits.map((hit) => hit._source as IndexedUser);
   }
 }

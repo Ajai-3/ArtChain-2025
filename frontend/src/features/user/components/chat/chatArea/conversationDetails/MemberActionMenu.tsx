@@ -1,9 +1,10 @@
 import React from "react";
 import { createPortal } from "react-dom";
 import { MoreVertical, Shield, Trash2 } from "lucide-react";
+import type { User } from "../../../../../types/users/user/user";
 
 interface MemberActionMenuProps {
-  member: any;
+  member: User;
   canPromote: boolean;
   canDemote: boolean;
   canRemove: boolean;

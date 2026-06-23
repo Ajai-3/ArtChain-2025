@@ -1,4 +1,5 @@
 import { PostStatus, PostType, PriceType } from '../../../../domain/entities/ArtPost';
+import type { AdminArtsResponse } from '../../../../types/admin-art';
 
 export interface IGetAllArtsUseCase {
   execute(
@@ -12,5 +13,5 @@ export interface IGetAllArtsUseCase {
       userId?: string;
     },
     token?: string
-  ): Promise<{ data: any[]; meta: any }>;
+  ): Promise<AdminArtsResponse>;
 }

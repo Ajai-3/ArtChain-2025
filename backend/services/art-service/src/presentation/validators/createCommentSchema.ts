@@ -6,4 +6,5 @@ export const createCommentSchema = z.object({
     .string()
     .min(1, 'Content is required')
     .max(500, 'Content is too long'),
+  replyToId: z.string().optional(),
 });

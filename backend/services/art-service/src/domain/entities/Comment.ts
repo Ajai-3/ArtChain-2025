@@ -7,6 +7,7 @@ export class Comment {
     public readonly content: string,
     public readonly status: CommentStatus = 'original',
     public readonly createdAt?: Date,
-    public readonly updatedAt?: Date
+    public readonly updatedAt?: Date,
+    public readonly replyToId?: string
   ) {}
 }

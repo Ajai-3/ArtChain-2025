@@ -13,7 +13,6 @@ const UserLayout: React.FC = () => {
 
   const location = useLocation();
 
-  // Define pages where bottom sidebar should be HIDDEN on mobile
   const hideBottomSidebarPages = ["/chat", "/bidding"];
   const shouldHideBottomSidebar = hideBottomSidebarPages.some((path) =>
     location.pathname.startsWith(path)

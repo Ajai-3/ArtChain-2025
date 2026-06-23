@@ -1,6 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { ArtWithUser } from "./useGetAllArt";
+import type { PaginationPage } from "../../../../types/apiResponses";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface LikeVariables {
   postId: string;
@@ -15,7 +17,7 @@ export const useUnlikePost = () => {
 
   return useMutation({
     mutationFn: async ({ postId }: LikeVariables) => {
-      const { data } = await apiClient.delete("/api/v1/art/unlike", {
+      const { data } = await apiClient.delete(API_ENDPOINTS.ART_UNLIKE, {
         data: { postId },
       });
       return data;
@@ -39,14 +41,14 @@ export const useUnlikePost = () => {
 
       // Update all "allArt" queries
       queryClient
-        .getQueriesData<any>({ queryKey: ["allArt"] })
+        .getQueriesData<{ pages: PaginationPage<ArtWithUser>[] }>({ queryKey: ["allArt"] })
         .forEach(([key, prevAllArt]) => {
           if (!prevAllArt) return;
           const newAllArt = {
             ...prevAllArt,
-            pages: prevAllArt.pages.map((page: any) => ({
+            pages: prevAllArt.pages.map((page) => ({
               ...page,
-              data: page.data.map((art: ArtWithUser) =>
+              data: page.data.map((art) =>
                 art.art.id === postId
                   ? { ...art, isLiked: false, likeCount: art.likeCount - 1 }
                   : art
@@ -58,14 +60,14 @@ export const useUnlikePost = () => {
 
       // Update userGallery queries
       queryClient
-        .getQueriesData<any>({ queryKey: ["userGallery"] })
+        .getQueriesData<{ pages: PaginationPage<ArtWithUser>[] }>({ queryKey: ["userGallery"] })
         .forEach(([key, prevUserArt]) => {
           if (!prevUserArt) return;
           const newUserArt = {
             ...prevUserArt,
-            pages: prevUserArt.pages.map((page: any) => ({
+            pages: prevUserArt.pages.map((page) => ({
               ...page,
-              data: page.data.map((art: ArtWithUser) =>
+              data: page.data.map((art) =>
                 art.art.id === postId
                   ? { ...art, isLiked: false, likeCount: art.likeCount - 1 }
                   : art
@@ -76,14 +78,14 @@ export const useUnlikePost = () => {
         });
 
       queryClient
-        .getQueriesData<any>({ queryKey: ["userFavorites"] })
+        .getQueriesData<{ pages: PaginationPage<ArtWithUser>[] }>({ queryKey: ["userFavorites"] })
         .forEach(([key, prevUserArt]) => {
           if (!prevUserArt) return;
           const newUserArt = {
             ...prevUserArt,
-            pages: prevUserArt.pages.map((page: any) => ({
+            pages: prevUserArt.pages.map((page) => ({
               ...page,
-              data: page.data.map((art: ArtWithUser) =>
+              data: page.data.map((art) =>
                 art.art.id === postId
                   ? { ...art, isLiked: false, likeCount: art.likeCount - 1 }
                   : art
@@ -94,15 +96,15 @@ export const useUnlikePost = () => {
         });
 
       queryClient
-        .getQueriesData<any>({ queryKey: ["userLikedArts"] })
+        .getQueriesData<{ pages: PaginationPage<ArtWithUser>[] }>({ queryKey: ["userLikedArts"] })
         .forEach(([key, prevLikedArts]) => {
           if (!prevLikedArts) return;
 
           const newLikedArts = {
             ...prevLikedArts,
-            pages: prevLikedArts.pages.map((page: any) => ({
+            pages: prevLikedArts.pages.map((page) => ({
               ...page,
-              data: page.data.filter((art: ArtWithUser) => art.art.id !== postId)
+              data: page.data.filter((art) => art.art.id !== postId)
             })),
           };
 

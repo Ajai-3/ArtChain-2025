@@ -5,21 +5,23 @@ import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { setUser } from "../../../../redux/slices/userSlice";
 import { ROUTES } from "../../../../constants/routes";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useGoogleAuthMutation = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: (credentials: { token: string; email: string; name: string }) =>
-      apiClient.post("/api/v1/auth/google-auth", credentials),
+      apiClient.post(API_ENDPOINTS.AUTH_GOOGLEAUTH, credentials),
     onSuccess: (res) => {
       const { user, accessToken, message } = res.data;
       toast.success(message);
       dispatch(setUser({ user, accessToken }));
       navigate(ROUTES.HOME);
     },
-    onError: (error: any) => {
-      console.error("Login failed:", error);
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      console.error("Login failed:", err);
     },
   });
 };

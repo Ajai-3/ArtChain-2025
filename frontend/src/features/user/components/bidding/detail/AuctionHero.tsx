@@ -7,9 +7,10 @@ import {
   AvatarImage,
 } from '../../../../../components/ui/avatar';
 import { TrendingUp } from 'lucide-react';
+import type { AuctionItem } from '../../../../../types/apiResponses';
 
 interface AuctionHeroProps {
-  auction: any;
+  auction: AuctionItem;
   isLive: boolean;
   isEnded: boolean;
   isUnsold: boolean;

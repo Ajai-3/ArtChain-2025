@@ -10,7 +10,7 @@ interface ProfileImageCropperProps {
   isSaving?: boolean;
 }
 
-function getCroppedImg(imageSrc: string, crop: any): Promise<File> {
+function getCroppedImg(imageSrc: string, crop: { width: number; height: number; x: number; y: number }): Promise<File> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.src = imageSrc;
@@ -51,7 +51,7 @@ const ProfileImageCropper: React.FC<ProfileImageCropperProps> = ({
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ width: number; height: number; x: number; y: number } | null>(null);
 
   useEffect(() => {
     const reader = new FileReader();
@@ -61,7 +61,7 @@ const ProfileImageCropper: React.FC<ProfileImageCropperProps> = ({
     reader.readAsDataURL(file);
   }, [file]);
 
-  const onCropComplete = useCallback((_: any, croppedPixels: any) => {
+  const onCropComplete = useCallback((_: { width: number; height: number; x: number; y: number }, croppedPixels: { width: number; height: number; x: number; y: number }) => {
     setCroppedAreaPixels(croppedPixels);
   }, []);
 
