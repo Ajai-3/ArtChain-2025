@@ -1,0 +1,71 @@
+name: Backend CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-cd.yml'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          [
+            api-gateway,
+            user-admin-service,
+            art-service,
+            wallet-service,
+            elastic-search-service,
+            notification-service,
+            s3-service,
+            chat-service,
+          ]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.service == 'api-gateway' && './backend/api-gateway' || format('./backend/services/{0}', matrix.service) }}
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/artchain-${{ matrix.service }}:latest
+
+  deploy-to-vm:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Copy docker-compose and nginx config to VM
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          source: 'backend/docker-compose.prod.yml,backend/nginx/nginx.conf'
+          target: '/home/${{ secrets.VM_USER }}/app'
+
+      - name: Deploy to VM via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+            cd /home/${{ secrets.VM_USER }}/app/backend
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans

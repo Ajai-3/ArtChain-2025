@@ -1,0 +1,110 @@
+version: '3.9'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+    ports:
+      - '9200:9200'
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - backend
+
+  user-admin-service:
+    image: ${DOCKERHUB_USERNAME}/artchain-user-admin-service:latest
+    container_name: user-admin-service
+    restart: unless-stopped
+    env_file:
+      - ./services/user-admin-service/.env.docker
+    networks:
+      - backend
+
+  art-service:
+    image: ${DOCKERHUB_USERNAME}/artchain-art-service:latest
+    container_name: art-service
+    restart: unless-stopped
+    env_file:
+      - ./services/art-service/.env.docker
+    networks:
+      - backend
+
+  wallet-service:
+    image: ${DOCKERHUB_USERNAME}/artchain-wallet-service:latest
+    container_name: wallet-service
+    restart: unless-stopped
+    env_file:
+      - ./services/wallet-service/.env.docker
+    networks:
+      - backend
+
+  elastic-search-service:
+    image: ${DOCKERHUB_USERNAME}/artchain-elastic-search-service:latest
+    container_name: elastic-search-service
+    restart: unless-stopped
+    env_file:
+      - ./services/elastic-search-service/.env
+    networks:
+      - backend
+
+  notification-service:
+    image: ${DOCKERHUB_USERNAME}/artchain-notification-service:latest
+    container_name: notification-service
+    restart: unless-stopped
+    env_file:
+      - ./services/notification-service/.env.docker
+    networks:
+      - backend
+
+  s3-service:
+    image: ${DOCKERHUB_USERNAME}/artchain-s3-service:latest
+    container_name: s3-service
+    restart: unless-stopped
+    env_file:
+      - ./services/s3-service/.env
+    networks:
+      - backend
+
+  chat-service:
+    image: ${DOCKERHUB_USERNAME}/artchain-chat-service:latest
+    container_name: chat-service
+    restart: unless-stopped
+    env_file:
+      - ./services/chat-service/.env.docker
+    networks:
+      - backend
+
+  api-gateway:
+    image: ${DOCKERHUB_USERNAME}/artchain-api-gateway:latest
+    container_name: api-gateway
+    restart: unless-stopped
+    env_file:
+      - ./api-gateway/.env.docker
+    ports:
+      - '4000:4000'
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    container_name: api-reverse-proxy
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api-gateway
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  es_data:
