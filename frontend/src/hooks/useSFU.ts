@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 // Mock SFU Service interface
 export interface SFUParticipant {
   id: string;
-  stream: MediaStream | null; // In real app, this would be a remote stream
+  stream: MediaStream | null; 
   isMuted: boolean;
   isVideoOff: boolean;
 }
@@ -24,12 +24,10 @@ export const useSFU = () => {
   }, []);
 
   const toggleMic = useCallback((userId: string) => {
-      // Send signal to SFU
       console.log("Toggling mic for", userId);
   }, []);
 
   const toggleCamera = useCallback((userId: string) => {
-      // Send signal to SFU
       console.log("Toggling camera for", userId);
   }, []);
 

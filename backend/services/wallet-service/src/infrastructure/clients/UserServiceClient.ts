@@ -18,21 +18,20 @@ export class UserServiceClient {
 
   async getUsersByIds(userIds: string[], token?: string): Promise<UserProfile[]> {
     try {
-      const headers: any = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-        headers['x-user-id'] = 'admin-action'; 
-        headers['Cookie'] = `token=${token}`; 
-      }
-      
-      const config = token ? { headers: { Authorization: `Bearer ${token}`, Cookie: `token=${token}` } } : {};
+      const requestConfig = token ? {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'x-user-id': 'admin-action',
+          Cookie: `token=${token}`
+        }
+      } : {};
 
       const response = await axios.post(
-        `${this.baseUrl}/api/v1/user/batch`, 
+        `${this.baseUrl}/api/v1/user/batch`,
         { ids: userIds },
-        config
+        requestConfig
       );
-      
+
       return response.data.data || [];
     } catch (error) {
       console.error('Error fetching users from user-admin-service:', error);

@@ -1,8 +1,9 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import type { SalesAnalytics } from '../../../../types/apiResponses';
 
 interface HeroProps {
-  analytics: any;
+  analytics: SalesAnalytics[] | undefined;
   isChartLoading: boolean;
   range: string;
 }
@@ -39,7 +40,7 @@ const SalesAnalyticsHero: React.FC<HeroProps> = ({ analytics, isChartLoading, ra
                 contentStyle={{ backgroundColor: '#09090b', border: '1px solid #27272a', borderRadius: '16px', fontSize: '12px' }}
                 itemStyle={{ color: '#10b981', fontWeight: 'bold' }}
                 cursor={{ stroke: '#10b981', strokeWidth: 1, strokeDasharray: '5 5' }}
-                formatter={(value: any, name: any) => {
+                formatter={(value: number, name: string) => {
                   if (name === "totalAmount") return [`${value} AC`, "Revenue"];
                   return [value, name];
                 }}
@@ -63,13 +64,13 @@ const SalesAnalyticsHero: React.FC<HeroProps> = ({ analytics, isChartLoading, ra
         <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/60 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all"></div>
         <span className="text-emerald-500 text-md sm:text-xl font-bold">Total Revenue</span>
         <h2 className="text-4xl font-black mt-2 tracking-tighter">
-          {analytics?.reduce((sum: number, d: any) => sum + (d.totalAmount || 0), 0)?.toLocaleString() || 0}
+          {analytics?.reduce((sum, d) => sum + (d.totalAmount || 0), 0)?.toLocaleString() || 0}
           <span className="text-xs font-bold text-zinc-600 ml-2 italic text-white/50">AC</span>
         </h2>
         <div className="mt-8 pt-6 border-t border-white/5">
           <span className="text-zinc-500 text-md sm:text-xl font-bold">Transactions</span>
           <p className="text-2xl font-black tracking-tight">
-            {analytics?.reduce((sum: number, d: any) => sum + (d.count || 0), 0) || 0}
+            {analytics?.reduce((sum, d) => sum + (d.count || 0), 0) || 0}
           </p>
         </div>
       </div>

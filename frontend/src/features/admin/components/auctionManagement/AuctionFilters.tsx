@@ -34,7 +34,6 @@ const AuctionFilters: React.FC<AuctionFiltersProps> = ({
   return (
     <div className="flex flex-col sm:flex-row gap-4 mb-6">
       
-      {/* Date Range Picker */}
       <div className="flex-1 sm:max-w-[300px]">
         <Popover>
           <PopoverTrigger asChild>

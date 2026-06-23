@@ -1,7 +1,6 @@
 
 import { Server } from 'socket.io';
 import { logger } from '../utils/logger';
-import { redisSub } from '../config/redis';
 import { registerClientEvents } from './handlers/registerClientEvents';
 import { authMiddleware } from '../../presentation/middleware/authMiddleware';
 import { subscribeChatMessages } from './redis/chatMessageSubscriber';
@@ -25,7 +24,7 @@ export const chatSocket = (io: Server) => {
     socket.on('disconnect', () => {
       onlineUsers.delete(userId);
       io.emit('updateOnline', Array.from(onlineUsers.keys()));
-      console.log(`🔌 Socket disconnected: ${socket.id} (user: ${userId})`);
+      logger.info(`Socket disconnected: ${socket.id} (user: ${userId})`);
     });
   });
 

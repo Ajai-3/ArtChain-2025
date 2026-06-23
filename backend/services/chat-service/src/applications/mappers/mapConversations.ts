@@ -25,8 +25,21 @@ export interface EnrichedConversation {
   group: EnrichedGroup | null;
 }
 
+export interface RawConversationData {
+  id: string;
+  type: ConversationType;
+  name?: string;
+  ownerId?: string;
+  memberIds: string[];
+  adminIds: string[];
+  locked: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  [key: string]: unknown;
+}
+
 interface MapConversationParams {
-  conversation: any;
+  conversation: RawConversationData;
   userId: string;
   lastMap: Map<string, Message>;
   unreadMap: Map<string, number>;
@@ -57,7 +70,7 @@ export function mapConversation({
 
   const group: EnrichedGroup | null =
     c.type === ConversationType.GROUP
-      ? { name: c.name, profileImage: c.profileImage ?? null }
+      ? { name: c.name || undefined, profileImage: (c as Record<string, unknown>).profileImage as string ?? null }
       : null;
 
   let lastMessage = lastMap.get(c.id) || null;
@@ -98,7 +111,7 @@ export function mapConversation({
 }
 
 export function mapConversations(
-  conversations: any[],
+  conversations: RawConversationData[],
   userId: string,
   lastMap: Map<string, Message>,
   unreadMap: Map<string, number>,

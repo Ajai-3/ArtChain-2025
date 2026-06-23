@@ -4,6 +4,8 @@ import { Category } from '../../domain/entities/Category';
 import { BaseRepositoryImpl } from './BaseRepositoryImpl';
 import { ICategoryRepository } from '../../domain/repositories/ICategoryRepository';
 
+import type { MongoQuery } from '../../types/mongo';
+
 @injectable()
 export class CategoryRepositoryImpl
   extends BaseRepositoryImpl<Category>
@@ -17,7 +19,7 @@ export class CategoryRepositoryImpl
     return await CategoryModel.findById(id).lean<Category | null>();
   }
 
-  async findByName(name: string): Promise<any> {
+  async findByName(name: string): Promise<Category | null> {
     const category = await CategoryModel.findOne({ name });
     return category;
   }
@@ -41,7 +43,7 @@ export class CategoryRepositoryImpl
       lowUsage: number;
     };
   }> {
-    const query: any = {};
+    const query: MongoQuery = {};
 
     if (search) {
       query.name = { $regex: search, $options: 'i' };

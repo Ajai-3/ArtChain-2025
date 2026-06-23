@@ -3,11 +3,13 @@ import { Purchase } from '../../domain/entities/Purchase';
 import { IPurchaseRepository } from '../../domain/repositories/IPurchaseRepository';
 import { BaseRepositoryImpl } from './BaseRepositoryImpl';
 import { PurchaseModel } from '../models/PurchaseModel';
+import type { MongoQuery } from '../../types/mongo';
 
 @injectable()
 export class PurchaseRepositoryImpl
   extends BaseRepositoryImpl<Purchase>
-  implements IPurchaseRepository {
+  implements IPurchaseRepository
+{
   constructor() {
     super(PurchaseModel);
   }
@@ -52,70 +54,70 @@ export class PurchaseRepositoryImpl
   async getSalesAnalytics(
     sellerId: string,
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
   ): Promise<{ date: string; totalAmount: number; count: number }[]> {
-
-    const matchQuery: any = { sellerId };
+    const matchQuery: MongoQuery = { sellerId };
 
     if (startDate || endDate) {
       matchQuery.purchaseDate = {};
-      if (startDate) matchQuery.purchaseDate.$gte = startDate;
-      if (endDate) matchQuery.purchaseDate.$lte = endDate;
+      if (startDate) matchQuery.purchaseDate.$gte = startDate.toISOString();
+      if (endDate) matchQuery.purchaseDate.$lte = endDate.toISOString();
     }
 
     return await PurchaseModel.aggregate([
       { $match: matchQuery },
       {
         $group: {
-          _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } },
-          totalAmount: { $sum: "$amount" },
-          count: { $sum: 1 }
-        }
+          _id: { $dateToString: { format: '%Y-%m-%d', date: '$purchaseDate' } },
+          totalAmount: { $sum: '$amount' },
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { "_id": 1 } },
+      { $sort: { _id: 1 } },
       {
         $project: {
           _id: 0,
-          date: "$_id",
+          date: '$_id',
           totalAmount: 1,
-          count: 1
-        }
-      }
+          count: 1,
+        },
+      },
     ]);
   }
 
-async getPurchaseAnalytics(userId: string, startDate: Date, endDate: Date) {
-  return await PurchaseModel.aggregate([
-    { 
-      $match: { 
-        userId: userId, 
-        purchaseDate: { $gte: startDate, $lte: endDate } 
-      } 
-    },
-    {
-      $facet: {
-        "timeline": [
-          {
-            $group: {
-              _id: { $dateToString: { format: "%Y-%m-%d", date: "$purchaseDate" } },
-              totalSpent: { $sum: "$amount" },
-              count: { $sum: 1 }
-            }
-          },
-          { $sort: { "_id": 1 } }
-        ],
-        "stats": [
-          {
-            $group: {
-              _id: null,
-              totalSpent: { $sum: "$amount" },
-              totalItems: { $sum: 1 }
-            }
-          }
-        ]
-      }
-    }
-  ]);
-}
-
+  async getPurchaseAnalytics(userId: string, startDate: Date, endDate: Date) {
+    return await PurchaseModel.aggregate([
+      {
+        $match: {
+          userId: userId,
+          purchaseDate: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $facet: {
+          timeline: [
+            {
+              $group: {
+                _id: {
+                  $dateToString: { format: '%Y-%m-%d', date: '$purchaseDate' },
+                },
+                totalSpent: { $sum: '$amount' },
+                count: { $sum: 1 },
+              },
+            },
+            { $sort: { _id: 1 } },
+          ],
+          stats: [
+            {
+              $group: {
+                _id: null,
+                totalSpent: { $sum: '$amount' },
+                totalItems: { $sum: 1 },
+              },
+            },
+          ],
+        },
+      },
+    ]);
+  }
 }

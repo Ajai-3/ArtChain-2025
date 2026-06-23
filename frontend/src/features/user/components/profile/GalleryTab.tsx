@@ -54,7 +54,7 @@ const GalleryTab: React.FC = () => {
             className="flex"
             style={{ gap: "4px", marginBottom: "4px" }}
           >
-            {row.items.map((item: any) => (
+             {row.items.map((item: ArtItem) => (
               <div
                 key={item.art.id}
                 style={{

@@ -19,11 +19,6 @@ async function seed() {
   console.log('Connected!');
 
   try {
-    // Clear existing data (Optional: comment out if you want to append)
-    // await ArtPostModel.deleteMany({});
-    // await AuctionModel.deleteMany({});
-    // await CommissionModel.deleteMany({});
-    // await CategoryModel.deleteMany({});
 
     console.log('Seeding Categories...');
     const categories = ['Painting', 'Digital Art', 'Sculpture', 'Photography', 'AI Art'];
@@ -89,16 +84,11 @@ async function seed() {
                 ? new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) // Ends in 2 days
                 : new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // Ended 1 day ago
             hostId: hostId,
-            imageKey: artwork.previewUrl, // Required by AuctionModel
-            // artPostId not in AuctionModel schema provided, assuming it might be linked via description or we just omit it if not there
-            // The provided AuctionModel schema has: hostId, title, description, imageKey, startPrice, currentBid, startTime, endTime, status, winnerId, bids
-            // It does NOT have artPostId.
+            imageKey: artwork.previewUrl,
             
             status: isActive ? 'ACTIVE' : 'ENDED',
             winnerId: isActive ? null : (hostId === USER_1 ? USER_2 : USER_1),
-            // winnerBid field not in schema, ignoring
-            // participants field not in schema, ignoring
-            // bids is a ref array
+
             bids: []
         });
     }

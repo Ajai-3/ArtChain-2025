@@ -218,7 +218,7 @@ export class UserController implements IUserController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | any> => {
+  ): Promise<Response | void> => {
     try {
       const userId = req.headers['x-user-id'] as string;
       const currentUserId = req.params.supporterId as string;
@@ -324,7 +324,7 @@ export class UserController implements IUserController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<Response | any> => {
+  ): Promise<Response | void> => {
     try {
       const { ids, currentUserId } = validateWithZod(
         getUsersBatchSchema,

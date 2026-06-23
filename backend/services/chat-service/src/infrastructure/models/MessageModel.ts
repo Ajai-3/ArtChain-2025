@@ -1,7 +1,19 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 import { Message, MediaType, DeleteMode, CallStatus } from '../../domain/entities/Message';
 
-export interface IMessageDocument extends Omit<Message, 'id'> {}
+export interface IMessageDocument extends Document {
+  conversationId: string;
+  senderId: string;
+  content: string;
+  mediaType: MediaType;
+  mediaUrl?: string;
+  readBy: string[];
+  deleteMode: DeleteMode;
+  callId?: string;
+  callStatus?: CallStatus;
+  callDuration?: number;
+  deletedAt?: Date;
+}
 
 const MessageSchema = new Schema<IMessageDocument>(
   {

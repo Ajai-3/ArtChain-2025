@@ -3,6 +3,7 @@ import { IGetRevenueStatsUseCase } from '../../interface/usecase/wallet/IGetReve
 import { GetRevenueStatsDTO } from '../../interface/dto/wallet/GetRevenueStatsDTO';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
+import { RevenueStatsResponse } from '../../../types/Revenue';
 
 @injectable()
 export class GetRevenueStatsUseCase implements IGetRevenueStatsUseCase {
@@ -11,7 +12,7 @@ export class GetRevenueStatsUseCase implements IGetRevenueStatsUseCase {
     private readonly _walletRepository: IWalletRepository
   ) {}
 
-  async execute(dto: GetRevenueStatsDTO): Promise<any> {
+  async execute(dto: GetRevenueStatsDTO): Promise<RevenueStatsResponse> {
     return this._walletRepository.getRevenueStats(
       dto.adminId,
       dto.startDate,

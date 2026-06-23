@@ -10,7 +10,6 @@ import { cn } from "../../../../../libs/utils";
 import { useUpdateCommissionMutation } from "../../../hooks/commission/useUpdateCommissionMutation";
 import { useUploadArtImageMutation } from "../../../hooks/art/useUploadArtImageMutation";
 import { commissionRequestSchema } from "../../../schemas/CommissionRequestSchema";
-import type { CommissionRequestFormValues } from "../../../schemas/CommissionRequestSchema";
 
 import { Button } from "../../../../../components/ui/button";
 import {
@@ -38,11 +37,14 @@ import {
 } from "../../../../../components/ui/popover";
 import CustomLoader from "../../../../../components/CustomLoader";
 import toast from "react-hot-toast";
+import type { CommissionRequestFormValues } from "../../../schemas/CommissionRequestSchema";
+
+import type { Commission } from '../../../types/commission';
 
 interface CommissionEditModalProps {
   isOpen: boolean;
   onClose: () => void;
-  commission: any;
+  commission: Commission;
   isRequester: boolean;
 }
 
@@ -81,7 +83,9 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
         title: commission.title,
         description: commission.description,
         budget: commission.budget,
-        deadline: new Date(commission.deadline),
+        deadline: commission.deadline
+          ? new Date(commission.deadline)
+          : undefined,
       });
       setUploadedImageUrls(commission.referenceImages || []);
     }
@@ -130,6 +134,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
       setFilePreviews([]);
       toast.success("Images uploaded!");
     } catch (error) {
+      console.log(error)
       toast.error("Upload failed.");
     } finally {
       setIsUploading(false);
@@ -178,7 +183,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
             <FormField
               control={form.control}
               name="title"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Title</FormLabel>
                   <FormControl>
@@ -192,7 +197,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
             <FormField
               control={form.control}
               name="description"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
@@ -207,7 +212,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
               <FormField
                 control={form.control}
                 name="budget"
-                render={({ field }: { field: any }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Budget (Art Coin)</FormLabel>
                     <FormControl>
@@ -228,7 +233,7 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
               <FormField
                 control={form.control}
                 name="deadline"
-                render={({ field }: { field: any }) => (
+                render={({ field }) => (
                   <FormItem className="flex flex-col mt-2">
                     <FormLabel className="mb-1">Deadline</FormLabel>
                     <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen} modal={true}>
@@ -251,12 +256,12 @@ export const CommissionEditModal: React.FC<CommissionEditModalProps> = ({
                       </PopoverContent>
                     </Popover>
                     <FormMessage />
-                  </FormItem>
+              </FormItem>
                 )}
-              />
-            </div>
+               />
+             </div>
 
-            <div className="space-y-3">
+             <div className="space-y-3">
               <FormLabel>Reference Images</FormLabel>
               <div className="flex flex-wrap gap-3">
                 {uploadedImageUrls.map((url, index) => (

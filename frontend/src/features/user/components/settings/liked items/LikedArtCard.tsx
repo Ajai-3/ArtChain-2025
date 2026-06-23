@@ -10,8 +10,9 @@ import { ArtCardLikeButton } from '../../art/ArtCardLikeButton';
 import { ArtCardFavoriteButton } from '../../art/ArtCardFavoriteButton';
 import { ROUTES } from '../../../../../constants/routes';
 import type { RootState } from '../../../../../redux/store';
+import type { ArtItem } from '../../../../../types/apiResponses';
 
-export const LikedArtCard: React.FC<{ item: any }> = ({ item }) => {
+export const LikedArtCard: React.FC<{ item: ArtItem }> = ({ item }) => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useSelector(
     (state: RootState) => state.user,

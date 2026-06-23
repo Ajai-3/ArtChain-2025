@@ -5,16 +5,18 @@ import { GetAllUsersQueryDto } from '../../../interface/dtos/admin/GetAllUsersQu
 import { IElasticSearchService } from '../../../interface/http/IElasticSearchService';
 import { IGetAllUsersUseCase } from '../../../interface/usecases/admin/user-management/IGetAllUsersUseCase';
 import { mapCdnUrl } from '../../../../utils/mapCdnUrl';
+import { SafeUser } from '../../../../domain/entities/User';
+import { GetUsersResponse } from '../../../../types';
 
 @injectable()
 export class GetAllUsersUseCase implements IGetAllUsersUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private _userRepo: IUserRepository,
     @inject(TYPES.IElasticSearchService)
-    private readonly _elasticSearchService: IElasticSearchService
+    private readonly _elasticSearchService: IElasticSearchService,
   ) {}
 
-  async execute(query: GetAllUsersQueryDto): Promise<any> {
+  async execute(query: GetAllUsersQueryDto): Promise<GetUsersResponse> {
     const { page = 1, limit = 10, search, role, status, plan } = query;
 
     let userIds: string[] | undefined;
@@ -39,7 +41,7 @@ export class GetAllUsersUseCase implements IGetAllUsersUseCase {
       });
     }
 
-    const mappedData = result.data.map((user: any) => ({
+    const mappedData = result.data.map((user: SafeUser) => ({
       ...user,
       profileImage: mapCdnUrl(user.profileImage) ?? null,
       bannerImage: mapCdnUrl(user.bannerImage) ?? null,

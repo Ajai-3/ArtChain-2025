@@ -4,6 +4,7 @@ import { IGetAllWithdrawalRequestsUseCase } from '../../interface/usecase/withdr
 import { IWithdrawalRepository } from '../../../domain/repository/IWithdrawalRepository';
 import { WithdrawalRequest } from '../../../domain/entities/WithdrawalRequest';
 import { UserServiceClient } from '../../../infrastructure/clients/UserServiceClient';
+import { GetAllWithdrawalsResponse, WithdrawalUserInfo } from '../../../types/Withdrawal';
 
 @injectable()
 export class GetAllWithdrawalRequestsUseCase implements IGetAllWithdrawalRequestsUseCase {
@@ -14,14 +15,14 @@ export class GetAllWithdrawalRequestsUseCase implements IGetAllWithdrawalRequest
     private readonly _userServiceClient: UserServiceClient
   ) {}
 
-  async execute(page: number = 1, limit: number = 10, token?: string, status?: string): Promise<any> {
+  async execute(page: number = 1, limit: number = 10, token?: string, status?: string): Promise<GetAllWithdrawalsResponse> {
     const { requests: withdrawals, total } = await this._withdrawalRepository.findAll(page, limit, status);
 
     const statusCounts = await this._withdrawalRepository.getStatusCounts();
 
     const userIds = [...new Set(withdrawals.map(w => w.userId))];
 
-    let users: any[] = [];
+    let users: WithdrawalUserInfo[] = [];
     if (userIds.length > 0) {
         users = await this._userServiceClient.getUsersByIds(userIds, token);
     }

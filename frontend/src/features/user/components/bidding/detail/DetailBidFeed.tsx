@@ -1,7 +1,7 @@
 import { Badge } from '../../../../../components/ui/badge';
 import { Clock, Users } from 'lucide-react';
 import { BiddingBoard } from '../BiddingBoard';
-import type { Auction } from '../../../../../types/auction';
+import type { Auction, Bid } from '../../../../../types/auction';
 import { useBiddingSocket } from '../../../hooks/bidding/useBiddingSocket';
 
 interface DetailBidFeedProps {
@@ -9,9 +9,9 @@ interface DetailBidFeedProps {
   isLive: boolean;
   isEnded: boolean;
   isScheduled: boolean;
-  isCanceled: boolean;
+  isCancelled: boolean;
   isUnsold: boolean;
-  initialBids?: any[];
+  initialBids?: Bid[];
 }
 
 export const DetailBidFeed = ({

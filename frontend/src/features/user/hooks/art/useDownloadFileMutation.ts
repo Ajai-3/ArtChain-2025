@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
 import apiClient from '../../../../api/axios';
 import { toast } from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface DownloadParams {
   id: string;
@@ -10,7 +11,7 @@ interface DownloadParams {
 export const useDownloadFileMutation = () => {
   return useMutation({
     mutationFn: ({ id, category }: DownloadParams) =>
-      apiClient.get(`/api/v1/art/download/${id}`, {
+      apiClient.get(API_ENDPOINTS.ART_DOWNLOAD(id), {
         params: { type: category },
       }),
 
@@ -22,10 +23,10 @@ export const useDownloadFileMutation = () => {
         toast.success('Download started!');
       }
     },
-    onError: (error: any) => {
-      const serverMessage = error.response?.data?.data?.error?.message;
-
-      const message = serverMessage || error.message || 'Download failed';
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { data?: { error?: { message?: string } }; message?: string } } };
+      const serverMessage = err?.response?.data?.data?.error?.message;
+      const message = serverMessage || err?.response?.data?.message || 'Download failed';
       toast.error(message);
     },
   });

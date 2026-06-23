@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface Filters {
   status?: string;
@@ -21,7 +22,7 @@ export const useGetAllWallets = ({
   return useQuery({
     queryKey: ["admin-wallets", page, limit, search, filters],
     queryFn: async () => {
-      const params: any = {
+      const params: Record<string, string | number | undefined> = {
         page,
         limit,
         ...filters,
@@ -33,7 +34,7 @@ export const useGetAllWallets = ({
 
       if (params.status === "all") delete params.status;
 
-      const res = await apiClient.get(`/api/v1/wallet/admin/wallets`, { params });
+      const res = await apiClient.get(API_ENDPOINTS.WALLET_ADMIN_WALLETS, { params });
       return res.data;
     },
     placeholderData: (previousData) => previousData, 

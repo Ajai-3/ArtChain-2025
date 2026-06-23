@@ -1,5 +1,6 @@
 import { IBaseRepository } from './IBaseRepository';
 import { Transaction } from '../entities/Transaction';
+import { AdminTransactionStatsResponse } from '../../types/TransactionStats';
 
 export interface ITransactionRepository extends IBaseRepository<Transaction> {
   findByExternalId(externalId: string): Promise<Transaction | null>
@@ -12,5 +13,5 @@ export interface ITransactionRepository extends IBaseRepository<Transaction> {
     status?: string,
     category?: string
   ): Promise<{ transactions: Transaction[]; total: number }>;
-  getStats(startDate: Date, endDate: Date): Promise<any[]>;
+  getStats(startDate: Date, endDate: Date): Promise<AdminTransactionStatsResponse>;
 }

@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useAuctions = (filterStatus: string = 'ALL', startDate: string = '', endDate: string = '', hostId?: string) => {
   return useInfiniteQuery({
@@ -15,7 +16,7 @@ export const useAuctions = (filterStatus: string = 'ALL', startDate: string = ''
       if (endDate) params.append("endDate", endDate);
       if (hostId) params.append("hostId", hostId);
 
-      const { data } = await apiClient.get(`/api/v1/art/auctions?${params.toString()}`);
+      const { data } = await apiClient.get(API_ENDPOINTS.ART_AUCTIONS_1(params.toString()));
       
       // Response structure should be { message: "...", data: { auctions: [], total: number } }
       // Or fallback if extraction logic is robust

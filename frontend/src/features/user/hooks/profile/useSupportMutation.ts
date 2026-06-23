@@ -3,6 +3,8 @@ import apiClient from "../../../../api/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
+import type { UserProfileApiResponse } from "../../../../types/users/user/userProfileApiResponse";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface SupportPayload {
   userId: string;
@@ -13,11 +15,11 @@ export const useSupportMutation = () => {
   const queryClient = useQueryClient();
   const user = useSelector((state: RootState) => state.user.user);
 
-  return useMutation<AxiosResponse<any>, Error, SupportPayload>({
+  return useMutation<AxiosResponse, Error, SupportPayload>({
     mutationFn: ({ userId }: { userId: string }) =>
-      apiClient.post(`/api/v1/user/support/${userId}`),
+      apiClient.post(API_ENDPOINTS.USER_SUPPORT(userId)),
     onSuccess: (_, { username }) => {
-      queryClient.setQueryData(["userProfile", username], (old: any) => {
+      queryClient.setQueryData(["userProfile", username], (old: UserProfileApiResponse | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -29,7 +31,7 @@ export const useSupportMutation = () => {
         };
       });
 
-      queryClient.setQueryData(["userProfile", user?.username], (old: any) => {
+      queryClient.setQueryData(["userProfile", user?.username], (old: UserProfileApiResponse | undefined) => {
         if (!old) return old;
         return {
           ...old,
@@ -43,15 +45,15 @@ export const useSupportMutation = () => {
 
       // likedUsers
       queryClient
-        .getQueriesData<any>({ queryKey: ["likedUsers"] })
+        .getQueriesData<{ pages: Array<{ users: Array<{ username: string; isSupporting?: boolean }> }> }>({ queryKey: ["likedUsers"] })
         .forEach(([key, prev]) => {
           if (!prev) return;
 
           const newData = {
             ...prev,
-            pages: prev.pages.map((page: any) => ({
+            pages: prev.pages.map((page) => ({
               ...page,
-              users: page.users.map((u: any) =>
+              users: page.users.map((u) =>
                 u.username === username ? { ...u, isSupporting: true } : u
               ),
             })),
@@ -60,17 +62,17 @@ export const useSupportMutation = () => {
           queryClient.setQueryData(key, newData);
         });
 
-        // favoritedUsers
-        queryClient
-        .getQueriesData<any>({ queryKey: ["favoritedUsers"] })
+      // favoritedUsers
+      queryClient
+        .getQueriesData<{ pages: Array<{ users: Array<{ username: string; isSupporting?: boolean }> }> }>({ queryKey: ["favoritedUsers"] })
         .forEach(([key, prev]) => {
           if (!prev) return;
 
           const newData = {
             ...prev,
-            pages: prev.pages.map((page: any) => ({
+            pages: prev.pages.map((page) => ({
               ...page,
-              users: page.users.map((u: any) =>
+              users: page.users.map((u) =>
                 u.username === username ? { ...u, isSupporting: true } : u
               ),
             })),

@@ -3,7 +3,7 @@ import { BadRequestError } from 'art-chain-shared';
 import { TYPES } from '../../infrastructure/Inversify/types';
 import { SendMessageDto } from '../interface/dto/SendMessageDto';
 import { ConversationType } from '../../domain/entities/Conversation';
-import { DeleteMode, MediaType, Message } from '../../domain/entities/Message';
+import { CallStatus, DeleteMode, MediaType, Message } from '../../domain/entities/Message';
 import { ISendMessageUseCase } from '../interface/usecase/ISendMessageUseCase';
 import { IMessageCacheService } from '../interface/service/IMessageCacheService';
 import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
@@ -68,7 +68,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       readBy: [senderId],
       deleteMode: DeleteMode.NONE,
       callId: dto.callId,
-      callStatus: dto.callStatus as any,
+      callStatus: dto.callStatus as CallStatus,
       callDuration: dto.callDuration,
     });
 

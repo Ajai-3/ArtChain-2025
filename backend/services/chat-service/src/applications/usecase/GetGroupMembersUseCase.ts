@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../../infrastructure/Inversify/types';
-import { IGetGroupMembersUseCase } from '../interface/usecase/IGetGroupMembersUseCase';
+import { IGetGroupMembersUseCase, GroupMemberWithRole, GetGroupMembersResponse, MemberRole } from '../interface/usecase/IGetGroupMembersUseCase';
 import { GetGroupMembersDto } from '../interface/dto/GetGroupMembersDto';
 import { IConversationRepository } from '../../domain/repositories/IConversationRepository';
 import { IUserService } from '../interface/http/IUserService';
@@ -16,7 +16,7 @@ export class GetGroupMembersUseCase implements IGetGroupMembersUseCase {
     private readonly _userService: IUserService
   ) {}
 
-  async execute(dto: GetGroupMembersDto): Promise<any> {
+  async execute(dto: GetGroupMembersDto): Promise<GetGroupMembersResponse> {
     const { conversationId, page, limit } = dto;
     const conversation = await this._conversationRepo.findById(conversationId);
 
@@ -42,14 +42,15 @@ export class GetGroupMembersUseCase implements IGetGroupMembersUseCase {
 
     const users = await this._userService.getUsersByIds(paginatedIds);
 
-    const members = users.map((user: any) => ({
+    const getMemberRole = (userId: string): MemberRole => {
+      if (userId === conversation.ownerId) return 'OWNER' as MemberRole;
+      if (conversation.adminIds.includes(userId)) return 'ADMIN' as MemberRole;
+      return 'MEMBER' as MemberRole;
+    };
+
+    const members: GroupMemberWithRole[] = users.map((user) => ({
       ...user,
-      role:
-        user.id === conversation.ownerId
-          ? 'OWNER'
-          : conversation.adminIds.includes(user.id)
-          ? 'ADMIN'
-          : 'MEMBER',
+      role: getMemberRole(user.id),
     }));
 
     return {

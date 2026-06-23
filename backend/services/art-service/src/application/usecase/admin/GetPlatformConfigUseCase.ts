@@ -13,7 +13,7 @@ export class GetPlatformConfigUseCase implements IGetPlatformConfigUseCase {
     private readonly _repository: IPlatformConfigRepository
   ) {}
 
-  async execute(dto?: GetPlatformConfigDTO): Promise<PlatformConfig> {
+  async execute(_dto?: GetPlatformConfigDTO): Promise<PlatformConfig> {
     return this._repository.getConfig();
   }
 }

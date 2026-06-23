@@ -24,10 +24,10 @@ const AuctionManagement = () => {
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-  const handleViewDetails = (auction: any) => {
-      setSelectedAuctionId(auction._id || auction.id);
+  const handleViewDetails = (auction: { _id?: string; id?: string }) => {
+      setSelectedAuctionId(auction._id || auction.id || null);
       setDetailModalOpen(true);
-  };
+    };
 
   return (
     <AdminPageLayout

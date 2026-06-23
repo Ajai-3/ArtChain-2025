@@ -179,7 +179,7 @@ export default function MyAuctionsPage() {
       ) : (
         <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {auctions.map((auction: any) => (
+            {auctions.map((auction: AuctionItem) => (
                 <AuctionCard key={auction.id} auction={auction} />
             ))}
             </div>

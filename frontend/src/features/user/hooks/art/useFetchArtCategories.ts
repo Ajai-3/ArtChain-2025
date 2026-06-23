@@ -1,5 +1,6 @@
 import apiClient from "../../../../api/axios";
 import { useQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface ArtCategory {
   _id: string;
@@ -16,7 +17,7 @@ export const useFetchArtCategories = () => {
   return useQuery<ArtCategoryResponse>({
     queryKey: ["art-categories"],
     queryFn: async () => {
-      const response = await apiClient.get("/api/v1/art/category?status=active&limit=100");
+      const response = await apiClient.get(API_ENDPOINTS.ART_CATEGORYSTATUSACTIVELIMIT100);
       return response.data; 
     },
     staleTime: 1000 * 60 * 10,

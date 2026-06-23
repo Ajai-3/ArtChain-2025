@@ -3,6 +3,7 @@ import apiClient from "../../../../api/axios";
 import { useDispatch } from "react-redux";
 import { setPlatformConfig } from "../../../../redux/slices/platformSlice";
 import { useEffect } from "react";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface PlatformConfig {
     auctionCommissionPercentage: number;
@@ -19,7 +20,7 @@ export const useGetPlatformConfig = () => {
     const query = useQuery({
         queryKey: ['platformConfig'],
         queryFn: async () => {
-             const response = await apiClient.get<{ message: string; data: PlatformConfig }>("/api/v1/art/platform-config");
+             const response = await apiClient.get<{ message: string; data: PlatformConfig }>(API_ENDPOINTS.ART_PLATFORMCONFIG);
             return response.data.data;
         },
         staleTime: 1000 * 60 * 60, 

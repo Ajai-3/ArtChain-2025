@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "../../../components/ui/button";
-import { Sparkles, Settings } from "lucide-react";
+import { Settings, ExternalLink } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
 import { useGenerateAIImage } from "../hooks/ai/useGenerateAIImage";
@@ -9,7 +9,7 @@ import { useGetAvailableModels } from "../hooks/ai/useGetAvailableModels";
 import { useGetMyAIGenerations } from "../hooks/ai/useGetMyAIGenerations";
 import { useDeleteAIGeneration } from "../hooks/ai/useDeleteAIGeneration";
 import { useQueryClient } from "@tanstack/react-query";
-import type { AIGeneratedImage } from "../../../types/ai";
+import type { AIGeneratedImage, AIModelConfig, AIGenerationResponse } from "../../../types/ai";
 import { LioraSidebar } from "../components/liora/LioraSidebar";
 import { LioraImageGrid } from "../components/liora/LioraImageGrid";
 import { LioraPromptBar } from "../components/liora/LioraPromptBar";
@@ -46,7 +46,7 @@ const Liora: React.FC = () => {
     if (!model || !availableModels) return 0;
     
     // Find model config
-    const config = availableModels.find((c: any) => c.availableModels.includes(model));
+    const config = availableModels?.find((c: AIModelConfig) => c.availableModels.includes(model));
     const provider = config?.provider || "pollinations";
 
     // If Free Tier available and Limit NOT reached -> Free
@@ -73,7 +73,7 @@ const Liora: React.FC = () => {
     }
   }, [availableModels, model]);
 
-  const currentConfig = availableModels?.find((c: any) => c.availableModels.includes(model));
+  const currentConfig = availableModels?.find((c: AIModelConfig) => c.availableModels.includes(model));
 
   useEffect(() => {
     if (currentConfig && currentConfig.allowedResolutions && !currentConfig.allowedResolutions.includes(resolution)) {
@@ -98,7 +98,7 @@ const Liora: React.FC = () => {
     if (!historyData?.data?.generations) return [];
     
     // Map generations to a flat list of images
-    return historyData.data.generations.flatMap((gen: any) => 
+    return historyData.data.generations.flatMap((gen: AIGenerationResponse) => 
       gen.images.map((url: string) => ({
         id: gen.id,
         url,
@@ -133,7 +133,7 @@ const Liora: React.FC = () => {
     
     let provider = "pollinations";
     if (availableModels) {
-      const config = availableModels.find((c: any) => c.availableModels.includes(model));
+      const config = availableModels.find((c: AIModelConfig) => c.availableModels.includes(model));
       if (config) provider = config.provider;
     }
 
@@ -152,7 +152,7 @@ const Liora: React.FC = () => {
         queryClient.invalidateQueries({ queryKey: ["ai-quota"] });
         queryClient.invalidateQueries({ queryKey: ["my-ai-generations"] });
       },
-      onError: (error: any) => {
+      onError: (error: unknown) => {
         console.error('Generation error:', error);
       }
     });
@@ -222,8 +222,19 @@ const Liora: React.FC = () => {
         <div className="lg:hidden bg-background border-b border-border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-6 h-6 text-primary" />
-              <h1 className="text-lg font-bold">Liora</h1>
+              <img src="/liora.png" alt="Liora" className="w-8 h-8 rounded-xl object-cover" />
+              <div className="flex items-center gap-2">
+                <h1 className="text-lg font-bold">Liora</h1>
+                <a 
+                  href={import.meta.env.VITE_LIORA_AI_URL || "https://liora-ai-2025.vercel.app/"} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
+                  title="Visit Liora AI"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               <Button size="icon" variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)}>

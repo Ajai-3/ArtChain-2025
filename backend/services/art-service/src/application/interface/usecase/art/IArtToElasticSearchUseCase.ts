@@ -1,3 +1,5 @@
+import type { ArtToElasticSearchInput, ArtToElasticSearchResponse } from '../../../../types/usecase-response';
+
 export interface IArtToElasticSearchUseCase {
-  execute(art: any): Promise<any>;
+  execute(art: ArtToElasticSearchInput): Promise<ArtToElasticSearchResponse>;
 }

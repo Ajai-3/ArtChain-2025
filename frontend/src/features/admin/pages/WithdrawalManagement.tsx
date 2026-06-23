@@ -21,7 +21,7 @@ import { Label } from "../../../components/ui/label";
 
 const WithdrawalManagement: React.FC = () => {
   const [page, setPage] = useState(1);
-  const [selectedWithdrawal, setSelectedWithdrawal] = useState<any>(null);
+  const [selectedWithdrawal, setSelectedWithdrawal] = useState<WithdrawalData | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   

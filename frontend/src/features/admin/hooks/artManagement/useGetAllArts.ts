@@ -1,9 +1,15 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import apiClient from "../../../../api/axios";
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import apiClient from '../../../../api/axios';
+import type { AdminArtData } from '../../../../types/artAdmin';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface ArtResponse {
-  data: any[];
-  meta: any;
+  data: AdminArtData[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
   stats?: {
     total: number;
     free: number;
@@ -23,23 +29,22 @@ interface Filters {
 export const useGetAllArts = (
   page: number,
   limit: number,
-  filters?: Filters
+  filters?: Filters,
 ) => {
   return useQuery<ArtResponse>({
-    queryKey: ["admin-arts", page, limit, filters],
+    queryKey: ['admin-arts', page, limit, filters],
     queryFn: async () => {
-      const params: any = {
+      const params: Record<string, string | number | undefined> = {
         page,
         limit,
         ...filters,
       };
 
-      // Filter out "all" values
-      if (params.status === "all") delete params.status;
-      if (params.postType === "all") delete params.postType;
-      if (params.priceType === "all") delete params.priceType;
+      if (params.status === 'all') delete params.status;
+      if (params.postType === 'all') delete params.postType;
+      if (params.priceType === 'all') delete params.priceType;
 
-      const response = await apiClient.get("/api/v1/art/admin/art", { params });
+      const response = await apiClient.get(API_ENDPOINTS.ART_ADMIN_ART, { params });
       return response.data;
     },
     placeholderData: keepPreviousData,

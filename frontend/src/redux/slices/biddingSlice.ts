@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { Auction, Bid } from "../../types/auction";
+import type { AuctionStatus } from "../../types/common";
 
 interface BiddingState {
   activeAuctionId: string | null;
@@ -35,7 +36,6 @@ const biddingSlice = createSlice({
       }
     },
     addBid: (state, action: PayloadAction<Bid>) => {
-      // Avoid duplicate bids (e.g., from re-renders or double socket events)
       if (state.bids.some(b => b.id === action.payload.id)) {
           return;
       }
@@ -56,16 +56,13 @@ const biddingSlice = createSlice({
     setActiveAuctionData: (state, action: PayloadAction<Auction>) => {
         state.activeAuction = action.payload;
         state.activeAuctionId = action.payload.id;
-        // Sync bids and highest bid if included
         if (action.payload.bids && action.payload.bids.length > 0) {
             state.bids = action.payload.bids;
             state.currentHighestBid = Math.max(...action.payload.bids.map(b => b.amount));
         } else if (action.payload.bids) {
-            // connection payload has empty bids
             state.bids = [];
             state.currentHighestBid = 0;
         } else {
-             // If bids not provided, use currentBid from auction object if available as fallback, or keep 0
              state.currentHighestBid = action.payload.currentBid || 0;
         }
     },
@@ -75,9 +72,9 @@ const biddingSlice = createSlice({
         state.bids = [];
         state.currentHighestBid = 0;
     },
-    auctionEnded: (state, action: PayloadAction<{ auctionId: string, status: string, winnerId?: string, winningBidAmount?: number }>) => {
+    auctionEnded: (state, action: PayloadAction<{ auctionId: string, status: AuctionStatus, winnerId?: string, winningBidAmount?: number }>) => {
         if (state.activeAuction && state.activeAuction.id === action.payload.auctionId) {
-            state.activeAuction.status = action.payload.status as any;
+            state.activeAuction.status = action.payload.status;
             if (action.payload.winnerId) {
                 state.activeAuction.winnerId = action.payload.winnerId;
             }
@@ -86,10 +83,9 @@ const biddingSlice = createSlice({
                  state.currentHighestBid = action.payload.winningBidAmount;
             }
         }
-        // Update in list if present
         const auctionInList = state.auctions.find(a => a.id === action.payload.auctionId);
         if (auctionInList) {
-             auctionInList.status = action.payload.status as any;
+             auctionInList.status = action.payload.status;
              if (action.payload.winnerId) {
                 auctionInList.winnerId = action.payload.winnerId;
              }

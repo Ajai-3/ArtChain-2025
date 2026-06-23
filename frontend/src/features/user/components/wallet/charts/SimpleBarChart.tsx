@@ -10,8 +10,13 @@ import {
 } from "recharts";
 import CustomTooltip from "./CustomTooltip";
 
+interface ChartDataPoint {
+  name: string;
+  value: number;
+}
+
 interface SimpleBarChartProps {
-  data: any[];
+  data: ChartDataPoint[];
   color: string;
 }
 

@@ -7,6 +7,7 @@ import {
 import { IWalletRepository } from '../../../domain/repository/IWalletRepository';
 import { BadRequestError } from 'art-chain-shared';
 import { WALLET_MESSAGES } from '../../../constants/WalletMessages';
+import { DailyTransactionStat } from '../../../types/TransactionStats';
 
 @injectable()
 export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
@@ -52,7 +53,7 @@ export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
     const dailyMap = new Map<string, { income: number; expense: number }>();
     const uniqueDates = new Set<string>();
 
-    dailyStats.forEach((stat: any) => {
+    dailyStats.forEach((stat: DailyTransactionStat) => {
       const isCredit = stat.type === 'credited' && stat.category !== 'TOP_UP';
       const amount = Number(stat.total_amount);
 
@@ -102,15 +103,15 @@ export class GetWalletChartDataUseCase implements IGetWalletChartDataUseCase {
     });
 
     const earnedBreakdown = categoryStats
-      .filter((s: any) => s.type === 'credited')
-      .map((s: any) => ({
+      .filter((s) => s.type === 'credited')
+      .map((s) => ({
         name: s.category || 'Other',
         value: Number(s._sum.amount || 0),
       }));
 
     const spentBreakdown = categoryStats
-      .filter((s: any) => s.type === 'debited')
-      .map((s: any) => ({
+      .filter((s) => s.type === 'debited')
+      .map((s) => ({
         name: s.category || 'Other',
         value: Number(s._sum.amount || 0),
       }));

@@ -1,28 +1,53 @@
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { getChatSocket, onChatSocketAvailable } from '../socket/socketManager';
-import { useWebRTC } from '../hooks/useWebRTC';
-import { useSFU } from '../hooks/useSFU';
+import { type RTCDirectSignal, useWebRTC } from '../hooks/useWebRTC';
+import { useSFU, type SFUParticipant } from '../hooks/useSFU';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../redux/store';
+import type { Socket } from 'socket.io-client';
+import type {
+  IncomingCallPayload,
+  CallSignalPayload,
+  CallAcceptedPayload,
+  CallRejectedPayload,
+  CallEndedPayload,
+  CallErrorPayload,
+} from '../types/socket';
+import { VideoCallContext } from '../hooks/useVideoCall';
+
+export { useVideoCall } from '../hooks/useVideoCall';
+
+interface CallerInfo {
+  id: string;
+  name?: string;
+  profileImage?: string;
+}
 
 interface CallState {
   status: 'IDLE' | 'INCOMING' | 'OUTGOING' | 'ACTIVE' | 'ENDING';
   type: 'PRIVATE' | 'GROUP';
   callId: string | null;
   conversationId: string | null;
-  caller: { id: string; name?: string; profileImage?: string } | null;
+  caller: CallerInfo | null;
   remoteUserId: string | null;
   remoteUserName: string | null;
   remoteUserProfile: string | null;
   isGroup: boolean;
 }
 
-interface VideoCallContextType {
+export interface VideoCallContextType {
   callState: CallState;
   localStream: MediaStream | null;
   remoteStream: MediaStream | null;
-  sfuParticipants: any[];
+  sfuParticipants: SFUParticipant[];
   audioInputs: MediaDeviceInfo[];
-  startCall: (conversationId: string, receiverId: string, isGroup: boolean, receiverName?: string, receiverImage?: string) => Promise<void>;
+  startCall: (
+    conversationId: string,
+    receiverId: string,
+    isGroup: boolean,
+    receiverName?: string,
+    receiverImage?: string,
+  ) => Promise<void>;
   acceptCall: () => void;
   rejectCall: () => void;
   endCall: () => void;
@@ -37,15 +62,9 @@ interface VideoCallContextType {
   outgoingTimer: number;
 }
 
-const VideoCallContext = createContext<VideoCallContextType | null>(null);
-
-export const useVideoCall = () => {
-  const context = useContext(VideoCallContext);
-  if (!context) throw new Error('useVideoCall must be used within a VideoCallProvider');
-  return context;
-};
-
-export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [callState, setCallState] = useState<CallState>({
     status: 'IDLE',
     type: 'PRIVATE',
@@ -63,129 +82,147 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isCameraOn, setIsCameraOn] = useState(true);
   const [isRemoteMicOn, setIsRemoteMicOn] = useState(true);
   const [isRemoteCameraOn, setIsRemoteCameraOn] = useState(true);
-  const [incomingOffer, setIncomingOffer] = useState<any>(null);
+  const [incomingOffer, setIncomingOffer] = useState<CallSignalPayload | null>(
+    null,
+  );
   const [audioInputs, setAudioInputs] = useState<MediaDeviceInfo[]>([]);
   const [callDuration, setCallDuration] = useState(0);
   const [outgoingTimer, setOutgoingTimer] = useState(30);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const outgoingTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const outgoingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { createPeerConnection, addLocalStream, handleSignal, closeConnection, remoteStream, replaceTrack } = useWebRTC();
+  const {
+    createPeerConnection,
+    addLocalStream,
+    handleSignal,
+    closeConnection,
+    remoteStream,
+    replaceTrack,
+  } = useWebRTC();
   const { joinRoom, leaveRoom, participants: sfuParticipants } = useSFU();
-  
-  const [socket, setSocket] = useState<any>(null);
-  // @ts-ignore
-  const currentUser = useSelector((state: any) => state.user.user);
+
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const currentUser = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
     const s = getChatSocket();
     if (s) setSocket(s);
 
-    const cleanup = onChatSocketAvailable((s: any) => {
-        setSocket(s);
+    const cleanup = onChatSocketAvailable((socketInstance: Socket | null) => {
+      setSocket(socketInstance);
     });
-    
-    // Enumerate devices
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-        setAudioInputs(devices.filter(d => d.kind === 'audioinput'));
+
+    navigator.mediaDevices.enumerateDevices().then((devices) => {
+      setAudioInputs(devices.filter((d) => d.kind === 'audioinput'));
     });
 
     return cleanup;
   }, []);
 
-  // Timer Logic
   useEffect(() => {
     if (callState.status === 'ACTIVE') {
-        const startTime = Date.now();
-        timerRef.current = setInterval(() => {
-            setCallDuration(Math.floor((Date.now() - startTime) / 1000));
-        }, 1000);
+      const startTime = Date.now();
+      timerRef.current = setInterval(() => {
+        setCallDuration(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
     } else {
-        if (timerRef.current) clearInterval(timerRef.current);
-        setCallDuration(0);
+      if (timerRef.current) clearInterval(timerRef.current);
+      setCallDuration(0);
     }
     return () => {
-        if (timerRef.current) clearInterval(timerRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [callState.status]);
 
-  // Outgoing Timer Logic
   useEffect(() => {
     if (callState.status === 'OUTGOING') {
-        setOutgoingTimer(30);
-        outgoingTimerRef.current = setInterval(() => {
-            setOutgoingTimer(prev => {
-                if (prev <= 1) {
-                    clearInterval(outgoingTimerRef.current as NodeJS.Timeout);
-                    endCall(); // Auto-end call
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
+      setOutgoingTimer(30);
+      outgoingTimerRef.current = setInterval(() => {
+        setOutgoingTimer((prev) => {
+          if (prev <= 1) {
+            clearInterval(
+              outgoingTimerRef.current as ReturnType<typeof setInterval>,
+            );
+            endCall();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     } else {
-        if (outgoingTimerRef.current) clearInterval(outgoingTimerRef.current);
-        setOutgoingTimer(30); // Reset
+      if (outgoingTimerRef.current) clearInterval(outgoingTimerRef.current);
+      setOutgoingTimer(30);
     }
     return () => {
-        if (outgoingTimerRef.current) clearInterval(outgoingTimerRef.current);
+      if (outgoingTimerRef.current) clearInterval(outgoingTimerRef.current);
     };
   }, [callState.status]);
 
   useEffect(() => {
     if (!socket) return;
 
-    socket.on('call:incoming', (data: any) => {
+    socket.on('call:incoming', (data: IncomingCallPayload) => {
       setCallState({
         status: 'INCOMING',
         type: data.isGroup ? 'GROUP' : 'PRIVATE',
         callId: data.callId,
         conversationId: data.conversationId,
-        caller: { 
-            id: data.callerId,
-            name: data.callerName,
-            profileImage: data.callerProfileImage
+        caller: {
+          id: data.callerId,
+          name: data.callerName,
+          profileImage: data.callerProfileImage || undefined,
         },
         remoteUserId: data.callerId,
         remoteUserName: data.callerName,
-        remoteUserProfile: data.callerProfileImage,
+        remoteUserProfile: data.callerProfileImage || null,
         isGroup: data.isGroup,
       });
 
-      // Initialize peer connection immediately on incoming call to start gathering/queuing ICE candidates
       if (!data.isGroup && data.callerId) {
-          createPeerConnection(data.callerId);
+        createPeerConnection(data.callerId);
       }
     });
 
-    socket.on('call:accepted', async (data: any) => {
+    socket.on('call:accepted', async (data: CallAcceptedPayload) => {
+      void data;
       if (callState.status === 'ENDING') return;
-      
-      setCallState(prev => ({ ...prev, status: 'ACTIVE' }));
+
+      setCallState((prev) => ({ ...prev, status: 'ACTIVE' }));
     });
 
-    socket.on('call:rejected', (data: any) => {
+    socket.on('call:rejected', (data: CallRejectedPayload) => {
+      void data;
       endCallCleanup();
     });
 
-    socket.on('call:ended', (data: any) => {
+    socket.on('call:ended', (data: CallEndedPayload) => {
+      void data;
       endCallCleanup();
     });
 
-    socket.on('call:signal', (data: any) => {
-        if (data.signal.type === 'offer') {
-            setIncomingOffer(data);
-        } else if (data.signal.type === 'camera-toggle') {
-            setIsRemoteCameraOn(data.signal.enabled);
-        } else if (data.signal.type === 'mic-toggle') {
-            setIsRemoteMicOn(data.signal.enabled);
+    socket.on('call:signal', (data: CallSignalPayload) => {
+      const signal = data.signal;
+      if (
+        'enabled' in signal &&
+        'type' in signal &&
+        (signal.type === 'camera-toggle' || signal.type === 'mic-toggle')
+      ) {
+        setIsRemoteCameraOn(signal.enabled);
+        setIsRemoteMicOn(signal.enabled);
+      } else if ((signal as any).type === 'offer') {
+        if (callState.status === 'ACTIVE') {
+          handleSignal(signal as RTCDirectSignal, data.from);
         } else {
-            handleSignal(data.signal, data.from);
+          setIncomingOffer(data);
         }
+      } else if ('sdp' in signal || 'candidate' in signal) {
+        handleSignal(signal as RTCDirectSignal, data.from);
+      }
     });
 
-    socket.on('call:error', (data: any) => {
-        endCallCleanup();
+    socket.on('call:error', (data: CallErrorPayload) => {
+      void data;
+      endCallCleanup();
     });
 
     return () => {
@@ -200,97 +237,111 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const getMediaStream = async (audioDeviceId?: string) => {
     if (localStream) {
-       return localStream;
+      return localStream;
     }
-    
+
     try {
       const constraints = {
-          video: true,
-          audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true
+        video: true,
+        audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true,
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       setLocalStream(stream);
       setIsCameraOn(true);
       return stream;
-    } catch (err: any) {
-      if (err.name === 'NotReadableError' || err.name === 'NotFoundError' || err.name === 'NotAllowedError') {
-         try {
-            const fallbackConstraints = {
-               video: false,
-               audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true
-            };
-            const fallbackStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
-            setLocalStream(fallbackStream);
-            setIsCameraOn(false);
-            return fallbackStream;
-         } catch (fallbackErr) {
-            return null;
-         }
+    } catch (err) {
+      const error = err as { name?: string };
+      if (
+        error.name === 'NotReadableError' ||
+        error.name === 'NotFoundError' ||
+        error.name === 'NotAllowedError'
+      ) {
+        try {
+          const fallbackConstraints = {
+            video: false,
+            audio: audioDeviceId
+              ? { deviceId: { exact: audioDeviceId } }
+              : true,
+          };
+          const fallbackStream =
+            await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+          setLocalStream(fallbackStream);
+          setIsCameraOn(false);
+          return fallbackStream;
+        } catch {
+          return null;
+        }
       }
       return null;
     }
   };
 
-  const startCall = async (conversationId: string, receiverId: string, isGroup: boolean, receiverName?: string, receiverImage?: string) => {
+  const startCall = async (
+    conversationId: string,
+    receiverId: string,
+    isGroup: boolean,
+    receiverName?: string,
+    receiverImage?: string,
+  ) => {
     if (!socket || !currentUser) return;
 
     const stream = await getMediaStream();
     if (!stream) return;
 
     const newCallId = `${conversationId}-${Date.now()}`;
-    
+
     try {
-        setCallState({
-          status: 'OUTGOING',
-          type: isGroup ? 'GROUP' : 'PRIVATE',
+      setCallState({
+        status: 'OUTGOING',
+        type: isGroup ? 'GROUP' : 'PRIVATE',
+        callId: newCallId,
+        conversationId,
+        caller: {
+          id: currentUser.id,
+          name: currentUser.name,
+          profileImage: currentUser.profileImage,
+        },
+        remoteUserId: receiverId,
+        remoteUserName: receiverName || 'Unknown',
+        remoteUserProfile: receiverImage || null,
+        isGroup,
+      });
+
+      if (isGroup) {
+        joinRoom(conversationId, currentUser.id, stream);
+      } else {
+        const pc = createPeerConnection(receiverId);
+        addLocalStream(stream);
+
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        socket.emit('call:initiate', {
+          receiverId,
           callId: newCallId,
+          callerId: currentUser.id,
           conversationId,
-          caller: { 
-              id: currentUser.id,
-              name: currentUser.name,
-              profileImage: currentUser.profileImage
-          },
-          remoteUserId: receiverId,
-          remoteUserName: receiverName || 'Unknown',
-          remoteUserProfile: receiverImage || null,
           isGroup,
+          callerName: currentUser.name,
+          callerProfileImage: currentUser.profileImage,
         });
 
-        if (isGroup) {
-            joinRoom(conversationId, currentUser.id, stream);
-        } else {
-            const pc = createPeerConnection(receiverId);
-            addLocalStream(stream);
-            
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-            
-            socket.emit('call:initiate', {
-                receiverId,
-                callId: newCallId, // Send the generated callId to the receiver
-                callerId: currentUser.id, 
-                conversationId,
-                isGroup,
-                callerName: currentUser.name,
-                callerProfileImage: currentUser.profileImage
-            });
-            
-            socket.emit('call:signal', {
-                to: receiverId,
-                signal: offer
-            });
+        socket.emit('call:signal', {
+          to: receiverId,
+          signal: offer,
+        });
 
-            // Initial status sync
-            socket.emit('call:signal', {
-                to: receiverId,
-                signal: { type: 'camera-toggle', enabled: isCameraOn }
-            });
-            socket.emit('call:signal', {
-                to: receiverId,
-                signal: { type: 'mic-toggle', enabled: isMicOn }
-            });
-        }
+        socket.emit('call:signal', {
+          to: receiverId,
+          signal: { type: 'camera-toggle', enabled: isCameraOn },
+        });
+        socket.emit('call:signal', {
+          to: receiverId,
+          signal: { type: 'mic-toggle', enabled: isMicOn },
+        });
+      }
     } catch (error) {
+      console.log(error);
     }
   };
 
@@ -298,78 +349,79 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const stream = await getMediaStream();
     if (!stream) return;
 
-    setCallState(prev => ({ ...prev, status: 'ACTIVE' }));
+    setCallState((prev) => ({ ...prev, status: 'ACTIVE' }));
 
-    if (callState.isGroup && callState.conversationId) {
-        joinRoom(callState.conversationId, currentUser.id, stream);
+    if (callState.isGroup && callState.conversationId && currentUser) {
+      joinRoom(callState.conversationId, currentUser.id, stream);
     } else {
-        if (callState.remoteUserId) {
-            // peerConnection might already be initialized by incoming call listener
-            addLocalStream(stream);
+      if (callState.remoteUserId) {
+        addLocalStream(stream);
 
-            if (incomingOffer) {
-                await handleSignal(incomingOffer.signal, incomingOffer.from);
-                setIncomingOffer(null);
-            }
-
-            // Sync status to the caller
-            socket.emit('call:signal', {
-                to: callState.remoteUserId,
-                signal: { type: 'camera-toggle', enabled: isCameraOn }
-            });
-            socket.emit('call:signal', {
-                to: callState.remoteUserId,
-                signal: { type: 'mic-toggle', enabled: isMicOn }
-            });
+        if (incomingOffer) {
+          await handleSignal(
+            incomingOffer.signal as RTCDirectSignal,
+            incomingOffer.from,
+          );
+          setIncomingOffer(null);
         }
+
+        socket?.emit('call:signal', {
+          to: callState.remoteUserId,
+          signal: { type: 'camera-toggle', enabled: isCameraOn },
+        });
+        socket?.emit('call:signal', {
+          to: callState.remoteUserId,
+          signal: { type: 'mic-toggle', enabled: isMicOn },
+        });
+      }
     }
 
     socket?.emit('call:accept', {
-        callerId: callState.caller?.id,
-        callId: callState.callId,
-        conversationId: callState.conversationId
+      callerId: callState.caller?.id,
+      callId: callState.callId,
+      conversationId: callState.conversationId,
     });
   };
 
   const rejectCall = () => {
     socket?.emit('call:reject', {
-        callerId: callState.caller?.id,
-        callId: callState.callId,
-        conversationId: callState.conversationId
+      callerId: callState.caller?.id,
+      callId: callState.callId,
+      conversationId: callState.conversationId,
     });
     endCallCleanup();
   };
 
   const endCall = () => {
     const targetId = callState.remoteUserId || callState.caller?.id;
-    
+
     socket?.emit('call:end', {
-        conversationId: callState.conversationId,
-        callId: callState.callId,
-        to: targetId,
-        duration: callDuration
+      conversationId: callState.conversationId,
+      callId: callState.callId,
+      to: targetId,
+      duration: callDuration,
     });
     endCallCleanup();
   };
 
   const endCallCleanup = () => {
     setCallState({
-        status: 'IDLE',
-        type: 'PRIVATE',
-        callId: null,
-        conversationId: null,
-        caller: null,
-        remoteUserId: null,
-        remoteUserName: null,
-        remoteUserProfile: null,
-        isGroup: false,
+      status: 'IDLE',
+      type: 'PRIVATE',
+      callId: null,
+      conversationId: null,
+      caller: null,
+      remoteUserId: null,
+      remoteUserName: null,
+      remoteUserProfile: null,
+      isGroup: false,
     });
-    
+
     if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        setLocalStream(null);
+      localStream.getTracks().forEach((track) => track.stop());
+      setLocalStream(null);
     }
-    
+
     closeConnection();
     leaveRoom();
     setIsRemoteCameraOn(true);
@@ -377,70 +429,76 @@ export const VideoCallProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const toggleMic = () => {
-      if (localStream) {
-          const newStatus = !isMicOn;
-          localStream.getAudioTracks().forEach(track => track.enabled = newStatus);
-          setIsMicOn(newStatus);
-          
-          if (callState.remoteUserId) {
-             socket?.emit('call:signal', {
-                 to: callState.remoteUserId,
-                 signal: { type: 'mic-toggle', enabled: newStatus }
-             });
-          }
+    if (localStream) {
+      const newStatus = !isMicOn;
+      localStream
+        .getAudioTracks()
+        .forEach((track) => (track.enabled = newStatus));
+      setIsMicOn(newStatus);
+
+      if (callState.remoteUserId) {
+        socket?.emit('call:signal', {
+          to: callState.remoteUserId,
+          signal: { type: 'mic-toggle', enabled: newStatus },
+        });
       }
+    }
   };
 
   const toggleCamera = () => {
-      if (localStream) {
-          const newStatus = !isCameraOn;
-          localStream.getVideoTracks().forEach(track => track.enabled = newStatus);
-          setIsCameraOn(newStatus);
+    if (localStream) {
+      const newStatus = !isCameraOn;
+      localStream
+        .getVideoTracks()
+        .forEach((track) => (track.enabled = newStatus));
+      setIsCameraOn(newStatus);
 
-          if (callState.remoteUserId) {
-             socket?.emit('call:signal', {
-                 to: callState.remoteUserId,
-                 signal: { type: 'camera-toggle', enabled: newStatus }
-             });
-          }
+      if (callState.remoteUserId) {
+        socket?.emit('call:signal', {
+          to: callState.remoteUserId,
+          signal: { type: 'camera-toggle', enabled: newStatus },
+        });
       }
+    }
   };
 
   const switchAudioInput = async (deviceId: string) => {
     const newStream = await getMediaStream(deviceId);
     if (newStream) {
-        const audioTrack = newStream.getAudioTracks()[0];
-        if (localStream) {
-            localStream.removeTrack(localStream.getAudioTracks()[0]);
-            localStream.addTrack(audioTrack);
-            audioTrack.enabled = isMicOn;
-            
-            replaceTrack(audioTrack);
-        }
+      const audioTrack = newStream.getAudioTracks()[0];
+      if (localStream) {
+        localStream.removeTrack(localStream.getAudioTracks()[0]);
+        localStream.addTrack(audioTrack);
+        audioTrack.enabled = isMicOn;
+
+        replaceTrack(audioTrack);
+      }
     }
   };
 
   return (
-    <VideoCallContext.Provider value={{
-      callState,
-      localStream,
-      remoteStream,
-      sfuParticipants,
-      audioInputs,
-      startCall,
-      acceptCall,
-      rejectCall,
-      endCall,
-      toggleMic,
-      toggleCamera,
-      switchAudioInput,
-      isMicOn,
-      isCameraOn,
-      isRemoteMicOn,
-      isRemoteCameraOn,
-      callDuration,
-      outgoingTimer
-    }}>
+    <VideoCallContext.Provider
+      value={{
+        callState,
+        localStream,
+        remoteStream,
+        sfuParticipants,
+        audioInputs,
+        startCall,
+        acceptCall,
+        rejectCall,
+        endCall,
+        toggleMic,
+        toggleCamera,
+        switchAudioInput,
+        isMicOn,
+        isCameraOn,
+        isRemoteMicOn,
+        isRemoteCameraOn,
+        callDuration,
+        outgoingTimer,
+      }}
+    >
       {children}
     </VideoCallContext.Provider>
   );

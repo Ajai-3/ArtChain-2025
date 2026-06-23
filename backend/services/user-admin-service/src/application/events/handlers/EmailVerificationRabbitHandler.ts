@@ -14,7 +14,7 @@ export class EmailVerificationRabbitHandler implements IEventHandler<EmailVerifi
   ) {}
   
   async handle(event: EmailVerificationEvent) {
-    console.log(event.link)
+    console.log(event.link);
     await this._messagePublisher.publish(EventType.EMAIL_VERIFICATION, {
       type: 'VERIFICATION',
       email: event.email,

@@ -1,20 +1,22 @@
 import axios from "axios";
 import { store } from "../redux/store";
-import type { ApiError } from "../types/apiError";
+import type { QueueItem } from "../types/common";
 import { logout, setAccessToken } from "../redux/slices/userSlice";
 import type { RefreshTokenResponse } from "../types/refreshTokenResponse";
 import { adminLogout, setAdminAccessToken } from "../redux/slices/adminSlice";
 import toast from "react-hot-toast";
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: QueueItem<string>[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: Error | null, token: string | null = null) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
-    } else {
+    } else if (token) {
       prom.resolve(token);
+    } else {
+      prom.reject(new Error("No token available"));
     }
   });
   failedQueue = [];
@@ -78,7 +80,6 @@ apiClient.interceptors.response.use(
     const originalRequest = error.config;
     const status = error.response.status;
 
-    // MANDATORY: Handle 404s IMMEDIATELY to prevent downstream auth logic
     if (status === 404) {
       console.log(`[Axios Interceptor] 404 detected for ${originalRequest.url}. Blocking logout logic.`);
       return Promise.reject({
@@ -92,7 +93,6 @@ apiClient.interceptors.response.use(
       originalRequest.url?.startsWith(url)
     );
 
-    // Only attempt refresh for 401s that aren't on auth endpoints and haven't been tried
     if (status === 401 && !originalRequest._retry && !isAuthEndpoint) {
       console.log(`[Axios Interceptor] 401 detected for ${originalRequest.url}. Attempting token refresh.`);
       
@@ -137,16 +137,15 @@ apiClient.interceptors.response.use(
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return apiClient(originalRequest);
-      } catch (refreshError: any) {
-        const refreshStatus = refreshError.response?.status;
+      } catch (refreshError: unknown) {
+        const refreshStatus = (refreshError as { response?: { status: number } })?.response?.status;
         console.error(`[Axios Interceptor] Token refresh failed with status ${refreshStatus}:`, refreshError);
         
-        processQueue(refreshError, null);
+        processQueue(refreshError as Error, null);
         isRefreshing = false;
 
         const isAdmin = originalRequest.url?.includes("/api/v1/admin");
         
-        // Only log out if the refresh token itself is actually invalid (401 or 403)
         if (refreshStatus === 401 || refreshStatus === 403) {
           console.warn(`[Axios Interceptor] Refresh token invalid. Dispatching logout.`);
           store.dispatch(isAdmin ? adminLogout() : logout());

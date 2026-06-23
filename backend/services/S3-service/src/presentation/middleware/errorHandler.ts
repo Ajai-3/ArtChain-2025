@@ -4,10 +4,10 @@ import { ZodError } from 'zod';
 import { HttpStatus } from 'art-chain-shared';
 
 export const errorHandler = (
-  err: any,
+  err: unknown,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (res.headersSent) {
     return next(err);
@@ -16,12 +16,12 @@ export const errorHandler = (
   if (err instanceof ZodError) {
     const messages = err.issues.map((issue) => issue.message).join(', ');
     logger.warn(
-      `Validation failed | userId=${req.headers['x-user-id'] || 'unknown'} | reason=${messages}`
+      `Validation failed | userId=${req.headers['x-user-id'] || 'unknown'} | reason=${messages}`,
     );
     return res.status(HttpStatus.BAD_REQUEST).json({ errors: err.issues });
   }
 
-  logger.error(`Unhandled error | message=${err.message} | stack=${err.stack}`);
+  logger.error(`Unhandled error | ${err}`);
   res
     .status(HttpStatus.INTERNAL_SERVER_ERROR)
     .json({ message: 'Internal server error' });

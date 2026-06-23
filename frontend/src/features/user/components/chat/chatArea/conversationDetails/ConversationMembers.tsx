@@ -10,7 +10,7 @@ interface ConversationMembersProps {
   conversation: Conversation;
   currentUserId: string;
   user: User | null;
-  membersData: any;
+  membersData: { pages: { members: User[] }[] } | undefined;
   isLoadingMembers: boolean;
   fetchNextPage: () => void;
   hasNextPage: boolean;
@@ -42,11 +42,11 @@ const ConversationMembers: React.FC<ConversationMembersProps> = ({
     if (!membersData?.pages) return [];
 
     const allMembers = membersData.pages
-      .flatMap((page: any) => page.members)
-      .filter((m: any) => m.id !== currentUserId);
+      .flatMap((page) => page.members)
+      .filter((m: User) => m.id !== currentUserId);
 
-    return allMembers.sort((a: any, b: any) => {
-      const getRolePriority = (role: string, id: string) => {
+    return allMembers.sort((a: User, b: User) => {
+      const getRolePriority = (role: string | undefined, id: string) => {
         if (id === conversation.ownerId) return 3;
         if (role === 'ADMIN') return 2;
         return 1;
@@ -55,7 +55,7 @@ const ConversationMembers: React.FC<ConversationMembersProps> = ({
     });
   }, [membersData, conversation.ownerId, currentUserId]);
 
-  const canRemove = (member: any) => {
+  const canRemove = (member: User) => {
     const result = (() => {
       if (member.id === currentUserId) return false;
       if (isOwner) return true;
@@ -70,7 +70,7 @@ const ConversationMembers: React.FC<ConversationMembersProps> = ({
     return result;
   };
 
-  const canPromote = (member: any) => {
+  const canPromote = (member: User) => {
     const result = (() => {
       if (member.role === 'ADMIN' || member.role === 'OWNER') return false;
       if (member.id === conversation.ownerId) return false;
@@ -80,7 +80,7 @@ const ConversationMembers: React.FC<ConversationMembersProps> = ({
     return result;
   };
 
-  const canDemote = (member: any) => {
+  const canDemote = (member: User) => {
     const result = (() => {
       if (member.role !== 'ADMIN') return false;
       if (member.id === conversation.ownerId) return false;
@@ -182,7 +182,7 @@ const ConversationMembers: React.FC<ConversationMembersProps> = ({
                 Loading members...
               </p>
             ) : (
-              sortedMembers.map((member: any) => (
+              sortedMembers.map((member: User) => (
                 <div
                   key={member.id}
                   className='flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors'

@@ -4,7 +4,6 @@ import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../../infrastructure/inversify/types';
 import { ILogger } from '../../../application/interface/ILogger';
 
-import { tokenService } from '../../service/token.service';
 import { validateWithZod } from '../../../utils/zodValidator';
 import { AUTH_MESSAGES } from '../../../constants/authMessages';
 import { IUserAuthController } from '../../interfaces/user/IUserAuthController';
@@ -26,11 +25,11 @@ import { ILoginUserUseCase } from '../../../application/interface/usecases/user/
 import { ILogoutUserUseCase } from '../../../application/interface/usecases/user/auth/ILogoutUserUseCase';
 import { IRefreshTokenUseCase } from '../../../application/interface/usecases/user/auth/IRefreshTokenUseCase';
 import { IRegisterUserUseCase } from './../../../application/interface/usecases/user/auth/IRegisterUserUseCase';
+import { IInitializeAuthUseCase } from '../../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 import { IGoogleAuthUserUseCase } from '../../../application/interface/usecases/user/auth/IGoogleAuthUserUseCase';
 import { IResetPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IResetPasswordUserUseCase';
 import { IStartRegisterUserUseCase } from '../../../application/interface/usecases/user/auth/IStartRegisterUserUseCase';
 import { IForgotPasswordUserUseCase } from '../../../application/interface/usecases/user/auth/IForgotPasswordUserUseCase';
-import { IInitializeAuthUseCase } from '../../../application/interface/usecases/user/auth/InitializeAuthUseCase';
 @injectable()
 export class UserAuthController implements IUserAuthController {
   constructor(
@@ -108,8 +107,6 @@ export class UserAuthController implements IUserAuthController {
       this._logger.info(
         `Start registration sucessfull of user ${payload.name}`,
       );
-
-      console.log(token);
 
       return res.status(HttpStatus.OK).json({
         message: AUTH_MESSAGES.VERIFICATION_EMAIL_SENT,

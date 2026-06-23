@@ -12,8 +12,13 @@ import {
 } from "recharts";
 import CustomTooltip from "./CustomTooltip";
 
+interface ChartDataPoint {
+  name: string;
+  value: number;
+}
+
 interface StatsRadarChartProps {
-  data: any[];
+  data: ChartDataPoint[];
 }
 
 const STAT_COLORS: Record<string, string> = {
@@ -33,7 +38,7 @@ const StatsRadarChart: React.FC<StatsRadarChartProps> = ({ data }) => {
   }
 
   // Custom label renderer for values on bars
-  const renderCustomLabel = (props: any) => {
+  const renderCustomLabel = (props: { x: number; y: number; width: number; value: number }) => {
     const { x, y, width, value } = props;
     return (
       <text

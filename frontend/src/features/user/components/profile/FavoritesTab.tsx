@@ -5,6 +5,7 @@ import { useOutletContext } from 'react-router-dom';
 import { useGetUserFavorites } from '../../hooks/profile/favorites/useGetUserFavorites';
 import { useMasonryLayout } from '../../../../hooks/useMasonryLayout';
 import { Star } from 'lucide-react';
+import type { ArtItem } from '../../../../types/apiResponses';
 
 interface Props {
   profileUser: { id: string; username: string };
@@ -34,28 +35,28 @@ const FavoritesTab: React.FC = () => {
   );
 
   const arts = useMemo(
-    () => data?.pages.flatMap((page: any) => page.data) ?? [],
+    () => data?.pages.flatMap((page: { data: ArtItem[] }) => page.data) ?? [],
     [data],
   );
 
   const { containerRef, rows } = useMasonryLayout(
     arts,
-    (item) => item.art?.id || item._id,
-    (item) => item.art?.imageUrl || item.imageUrl,
+    (item: ArtItem) => item.art?.id || item.id || '',
+    (item: ArtItem) => item.art?.imageUrl || item.imageUrl || '',
   );
 
   return (
     <div ref={containerRef} className='w-full'>
-      {rows.map((row, rowIndex) => (
-        <div
-          key={rowIndex}
-          className='flex'
-          style={{ gap: '4px', marginBottom: '4px' }}
-        >
-          {row.items.map((item: any, itemIndex: number) => {
-            const isLastItem =
-              rowIndex === rows.length - 1 &&
-              itemIndex === row.items.length - 1;
+          {rows.map((row, rowIndex) => (
+            <div
+              key={rowIndex}
+              className='flex'
+              style={{ gap: '4px', marginBottom: '4px' }}
+            >
+              {row.items.map((item: ArtItem, itemIndex: number) => {
+                const isLastItem =
+                  rowIndex === rows.length - 1 &&
+                  itemIndex === row.items.length - 1;
             return (
               <div
                 key={item.art?.id || item._id}

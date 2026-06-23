@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
 import type { UserPreview } from "../../../../types/users/user/UserPreview";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface UserResponse {
   data: UserPreview[];
@@ -11,7 +12,7 @@ export const useGetSupporters = (userId?: string, enabled: boolean = true) => {
   return useInfiniteQuery<UserResponse, Error>({
     queryKey: ["supporters", userId],
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await apiClient.get(`/api/v1/user/${userId}/supporters`, {
+      const res = await apiClient.get(API_ENDPOINTS.USER(userId), {
         params: { page: pageParam, limit: 10 },
       });
       return res.data as UserResponse;

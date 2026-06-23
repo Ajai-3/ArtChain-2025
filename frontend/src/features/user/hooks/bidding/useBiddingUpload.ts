@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import apiClient from '../../../../api/axios';
 import { toast } from 'react-hot-toast';
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useBiddingUpload = () => {
   const [uploading, setUploading] = useState(false);
@@ -14,7 +15,7 @@ export const useBiddingUpload = () => {
     formData.append('type', 'biddingImage');
 
     try {
-      const response = await apiClient.post('/api/v1/upload', formData, {
+      const response = await apiClient.post(API_ENDPOINTS.UPLOAD, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -25,7 +26,7 @@ export const useBiddingUpload = () => {
         return response.data.data;
       }
       return response.data;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Upload failed', error);
       toast.error('Failed to upload bidding image');
       return null;

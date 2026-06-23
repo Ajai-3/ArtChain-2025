@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import apiClient from "../../../../api/axios";
 import { toast } from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface PlatformConfig {
   auctionCommissionPercentage: number;
@@ -20,10 +21,11 @@ export const usePlatformConfig = () => {
   const fetchConfig = async () => {
     setLoading(true);
     try {
-      const response = await apiClient.get<any>("/api/v1/art/admin/platform-config");
+      const response = await apiClient.get<{ data: PlatformConfig }>(API_ENDPOINTS.ART_ADMIN_PLATFORMCONFIG);
       setConfig(response.data.data);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch platform config");
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      setError(error.message || "Failed to fetch platform config");
     } finally {
       setLoading(false);
     }
@@ -32,12 +34,13 @@ export const usePlatformConfig = () => {
   const updateConfig = async (data: Partial<PlatformConfig>) => {
     setUpdating(true);
     try {
-      const response = await apiClient.patch<any>("/api/v1/art/admin/platform-config", data);
+      const response = await apiClient.patch<{ data: PlatformConfig }>(API_ENDPOINTS.ART_ADMIN_PLATFORMCONFIG, data);
       setConfig(response.data.data);
       toast.success("Platform configuration updated successfully");
       return true;
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update config");
+    } catch (err: unknown) {
+      const error = err as { message?: string };
+      toast.error(error.message || "Failed to update config");
       return false;
     } finally {
       setUpdating(false);

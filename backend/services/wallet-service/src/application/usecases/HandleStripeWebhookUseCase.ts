@@ -38,8 +38,8 @@ export class HandleStripeWebhookUseCase implements IHandleStripeWebhookUseCase {
         signature,
         config.stripe_webhook_secret
       );
-    } catch (err: any) {
-      logger.error('Invalid webhook signature:', err.message);
+    } catch (err) {
+      logger.error('Invalid webhook signature:', (err as Error).message);
       throw new BadRequestError(WALLET_MESSAGES.INVALID_WEBHOOK_SIGNATURE);
     }
 

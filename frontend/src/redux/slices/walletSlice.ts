@@ -46,7 +46,7 @@ const walletSlice = createSlice({
     updateBalanceAndLocked: (state, action: PayloadAction<{ balance: number; lockedAmount: number }>) => {
       state.balance = action.payload.balance;
       state.lockedAmount = action.payload.lockedAmount;
-      state.inrValue = action.payload.balance * 10; // Update INR value as well
+      state.inrValue = action.payload.balance * 10; 
     },
     addTransaction: (state, action: PayloadAction<Transaction>) => {
       state.transactions.push(action.payload);

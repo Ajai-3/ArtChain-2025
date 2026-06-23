@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import apiClient from '../../api/axios';
-import { setUser } from '../../redux/slices/userSlice';
-import { setAdmin } from '../../redux/slices/adminSlice';
-import { useGetPlatformConfig } from '../../features/user/hooks/platform/useGetPlatformConfig';
+import React from 'react';
+import { useAuthInitialization } from '../../hooks/useAuthInitialization';
 
 interface AuthInitializerProps {
   children: React.ReactNode;
@@ -12,60 +8,7 @@ interface AuthInitializerProps {
 export const AuthInitializer: React.FC<AuthInitializerProps> = ({
   children,
 }) => {
-  const [loading, setLoading] = useState(true);
-  const dispatch = useDispatch();
-
-  useGetPlatformConfig();
-
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        const initialAuthResponse = await apiClient.get(
-          '/api/v1/auth/initialize',
-          {
-            _noRetry: true,
-          },
-        );
-
-        const { accessToken, user } = initialAuthResponse.data;
-
-        console.log('🔐 Auth Initialize:', {
-          accessToken: !!accessToken,
-          user,
-        });
-
-        if (accessToken && user) {
-          // Check if user is an admin
-          if (user.role === 'admin') {
-            dispatch(
-              setAdmin({
-                accessToken,
-                admin: user,
-              }),
-            );
-            // Also set user state so user-side UI links (Sidebar/Navbar) work correctly
-            dispatch(
-              setUser({
-                accessToken,
-                user,
-              }),
-            );
-          } else {
-            dispatch(
-              setUser({
-                accessToken,
-                user,
-              }),
-            );
-          }
-        }
-      } finally {
-        setTimeout(() => setLoading(false), 1500);
-      }
-    };
-
-    initializeAuth();
-  }, [dispatch]);
+  const { loading } = useAuthInitialization();
 
   if (loading) {
     return (
@@ -78,8 +21,7 @@ export const AuthInitializer: React.FC<AuthInitializerProps> = ({
           <div className='text-xs text-muted-foreground tracking-[0.2em] font-medium text-gray-400'>
             from
           </div>
-
-          <div className='flex items-center gap-2 font-semibold text-foreground tracking-widest text-lg'>
+          <div className='flex items-center gap-2 font-semibold tracking-widest text-lg bg-gradient-to-r from-blue-600 to-red-600 bg-clip-text text-transparent'>
             Liora.ai
           </div>
         </div>

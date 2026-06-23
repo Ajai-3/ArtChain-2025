@@ -337,38 +337,46 @@ container.bind<IReportController>(TYPES.IReportController).to(ReportController);
 container.bind<IAdminReportController>(TYPES.IAdminReportController).to(AdminReportController);
 
 
+// Events
+import { UserCreatedEvent } from '../../domain/events/UserCreatedEvent';
+import { UserSupportedEvent } from '../../domain/events/UserSupportedEvent';
+import { EmailVerificationEvent } from '../../domain/events/EmailVerificationEvent';
+import { EmailChangeVerificationEvent } from '../../domain/events/EmailChangeVerificationEvent';
+import { UserUpdatedEvent } from '../../domain/events/UserUpdatedEvent';
+import { PasswordResetRequestedEvent } from '../../domain/events/PasswordResetRequestedEvent';
+
 // Register Events
 try {
   const eventBus = container.get<IEventBus>(TYPES.IEventBus);
 
   // User Created
   container.bind<UserCreatedElasticHandler>(UserCreatedElasticHandler).toSelf();
-  const userCreatedElasticHandler = container.get<IEventHandler<any>>(UserCreatedElasticHandler);
+  const userCreatedElasticHandler = container.get<IEventHandler<UserCreatedEvent>>(UserCreatedElasticHandler);
   eventBus.register(EventType.USER_CREATED, userCreatedElasticHandler);
 
   // User Supported
   container.bind<UserSupportedRabbitHandler>(UserSupportedRabbitHandler).toSelf();
-  const userSupportedRabbitHandler = container.get<IEventHandler<any>>(UserSupportedRabbitHandler);
+  const userSupportedRabbitHandler = container.get<IEventHandler<UserSupportedEvent>>(UserSupportedRabbitHandler);
   eventBus.register(EventType.USER_SUPPORTED, userSupportedRabbitHandler);
 
   // Email Verification
   container.bind<EmailVerificationRabbitHandler>(EmailVerificationRabbitHandler).toSelf();
-  const emailVerificationRabbitHandler = container.get<IEventHandler<any>>(EmailVerificationRabbitHandler);
+  const emailVerificationRabbitHandler = container.get<IEventHandler<EmailVerificationEvent>>(EmailVerificationRabbitHandler);
   eventBus.register(EventType.EMAIL_VERIFICATION, emailVerificationRabbitHandler);
 
   // Email Change
   container.bind<EmailChangeVerificationRabbitHandler>(EmailChangeVerificationRabbitHandler).toSelf();
-  const emailChangeVerificationRabbitHandler = container.get<IEventHandler<any>>(EmailChangeVerificationRabbitHandler);
+  const emailChangeVerificationRabbitHandler = container.get<IEventHandler<EmailChangeVerificationEvent>>(EmailChangeVerificationRabbitHandler);
   eventBus.register(EventType.EMAIL_CHANGE_VERIFICATION, emailChangeVerificationRabbitHandler);
 
   // User Updated
   container.bind<UserUpdatedElasticHandler>(UserUpdatedElasticHandler).toSelf();
-  const userUpdatedElasticHandler = container.get<IEventHandler<any>>(UserUpdatedElasticHandler);
+  const userUpdatedElasticHandler = container.get<IEventHandler<UserUpdatedEvent>>(UserUpdatedElasticHandler);
   eventBus.register(EventType.USER_UPDATED, userUpdatedElasticHandler);
 
    // Password Reset
   container.bind<PasswordResetRabbitHandler>(PasswordResetRabbitHandler).toSelf();
-   const passwordResetRabbitHandler = container.get<IEventHandler<any>>(PasswordResetRabbitHandler);
+   const passwordResetRabbitHandler = container.get<IEventHandler<PasswordResetRequestedEvent>>(PasswordResetRabbitHandler);
    eventBus.register(EventType.PASSWORD_RESET_REQUESTED, passwordResetRabbitHandler);
 
    console.log('Events registered successfully via IoC container');

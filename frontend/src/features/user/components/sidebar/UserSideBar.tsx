@@ -9,6 +9,7 @@ import {
   CreditCard,
   User,
   Settings,
+  Layers,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -32,6 +33,7 @@ const UserSideBar: React.FC<{ createPostClick: () => void; onShowNotifications: 
     { to: ROUTES.HOME, icon: House, label: "Home", authRequired: false, showOn: "all" },
     { to: ROUTES.CHAT, icon: MessageSquareText, label: "Chat", authRequired: true, showOn: "all" },
     { to: ROUTES.LIORA_AI, icon: FlaskConical, label: "Liora.Ai", authRequired: true, showOn: "all" },
+    { to: ROUTES.PRODUCTS, icon: Layers, label: "Products", authRequired: false, showOn: "desktop" },
     { to: "#", icon: Bell, label: "Notifications", authRequired: true, showOn: "desktop" },
     { to: ROUTES.CREATE, icon: Plus, label: "Create Post", authRequired: true, showOn: "all" },
     { to: ROUTES.BIDDING, icon: Gavel, label: "Bidding", authRequired: true, showOn: "all" },

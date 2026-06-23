@@ -13,7 +13,7 @@ export const formatChatTime = (dateInput: string | Date | undefined): string => 
   }
 
   if (isToday(date)) {
-    return format(date, 'h:mm a').toLowerCase(); // 11:24 pm
+    return format(date, 'h:mm a').toLowerCase(); 
   }
 
   if (isYesterday(date)) {
@@ -23,7 +23,7 @@ export const formatChatTime = (dateInput: string | Date | undefined): string => 
   const diffDays = differenceInDays(now, date);
 
   if (diffDays < 7) {
-    return format(date, 'EEEE'); // Monday, Tuesday...
+    return format(date, 'EEEE'); 
   }
 
   if (diffDays >= 7 && diffDays < 14) {

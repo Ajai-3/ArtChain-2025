@@ -1,52 +1,63 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { config } from '../config/env';
 import { injectable } from 'inversify';
 import { IUserService } from '../../application/interface/service/IUserService';
+import type { ApiGatewayResponse } from '../../types/gateway';
+import type { UserPublicProfile } from '../../types/user';
+import { SERVICE_MESSAGES, SERVICE_ROUTES } from '../../constants/ServiceMessages';
 
 @injectable()
 export class UserService implements IUserService {
-  async getUserById(userId: string, currentUserId?: string): Promise<unknown> {
+  async getUserById(
+    userId: string,
+    currentUserId?: string,
+  ): Promise<UserPublicProfile | null> {
     try {
-     
-      const response = await axios.get(
-        `${config.api_gateway_url}/api/v1/user/profile-id/${userId}`,
+      const response = await axios.get<ApiGatewayResponse<UserPublicProfile>>(
+        `${config.api_gateway_url}${SERVICE_ROUTES.USER_PROFILE_ID(userId)}`,
         {
           headers: {
-            'x-user-id': currentUserId, 
+            'x-user-id': currentUserId,
           },
-        }
+        },
       );
       return response.data.data;
-    } catch (error: any) {
-      if (error.response && error.response.status === 404) {
+    } catch (error) {
+      const err = error as AxiosError;
+      if (err.response && err.response.status === 404) {
         return null;
       }
       throw error;
     }
   }
 
-  async getUsersByIds(userIds: string[], currentUserId?: string): Promise<any[]> {
+  async getUsersByIds(
+    userIds: string[],
+    currentUserId?: string,
+  ): Promise<UserPublicProfile[]> {
     try {
-      const response = await axios.post(
-        `${config.api_gateway_url}/api/v1/user/batch`,
+      const response = await axios.post<ApiGatewayResponse<UserPublicProfile[]>>(
+        `${config.api_gateway_url}${SERVICE_ROUTES.USER_BATCH}`,
         { ids: userIds, currentUserId },
-        
       );
       return response.data.data || [];
     } catch (error) {
-      console.error('Error fetching users in batch', error);
       return [];
     }
   }
 
-  async getUserByUsername(username: string): Promise<any> {
-     try {
-      const response = await axios.get(
-        `${config.api_gateway_url}/api/v1/user/profile/${username}`);
+  async getUserByUsername(username: string): Promise<UserPublicProfile | null> {
+    try {
+      const response = await axios.get<ApiGatewayResponse<UserPublicProfile>>(
+        `${config.api_gateway_url}${SERVICE_ROUTES.USER_PROFILE_USERNAME(username)}`,
+      );
       return response.data.data;
     } catch (error) {
-      console.error('Error fetching users in batch', error);
-      return [];
+      const err = error as AxiosError;
+      if (err.response && err.response.status === 404) {
+        return null;
+      }
+      throw error;
     }
   }
 }

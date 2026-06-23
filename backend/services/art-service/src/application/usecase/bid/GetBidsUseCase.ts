@@ -2,10 +2,10 @@ import { injectable, inject } from 'inversify';
 import { IGetBidsUseCase } from '../../interface/usecase/bid/IGetBidsUseCase';
 import { TYPES } from '../../../infrastructure/Inversify/types';
 import { IBidRepository } from '../../../domain/repositories/IBidRepository';
-import { UserService } from '../../../infrastructure/service/UserService';
 import { BidMapper } from '../../mapper/BidMapper';
 import { BidResponseDTO } from '../../interface/dto/bid/BidResponseDTO';
 import { IUserService } from '../../interface/service/IUserService';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
 export class GetBidsUseCase implements IGetBidsUseCase {
@@ -32,10 +32,10 @@ export class GetBidsUseCase implements IGetBidsUseCase {
 
     const userIds = [...new Set(bids.map((b) => b.bidderId))];
     const users = await this._userService.getUsersByIds(userIds);
-    const userMap = new Map(users.map((u: any) => [u.id, u]));
+    const userMap = new Map<string, UserPublicProfile>(users.map((u) => [u.id, u]));
 
     const mappedBids = bids.map((bid) => {
-      const bidder = userMap.get(bid.bidderId);
+      const bidder = userMap.get(bid.bidderId) ?? null;
       return BidMapper.toDTO(bid, bidder);
     });
 

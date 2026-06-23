@@ -5,6 +5,9 @@ import { IArtPostRepository } from '../../../domain/repositories/IArtPostReposit
 import { IPurchaseRepository } from '../../../domain/repositories/IPurchaseRepository';
 import { IGetPurchasedArtWorksUseCase } from '../../interface/usecase/art/IGetPurchasedArtWorksUseCase';
 import { toPurchaseHistoryResponse } from '../../mapper/artWithUserMapper';
+import { PurchasedArtworksResponse } from '../../../types/usecase-response';
+import type { ArtPostLike } from '../../../types/art-mapper';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
 export class GetPurchasedArtWorksUseCase implements IGetPurchasedArtWorksUseCase {
@@ -16,17 +19,17 @@ export class GetPurchasedArtWorksUseCase implements IGetPurchasedArtWorksUseCase
     private readonly _purchaseRepo: IPurchaseRepository,
   ) {}
 
-  async execute(userId: string, page: number = 1, limit: number = 10) {
+  async execute(userId: string, page: number = 1, limit: number = 10): Promise<PurchasedArtworksResponse> {
     const purchasedList = await this._purchaseRepo.findByUserId(
       userId,
       page,
       limit,
     );
-    if (!purchasedList || !purchasedList.length) return [];
+    if (!purchasedList || !purchasedList.length) return { purchases: [], total: 0 };
 
-    const artIds = [...new Set(purchasedList.map((p) => p.artId.toString()))];
+    const artIds = [...new Set(purchasedList.map((p) => p.artId?.toString() ?? '').filter(Boolean))];
     const sellerIds = [
-      ...new Set(purchasedList.map((p) => p.sellerId.toString())),
+      ...new Set(purchasedList.map((p) => p.sellerId?.toString() ?? '').filter(Boolean)),
     ];
 
     const [allArts, allSellers] = await Promise.all([
@@ -34,22 +37,28 @@ export class GetPurchasedArtWorksUseCase implements IGetPurchasedArtWorksUseCase
       this._userService.getUsersByIds(sellerIds),
     ]);
 
-    const artMap = new Map(
-      allArts
-        .filter((a) => a && (a.id || a._id))
-        .map((a) => [(a.id || a._id).toString(), a]),
-    );
+    const artMap = new Map<string, ArtPostLike>();
+    for (const a of allArts) {
+      if (a) {
+        const key = a._id?.toString() ?? a.id ?? '';
+        artMap.set(key, a);
+      }
+    }
 
-    const sellerMap = new Map(
-      allSellers
-        .filter((s) => s && (s.id || s._id))
-        .map((s) => [(s.id || s._id).toString(), s]),
-    );
+    const sellerMap = new Map<string, UserPublicProfile>();
+    for (const s of allSellers) {
+      if (s) {
+        sellerMap.set(s.id, s);
+      }
+    }
 
-    const result = purchasedList
+    const purchases = purchasedList
       .map((purchase) => {
-        const art = artMap.get(purchase.artId.toString());
-        const seller = sellerMap.get(purchase.sellerId.toString());
+        const artId = purchase.artId?.toString() ?? '';
+        const sellerId = purchase.sellerId?.toString() ?? '';
+
+        const art = artMap.get(artId) ?? null;
+        const seller = sellerMap.get(sellerId) ?? null;
 
         if (!art) {
           console.warn(`Art not found for ID: ${purchase.artId}`);
@@ -58,8 +67,8 @@ export class GetPurchasedArtWorksUseCase implements IGetPurchasedArtWorksUseCase
 
         return toPurchaseHistoryResponse(purchase, art, seller);
       })
-      .filter((item) => item !== null);
+      .filter((item): item is NonNullable<typeof item> => item !== null);
 
-    return result;
+    return { purchases, total: purchasedList.length };
   }
 }

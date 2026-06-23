@@ -7,6 +7,7 @@ import { IUserService } from '../../interface/service/IUserService';
 import { IGetArtByIdUseCase } from '../../interface/usecase/art/IGetArtByIdUseCase';
 import { IArtPostRepository } from '../../../domain/repositories/IArtPostRepository';
 import { mapCdnUrl } from '../../../utils/mapCdnUrl';
+import type { UserPublicProfile } from '../../../types/user';
 
 @injectable()
 export class GetArtByIdUseCase implements IGetArtByIdUseCase {
@@ -16,7 +17,7 @@ export class GetArtByIdUseCase implements IGetArtByIdUseCase {
     private readonly _artRepo: IArtPostRepository
   ) { }
 
-  async execute(id: string): Promise<{ art: ArtPost | null; user: unknown }> {
+  async execute(id: string): Promise<{ art: ArtPost | null; user: UserPublicProfile | null }> {
     const art = await this._artRepo.getById(id);
 
     if (!art) {

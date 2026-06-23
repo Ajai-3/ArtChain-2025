@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import apiClient from "../../../../../api/axios";
 import { useDispatch } from "react-redux";
 import { removeMessage, updateMessage } from "../../../../../redux/slices/chatSlice";
+import { API_ENDPOINTS } from "../../../../../constants/apiEndpoints";
 
 export const useDeleteMessage = (currentUserId: string) => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ export const useDeleteMessage = (currentUserId: string) => {
              }));
         }
 
-        await apiClient.delete(`/api/v1/chat/message/${messageId}`, {
+        await apiClient.delete(API_ENDPOINTS.CHAT_MESSAGE_2(messageId), {
           data: { userId: currentUserId, mode },
         });
 

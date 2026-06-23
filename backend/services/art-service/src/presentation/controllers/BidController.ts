@@ -11,6 +11,7 @@ import { PlaceBidDTO } from '../../application/interface/dto/bid/PlaceBidDTO';
 import { IGetBidsUseCase } from '../../application/interface/usecase/bid/IGetBidsUseCase';
 import { IPlaceBidUseCase } from '../../application/interface/usecase/bid/IPlaceBidUseCase';
 import { IGetUserBidsUseCase } from '../../application/interface/usecase/bid/IGetUserBidsUseCase';
+import type { RequestWithUser } from '../../types/express';
 
 @injectable()
 export class BidController implements IBidController {
@@ -32,7 +33,7 @@ export class BidController implements IBidController {
   //# This controller handles placing a bid on an auction.
   //# ================================================================================================================
   placeBid = async (
-    req: Request,
+    req: RequestWithUser,
     res: Response,
     next: NextFunction,
   ): Promise<Response | void> => {
@@ -49,12 +50,12 @@ export class BidController implements IBidController {
         auctionId: validatedBody.auctionId,
         amount: validatedBody.amount,
         bidderId,
-        bidderUserInfo: (req as any).user
+        bidderUserInfo: req.user
           ? {
-              id: (req as any).user.id || (req as any).user._id || bidderId,
-              username: (req as any).user.username,
-              profileImage: (req as any).user.profileImage,
-              name: (req as any).user.name,
+              id: req.user.id || req.user._id || bidderId,
+              username: req.user.username,
+              profileImage: req.user.profileImage,
+              name: req.user.name,
             }
           : undefined,
       };

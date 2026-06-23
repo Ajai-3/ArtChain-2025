@@ -86,11 +86,11 @@ export const AuctionCardImage = ({ auction, isLive, isEnded, isScheduled, isUnso
         )}
 
         {/* Winner Overlay for Ended Auctions (IF SOLD) */}
-        {isEnded && !isUnsold && (auction).winner && (
-           <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent p-3 pt-8 flex items-center gap-3 animate-in slide-in-from-bottom-2">
+        {isEnded && !isUnsold && auction.winner && (
+            <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent p-3 pt-8 flex items-center gap-3 animate-in slide-in-from-bottom-2">
               <div className="relative">
                   <Avatar className="h-10 w-10 border-2 border-amber-400 shadow-amber-500/20 shadow-lg">
-                      <AvatarImage src={(auction).winner?.profileImage} />
+                      <AvatarImage src={auction.winner?.profileImage} />
                       <AvatarFallback className="text-amber-700 bg-amber-100 font-bold">W</AvatarFallback>
                   </Avatar>
                   <div className="absolute -top-1 -right-1 bg-amber-400 text-amber-900 rounded-full p-0.5 shadow-sm">
@@ -99,9 +99,9 @@ export const AuctionCardImage = ({ auction, isLive, isEnded, isScheduled, isUnso
               </div>
               <div className="flex flex-col">
                    <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">Winner</span>
-                   <span className="text-sm font-bold text-white">{(auction as any).winner?.name || (auction as any).winner?.username}</span>
+                   <span className="text-sm font-bold text-white">{auction.winner?.name || auction.winner?.username}</span>
               </div>
-           </div>
+            </div>
         )}
         
         {/* Unsold Overlay */}

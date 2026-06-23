@@ -13,6 +13,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import ArtCardSkeleton from "../components/skeletons/ArtCardSkeleton";
 import { useMasonryLayout } from "../../../hooks/useMasonryLayout";
 import ContentUnavailable from "../../../components/ContentUnavailable";
+import type { ArtItem } from "../../../types/apiResponses";
 
 const Home: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -28,7 +29,6 @@ const Home: React.FC = () => {
     hasNextPage,
     isFetchingNextPage,
     status,
-    error,
   } = useGetAllArt(selectedCategory || undefined);
 
   const observer = useRef<IntersectionObserver | null>(null);
@@ -47,14 +47,14 @@ const Home: React.FC = () => {
   );
 
   const allItems = useMemo(
-    () => data?.pages.flatMap((p) => p.data) || [],
+    () => data?.pages.flatMap((p: { data: ArtItem[] }) => p.data) || [],
     [data]
   );
 
   const { containerRef, rows } = useMasonryLayout(
     allItems,
-    (item) => item.art.id,
-    (item) => item.art.imageUrl
+    (item: ArtItem) => item.id,
+    (item: ArtItem) => item.imageUrl || item.previewUrl || ''
   );
 
   // categories scroll helpers (unchanged)
@@ -200,13 +200,13 @@ const Home: React.FC = () => {
               className="flex"
               style={{ gap: "4px", marginBottom: "4px" }}
             >
-              {row.items.map((item: any, itemIndex: number) => {
+              {row.items.map((item, itemIndex: number) => {
                 const isLastItem =
                   rowIndex === rows.length - 1 &&
                   itemIndex === row.items.length - 1;
                 return (
                   <div
-                    key={item.art.id}
+                    key={item.id}
                     ref={isLastItem ? lastArtRef : null}
                     style={{
                       width: `${item.calculatedWidth}px`,

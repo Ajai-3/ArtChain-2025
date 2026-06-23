@@ -14,7 +14,6 @@ export class CheckOngoingCommissionUseCase implements ICheckOngoingCommissionUse
   async execute(requesterId: string, artistId: string): Promise<{ hasOngoing: boolean }> {
     const commissions = await this._commissionRepository.findByRequesterIdAndArtistId(requesterId, artistId);
     
-    // Statuses that are considered "ongoing"
     const ongoingStatuses: CommissionStatus[] = [
       CommissionStatus.REQUESTED,
       CommissionStatus.NEGOTIATING,

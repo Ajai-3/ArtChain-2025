@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Download, Loader2 } from 'lucide-react';
 import { useDownloadFileMutation } from '../../../hooks/art/useDownloadFileMutation';
 import { Button } from '../../../../../components/ui/button';
+import { type PurchasedArt } from '../../../../../types/apiResponses';
 
 interface Props {
-  artworks: any[];
+  artworks: PurchasedArt[];
   isLoading: boolean;
   page: number;
-  setPage: (p: any) => void;
+  setPage: (p: number | ((prev: number) => number)) => void;
   limit: number;
 }
 
@@ -29,7 +30,7 @@ const PurchasedArtGrid: React.FC<Props> = ({ artworks, isLoading, page, setPage,
             <div key={i} className="h-80 rounded-[2rem] bg-zinc-900 animate-pulse" />
           ))
         ) : (
-          artworks.map((item: any) => (
+          artworks.map((item) => (
             <div 
               key={item.transactionId}
               className="group relative bg-zinc-900/30 border border-white/5 rounded-[2rem] overflow-hidden hover:border-emerald-500/50 transition-all duration-500 hover:-translate-y-2"
@@ -62,29 +63,29 @@ const PurchasedArtGrid: React.FC<Props> = ({ artworks, isLoading, page, setPage,
                 </div>
               </div>
 
-              {/* CONTENT AREA */}
-              <div className="p-5 space-y-3">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h4 className="text-sm text-white group-hover:text-emerald-400 transition-colors uppercase truncate w-32">
-                      {item.art?.title}
-                    </h4>
-                    <p className="text-sm text-zinc-500 font-bold">Bought on {new Date(item.purchaseDate).toLocaleDateString()}</p>
+                {/* CONTENT AREA */}
+                <div className="p-5 space-y-3">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="text-sm text-white group-hover:text-emerald-400 transition-colors uppercase truncate w-32">
+                        {item.art?.title || item.artName}
+                      </h4>
+                      <p className="text-sm text-zinc-500 font-bold">Bought on {new Date(item.purchaseDate || item.createdAt || '').toLocaleDateString()}</p>
+                    </div>
+                    <div className="px-2 py-1 bg-white/5 rounded-lg text-md text-emerald-500">{item.amount || item.price} AC</div>
                   </div>
-                  <div className="px-2 py-1 bg-white/5 rounded-lg text-md text-emerald-500">{item.amount} AC</div>
-                </div>
 
-                <div 
-                  className="flex items-center gap-2 pt-3 border-t border-white/5 cursor-pointer"
-                  onClick={() => navigate(`/${item.seller?.username}`)}
-                >
-                  <img src={item.seller?.profileImage} className="w-12 h-12 rounded-full border border-white/10" alt="" />
-                 <div className="flex flex-col items-start">
-                     <span className="text-md font-bold dark:text-zinc-300 hover:text-white transition-colors">@{item.seller?.username}</span>
-                  <span className="text-sm font-bold dark:text-zinc-500">({item.seller?.name})</span>
+                  <div 
+                    className="flex items-center gap-2 pt-3 border-t border-white/5 cursor-pointer"
+                    onClick={() => navigate(`/${item.seller?.username || item.sellerUsername || ''}`)}
+                  >
+                    <img src={(item.seller?.profileImage || '')} className="w-12 h-12 rounded-full border border-white/10" alt="" />
+                   <div className="flex flex-col items-start">
+                      <span className="text-md font-bold dark:text-zinc-300 hover:text-white transition-colors">@{item.seller?.username || item.sellerUsername || ''}</span>
+                    <span className="text-sm font-bold dark:text-zinc-500">({item.seller?.name || item.sellerName || ''})</span>
+                   </div>
                  </div>
-                </div>
-              </div>
+               </div>
             </div>
           ))
         )}

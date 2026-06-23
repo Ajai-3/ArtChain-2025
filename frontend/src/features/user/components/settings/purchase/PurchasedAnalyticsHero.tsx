@@ -9,13 +9,20 @@ import {
     ResponsiveContainer,
     Cell,
 } from 'recharts';
+import type { PurchasedAnalytics } from '@/types/apiResponses';
 
 interface Props {
-    analytics: any;
+    analytics: { purchaseTrend: PurchasedAnalytics[]; totalAmount: number; totalPurchases: number } | undefined;
     isLoading: boolean;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface CustomTooltipProps {
+    active?: boolean;
+    payload?: Array<{ value: number }>;
+    label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3">
@@ -134,7 +141,7 @@ const PurchasedAnalyticsHero: React.FC<Props> = ({ analytics, isLoading }) => {
                                         cursor={{ fill: "#02a86308" }}
                                     />
                                     <Bar dataKey="amount" radius={[6, 6, 2, 2]}>
-                                        {trend.map((_: any, index: number) => (
+                                        {trend.map((_, index: number) => (
                                             <Cell
                                                 key={`cell-${index}`}
                                                 fill={index === trend.length - 1 ? "#02a863" : "#02a86330"}

@@ -30,6 +30,7 @@ import { Pagination } from "./Pagination";
 import { Button } from "../../../../components/ui/button";
 import { Plus } from "lucide-react";
 import WithdrawalModal from "./WithdrawalModal";
+import type { WithdrawalData } from "../../../../types/withdrawal";
 
 export default function WithdrawalsTable({ balance }: { balance: number }) {
   const STATUSES = ["PENDING", "APPROVED", "PROCESSING", "COMPLETED", "REJECTED", "FAILED"] as const;
@@ -216,7 +217,7 @@ export default function WithdrawalsTable({ balance }: { balance: number }) {
         </TableHeader>
         <TableBody>
           {withdrawals && withdrawals.length > 0 ? (
-            withdrawals.map((withdrawal: any) => {
+            withdrawals.map((withdrawal: WithdrawalData) => {
               const dateObj = new Date(withdrawal.createdAt);
               const date = dateObj.toLocaleDateString("en-GB", {
                 day: "2-digit",

@@ -26,12 +26,25 @@ export const TransactionCategory = {
   COMMISSION: 'COMMISSION',
   REFUND: 'REFUND',
   GIFT: 'GIFT',
-  AUCTION_FEE: 'AUCTION_FEE',      
-  SALE_FEE: 'SALE_FEE',          
+  AUCTION_FEE: 'AUCTION_FEE',
+  SALE_FEE: 'SALE_FEE',
   COMMISSION_FEE: 'COMMISSION_FEE',
   OTHER: 'OTHER',
 } as const;
 export type TransactionCategory = typeof TransactionCategory[keyof typeof TransactionCategory];
+
+export interface TransactionMeta {
+  withdrawalMethod?: string;
+  accountHolderName?: string;
+  accountNumber?: string;
+  ifscCode?: string;
+  upiId?: string;
+  recipientId?: string;
+  senderId?: string;
+  withdrawalId?: string;
+  originalTransactionId?: string;
+  [key: string]: unknown;
+}
 
 export class Transaction {
   constructor(
@@ -44,7 +57,7 @@ export class Transaction {
     public readonly status: TransactionStatus = TransactionStatus.PENDING,
     public readonly externalId?: string | null,
     public readonly description?: string,
-    public readonly meta?: any,
+    public readonly meta?: TransactionMeta | null,
     public readonly createdAt: Date = new Date(),
     public readonly updatedAt: Date = new Date()
   ) {}

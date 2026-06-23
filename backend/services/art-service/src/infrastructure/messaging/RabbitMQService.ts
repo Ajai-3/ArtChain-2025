@@ -1,13 +1,17 @@
-import amqp from 'amqplib';
+import amqp, { Channel, ConsumeMessage } from 'amqplib';
 import { injectable } from 'inversify';
 import { config } from '../config/env';
 import { logger } from '../../utils/logger';
+import type { JsonObject } from '../../types/json';
 
 @injectable()
 export class RabbitMQService {
   private connection: any = null;
   private channel: any = null;
-  private consumers: Array<{ queue: string; handler: (msg: any) => Promise<boolean> }> = [];
+  private consumers: Array<{
+    queue: string;
+    handler: (msg: JsonObject) => Promise<boolean>;
+  }> = [];
 
   private readonly DELAYED_EXCHANGE = 'delayed_exchange';
   private readonly GLOBAL_EXCHANGE = 'global_exchange';
@@ -16,6 +20,10 @@ export class RabbitMQService {
   private readonly DELAYED_QUEUE = 'delayed_queue';
   private readonly ENDED_QUEUE = 'ended_queue';
   private readonly RETRY_QUEUE = 'auction_retry_queue';
+  private readonly DEAD_LETTER_QUEUE = 'auction_ended_dlq';
+
+  /** Max times a failed end-event is retried (60s apart via retry queue TTL). */
+  private readonly MAX_AUCTION_END_RETRIES = 5;
 
   public readonly AUCTION_ENDED_KEY = 'auction.ended';
 
@@ -24,7 +32,7 @@ export class RabbitMQService {
     try {
       this.connection = await amqp.connect(config.rabbitmq_url);
       
-      this.connection.on('error', (err: any) => {
+      this.connection.on('error', (err: Error) => {
         logger.error('RabbitMQ Connection Error', err);
         this.handleConnectionFailure();
       });
@@ -36,7 +44,7 @@ export class RabbitMQService {
 
       this.channel = await this.connection.createChannel();
       
-      this.channel.on('error', (err: any) => {
+      this.channel.on('error', (err: Error) => {
         logger.error('RabbitMQ Channel Error', err);
         this.handleChannelFailure();
       });
@@ -50,7 +58,6 @@ export class RabbitMQService {
       logger.info('RabbitMQ Connected and Queues Configured');
     } catch (error) {
       logger.error('RabbitMQ Connection Failed', error);
-      // Don't throw the error, just handle the failure so the process doesn't exit if it occurs during runtime
       this.handleConnectionFailure();
     }
   }
@@ -58,7 +65,6 @@ export class RabbitMQService {
   private handleConnectionFailure() {
     this.connection = null;
     this.channel = null;
-    // Optional: add a timeout to try reconnecting automatically
     setTimeout(() => {
         this.connect().catch(err => logger.error('RabbitMQ Reconnection Retry Failed', err));
     }, 5000);
@@ -66,15 +72,16 @@ export class RabbitMQService {
 
   private handleChannelFailure() {
     this.channel = null;
-    // Try to recreate channel if connection is still alive
     if (this.connection) {
        this.connection.createChannel()
-        .then(async (ch: any) => {
+        .then(async (ch: Channel) => {
             this.channel = ch;
             await this.setupQueues();
             await this.reRegisterConsumers();
         })
-        .catch((err: any) => logger.error('Failed to recreate RabbitMQ channel', err));
+        .catch((err: Error) =>
+          logger.error('Failed to recreate RabbitMQ channel', err),
+        );
     }
   }
 
@@ -143,6 +150,31 @@ export class RabbitMQService {
       this.RETRY_EXCHANGE,
       'auction.retry',
     );
+
+    // 5. Dead-letter queue — messages that exceeded max retries
+    await this.channel.assertQueue(this.DEAD_LETTER_QUEUE, { durable: true });
+  }
+
+  private getMessageRetryCount(msg: ConsumeMessage): number {
+    const xDeath = msg.properties.headers?.['x-death'];
+    if (!Array.isArray(xDeath)) return 0;
+
+    return xDeath.reduce((sum: number, entry: { queue?: string; count?: number }) => {
+      if (entry.queue === this.RETRY_QUEUE) {
+        return sum + (entry.count ?? 0);
+      }
+      return sum;
+    }, 0);
+  }
+
+  private publishToDeadLetterQueue(content: JsonObject, reason: string) {
+    if (!this.channel) return;
+    const payload = { ...content, failedAt: new Date().toISOString(), reason };
+    this.channel.sendToQueue(
+      this.DEAD_LETTER_QUEUE,
+      Buffer.from(JSON.stringify(payload)),
+      { persistent: true },
+    );
   }
 
   async publishDelayedAuctionEnd(auctionId: string, durationMs: number) {
@@ -163,7 +195,7 @@ export class RabbitMQService {
     );
   }
 
-  async consume(queue: string, handler: (msg: any) => Promise<boolean>) {
+  async consume(queue: string, handler: (msg: JsonObject) => Promise<boolean>) {
     // 1. Store consumer info for potential reconnection
     if (!this.consumers.find(c => c.queue === queue && c.handler === handler)) {
         this.consumers.push({ queue, handler });
@@ -173,7 +205,10 @@ export class RabbitMQService {
     await this.setupConsumer(queue, handler);
   }
 
-  private async setupConsumer(queue: string, handler: (msg: any) => Promise<boolean>) {
+  private async setupConsumer(
+    queue: string,
+    handler: (msg: JsonObject) => Promise<boolean>,
+  ) {
     if (!this.channel) await this.connect();
     if (!this.channel) {
         logger.error(`Cannot start consumer for queue ${queue}: RabbitMQ channel not available`);
@@ -186,21 +221,53 @@ export class RabbitMQService {
 
         await this.channel.consume(
             queue,
-            async (msg: any) => {
+            async (msg: ConsumeMessage | null) => {
               if (!msg) return;
               try {
-                const content = JSON.parse(msg.content.toString());
+                const content = JSON.parse(msg.content.toString()) as JsonObject;
+                const retryCount = this.getMessageRetryCount(msg);
                 const success = await handler(content);
-      
+
                 if (success) {
+                  this.channel.ack(msg);
+                  return;
+                }
+
+                if (retryCount >= this.MAX_AUCTION_END_RETRIES) {
+                  logger.error(
+                    `Auction end event exceeded max retries (${this.MAX_AUCTION_END_RETRIES}). ` +
+                      `Moving to DLQ. Payload: ${JSON.stringify(content)}`,
+                  );
+                  this.publishToDeadLetterQueue(
+                    content,
+                    'max_retries_exceeded',
+                  );
+                  this.channel.ack(msg);
+                  return;
+                }
+
+                logger.warn(
+                  `Auction end event failed (retry ${retryCount + 1}/${this.MAX_AUCTION_END_RETRIES}). ` +
+                    `Will retry after TTL.`,
+                );
+                this.channel.nack(msg, false, false);
+              } catch (error) {
+                logger.error('Consumer Processing Error', error);
+                if (!this.channel) return;
+
+                let content: JsonObject = {};
+                try {
+                  content = JSON.parse(msg.content.toString()) as JsonObject;
+                } catch {
+                  /* use empty payload for DLQ */
+                }
+
+                const retryCount = this.getMessageRetryCount(msg);
+                if (retryCount >= this.MAX_AUCTION_END_RETRIES) {
+                  this.publishToDeadLetterQueue(content, 'processing_error');
                   this.channel.ack(msg);
                 } else {
                   this.channel.nack(msg, false, false);
-                }
-              } catch (error) {
-                logger.error('Consumer Processing Error', error);
-                if (this.channel) {
-                    this.channel.nack(msg, false, false);
                 }
               }
             },

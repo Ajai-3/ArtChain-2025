@@ -3,10 +3,11 @@ import { VerifiedArtistBadge } from "../../../../components/shared/VerifiedArtis
 import { formatDistanceToNow } from "date-fns";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { Badge } from "../../../../components/ui/badge";
+import type { BidItem } from "../../../../types/apiResponses";
 
 interface BiddingBoardProps {
   auctionId: string;
-  bids: any[];
+  bids: BidItem[];
   isEnded?: boolean;
 }
 
@@ -34,7 +35,7 @@ export const BiddingBoard = ({ auctionId: _auctionId, bids, isEnded = false }: B
           </div>
         ) : (
           <div className="space-y-3 pb-4">
-            {bids.map((bid: any, index: number) => {
+            {bids.map((bid, index: number) => {
                 const isTopBid = index === 0;
                 return (
                   <div 

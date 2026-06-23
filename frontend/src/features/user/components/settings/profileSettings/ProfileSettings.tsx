@@ -115,7 +115,7 @@ const ProfileSettings: React.FC = () => {
   };
 
   const onSubmit = (data: ProfileFormValues) => {
-    const updatedFields: any = {};
+    const updatedFields: Partial<ProfileFormValues> = {};
     if (data.name !== userData?.name) updatedFields.name = data.name;
     if (data.username !== userData?.username) updatedFields.username = data.username;
     if (data.bio !== userData?.bio) updatedFields.bio = data.bio;

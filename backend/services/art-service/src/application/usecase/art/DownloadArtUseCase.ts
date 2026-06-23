@@ -97,6 +97,6 @@ export class DownloadArtUseCase implements IDownloadArtUseCase {
       throw new BadRequestError('Unsupported category');
     }
 
-    return this._s3Service.getSignedUrl(originalKey, category as any, fileName);
+    return this._s3Service.getSignedUrl(originalKey, category, fileName);
   }
 }

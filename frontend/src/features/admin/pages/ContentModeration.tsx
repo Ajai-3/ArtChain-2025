@@ -25,8 +25,13 @@ const ContentModeration = () => {
   const totalPages = data?.meta ? Math.ceil(data.meta.total / data.meta.limit) : 0;
 
   // Calculate stats from grouped reports
+  interface GroupedReport {
+    reportCount: number;
+    status: string;
+  }
+  
   const stats = groupedReports.reduce(
-    (acc: { total: number; pending: number; resolved: number; dismissed: number }, report: any) => {
+    (acc: { total: number; pending: number; resolved: number; dismissed: number }, report: GroupedReport) => {
       acc.total += report.reportCount;
       if (report.status === "pending") acc.pending += report.reportCount;
       if (report.status === "resolved") acc.resolved += report.reportCount;
@@ -37,7 +42,7 @@ const ContentModeration = () => {
   );
 
   // Create mock reports array for stats display
-  const mockReportsForStats: any[] = Array(stats.total).fill({ status: "pending" }).map((_, i) => {
+  const mockReportsForStats: { status: string }[] = Array(stats.total).fill({ status: "pending" }).map((_, i) => {
     if (i < stats.resolved) return { status: "resolved" };
     if (i < stats.resolved + stats.dismissed) return { status: "dismissed" };
     return { status: "pending" };

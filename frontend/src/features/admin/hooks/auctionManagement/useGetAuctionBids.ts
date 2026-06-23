@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 interface Bid {
   id: string;
@@ -29,7 +30,7 @@ export const useGetAuctionBids = (auctionId: string | null) => {
     queryFn: async ({ pageParam = 1 }) => {
       if (!auctionId) return { bids: [], total: 0 };
       const { data } = await apiClient.get<BidsResponse>(
-        `/api/v1/art/bids/${auctionId}`,
+        API_ENDPOINTS.ART_BIDS(auctionId),
         {
           params: {
             page: pageParam,

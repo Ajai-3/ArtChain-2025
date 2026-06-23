@@ -80,7 +80,7 @@ export class UserManageMentController implements IUserManageMentController {
     req: Request,
     res: Response,
     next: NextFunction,
-  ): Promise<any> => {
+  ): Promise<Response | void> => {
     try {
       const { userId } = req.params as { userId: string };
 
@@ -90,7 +90,7 @@ export class UserManageMentController implements IUserManageMentController {
       this._logger.info(`User ${action} successfully`);
 
       return res
-        .status(200)
+        .status(HttpStatus.OK)
         .json({ message: `User ${action} successfully`, data: user });
     } catch (error) {
       next(error);

@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../../../components/ui/select";
+} from '../../../../components/ui/select';
 
 interface ReportFiltersProps {
   status: string;
@@ -21,28 +21,28 @@ export const ReportFilters: React.FC<ReportFiltersProps> = ({
   setTargetType,
 }) => {
   return (
-    <div className="flex gap-4">
+    <div className='flex gap-4'>
       <Select value={status} onValueChange={setStatus}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Filter by Status" />
+        <SelectTrigger className='w-[180px]'>
+          <SelectValue placeholder='Filter by Status' />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="ALL">All Statuses</SelectItem>
-          <SelectItem value="pending">Pending</SelectItem>
-          <SelectItem value="resolved">Resolved</SelectItem>
-          <SelectItem value="dismissed">Dismissed</SelectItem>
+          <SelectItem value='ALL'>All Statuses</SelectItem>
+          <SelectItem value='pending'>Pending</SelectItem>
+          <SelectItem value='resolved'>Resolved</SelectItem>
+          <SelectItem value='dismissed'>Dismissed</SelectItem>
         </SelectContent>
       </Select>
 
       <Select value={targetType} onValueChange={setTargetType}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Filter by Type" />
+        <SelectTrigger className='w-[180px]'>
+          <SelectValue placeholder='Filter by Type' />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="ALL">All Types</SelectItem>
-          <SelectItem value="ART">Art</SelectItem>
-          <SelectItem value="COMMENT">Comment</SelectItem>
-          <SelectItem value="USER">User</SelectItem>
+          <SelectItem value='ALL'>All Types</SelectItem>
+          <SelectItem value='ART'>Art</SelectItem>
+          <SelectItem value='COMMENT'>Comment</SelectItem>
+          <SelectItem value='USER'>User</SelectItem>
         </SelectContent>
       </Select>
     </div>

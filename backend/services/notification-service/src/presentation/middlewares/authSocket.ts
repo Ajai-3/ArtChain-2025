@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { config } from '../../infrastructure/config/env';
 import { logger } from '../../infrastructure/utils/logger';
+import { AuthenticatedSocket } from '../../types';
 
 export const authSocket = (socket: Socket, next: (err?: Error) => void) => {
   try {
@@ -16,10 +17,9 @@ export const authSocket = (socket: Socket, next: (err?: Error) => void) => {
 
     logger.debug('Decoded token:', { decode });
 
-    (socket as any).userId = decode?.id;
+    (socket as unknown as AuthenticatedSocket).userId = decode?.id;
     next();
   } catch (err) {
     logger.error('Invalid token : ', err);
-    // next(new Error("Invalid token"));
   }
 };

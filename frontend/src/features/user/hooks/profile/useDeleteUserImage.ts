@@ -5,6 +5,7 @@ import { updateProfile } from "../../../../redux/slices/userSlice";
 import type { RootState } from "../../../../redux/store";
 import type { User } from "../../../../types/users/user/user";
 import toast from "react-hot-toast";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 type ImageType = "profileImage" | "bannerImage" | "backgroundImage";
 
@@ -21,7 +22,7 @@ export const useDeleteUserImage = () => {
     mutationFn: async ({ type }) => {
       const currentImageUrl = user?.[type];
       if (!currentImageUrl) throw new Error(`No ${type} to delete`);
-      await apiClient.post("/api/v1/upload/delete", { fileUrl: currentImageUrl, type });
+      await apiClient.post(API_ENDPOINTS.UPLOAD_DELETE, { fileUrl: currentImageUrl, type });
     },
 
     onSuccess: (_, variables) => {

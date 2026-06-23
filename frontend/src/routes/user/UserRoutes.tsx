@@ -1,95 +1,99 @@
-import { Route } from "react-router-dom";
-import { lazy } from "react";
-import UserLayout from "../../layouts/UserLayout";
-import SettingsLayout from "../../layouts/SettingsLayout";
-import { AuthRouteGuard } from "./AuthRouteGuard";
-import { UserRouteGuard } from "./UserRouteGuard";
-import Test from "../../components/Test";
-import SuccessPage from "../../features/user/components/wallet/SuccessPage";
-import { ROUTES, ROUTE_PATTERNS } from "../../constants/routes";
+import { Route } from 'react-router-dom';
+import { lazy } from 'react';
+import UserLayout from '../../layouts/UserLayout';
+import SettingsLayout from '../../layouts/SettingsLayout';
+import { AuthRouteGuard } from './AuthRouteGuard';
+import { UserRouteGuard } from './UserRouteGuard';
+import SuccessPage from '../../features/user/components/wallet/SuccessPage';
+import { ROUTES, ROUTE_PATTERNS } from '../../constants/routes';
 
 // Lazy-loaded pages
-const Home = lazy(() => import("../../features/user/pages/Home"));
-const Profile = lazy(() => import("../../features/user/pages/Profile"));
-const Auth = lazy(() => import("../../features/user/components/auth/Auth"));
+const Home = lazy(() => import('../../features/user/pages/Home'));
+const Profile = lazy(() => import('../../features/user/pages/Profile'));
+const Auth = lazy(() => import('../../features/user/components/auth/Auth'));
 const ResetPassword = lazy(
-  () => import("../../features/user/components/auth/ResetPassword")
+  () => import('../../features/user/components/auth/ResetPassword'),
 );
 const SignupPassword = lazy(
-  () => import("../../features/user/components/auth/SignupPassword")
+  () => import('../../features/user/components/auth/SignupPassword'),
 );
-const Chat = lazy(() => import("../../features/user/pages/Chat"));
-const Liora = lazy(() => import("../../features/user/pages/Liora"));
+const Chat = lazy(() => import('../../features/user/pages/Chat'));
+const Liora = lazy(() => import('../../features/user/pages/Liora'));
+const Products = lazy(() => import('../../features/user/pages/Products'));
 
-const Shop = lazy(() => import("../../features/user/pages/Shop"));
-const Wallet = lazy(() => import("../../features/user/pages/Wallet"));
-const ArtPage = lazy(() => import("../../features/user/pages/ArtPage"));
-const BiddingPage = lazy(() => import("../../features/user/pages/bidding/BiddingPage"));
-const BiddingListPage = lazy(() => import("../../features/user/pages/bidding/BiddingListPage"));
-const BiddingDetailPage = lazy(() => import("../../features/user/pages/bidding/BiddingDetailPage"));
+const Shop = lazy(() => import('../../features/user/pages/Shop'));
+const Wallet = lazy(() => import('../../features/user/pages/Wallet'));
+const ArtPage = lazy(() => import('../../features/user/pages/ArtPage'));
+const BiddingPage = lazy(
+  () => import('../../features/user/pages/bidding/BiddingPage'),
+);
+const BiddingListPage = lazy(
+  () => import('../../features/user/pages/bidding/BiddingListPage'),
+);
+const BiddingDetailPage = lazy(
+  () => import('../../features/user/pages/bidding/BiddingDetailPage'),
+);
 
-const MyBidsPage = lazy(() => import("../../features/user/pages/bidding/MyBidsPage"));
-const MyAuctionsPage = lazy(() => import("../../features/user/pages/bidding/MyAuctionsPage"));
+const MyBidsPage = lazy(
+  () => import('../../features/user/pages/bidding/MyBidsPage'),
+);
+const MyAuctionsPage = lazy(
+  () => import('../../features/user/pages/bidding/MyAuctionsPage'),
+);
 
-// Profile tabs
 const ProfileGallery = lazy(
-  () => import("../../features/user/components/profile/GalleryTab")
+  () => import('../../features/user/components/profile/GalleryTab'),
 );
 
-// ... (rest of imports)
-
-      <Route path="bidding" element={<BiddingPage />}>
-        <Route index element={<BiddingListPage />} />
-        <Route path="my-bids" element={<MyBidsPage />} />
-        <Route path=":id" element={<BiddingDetailPage />} />
-      </Route>
 const ProfileFavorites = lazy(
-  () => import("../../features/user/components/profile/FavoritesTab")
+  () => import('../../features/user/components/profile/FavoritesTab'),
 );
 const ProfilePosts = lazy(
-  () => import("../../features/user/components/profile/PostsTab")
+  () => import('../../features/user/components/profile/PostsTab'),
 );
 const ProfileShop = lazy(
-  () => import("../../features/user/components/profile/ShopTab")
+  () => import('../../features/user/components/profile/ShopTab'),
 );
 const ProfileAbout = lazy(
-  () => import("../../features/user/components/profile/AboutTab")
+  () => import('../../features/user/components/profile/AboutTab'),
 );
 
 // Settings pages
 const ProfileSettings = lazy(
-  () => import("../../features/user/components/settings/profileSettings/ProfileSettings")
+  () =>
+    import('../../features/user/components/settings/profileSettings/ProfileSettings'),
 );
 const PasswordSettings = lazy(
-  () => import("../../features/user/components/settings/passwordsecurity/PasswordSettings")
+  () =>
+    import('../../features/user/components/settings/passwordsecurity/PasswordSettings'),
 );
 const PrivacySettings = lazy(
-  () => import("../../features/user/components/settings/PrivacySettings")
+  () => import('../../features/user/components/settings/PrivacySettings'),
 );
 const NotificationSettings = lazy(
-  () => import("../../features/user/components/settings/NotificationSettings")
+  () => import('../../features/user/components/settings/NotificationSettings'),
 );
 const SubscriptionSettings = lazy(
-  () => import("../../features/user/components/settings/SubscriptionSettings")
+  () => import('../../features/user/components/settings/SubscriptionSettings'),
 );
 const PurchaseHistory = lazy(
-  () => import("../../features/user/components/settings/purchase/PurchaseHistory")
+  () =>
+    import('../../features/user/components/settings/purchase/PurchaseHistory'),
 );
 const SalesHistory = lazy(
-  () => import("../../features/user/components/settings/sales/SalesHistory")
+  () => import('../../features/user/components/settings/sales/SalesHistory'),
 );
 const LikedItems = lazy(
-  () => import("../../features/user/components/settings/liked items/LikedItems")
+  () =>
+    import('../../features/user/components/settings/liked items/LikedItems'),
 );
 const BlockedUsers = lazy(
-  () => import("../../features/user/components/settings/BlockedUsers")
+  () => import('../../features/user/components/settings/BlockedUsers'),
 );
 const HelpAndSupport = lazy(
-  () => import("../../features/user/components/settings/HelpAndSupport")
+  () => import('../../features/user/components/settings/HelpAndSupport'),
 );
-const Settings = lazy(
-  () => import("../../features/user/pages/Settings")
-);
+const Settings = lazy(() => import('../../features/user/pages/Settings'));
 
 const UserRoutes = (
   <>
@@ -102,19 +106,12 @@ const UserRoutes = (
 
     <Route path={ROUTES.HOME} element={<UserLayout />}>
       <Route index element={<Home />} />
-      
+
       {/* Protected User Routes */}
       <Route element={<UserRouteGuard />}>
         <Route path="liora.ai" element={<Liora />} />
         <Route path="wallet" element={<Wallet />} />
         <Route path="success" element={<SuccessPage />} />
-        
-        <Route path="bidding" element={<BiddingPage />}>
-          <Route index element={<BiddingListPage />} />
-          <Route path="my-bids" element={<MyBidsPage />} />
-          <Route path="my-auctions" element={<MyAuctionsPage />} />
-          <Route path=":id" element={<BiddingDetailPage />} />
-        </Route>
 
         <Route path="chat" element={<Chat />} />
         <Route path={ROUTE_PATTERNS.CHAT_CONVERSATION} element={<Chat />} />
@@ -135,8 +132,14 @@ const UserRoutes = (
       </Route>
 
       {/* Public Pages but with feature-level auth (e.g. creating) */}
+      <Route path="bidding" element={<BiddingPage />}>
+        <Route index element={<BiddingListPage />} />
+        <Route path="my-bids" element={<MyBidsPage />} />
+        <Route path="my-auctions" element={<MyAuctionsPage />} />
+        <Route path=":id" element={<BiddingDetailPage />} />
+      </Route>
       <Route path="shop" element={<Shop />} />
-      <Route path="test" element={<Test />} />
+      <Route path="products" element={<Products />} />
       <Route path={ROUTE_PATTERNS.ART_PAGE} element={<ArtPage />} />
 
       {/* Profile Routes - Partially public */}
@@ -153,4 +156,3 @@ const UserRoutes = (
 );
 
 export default UserRoutes;
-

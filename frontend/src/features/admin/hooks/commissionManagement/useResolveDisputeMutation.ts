@@ -16,8 +16,9 @@ export const useResolveDisputeMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-commissions'] });
       toast.success("Dispute resolved successfully");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Failed to resolve dispute");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Failed to resolve dispute");
     }
   });
 };

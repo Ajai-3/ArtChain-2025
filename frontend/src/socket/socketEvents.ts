@@ -16,6 +16,13 @@ import {
   removeTypingUser,
 } from '../features/user/hooks/chat/presenceStore';
 import { addBid, auctionEnded } from '../redux/slices/biddingSlice';
+import type { 
+  TypingEventPayload, 
+  MessagesReadPayload, 
+  NewConversationPayload,
+  BidPlacedPayload,
+  AuctionEndedPayload
+} from '../types/socket';
 
 export const registerChatSocketEvents = (socket: Socket) => {
   socket.on('connect', () =>
@@ -39,28 +46,28 @@ export const registerChatSocketEvents = (socket: Socket) => {
     );
   });
 
-  socket.on('userTyping', ({ userId, conversationId }: any) => {
-    if (conversationId) {
-      addTypingUser(conversationId, userId);
-      setTimeout(() => removeTypingUser(conversationId, userId), 3000);
+  socket.on('userTyping', (data: TypingEventPayload) => {
+    if (data.conversationId) {
+      addTypingUser(data.conversationId, data.userId);
+      setTimeout(() => removeTypingUser(data.conversationId, data.userId), 3000);
     }
   });
 
-  socket.on('messagesRead', ({ conversationId, messageIds, readBy }: any) => {
+  socket.on('messagesRead', (data: MessagesReadPayload) => {
     store.dispatch(
       markMessagesAsRead({
-        conversationId,
-        messageIds,
-        readBy,
+        conversationId: data.conversationId,
+        messageIds: data.messageIds,
+        readBy: data.readBy,
       }),
     );
   });
 
-  socket.on('newPrivateConversation', (conversation: any) => {
+  socket.on('newPrivateConversation', (conversation: NewConversationPayload) => {
     store.dispatch(addConversation(conversation));
   });
 
-  socket.on('newGroupConversation', (conversation: any) => {
+  socket.on('newGroupConversation', (conversation: NewConversationPayload) => {
     store.dispatch(addConversation(conversation));
   });
 
@@ -108,11 +115,11 @@ export const registerBiddingSocketEvents = (socket: Socket) => {
     console.log('✅ Bidding socket connected:', socket.id),
   );
 
-  socket.on('bid_placed', (newBid: any) => {
+  socket.on('bid_placed', (newBid: BidPlacedPayload) => {
     store.dispatch(addBid(newBid));
   });
 
-  socket.on('auction_ended', (data: any) => {
+  socket.on('auction_ended', (data: AuctionEndedPayload) => {
     store.dispatch(auctionEnded(data));
   });
 

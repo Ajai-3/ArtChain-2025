@@ -1,4 +1,6 @@
+import { useSelector } from 'react-redux';
 import { useEffect, type ReactNode } from 'react';
+import type { RootState } from '../../redux/store';
 import { initSocket, disconnectSocket } from '../../socket';
 import {
   registerChatSocketEvents,
@@ -10,8 +12,6 @@ import {
   setChatSocket,
   setBiddingSocket,
 } from '../../socket/socketManager';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../../redux/store';
 
 interface Props {
   children: ReactNode;
@@ -25,8 +25,6 @@ export const SocketProvider = ({ children }: Props) => {
   useEffect(() => {
     if (!accessToken) return;
 
-    // VITE_API_URL will not works in the local running of the frontend
-    // This will rout the request to the services using the nginx when you run in docker
     const notificationSocket = initSocket(
       accessToken,
       import.meta.env.VITE_API_URL,

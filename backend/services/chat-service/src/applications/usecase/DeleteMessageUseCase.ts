@@ -3,7 +3,7 @@ import { TYPES } from '../../infrastructure/Inversify/types';
 import { BadRequestError, NotFoundError } from 'art-chain-shared';
 import { DeleteMode, Message } from '../../domain/entities/Message';
 import { DeleteMessageDto } from '../interface/dto/DeleteMessageDto';
-import { ConversationType } from '../../domain/entities/Conversation';
+import { ConversationType, Conversation } from '../../domain/entities/Conversation';
 import { IMessageCacheService } from '../interface/service/IMessageCacheService';
 import { IMessageRepository } from '../../domain/repositories/IMessageRepositories';
 import { IDeleteMessageUseCase } from './../interface/usecase/IDeleteMessageUseCase';
@@ -108,7 +108,7 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
   private validateDeletePermission(
     message: Message,
     userId: string,
-    conversation: any
+    conversation: Conversation
   ): void {
     if (conversation.type === ConversationType.PRIVATE) {
       if (message.senderId !== userId) {

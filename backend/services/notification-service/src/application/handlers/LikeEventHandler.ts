@@ -6,6 +6,7 @@ import { NotificationType } from '../../domain/enums/NotificationType';
 import { emitToUser } from '../../infrastructure/sockets/socketHandler';
 import { logger } from '../../infrastructure/utils/logger';
 import { ILikeEventHandler } from '../interfaces/handlers/ILikeEventHandler';
+import { LikeEventPayload } from '../../types';
 
 @injectable()
 export class LikeEventHandler implements ILikeEventHandler {
@@ -13,19 +14,13 @@ export class LikeEventHandler implements ILikeEventHandler {
     @inject(TYPES.INotificationRepository) private readonly _notificationRepo: INotificationRepository
   ) {}
 
-  async handle(event: {
-    userId: string;
-    senderId: string;
-    senderName: string;
-    senderProfile: string | null;
-    createdAt: string;
-  }): Promise<void> {
+  async handle(event: LikeEventPayload): Promise<void> {
     const notification = new Notification(
       event.userId,
       event.senderId,
       NotificationType.LIKE,
       false,
-      new Date(event.createdAt)
+      { createdAt: event.createdAt }
     );
 
     try {

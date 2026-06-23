@@ -6,6 +6,7 @@ import {
   storeMessages,
   setMessagesLoading,
 } from "../../../../redux/slices/chatSlice";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useInitialMessages = (conversationId: string) => {
   const dispatch = useDispatch();
@@ -33,8 +34,8 @@ export const useInitialMessages = (conversationId: string) => {
 
       try {
         const url = fromId
-          ? `/api/v1/chat/message/${conversationId}?limit=10&fromId=${fromId}`
-          : `/api/v1/chat/message/${conversationId}?limit=10`;
+          ? API_ENDPOINTS.CHAT_MESSAGE(conversationId, fromId)
+          : API_ENDPOINTS.CHAT_MESSAGE_1(conversationId);
 
         const res = await apiClient.get(url);
         const data = res.data.data || res.data;

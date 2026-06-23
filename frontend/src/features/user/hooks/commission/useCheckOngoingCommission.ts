@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import apiClient from "../../../../api/axios";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 /**
  * Checks if the current user already has an ongoing commission with the given artist.
@@ -18,7 +19,7 @@ export const useCheckOngoingCommission = (
     queryKey: ["commission-ongoing", requesterId, artistId],
     queryFn: async () => {
       const response = await apiClient.get<{ hasOngoing: boolean }>(
-        `/api/v1/art/commission/check-ongoing`,
+        API_ENDPOINTS.ART_COMMISSION_CHECKONGOING,
         { params: { artistId } }
       );
       return response.data;

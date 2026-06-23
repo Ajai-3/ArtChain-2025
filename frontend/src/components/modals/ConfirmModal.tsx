@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "../ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
 import CustomLoader from "../CustomLoader";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "../ui/dialog";
 
 interface ConfirmModalProps {
   isOpen: boolean;

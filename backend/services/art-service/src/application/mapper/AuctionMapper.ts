@@ -1,13 +1,14 @@
 import { Auction } from '../../domain/entities/Auction';
 import { Bid } from '../../domain/entities/Bid';
+import type { UserPublicProfile } from '../../types/user';
 
 export class AuctionMapper {
   static toDTO(
     auction: Auction,
     signedImageUrl: string,
-    host: any,
+    host: UserPublicProfile | null,
     bids: Bid[],
-    bidderMap: Map<string, any>
+    bidderMap: Map<string, UserPublicProfile>
   ) {
     const enrichedBids = bids.map((bid) => {
       const bidder = bidderMap.get(bid.bidderId);

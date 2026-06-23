@@ -1,12 +1,13 @@
 import apiClient from "../../../../api/axios";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export const useRecentConversations = () => {
   return useInfiniteQuery({
     queryKey: ["recentConversations"],
     queryFn: async ({ pageParam = 1 }) => {
       const res = await apiClient.get(
-        `/api/v1/chat/conversation/recent?page=${pageParam}`
+        API_ENDPOINTS.CHAT_CONVERSATION_RECENTPAGE(pageParam)
       );
 
       return res.data.data;

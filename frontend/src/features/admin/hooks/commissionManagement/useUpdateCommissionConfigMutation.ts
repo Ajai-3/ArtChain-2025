@@ -17,11 +17,13 @@ export const useUpdateCommissionConfigMutation = () => {
 
   return useMutation({
     mutationFn: async (data: Partial<CommissionConfig>) => {
-      const response = await apiClient.patch(ROUTES.ADMIN.PLATFORM_CONFIG, data);
+      const response = await apiClient.patch(
+        ROUTES.ADMIN.PLATFORM_CONFIG,
+        data,
+      );
       return response.data.data;
     },
     onSuccess: (data) => {
-      // Update cache directly instead of refetching
       queryClient.setQueryData(['commissionConfig'], data);
       toast.success('Commission settings updated successfully');
     },

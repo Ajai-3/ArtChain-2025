@@ -1,8 +1,7 @@
 import apiClient from "../../../../api/axios";
 import { useQuery, type UseQueryOptions } from "@tanstack/react-query";
 import type { Category } from "../../../../types/category/Category";
-
-
+import { API_ENDPOINTS } from "../../../../constants/apiEndpoints";
 
 export interface GetAllCategoryResponse {
   success: boolean;
@@ -40,7 +39,7 @@ export const useGetAllCategory = ({
     queryKey,
     queryFn: async () => {
       const { data } = await apiClient.get<GetAllCategoryResponse>(
-        "/api/v1/art/category",
+        API_ENDPOINTS.ART_CATEGORY,
         { params: { page, limit, search, status, count: countFilter } }
       );
       return data;

@@ -66,7 +66,6 @@ export const useMasonryLayout = <T>(
       if (!mounted) return;
       if (changed) {
         setImageDimensions(newDimensions);
-        // Trigger re-measure
          requestAnimationFrame(() => {
             if (containerRef.current) {
               const w = Math.max(
@@ -84,10 +83,8 @@ export const useMasonryLayout = <T>(
     return () => {
       mounted = false;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]); 
 
-  // Measure container
   useLayoutEffect(() => {
     const measure = () => {
       if (!containerRef.current) {
@@ -118,7 +115,6 @@ export const useMasonryLayout = <T>(
     };
   }, []);
 
-  // Calculate layout
   const rows = useMemo(() => {
       if (!items.length) return [];
 

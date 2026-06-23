@@ -1,3 +1,5 @@
+import { TransactionItem, TransactionStats } from '../../../types/wallet.types';
+
 export interface IWalletService {
   getAdminTransactions(
     adminId: string,
@@ -5,19 +7,14 @@ export interface IWalletService {
     startDate?: Date,
     endDate?: Date
   ): Promise<{
-    transactions: Array<{
-      amount: number;
-      category: string;
-      description: string;
-      createdAt: Date;
-    }>;
+    transactions: TransactionItem[];
   }>;
-  getRecentTransactions(token: string, limit?: number): Promise<any[]>;
-  getTransactionStats(token: string): Promise<any[]>;
+  getRecentTransactions(token: string, limit?: number): Promise<TransactionItem[]>;
+  getTransactionStats(token: string): Promise<TransactionStats>;
   getRevenueStats(
     adminId: string,
     token: string,
     startDate?: Date,
     endDate?: Date
-  ): Promise<any>;
+  ): Promise<Record<string, unknown> | null>;
 }
