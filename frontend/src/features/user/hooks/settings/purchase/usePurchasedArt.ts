@@ -10,7 +10,7 @@ export const usePurchasedArt = (page: number, limit: number) => {
         params: { page, limit }
       });
       
-      return response.data.data;
+      return response.data.data?.purchases || [];
     },
     placeholderData: keepPreviousData, 
     staleTime: 5000, 

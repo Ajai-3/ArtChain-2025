@@ -53,8 +53,8 @@ const Home: React.FC = () => {
 
   const { containerRef, rows } = useMasonryLayout(
     allItems,
-    (item: ArtItem) => item.id,
-    (item: ArtItem) => item.imageUrl || item.previewUrl || ''
+    (item: any) => item.art?.id || item.id,
+    (item: any) => item.art?.imageUrl || item.imageUrl || item.previewUrl || ''
   );
 
   // categories scroll helpers (unchanged)
@@ -206,7 +206,7 @@ const Home: React.FC = () => {
                   itemIndex === row.items.length - 1;
                 return (
                   <div
-                    key={item.id}
+                    key={item.art?.id || item.id}
                     ref={isLastItem ? lastArtRef : null}
                     style={{
                       width: `${item.calculatedWidth}px`,

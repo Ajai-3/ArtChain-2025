@@ -42,7 +42,11 @@ export const useGetUserLikedArts = () => {
         params: { page: pageParam, limit: 15 },
         signal,
       });
-      return res.data as PaginatedResponse;
+      return {
+        data: res.data.data.arts || [],
+        page: res.data.page,
+        total: res.data.data.totalCount || 0
+      } as PaginatedResponse;
     },
     getNextPageParam: (lastPage) =>
       lastPage.data.length < 15 ? undefined : lastPage.page + 1,
