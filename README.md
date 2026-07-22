@@ -6,70 +6,118 @@ The application has been meticulously engineered using **Clean Architecture** pa
 
 ---
 
-## 🏗️ Architecture & Tech Stack
+## Documentation Navigation Index
 
-The entire backend ecosystem is composed of highly decoupled **Microservices**, orchestrated seamlessly via **Docker** and utilizing industry-standard design patterns.
+Easily navigate to the detailed documentation for each layer and microservice in the codebase:
 
-**Frontend Stack:**
-![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-* **TanStack Query** (React Query): Leveraged for powerful, optimized server-state management, data fetching, and intelligent caching strategies.
-* **shadcn/ui**: Utilized for stunning, accessible, and deeply customizable UI components without restrictive monolithic libraries.
-* **Socket.io Client** & **WebRTC**: For seamless real-time sockets and peer-to-peer web-rtc video integrations.
-* **Redux Toolkit**: Handling complex global client states.
+| Component / Subsystem | Path | Description |
+| :--- | :--- | :--- |
+| **Frontend Web App** | [`frontend/README.md`](frontend/README.md) | React 19, TypeScript, Vite, TailwindCSS, Socket.IO client, WebRTC, Redux Toolkit, TanStack Query |
+| **Backend Ecosystem** | [`backend/README.md`](backend/README.md) | Central backend orchestration overview, Docker Compose, Nginx reverse proxy, PostgreSQL, MongoDB |
+| **API Gateway** | [`backend/api-gateway/README.md`](backend/api-gateway/README.md) | Reverse proxying, JWT conditional auth policies, rate limiting, Winston & Loki logging |
+| **User & Admin Service** | [`backend/services/user-admin-service/README.md`](backend/services/user-admin-service/README.md) | IAM, Google OAuth via Firebase, Prisma PostgreSQL, artist verification, gRPC |
+| **Art Service** | [`backend/services/art-service/README.md`](backend/services/art-service/README.md) | Artwork CRUD, live auctions & bidding engine, commission negotiation, Google Gemini AI generation |
+| **Wallet Service** | [`backend/services/wallet-service/README.md`](backend/services/wallet-service/README.md) | Digital ledger, Stripe Checkout integration, commission fund escrow locking/refund, withdrawals |
+| **Elasticsearch Service**| [`backend/services/elastic-search-service/README.md`](backend/services/elastic-search-service/README.md) | Elasticsearch indexing, fuzzy search, real-time index sync via RabbitMQ event consumers |
+| **Notification Service** | [`backend/services/notification-service/README.md`](backend/services/notification-service/README.md) | Multi-channel notifications, Socket.IO live alerts, Nodemailer transactional HTML emails |
+| **S3 Upload Service** | [`backend/services/s3-service/README.md`](backend/services/s3-service/README.md) | Media uploads to AWS S3, CloudFront CDN, image watermarking & sharp resizing, NSFWJS moderation |
+| **Chat Service** | [`backend/services/chat-service/README.md`](backend/services/chat-service/README.md) | Real-time chat via Socket.IO Redis Adapter, group rooms, WebRTC video/audio call signaling |
 
-**Backend & Infrastructure Stack:**
-![Node.JS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white) ![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB) ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/postgresql-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white) ![ElasticSearch](https://img.shields.io/badge/-ElasticSearch-005571?style=for-the-badge&logo=elasticsearch) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-* **Clean Architecture**: Deeply integrated Domain, Application, and Infrastructure layers. Applies stringent SOLID principles (Dependency Inversion, Single Responsibility).
-* **Databases**: Combining the relational constraints of **PostgreSQL** (managed via Prisma & pgAdmin) with the flexibility of **MongoDB**.
-* **Redis**: Deployed as an ultra-fast caching layer for optimization.
-* **Elasticsearch**: Used as a high-performance vector-search and logging utility module.
-* **Loki & Grafana**: Deployed as the observability platform for centralized, aggregated microservice logging and beautiful metrics tracking.
+---
+
+## Architecture & Tech Stack
+
+The platform is divided into a modern React frontend client and an event-driven Node.js/TypeScript microservices backend orchestrated via **Docker** and **Nginx**.
+
+### Frontend Tech Stack
+![React](https://img.shields.io/badge/React%2019-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Radix UI](https://img.shields.io/badge/Radix%20UI-161618?style=for-the-badge&logo=radix-ui&logoColor=white)
+![Redux Toolkit](https://img.shields.io/badge/Redux%20Toolkit-764ABC?style=for-the-badge&logo=redux&logoColor=white)
+![TanStack Query](https://img.shields.io/badge/TanStack%20Query-FF4154?style=for-the-badge&logo=react-query&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-black?style=for-the-badge&logo=socket.io)
+![WebRTC](https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=webrtc&logoColor=white)
+![Stripe](https://img.shields.io/badge/Stripe-6772E5?style=for-the-badge&logo=stripe&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+
+- **TanStack Query (v5)**: Optimized server-state management, data fetching, and intelligent caching strategies.
+- **shadcn/ui & Radix UI**: Accessible, customized UI components.
+- **Socket.io Client & WebRTC**: Real-time messaging, notification toasts, and peer-to-peer WebRTC video calls.
+- **Redux Toolkit & Redux Persist**: Complex client-side global state and session persistence.
+
+### Backend & Infrastructure Tech Stack
+![Node.JS](https://img.shields.io/badge/Node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
+![ElasticSearch](https://img.shields.io/badge/ElasticSearch-005571?style=for-the-badge&logo=elasticsearch&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![AWS CloudFront](https://img.shields.io/badge/AWS%20CloudFront-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![gRPC](https://img.shields.io/badge/gRPC-244c5a?style=for-the-badge&logo=grpc&logoColor=white)
+![Grafana Loki](https://img.shields.io/badge/Grafana%20Loki-F46800?style=for-the-badge&logo=grafana&logoColor=white)
+
+- **Clean Architecture**: Strict separation of Domain, Application, Infrastructure, and Presentation layers following SOLID principles.
+- **Databases**: Relational model via **PostgreSQL** (managed with Prisma ORM) alongside **MongoDB** document storage.
+- **Messaging & Cache**: **RabbitMQ** event bus for asynchronous pub/sub events and **Redis** for rate limiting and Socket.IO multi-node scaling.
+- **Elasticsearch**: Full-text vector search engine for artworks and user discovery.
+- **Observability**: **Grafana Loki** aggregated log transport for centralized monitoring.
 
 ---
 
 ## Architecture Diagram
+
 ![Architecture Diagram](docs/images/architecture.png)
 
-## 📦 Microservices Breakdown
+---
+
+## Microservices Breakdown
 
 Each service maps exclusively to its domain boundary, ensuring no tight-coupling between disparate features:
 
-1. **`api-gateway` (Port: 4000)**
-   The edge proxy. Routes all incoming client requests to their appropriate downstream services, handling core authentication pass-through and global rate-limiting.
+1. **[`api-gateway`](backend/api-gateway/README.md) (Port: 4000)**
+   The edge proxy. Routes all incoming client requests to downstream services, handling JWT access policy matching and global rate-limiting.
 
-2. **`user-admin-service` (Port: 4001)**
-   The robust IAM module. Manages user registration, OAuth flows (Google), authorization policies, profiles, artist identity verification, and curates extensive data for the admin observability dashboards.
+2. **[`user-admin-service`](backend/services/user-admin-service/README.md) (Port: 4001)**
+   The IAM module. Manages user registration, Google OAuth, authorization policies, profiles, artist identity verification, and admin dashboards.
 
-3. **`art-service` (Port: 4002)**
-   The core art engine. Handles the logic for artworks, bidding pipelines, and complex mutual-agreement commission workflows natively.
+3. **[`art-service`](backend/services/art-service/README.md) (Port: 4002)**
+   The core art engine. Handles artworks, live auction bidding pipelines, commission workflows, and Google Gemini AI generation.
 
-4. **`wallet-service` (Port: 4003)**
-   Finances & Escrow. Using modern Stripe integrations, it manages fund-locking capabilities to ensure mutual trust during active commissions, successfully paying out artists upon workflow completion.
+4. **[`wallet-service`](backend/services/wallet-service/README.md) (Port: 4003)**
+   Finances & Escrow. Using Stripe integrations, it manages fund-locking capabilities for active commissions and withdrawals.
 
-5. **`elastic-search-service` (Port: 4004)**
-   Indexes art/user data to act as an incredibly fast native search utility engine.
+5. **[`elastic-search-service`](backend/services/elastic-search-service/README.md) (Port: 4004)**
+   Indexes artwork and user data into Elasticsearch for full-text search.
 
-6. **`notification-service` (Port: 4005)**
-   The event bus listener. Broadcasts vital system alerts, email updates, and platform notifications safely.
+6. **[`notification-service`](backend/services/notification-service/README.md) (Port: 4005)**
+   The event listener. Broadcasts real-time in-app alerts and dispatches transactional HTML emails.
 
-7. **`s3-service` (Port: 4006)**
-   The media proxy. Safely streams and handles image uploads (avatars, full-res digital illustrations) directly into cloud buckets acting as the unified platform CDN.
+7. **[`s3-service`](backend/services/s3-service/README.md) (Port: 4006)**
+   Media proxy. Uploads artwork to S3, generates CloudFront CDN links, processes watermarks, and runs pre-upload AI image moderation.
 
-8. **`chat-service` (Port: 4007)**
-   The real-time epicenter. Actively uses `Socket.io` to persist real-time chat spaces, manage media messaging, and negotiate WebRTC signaling for point-to-point video communication.
-
----
-
-## 🚀 Platform Capabilities
-
-* **Mutual-Agreement Commissions**: Protects both clients and creatives. Funds are locked in escrow, requiring dual sign-offs throughout various phases (Agreement -> In-Progress -> Delivery -> Payout).
-* **Live Multimedia WebRTC Communication**: Why leave the platform to communicate? Integrated text messaging supports inline images alongside flawless live peer-to-peer Video calling. 
-* **Dynamic Content Loaders**: Employing beautiful, customized Skeleton loading screens natively built in `shadcn` to keep aesthetic standards premium while `TanStack Query` seamlessly populates data.
-* **Centralized Observability**: Zero blind-spots. **Loki** consumes container logs and outputs them directly into customizable **Grafana** visualization dashboards to track operational health.
+8. **[`chat-service`](backend/services/chat-service/README.md) (Port: 4007)**
+   Real-time epicenter. Uses `Socket.io` and Redis Adapter for chat rooms, media attachments, and WebRTC video call signaling.
 
 ---
 
-## 🛠️ Getting Started
+## Platform Capabilities
+
+* **Mutual-Agreement Commissions**: Funds are locked in escrow, requiring dual sign-offs throughout various phases (Agreement -> In-Progress -> Delivery -> Payout).
+* **Live Multimedia WebRTC Communication**: Integrated text messaging with inline media alongside peer-to-peer Video calling. 
+* **Dynamic Content Loaders**: Customized skeleton loading screens in `shadcn` with optimized caching via `TanStack Query`.
+* **Centralized Observability**: Log aggregation via **Loki** into customizable **Grafana** health tracking dashboards.
+
+---
+
+## Getting Started
 
 ### Prerequisites
 * **Node.js**: v18+ recommended.
@@ -81,19 +129,21 @@ Each service maps exclusively to its domain boundary, ensuring no tight-coupling
 2. **Database Initialization**: If running for the first time, boot the database instances via the shell scripts:
    ```bash
    # Unix environments
-   bash init-multiple-dbs.sh
+   bash backend/init-multiple-dbs.sh
    
    # Windows environments
-   ./start-all.ps1
+   ./backend/start-all.ps1
    ```
-3. **Container Orchestration**: Spin up the whole infrastructure network seamlessly:
+3. **Container Orchestration**: Spin up the backend infrastructure:
    ```bash
-   docker-compose up -d --build
+   cd backend
+   docker compose up -d --build
    ```
 4. **Accessing the Stack**:
-   * Frontend Application: Boot the Vite bundler over `npm run dev`
-   * PgAdmin Dashboard: Accessible globally at `localhost:8080`.
+   * Frontend Application: Run `cd frontend && npm run dev`
+   * PgAdmin Dashboard: Accessible at `localhost:8080`.
    * Grafana Observability Dashboard: Accessible at `localhost:3000`.
 
 ---
+
 **ArtChain-2025** — Setting the modern standard for Decentralized Art Ecosystems.
