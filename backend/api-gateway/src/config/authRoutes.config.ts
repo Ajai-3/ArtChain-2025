@@ -71,6 +71,7 @@ export const authRoutesConfig = {
     { path: ROUTES.CHAT.PRIVATE, methods: ['POST'] },
     { path: ROUTES.CHAT.RECENT, methods: ['GET'] },
     { path: ROUTES.CHAT.MESSAGE, methods: ['GET'] },
+    { path: ROUTES.CHAT.MESSAGE_SEND, methods: ['POST'] },
 
     { path: ROUTES.AI.GENERATE, methods: ['POST'] },
     { path: ROUTES.AI.QUOTA, methods: ['GET'] },

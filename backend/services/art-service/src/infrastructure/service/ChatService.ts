@@ -12,7 +12,7 @@ export class ChatService implements IChatService {
   ): Promise<string> {
     try {
       const response = await axios.post(
-        `${config.api_gateway_url}${SERVICE_ROUTES.CHAT_SEND}`,
+        `${config.api_gateway_url}${SERVICE_ROUTES.CHAT_CONVERSATION_REQUEST}`,
         { artistId },
         {
           headers: {

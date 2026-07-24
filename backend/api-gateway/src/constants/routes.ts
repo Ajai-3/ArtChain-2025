@@ -99,6 +99,7 @@ export const ROUTES = {
     PRIVATE: '/api/v1/chat/conversation/private',
     RECENT: '/api/v1/chat/conversation/recent',
     MESSAGE: '/api/v1/chat/message/:conversationId',
+    MESSAGE_SEND: '/api/v1/chat/message/send',
     GROUP: '/api/v1/chat/conversation/group',
     GROUP_BY_ID: '/api/v1/chat/conversation/group/:conversationId',
     MEMBERS: '/api/v1/chat/conversation/:conversationId/members',

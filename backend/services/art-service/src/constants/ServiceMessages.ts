@@ -45,6 +45,7 @@ export const SERVICE_ROUTES = {
   WALLET_SETTLE_AUCTION: '/api/v1/wallet/transaction/settle-auction',
   WALLET_TRANSFER_LOCKED_COMMISSION: '/api/v1/wallet/transaction/transfer-locked-commission',
   
-  CHAT_SEND: '/api/v1/chat/send',
+  CHAT_CONVERSATION_REQUEST: '/api/v1/chat/conversation/request',
+  CHAT_SEND: '/api/v1/chat/message/send',
   CHAT_HISTORY: (conversationId: string) => `/api/v1/chat/history/${conversationId}`,
 };
