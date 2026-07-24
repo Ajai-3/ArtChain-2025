@@ -1,3 +1,4 @@
+/** @jsxImportSource react */
 // PostDetailsForm.tsx
 import React, { useState } from "react";
 import StepOneForm from "./StepOneForm";
@@ -14,7 +15,7 @@ interface PostDetails {
   downloadingDisabled: boolean;
   isPrivate: boolean;
   isForSale: boolean;
-  priceType?: string;
+  priceType?: "artcoin" | "fiat";
   artcoins?: number;
   fiatPrice?: number;
 }
@@ -127,10 +128,10 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
             setPrivateCollection={(val) => setPostDetails({ ...postDetails, isPrivate: val })}
             forSale={postDetails.isForSale}
             setForSale={(val) => setPostDetails({ ...postDetails, isForSale: val })}
-            priceType={postDetails.priceType}
+            priceType={postDetails.priceType === "fiat" ? "fiat" : "artcoin"}
             setPriceType={(val) => setPostDetails({ ...postDetails, priceType: val })}
-            artcoins={postDetails.artcoins}
-            fiat={postDetails.fiatPrice}
+            artcoins={postDetails.artcoins ?? ""}
+            fiat={postDetails.fiatPrice ?? ""}
             handleArtcoinChange={(val) =>
               setPostDetails({ ...postDetails, artcoins: Number(val), fiatPrice: Number(val) * 10 })
             }
