@@ -40,6 +40,10 @@ const PostDetailsForm: React.FC<PostDetailsFormProps> = ({
       const newErrors = { ...prev };
       if (!value.trim()) {
         newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+      } else if (field === "title" && value.trim().length > 100) {
+        newErrors[field] = "Title cannot exceed 100 characters";
+      } else if (field === "description" && value.trim().length > 2000) {
+        newErrors[field] = "Description cannot exceed 2000 characters";
       } else {
         delete newErrors[field];
       }

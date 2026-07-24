@@ -4,7 +4,7 @@ export const createArtPostSchema = z.object({
   title: z
     .string()
     .min(1, 'Title is required')
-    .max(35, 'Title is too long.')
+    .max(100, 'Title is too long.')
     .transform((val) =>
       val
         .split(' ')
