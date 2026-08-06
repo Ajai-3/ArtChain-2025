@@ -91,7 +91,7 @@ Each service maps exclusively to its domain boundary, ensuring no tight-coupling
    docker-compose up -d --build
    ```
 4. **Accessing the Stack**:
-   * Frontend Application: Boot the Vite bundler over `npm run dev`.
+   * Frontend Application: Boot the Vite bundler over `npm run dev`
    * PgAdmin Dashboard: Accessible globally at `localhost:8080`.
    * Grafana Observability Dashboard: Accessible at `localhost:3000`.
 
