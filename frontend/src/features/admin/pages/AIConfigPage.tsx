@@ -11,7 +11,13 @@ const AIConfigPage: React.FC = () => {
   const { data: configData, isLoading: isConfigLoading, error: configError } = useGetAIConfigs();
   const { data: analyticsData, isLoading: isAnalyticsLoading } = useGetAIAnalytics();
   
-  const configs = configData?.data || [];
+  const configs = Array.isArray(configData?.data?.configs)
+    ? configData.data.configs
+    : Array.isArray(configData?.data)
+    ? configData.data
+    : Array.isArray(configData)
+    ? configData
+    : [];
   const analytics = analyticsData?.data || { totalGenerations: 0, activeModels: 0 };
 
   const isLoading = isConfigLoading || isAnalyticsLoading;

@@ -77,7 +77,6 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
       const user = userMap.get(art.userId);
       return {
         ...art,
-        previewUrl: mapCdnUrl(art.imageUrl),
         artist: {
           name: user?.name || 'Unknown',
           username: user?.username || 'unknown',
@@ -97,7 +96,6 @@ export class GetDashboardStatsUseCase implements IGetDashboardStatsUseCase {
 
       return {
         ...auc,
-        imageKey: mapCdnUrl(auc.imageUrl),
         host: host
           ? {
               name: host.name,

@@ -101,7 +101,7 @@ const RevenueSourceChart: React.FC<RevenueSourceChartProps> = ({
       <CardContent>
         <div className='h-[280px] w-full mt-4'>
           {pieData.length > 0 ? (
-            <ResponsiveContainer width='100%' height='100%'>
+            <ResponsiveContainer width='100%' height='100%' minWidth={0}>
               <PieChart>
                 <Pie
                   data={pieData}

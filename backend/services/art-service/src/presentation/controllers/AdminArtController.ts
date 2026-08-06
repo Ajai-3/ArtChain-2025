@@ -6,7 +6,8 @@ import { validateWithZod } from '../../utils/validateWithZod';
 import { ERROR_MESSAGES } from '../../constants/ErrorMessages';
 import { IAdminArtController } from '../interface/IAdminArtController';
 import { updateArtStatusSchema } from '../validators/updateArtStatus.schema';
-import { PostStatus, PostType, PriceType } from '../../domain/entities/ArtPost';
+import { mapCdnUrl } from '../../utils/mapCdnUrl';
+import { PostStatus, PostType, PriceType, ArtPost } from '../../domain/entities/ArtPost';
 import { UpdateArtStatusDTO } from '../../application/interface/dto/admin/UpdateArtStatusDTO';
 import { IGetAllArtsUseCase } from '../../application/interface/usecase/admin/IGetAllArtsUseCase';
 import { IGetTopArtsUseCase } from '../../application/interface/usecase/admin/IGetTopArtsUseCase';
@@ -111,7 +112,18 @@ export class AdminArtController implements IAdminArtController {
       const limit = Number(req.query.limit) || 5;
       const type = (req.query.type as 'likes' | 'price') || 'likes';
       const arts = await this._getTopArtsUseCase.execute(limit, type);
-      return res.status(HttpStatus.OK).json({ data: arts });
+      const mappedArts = arts.map((art: ArtPost) => {
+        const rawUrl = art.previewUrl || art.watermarkedUrl;
+        const cdnPreview = mapCdnUrl(rawUrl) ?? '';
+        const cdnWatermarked = mapCdnUrl(art.watermarkedUrl) ?? cdnPreview;
+        return {
+          ...art,
+          watermarkedUrl: cdnWatermarked,
+          previewUrl: cdnPreview,
+          imageUrl: cdnPreview,
+        };
+      });
+      return res.status(HttpStatus.OK).json({ data: mappedArts });
     } catch (error) {
       next(error);
     }

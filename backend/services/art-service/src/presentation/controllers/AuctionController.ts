@@ -4,8 +4,9 @@ import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../infrastructure/Inversify/types';
 import { validateWithZod } from '../../utils/validateWithZod';
-import { AuctionStatus } from '../../domain/entities/Auction';
-import { createAuctionSchema } from '../validators/auction.schema';
+import { mapCdnUrl } from '../../utils/mapCdnUrl';
+import { AuctionStatus, Auction } from '../../domain/entities/Auction';
+import { createAuctionSchema, CreateAuctionSchema } from '../validators/auction.schema';
 import { AUCTION_MESSAGES } from '../../constants/AuctionMessages';
 import { IAuctionController } from '../interface/IAuctionController';
 import { GetAuctionsDTO } from '../../application/interface/dto/auction/GetAuctionsDTO';
@@ -59,7 +60,7 @@ export class AuctionController implements IAuctionController {
       const hostId = req.headers['x-user-id'] as string;
       logger.info(`Creating auction for host: ${hostId}`);
 
-      const validatedBody = validateWithZod(createAuctionSchema, req.body);
+      const validatedBody = validateWithZod<CreateAuctionSchema>(createAuctionSchema, req.body);
 
       const dto: CreateAuctionDTO = {
         hostId,
@@ -290,9 +291,17 @@ export class AuctionController implements IAuctionController {
     try {
       const limit = parseInt(req.query.limit as string) || 5;
       const auctions = await this._getRecentAuctionsUseCase.execute(limit);
+      const mappedAuctions = auctions.map((auc: Auction) => {
+        const cdnImage = mapCdnUrl(auc.imageKey) ?? auc.imageKey;
+        return {
+          ...auc,
+          imageKey: cdnImage,
+          imageUrl: cdnImage,
+        };
+      });
       return res.status(HttpStatus.OK).json({
         message: AUCTION_MESSAGES.RECENT_AUCTIONS_FETCHED,
-        data: auctions,
+        data: mappedAuctions,
       });
     } catch (error) {
       logger.error('Error in getRecentAuctions', error);

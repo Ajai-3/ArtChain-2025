@@ -1,8 +1,7 @@
-import { ZodSchema } from 'zod';
+import { ZodType } from 'zod';
 import { ERROR_MESSAGES, ValidationError } from 'art-chain-shared';
 
-
-export function validateWithZod<T>(schema: ZodSchema<T>, data: unknown): T {
+export function validateWithZod<T>(schema: ZodType<T>, data: unknown): T {
   const result = schema.safeParse(data);
 
   if (!result.success) {

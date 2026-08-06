@@ -86,7 +86,7 @@ const RevenueTrendChart: React.FC<RevenueTrendChartProps> = ({
       <CardContent className='pl-0'>
         <div className='h-[300px] w-full'>
           {areaData.length > 0 ? (
-            <ResponsiveContainer width='100%' height='100%'>
+            <ResponsiveContainer width='100%' height='100%' minWidth={0}>
               <AreaChart
                 data={areaData}
                 margin={{ top: 10, right: 30, left: 0, bottom: 0 }}

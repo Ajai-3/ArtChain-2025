@@ -64,7 +64,9 @@ const AIConfigCard: React.FC<AIConfigCardProps> = ({ config }) => {
           <div>
             <p className='text-muted-foreground text-xs'>Models</p>
             <p className='font-semibold text-xs truncate'>
-              {config.availableModels?.join(', ') || 'N/A'}
+              {Array.isArray(config.availableModels)
+                ? config.availableModels.join(', ')
+                : 'N/A'}
             </p>
           </div>
           <div>

@@ -26,7 +26,7 @@ const ArtworkStatsChart: React.FC<ArtworkStatsChartProps> = ({ stats }) => {
       </CardHeader>
       <CardContent>
         <div className="h-[250px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
             <BarChart data={data} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#333" opacity={0.1} />
               <XAxis type="number" hide />
