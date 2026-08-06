@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import apiClient from '../api/axios';
 import { useDispatch } from 'react-redux';
 import { useQuery } from '@tanstack/react-query';
@@ -11,8 +11,9 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
 export const useAuthInitialization = () => {
   const dispatch = useDispatch();
   useGetPlatformConfig();
+  const [isInitialized, setIsInitialized] = useState(false);
 
-  const { data, isLoading, isFetching } = useQuery<AuthInitializeResponse>({
+  const { data, isLoading } = useQuery<AuthInitializeResponse>({
     queryKey: ['auth', 'initialize'],
     queryFn: async () => {
       const response = await apiClient.get(API_ENDPOINTS.AUTH_INITIALIZE, {
@@ -27,16 +28,19 @@ export const useAuthInitialization = () => {
   });
 
   useEffect(() => {
-    if (data && !isLoading) {
-      const { accessToken, user } = data;
+    if (!isLoading) {
+      if (data) {
+        const { accessToken, user } = data;
 
-      if (user.role === 'admin') {
-        dispatch(setAdmin({ accessToken, admin: user }));
+        if (user.role === 'admin') {
+          dispatch(setAdmin({ accessToken, admin: user }));
+        }
+
+        dispatch(setUser({ accessToken, user }));
       }
-
-      dispatch(setUser({ accessToken, user }));
+      setIsInitialized(true);
     }
   }, [data, isLoading, dispatch]);
 
-  return { loading: isLoading || isFetching };
+  return { loading: !isInitialized };
 };
