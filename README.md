@@ -6,24 +6,6 @@ The application has been meticulously engineered using **Clean Architecture** pa
 
 ---
 
-## Documentation Navigation Index
-
-Easily navigate to the detailed documentation for each layer and microservice in the codebase:
-
-| Component / Subsystem | Path | Description |
-| :--- | :--- | :--- |
-| **Frontend Web App** | [`frontend/README.md`](frontend/README.md) | React 19, TypeScript, Vite, TailwindCSS, Socket.IO client, WebRTC, Redux Toolkit, TanStack Query |
-| **Backend Ecosystem** | [`backend/README.md`](backend/README.md) | Central backend orchestration overview, Docker Compose, Nginx reverse proxy, PostgreSQL, MongoDB |
-| **API Gateway** | [`backend/api-gateway/README.md`](backend/api-gateway/README.md) | Reverse proxying, JWT conditional auth policies, rate limiting, Winston & Loki logging |
-| **User & Admin Service** | [`backend/services/user-admin-service/README.md`](backend/services/user-admin-service/README.md) | IAM, Google OAuth via Firebase, Prisma PostgreSQL, artist verification, gRPC |
-| **Art Service** | [`backend/services/art-service/README.md`](backend/services/art-service/README.md) | Artwork CRUD, live auctions & bidding engine, commission negotiation, Google Gemini AI generation |
-| **Wallet Service** | [`backend/services/wallet-service/README.md`](backend/services/wallet-service/README.md) | Digital ledger, Stripe Checkout integration, commission fund escrow locking/refund, withdrawals |
-| **Elasticsearch Service**| [`backend/services/elastic-search-service/README.md`](backend/services/elastic-search-service/README.md) | Elasticsearch indexing, fuzzy search, real-time index sync via RabbitMQ event consumers |
-| **Notification Service** | [`backend/services/notification-service/README.md`](backend/services/notification-service/README.md) | Multi-channel notifications, Socket.IO live alerts, Nodemailer transactional HTML emails |
-| **S3 Upload Service** | [`backend/services/s3-service/README.md`](backend/services/s3-service/README.md) | Media uploads to AWS S3, CloudFront CDN, image watermarking & sharp resizing, NSFWJS moderation |
-| **Chat Service** | [`backend/services/chat-service/README.md`](backend/services/chat-service/README.md) | Real-time chat via Socket.IO Redis Adapter, group rooms, WebRTC video/audio call signaling |
-
----
 
 ## Architecture & Tech Stack
 
