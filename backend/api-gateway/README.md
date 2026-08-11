@@ -26,12 +26,12 @@ The **API Gateway** serves as the single entry point for all client traffic into
                           └─────────────┬─────────────┘
                                         │ (HTTP/REST)
                                         ▼
-                          ┌───────────────────────────┐
-                          │     API Gateway (:4000)   │
-                          │  • CORS & Rate Limiting   │
+                          ┌────────────────────────────────┐
+                          │     API Gateway (:4000)        │
+                          │  • CORS & Rate Limiting        │
                           │  • Conditional Auth Middleware │
-                          │  • Winston / Loki Logging │
-                          └─────────────┬─────────────┘
+                          │  • Winston / Loki Logging      │
+                          └─────────────┬──────────────────┘
                                         │
      ┌─────────────┬─────────────┬──────┴──────┬─────────────┬─────────────┐
      ▼             ▼             ▼             ▼             ▼             ▼
