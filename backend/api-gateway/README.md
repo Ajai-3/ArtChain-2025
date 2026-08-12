@@ -205,7 +205,7 @@ npm run lint:fix
 
 ## Docker Usage
 
-The API Gateway is included in the project's root `docker-compose.yml`. To run the API Gateway within Docker:
+The API Gateway is included in the project's root `docker-compose.yml`. To run the API Gateway within Docker
 
 ```bash
 # Build & run gateway service
